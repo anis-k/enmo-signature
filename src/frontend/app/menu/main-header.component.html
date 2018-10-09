@@ -1,0 +1,57 @@
+<mat-toolbar color="primary" class="admin-toolbar">
+    <button mat-button (click)="this.snav.toggle();">
+        <mat-icon *ngIf="!mobileMode"class="maarchLogo" svgIcon="maarchLogo"></mat-icon>
+        <mat-icon *ngIf="mobileMode" class="fa fa-bars fa-2x"></mat-icon>
+    </button>
+    <h1 class="admin-toolbar-title" *ngIf="!mobileMode">{{titleHeader}}
+    </h1>
+    <span style="flex: 1 1 auto;"></span>
+    <search-home></search-home>
+    <button mat-button [matMenuTriggerFor]="applications" *ngIf="!mobileMode" style="min-width:0px;width:65px;height: 40px;margin-left: 10px" matTooltip="{{lang.menu}}">
+        <mat-icon mat-list-icon class="fa fa-th" style="font-size:16px;color:white;height:auto;"></mat-icon>
+    </button>
+    <mat-menu #applications="matMenu" class="headerMaarchShortcut">
+        <ng-container *ngFor="let shortcut of user.menu">
+            <button (click)="gotToMenu(shortcut);" style="white-space:inherit;height: 100px;line-height:20px;" class="col-md-4 col-xs-6" mat-button color="primary" matTooltip="{{shortcut.comment}}">
+                <i class="{{shortcut.style}} fa-2x"></i>
+                <br/>{{shortcut.name}}
+            </button>
+        </ng-container>
+    </mat-menu>
+    <button mat-button [matMenuTriggerFor]="menu" *ngIf="!mobileMode">
+        <mat-icon mat-list-icon class="fa fa-user fa-2x" style="color:white; margin:0px 12px 8px 0px;"></mat-icon>{{user.firstname.charAt(0) | uppercase}}. {{user.lastname | uppercase}}</button>
+    <mat-menu #menu="matMenu" class="headerMaarch">
+        <canvas class="header-bg" width="250" height="70" style="margin-top:-8px;background-image: url('static.php?filename=login-banner.jpg');background-size:cover;border-bottom: solid 1px white;"></canvas>
+        <i title="{{lang.myProfileAccess}}" routerLink="/profile" style="cursor:pointer;z-index:1;color:white;position: absolute;left: 85px;top: 17px;background-image: url('static.php?filename=logo_only.svg');width: 70px;height: 70px;background-size: cover;background-position: top center;border-radius: 50%;border: solid white;background-color:white;"></i>
+        <div class="content" style="padding-top:10px;color:white;max-height:250px;overflow-y:auto;overflow-x:hidden;">
+            <p routerLink="/profile" class="text-center" style="cursor:pointer;">{{user.firstname}} {{user.lastname | uppercase}}</p>
+            <mat-list>
+                <h3 mat-subheader style="color:white;">{{lang.groups}}</h3>
+                <mat-divider></mat-divider>
+                <mat-list-item *ngFor="let group of user.groups">
+                    <p mat-line style="color:white;opacity:0.5;"> {{group.group_desc}} </p>
+                </mat-list-item>
+                <h3 mat-subheader style="color:white;">{{lang.entities}}</h3>
+                <mat-divider></mat-divider>
+                <mat-list-item *ngFor="let entity of user.entities">
+                    <p mat-line style="color:white;opacity:0.5;"> {{entity.entity_label}} </p>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <div style="display:flex;padding: 5px 5px 0 5px;">
+            <div style="text-align:left;flex:1">
+                <a routerLink="/profile" style="color: white;padding-left: 10px;">
+                    <span class="badge" style="background:white;" color="primary">{{lang.myProfile}}</span>
+                </a>
+            </div>
+            <div style="text-align:right;flex:2;">
+                <a href="index.php?display=true&page=logout&logout=true" style="color: white;padding-right: 10px;">
+                    <span class="badge" style="background:white;" color="primary">{{lang.logout}}</span>
+                </a>
+            </div>
+        </div>
+    </mat-menu>
+    <button id="snav2Button" mat-icon-button (click)="this.snav2.toggle()">
+        <mat-icon class="fa fa-2x" [ngClass]="[this.snav2 && this.snav2.opened ? 'fa-chevron-right' : 'fa-chevron-left']"></mat-icon>
+    </button>
+</mat-toolbar>

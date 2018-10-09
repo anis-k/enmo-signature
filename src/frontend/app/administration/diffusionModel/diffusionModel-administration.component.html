@@ -1,0 +1,97 @@
+<div class="admin-container" [class.admin-is-mobile]="mobileQuery.matches">
+    <mat-sidenav-container autosize class="admin-sidenav-container" >
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            [opened]="mobileQuery.matches ? false : true">
+            <menu-shortcut></menu-shortcut>
+            <menu-nav></menu-nav>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <div *ngIf="loading" style="display:flex;height:100%;">
+                <mat-spinner style="margin:auto;"></mat-spinner>
+            </div>
+            <mat-card *ngIf="!loading" class="card-app-content">
+
+                <mat-tab-group [(selectedIndex)]="selectedTabIndex_1">
+                    <mat-tab label="{{lang.informations}}">
+                        <form class="form-horizontal" #diffusionModelForm="ngForm">
+                            <mat-form-field *ngIf="creationMode">
+                                <mat-select id="object_type" name="object_type" placeholder="{{lang.diffusionType}}" [(ngModel)]="diffusionModel.object_type" [disabled]="!creationMode">
+                                    <mat-option *ngFor="let itemType of this.itemTypeList" [value]="itemType.id">
+                                        {{ itemType.label }}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>                                   
+                            <mat-form-field *ngIf="!creationMode">
+                                <input matInput  name="object_id" placeholder="{{lang.id}}" title="{{lang.id}}" [(ngModel)]="diffusionModel.object_id"
+                                    disabled maxlength="50" required>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <input matInput name="title" title="{{lang.label}}" placeholder="{{lang.label}}" [(ngModel)]="diffusionModel.title" maxlength="255"
+                                    required>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <textarea matInput name="description" title="{{lang.description}}" placeholder="{{lang.description}}" [(ngModel)]="diffusionModel.description"
+                                    matTextareaAutosize matAutosizeMinRows="1" matAutosizeMaxRows="5" maxlength="255"></textarea>
+                            </mat-form-field>
+                            <div class="col-md-12 text-center" style="padding:10px;">
+                                <button mat-raised-button (click)="saveDiffListVisa()" [disabled]="!diffusionModelForm.form.valid || diffusionModel.diffusionList.length == 0" color="primary">{{lang.save}}</button>
+                                <button mat-raised-button color="default" (click)="loadDiffList(this.idCircuit)" [disabled]="!this.listDiffModified || creationMode">{{lang.cancel}}</button>
+                            </div>
+                        </form>
+                    </mat-tab>
+                </mat-tab-group>
+
+            </mat-card>
+        </mat-sidenav-content>
+        <mat-sidenav #snav2 [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            position='end' [opened]="mobileQuery.matches ? false : true" class="col-md-4 col-xs-11">
+
+            <mat-nav-list>
+                <mat-tab-group>
+                        <mat-tab label="{{lang.diffusionList}}">
+                                <div class="row" style="margin:0px;" id="visaCircuitContent">
+                                    <div class="col-md-12">
+                                        <mat-form-field>
+                                            <input #autocompleteFilter type="text" class="autocompleteSearch" placeholder="{{lang.addUser}}" matInput [matAutocomplete]="auto" [formControl]="userCtrl">
+                                            <mat-autocomplete #auto="matAutocomplete">
+                                                <mat-option *ngFor="let elem of filteredUsers | async" [value]="elem.id" (click)="addElemListModelVisa(elem);autocompleteFilter.isOpen=true">
+                                                    <p mat-line *ngIf="elem.type == 'user'" style="margin:0;">
+                                                        <span class="col-xm-1" style="padding-right:5px;">
+                                                            <mat-icon color="primary" class="fa fa-user fa-2x" style="margin-right:0px;"></mat-icon>
+                                                        </span>
+                                                        <span class="col-xm-11">
+                                                            {{ elem.idToDisplay }}
+                                                            <small>{{ elem.otherInfo }}</small>
+                                                        </span>
+                                                    </p>
+                                                </mat-option>
+                                            </mat-autocomplete>
+                                        </mat-form-field>
+                                        <mat-list>
+                                            <span dnd-sortable-container [dropZones]="['boxers-zone']" [sortableData]="diffusionModel.diffusionList">
+                                                <mat-list-item disableRipple="true" *ngFor="let template of diffusionModel.diffusionList; let i = index" title="{{lang.move}}"
+                                                    dnd-sortable [sortableIndex]="i" (onDropSuccess)="updateDiffListVisa(template)">
+                                                    <mat-icon color="primary" [class]="template.item_mode == 'sign' ? 'fa fa-certificate' : 'fa fa-user'" mat-list-icon></mat-icon>
+                                                    <p mat-line>{{template.idToDisplay}}
+                                                        <small style="opacity:0.5;">{{template.descriptionToDisplay}}</small>
+                                                    </p>
+                                                    <button matTooltip="{{lang.delete}}" mat-icon-button color="warn" (click)="removeDiffListVisa(template,i)">
+                                                        <mat-icon class="fa fa-times"></mat-icon>
+                                                    </button>
+                                                </mat-list-item>
+                                            </span>
+                                        </mat-list>
+                                    </div>
+                                    <div class="form-group" *ngIf="diffusionModel.entity_id">
+                                        <div class="col-md-12 text-center" style="padding:10px;">
+                                            <button mat-raised-button color="primary" (click)="saveDiffListVisa()" [disabled]="!this.listDiffModified || (diffusionModel.listTemplate.dest.length == 0 && diffusionModel.listTemplate.cc.length > 0)">{{lang.save}}</button>
+                                            <button mat-raised-button color="default" (click)="loadEntity(this.diffusionModel.entity_id)" [disabled]="!this.listDiffModified">{{lang.cancel}}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-tab>
+                </mat-tab-group>
+            </mat-nav-list>
+        </mat-sidenav>
+    </mat-sidenav-container>
+</div>

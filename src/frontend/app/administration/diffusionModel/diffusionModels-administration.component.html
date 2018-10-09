@@ -1,0 +1,68 @@
+<div class="admin-container" [class.admin-is-mobile]="mobileQuery.matches">
+    <mat-sidenav-container autosize class="admin-sidenav-container" >
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            [opened]="mobileQuery.matches ? false : true">
+            <menu-shortcut></menu-shortcut>
+            <menu-nav></menu-nav>
+            <mat-nav-list>
+                <h3 mat-subheader>{{lang.actions}}</h3>
+                <a mat-list-item routerLink="/administration/diffusionModels/new">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-plus"></mat-icon>
+                    <p mat-line>
+                        {{lang.add}}
+                    </p>
+                </a>
+            </mat-nav-list>
+            <mat-divider></mat-divider>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <div *ngIf="loading" style="display:flex;height:100%;">
+                <mat-spinner style="margin:auto;"></mat-spinner>
+            </div>
+            <mat-card *ngIf="!loading" class="card-app-content">
+                <div class="row" style="margin:0px;">
+                    <div class="col-md-6 col-xs-6">
+                        <mat-form-field>
+                            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{lang.filterBy}}">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <mat-paginator #paginator [length]="100" [pageSize]="10">
+                        </mat-paginator>
+                    </div>
+                </div>
+                <mat-table #table [dataSource]="dataSource" matSort matSortActive="title" matSortDirection="asc">
+                    <ng-container matColumnDef="title">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header style="flex:2;">{{lang.label}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element" style="flex:2;">
+                        {{element.title}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="description">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header style="flex:2;" [class.hide-for-mobile]="mobileQuery.matches">{{lang.description}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element" style="flex:2;" [class.hide-for-mobile]="mobileQuery.matches">
+                        {{element.description}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="object_type">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header style="flex:2;">{{lang.type}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element" style="flex:2;" >
+                        {{element.object_type}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                        <mat-header-cell *matHeaderCellDef style="flex:1;"></mat-header-cell>
+                        <mat-cell *matCellDef="let element" style="justify-content: flex-end;flex:1;">
+                            <button mat-icon-button color="warn" matTooltip="{{lang.delete}}" (click)="$event.stopPropagation();delete(element)">
+                                <mat-icon class="fa fa-trash-alt fa-2x" aria-hidden="true"></mat-icon>
+                            </button>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/diffusionModels/{{row.id}}" style="cursor:pointer;" matTooltip="{{lang.view}}"></mat-row>
+                </mat-table>
+                <div class="mat-paginator" style="min-height:48px;min-height: 48px;display: flex;justify-content: end;align-items: center;padding-right: 20px;">{{listTemplates.length}} {{lang.diffusionModels}}</div>
+            </mat-card>
+        </mat-sidenav-content>
+        <mat-sidenav #snav2 [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            position='end' [opened]="mobileQuery.matches ? false : false">
+        </mat-sidenav>
+    </mat-sidenav-container>
+</div>

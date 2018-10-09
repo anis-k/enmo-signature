@@ -1,0 +1,101 @@
+<div class="admin-container" [class.admin-is-mobile]="mobileQuery.matches">
+    <mat-sidenav-container autosize class="admin-sidenav-container" >
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            [opened]="mobileQuery.matches ? false : true" style="width:300px;">
+            <menu-shortcut></menu-shortcut>
+            <menu-nav></menu-nav>
+            <mat-nav-list>
+                <h3 mat-subheader>{{lang.actions}}</h3>
+                <a mat-list-item routerLink="/administration/docservers/new">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-plus"></mat-icon>
+                    <p mat-line>
+                        {{lang.add}}
+                    </p>
+                </a>
+            </mat-nav-list>
+            <mat-divider></mat-divider>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <div *ngIf="loading" style="display:flex;height:100%;">
+                <mat-spinner style="margin:auto;"></mat-spinner>
+            </div>
+            <mat-card *ngIf="!loading" class="card-app-content">
+                <mat-accordion>
+                    <mat-expansion-panel *ngFor="let docserverType of this.docserversTypes">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{docserverType.docserver_type_label}}
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                {{docserverType.docserver_type_id}}
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row">
+                            <div class="col-md-4" *ngFor="let docserver of this.docservers[docserverType.docserver_type_id];let i=index">
+                                <mat-card>
+                                    <form class="form-horizontal" (ngSubmit)="onSubmit(docserver,i)" #docserverFormUp="ngForm">
+                                        <button *ngIf="!docserver.is_readonly" mat-icon-button color="accent" (click)="toggleDocserver(docserver)" style="position: absolute;top: 5px;right:10px;"
+                                            matTooltip="{{lang.lockDocserver}}">
+                                            <mat-icon class="fa fa-lock-open"></mat-icon>
+                                        </button>
+                                        <button *ngIf="docserver.is_readonly" mat-icon-button color="warn" (click)="toggleDocserver(docserver)" style="position: absolute;top: 5px;right:10px;"
+                                            matTooltip="{{lang.unlockDocserver}}">
+                                            <mat-icon class="fa fa-lock"></mat-icon>
+                                        </button>
+                                        <div class="row" style="margin-top: 10px;">
+                                            <div class="col-md-12">
+                                                <mat-form-field>
+                                                    <input matInput required name="label" id="label" title="{{lang.label}}" type="text" placeholder="{{lang.label}}" maxlength="255"
+                                                        [(ngModel)]="docserver.device_label" [disabled]="docserver.is_readonly">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <mat-progress-spinner *ngIf="docserver.percentage < 60" name="percent_val" id="percent_val" color="primary" mode="determinate"
+                                                    [value]="docserver.percentage" style="margin:auto;">
+                                                </mat-progress-spinner>
+                                                <mat-progress-spinner *ngIf="docserver.percentage >= 60" name="percent_val" id="percent_val" color="warn" mode="determinate"
+                                                    [value]="docserver.percentage" style="margin:auto;">
+                                                </mat-progress-spinner>
+                                                <span style="position: absolute;font-weight: bold;left: 50%;transform: translateX(-50%);top: 40%;font-weight: bold;" title="{{docserver.actualSizeFormatted}}">{{docserver.percentage}}%</span>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <mat-form-field>
+                                                    <input matInput required name="collection" id="collection" title="{{lang.collection}}" type="text" placeholder="{{lang.collection}}" [(ngModel)]="docserver.coll_id" disabled>
+                                                </mat-form-field>
+                                                <mat-form-field>
+                                                    <input matInput required name="identifier" id="identifier" title="{{lang.id}}" type="text" placeholder="{{lang.id}}" [(ngModel)]="docserver.docserver_id"
+                                                        disabled>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <mat-form-field>
+                                                    <input matInput required name="max_size" id="max_size" title="{{lang.maxSize}}" type="number" placeholder="{{lang.maxSize}}"
+                                                        [(ngModel)]="docserver.limitSizeFormatted" [disabled]="docserver.is_readonly">
+                                                    <span matSuffix> Go</span>
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-8">
+                                                
+                                            </div>
+                                            <div class="col-md-12">
+                                                <mat-form-field>
+                                                    <input matInput required name="path" id="path" title="path" type="text" placeholder="Chemin" [(ngModel)]="docserver.path_template"
+                                                        [disabled]="docserver.is_readonly">
+                                                </mat-form-field>
+                                            </div>
+                                            <div class="col-md-12 text-center" style="padding:10px;">
+                                                    <button mat-raised-button color="primary" type="submit" [disabled]="checkModif(docserver,this.docserversClone[docserverType.docserver_type_id][i])">{{lang.update}}</button>
+                                                    <button mat-raised-button color="default" [disabled]="checkModif(docserver,this.docserversClone[docserverType.docserver_type_id][i])" (click)="cancelModification(docserverType.docserver_type_id,i)">{{lang.cancel}}</button>
+                                                    <button mat-raised-button type="button" color="warn" (click)="delete(docserver,i)">{{lang.delete}}</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </mat-card>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </mat-card>
+        </mat-sidenav-content>
+    </mat-sidenav-container>
+</div>

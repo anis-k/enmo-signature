@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>{{lang.groupRedirect}}</h2>
+<mat-dialog-content style="overflow:inherit;">
+    <form #changeGroupUsersForm="ngForm">
+        <div class="alert alert-warning" role="alert">
+            Le groupe
+            <b>{{this.data.group_desc}}</b> {{lang.isAssociatedTo}} <b>{{this.data.users.length}}</b> {{lang.users}}:
+            <mat-list>
+                <mat-list-item *ngFor="let user of this.data.users" style="height:25px;">
+                    <mat-icon mat-list-icon class="fa fa-user" color="primary"></mat-icon>
+                    <h4 mat-line></h4>
+                    <p mat-line> {{user.firstname}} {{user.lastname}}</p>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <mat-form-field>
+            <mat-select id="groups_redirect" name="groups_redirect" title="{{lang.chooseRedirectGroup}}" placeholder="{{lang.chooseRedirectGroup}}" [(ngModel)]="this.data.group_redirect"
+                required>
+                <mat-option value="_NO_REPLACEMENT">-- {{lang.noReplacement}} --</mat-option>
+                <mat-optgroup label="{{lang.groups}}">
+                    <mat-option *ngFor="let group of this.data.groupsForAssign" [value]="group.id">
+                        {{group.group_desc}}
+                    </mat-option>
+                </mat-optgroup>      
+            </mat-select>
+        </mat-form-field>
+        <mat-dialog-actions>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!changeGroupUsersForm.form.valid" (click)="dialogRef.close(this.data.group_redirect)">{{lang.validate}}</button>
+        </mat-dialog-actions>
+    </form>
+</mat-dialog-content>

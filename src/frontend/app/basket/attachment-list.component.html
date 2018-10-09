@@ -1,0 +1,55 @@
+<div *ngIf="loading" style="display:flex;height:100%;">
+    <mat-spinner style="margin:auto;"></mat-spinner>
+</div>
+<div style="text-align:center;font-weight:bold;opacity:0.3;">{{data.chrono}} - {{lang.attachments}}</div>
+<mat-nav-list *ngIf="!loading" style="min-width:650px;">
+    <div *ngIf="attachments.length == 0" style="text-align:center;font-size:24px;font-weight:bold;opacity:0.3;">
+        AUCUN ATTACHEMENT
+    </div>
+    <ng-container *ngFor="let attachment of attachments">
+        <a target="_blank" href="index.php?display=true&module=attachments&page=view_attachment&res_id_master={{data.resId}}&id={{attachment.res_id}}" mat-list-item (click)="openLink($event)" style="height:auto;">
+            <span mat-line>
+                <div style="display:flex;color: rgba(0,0,0,0.4);font-size: 90%;overflow: hidden;text-overflow: ellipsis;">
+                    <span style="flex:1;text-align: center;">
+                        <small color="primary" *ngIf="attachment.update_date != null" title='{{attachment.update_date | date : "le dd/MM/y à HH:mm"}}'>Modifié
+                            par {{attachment.firstname_updated}} {{attachment.lastname_updated}} ({{attachment.update_date | timeAgo}})</small>
+                    </span>
+                </div>
+                <div style="display:flex;">
+                    <div style="text-align: center;align-items: center;padding-right: 15px;width:180px;">
+                        <div style="color: rgba(0,0,0,0.4);font-size: 90%;overflow: hidden;text-overflow: ellipsis;" title="{{attachmentTypes[attachment.attachment_type].label}}">{{attachmentTypes[attachment.attachment_type].label}}</div>
+                        <div class="fa fa-paperclip fa-2x" title="{{attachment.status}}" color="primary"></div>
+                        <div style="color: rgba(0,0,0,0.4);font-size: 90%;padding:5px;" title="{{attachment.identifier}} (n°{{attachment.res_id}})">{{attachment.identifier}}</div>
+                    </div>
+                    <div style="flex:5;">
+                        <div style="display:flex;color: rgba(0,0,0,0.4);font-size: 90%;overflow: hidden;text-overflow: ellipsis;">
+                            <span style="flex:1" title='{{attachment.creation_date | date : "le dd/MM/y à HH:mm"}}'>
+                                <i class="fa fa-calendar" title="Date d'enregistrement"></i> {{attachment.creation_date | timeAgo}}
+                            </span>
+                            <span style="flex:1;text-align: right;">
+                                <span *ngIf="attachment.return_date != null && attachment.effective == null" title='{{attachment.return_date | date : "le dd/MM/y à HH:mm"}}'>
+                                    <i class="fa fa-stopwatch" title="Date de retour attendue"></i>&nbsp;<span [innerHTML]="attachment.return_date | timeLimit"></span>
+                                </span>
+                                <span *ngIf="attachment.effective != null">
+                                    <i class="fa fa-lock" title="Date de retour"></i>&nbsp;<span title='{{attachment.effective_date | date : "le dd/MM/y à HH:mm"}}' [innerHTML]="attachment.effective_date | timeAgo"></span>
+                                </span>
+                            </span>
+                        </div>
+                        <div style="padding-top:10px;padding-bottom:10px;">
+                            {{attachment.title}}
+                        </div>
+                        <div style="display:flex;color: rgba(0,0,0,0.4);font-size: 90%;overflow: hidden;text-overflow: ellipsis;">
+                            <span style="flex:1"><i class="fa fa-user" title="Auteur"></i> {{attachment.firstname_typist}}
+                                {{attachment.lastname_typist}}</span>
+                            <span style="flex:1;text-align: right;">{{attachment.status}}</span>
+                        </div>
+                    </div>
+                </div>
+
+
+            </span>
+        </a>
+        <mat-divider style="margin:10px;"></mat-divider>
+    </ng-container>
+
+</mat-nav-list>

@@ -1,0 +1,79 @@
+<div *ngIf="loading" style="display:flex;height:100%;">
+    <mat-spinner style="margin:auto;"></mat-spinner>
+</div>
+<div style="text-align:center;font-weight:bold;opacity:0.3;">{{data.chrono}} - {{lang.diffusionList}}</div>
+<mat-list *ngIf="!loading">
+    <mat-tab-group>
+        <mat-tab label="{{lang.diffusionList}}">
+            <div *ngIf="listinstance.length == 0" style="text-align:center;font-size:24px;font-weight:bold;opacity:0.3;">
+                AUCUNE LISTE DE DIFFUSION
+            </div>
+            <ng-container *ngFor="let role of roles">
+                <h3 mat-subheader>{{role}}</h3>
+                <mat-list-item *ngFor="let diffusion of listinstance[role]">
+
+                    <mat-icon *ngIf="diffusion.item_type == 'user_id'" mat-list-icon class="fa fa-2x" [ngClass]="[diffusion.item_mode == 'copy' ? 'fa-users' : 'fa-user']"
+                        color="primary"></mat-icon>
+                    <h4 mat-line *ngIf="diffusion.item_type == 'user_id'">{{diffusion.item_firstname}}
+                        {{diffusion.item_lastname}}</h4>
+                    <p mat-line *ngIf="diffusion.item_type == 'user_id'" style="opacity:0.5;">
+                        {{diffusion.item_entity}} </p>
+
+                    <mat-icon *ngIf="diffusion.item_type == 'entity_id'" mat-list-icon class="fa fa-sitemap fa-2x"
+                        color="primary"></mat-icon>
+                    <h4 *ngIf="diffusion.item_type == 'entity_id'" mat-line>{{diffusion.item_entity}}</h4>
+                    <p *ngIf="diffusion.item_type == 'entity_id'" mat-line style="opacity:0.5;"> &nbsp; </p>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </ng-container>
+        </mat-tab>
+        <mat-tab label="Circuit de visa" [disabled]='!tabVisaCircuit'>
+            <div *ngIf="visaCircuit.length == 0" style="text-align:center;font-size:24px;font-weight:bold;opacity:0.3;">
+                AUCUN CIRCUIT DE VISA
+            </div>
+            <ng-container *ngFor="let visa of visaCircuit">
+                <mat-list-item [ngStyle]="{'opacity': visa.process_date == null ? '0.5' : '1','background': visa.process_date != null ? 'rgba(0, 128, 0, 0.11)' : ''}">
+                    <mat-icon mat-list-icon class="fa fa-user fa-2x" color="primary"></mat-icon>
+                    <mat-icon mat-list-icon class="fa fa-hourglass fa-2x" *ngIf="visa.process_date == null" style="opacity:0.5;"></mat-icon>
+                    <mat-icon mat-list-icon class="fa fa-check fa-2x" *ngIf="visa.process_date != null" style="opacity:0.5;"
+                        color="accent"></mat-icon>
+                    <h4 mat-line style="display: flex;">
+                        <span style="flex: 1;">{{visa.item_firstname}} {{visa.item_lastname}}</span>
+                        <span *ngIf="!visa.requested_signature" style="flex: 1;text-align: right;font-size: 90%;" color="primary">{{lang.visaUser}}</span>
+                        <span *ngIf="visa.requested_signature" style="flex: 1;text-align: right;font-size: 90%;" color="warn">{{lang.signUser}}</span>
+                    </h4>
+                    <p mat-line style="display: flex;">
+                        <span style="opacity:0.5;flex: 1;">{{visa.item_entity}}</span>
+                        <span *ngIf="visa.process_date != null" title='{{visa.process_date | date : "le dd/MM/y à HH:mm"}}'
+                            style="flex: 1;text-align: right;font-size: 90%;" color="accent">{{visa.process_date
+                            | timeAgo}}</span>
+                    </p>
+                </mat-list-item>
+            </ng-container>
+        </mat-tab>
+        <mat-tab label="Circuit d'avis" [disabled]='!tabAvisCircuit'>
+            <div *ngIf="avisCircuit.length == 0" style="text-align:center;font-size:24px;font-weight:bold;opacity:0.3;">
+                AUCUN CIRCUIT D'AVIS
+            </div>
+            <ng-container *ngFor="let avis of avisCircuit">
+                <mat-list-item [ngStyle]="{'opacity': avis.process_date == null ? '0.5' : '1','background': avis.process_date != null ? 'rgba(0, 128, 0, 0.11)' : ''}">
+                    <mat-icon mat-list-icon class="fa fa-user fa-2x" color="primary"></mat-icon>
+                    <mat-icon mat-list-icon class="fa fa-hourglass fa-2x" *ngIf="avis.process_date == null" style="opacity:0.5;"></mat-icon>
+                    <mat-icon mat-list-icon class="fa fa-check fa-2x" *ngIf="avis.process_date != null" style="opacity:0.5;"
+                        color="accent"></mat-icon>
+                    <h4 mat-line style="display: flex;">
+                        <span style="flex: 1;">{{avis.item_firstname}} {{avis.item_lastname}}</span>
+                    </h4>
+                    <p mat-line style="display: flex;">
+                        <span style="opacity:0.5;flex: 1;">{{avis.item_entity}}</span>
+                        <span *ngIf="avis.process_date != null" title='{{avis.process_date | date : "le dd/MM/y à HH:mm"}}'
+                            style="flex: 1;text-align: right;font-size: 90%;" color="accent">{{avis.process_date
+                            | timeAgo}}</span>
+                    </p>
+                </mat-list-item>
+            </ng-container>
+        </mat-tab>
+    </mat-tab-group>
+
+
+</mat-list>

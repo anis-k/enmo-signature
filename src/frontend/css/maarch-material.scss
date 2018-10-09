@@ -1,0 +1,128 @@
+// import all mixins and utils to create a theme
+@import "./node_modules/@angular/material/_theming.scss";
+
+// Include the base styles for Angular Material core. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+@include mat-core();
+
+// theme colors
+// @function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700)
+$mat-maarch-primary: (
+  100: #4e8cae,
+  500: #135f7f,
+  700: #003552,
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$mat-maarch-warn: (
+  100: #c16b7e,
+  500: #8e3e52,
+  700: #5d102a,
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$mat-maarch-accent: (
+  100: #41976c,
+  500: #006841,
+  700: #003c1a,
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$primary: mat-palette($mat-maarch-primary,500);
+$accent: mat-palette($mat-maarch-accent,500);
+$warn: mat-palette($mat-maarch-warn,500);
+
+// create theme from palettes
+$theme: mat-light-theme($primary, $accent, $warn);
+// apply theme
+@include angular-material-theme($theme);
+
+[color=primary] {
+    color: mat-color($primary, 500);
+}
+
+[color=warn] {
+    color: mat-color($warn, 500);
+}
+
+[color=accent] {
+    color: mat-color($accent, 500);
+}
+
+[bgcolor=primary] {
+  background-color: mat-color($primary, 500);
+}
+
+[bgcolor=warn] {
+  background-color: mat-color($warn, 500);
+}
+
+[bgcolor=accent] {
+  background-color: mat-color($accent, 500);
+}
+
+.jstree-proton .jstree-clicked {
+    background : mat-color($primary, 100) !important;
+}
+.jstree-proton :not(.jstree-disabled).jstree-hovered {
+    background: mat-color($primary, 100) !important;
+    box-shadow: inset 0 0 1px mat-color($primary, 500) !important;
+}
+.jstree-proton .jstree-disabled:hover {
+  cursor:not-allowed;
+}
+
+.adminArea {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.adminArea_1{
+  flex: 1;
+  overflow: hidden;
+  padding:20px;
+}
+
+.adminArea_2{
+  overflow: hidden;
+  padding:20px;
+}
+
+.adminArea_3{
+  overflow: hidden;
+  padding:20px;
+}
+
+.adminArea_4{
+  overflow: hidden;
+  padding:20px;
+}
+
+.dndFile{
+  border: dashed 5px grey;
+  padding:10px;
+  text-align:center;
+  opacity:0.5;
+  font-size:15px;
+  font-weight:bolder;
+  margin:20px;
+
+}
+
+.dndFileHighlighted {
+  opacity : 1 !important;
+  border: dashed 5px mat-color($primary, 500) !important;
+  color : mat-color($primary, 500);
+}

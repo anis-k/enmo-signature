@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>{{lang.entityReplacement}}</h2>
+<form #changeEntityForm="ngForm">
+    <mat-dialog-content>
+        <div class="alert alert-info" role="alert">
+            <mat-list>
+                <mat-list-item *ngIf="data.entity.documents > 0">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-file fa-2x"></mat-icon>
+                    <p mat-line>
+                        <b>{{data.entity.entity_label}}</b> {{lang.isDestTo}}
+                        <b>{{data.entity.documents}}</b> {{lang.documents}}</p>
+                </mat-list-item>
+                <mat-list-item *ngIf="data.entity.instances > 0">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-sitemap fa-2x"></mat-icon>
+                    <p mat-line>
+                        <b>{{data.entity.entity_label}}</b> {{lang.isCopyTo}}
+                        <b>{{data.entity.instances}}</b> {{lang.documents}}</p>
+                </mat-list-item>
+                <mat-list-item *ngIf="data.entity.users.length > 0">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-user fa-2x"></mat-icon>
+                    <p mat-line>
+                        <b>{{data.entity.entity_label}}</b> {{lang.isLinkedTo | lowercase}}
+                        <b>{{data.entity.users.length}}</b> {{lang.users | lowercase}}</p>
+                </mat-list-item>
+                <mat-list-item *ngIf="data.entity.templates > 0">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-file-alt fa-2x"></mat-icon>
+                    <p mat-line>
+                        <b>{{data.entity.entity_label}}</b> {{lang.isLinkedTo | lowercase}}
+                        <b>{{data.entity.templates}}</b> {{lang.templates | lowercase}}</p>
+                </mat-list-item>
+            </mat-list>
+        </div>
+        <mat-form-field>
+            <input type="text" placeholder="{{lang.chooseEntity}}" matInput [matAutocomplete]="auto" [formControl]="elementCtrl"
+                [(ngModel)]="data.entity.redirectEntity">
+            <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let elem of filteredElements | async" [value]="elem.id">
+                    <p mat-line>
+                        <mat-icon [class]="elem.type == 'entity' ? 'fa fa-sitemap' : 'fa fa-user'" style="margin-right:0px;"></mat-icon> {{ elem.idToDisplay }}
+                        <small>{{ elem.otherInfo }}</small>
+                    </p>
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button style="margin:auto;" mat-raised-button color="warn" type="submit" class="btn btn-danger" (click)="dialogRef.close(data.entity)"
+            [disabled]="!changeEntityForm.form.valid || data.entity.redirectEntity == data.entity.entity_id">{{lang.delete}}</button>
+    </mat-dialog-actions>
+</form>

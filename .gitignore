@@ -1,0 +1,12 @@
+composer.lock
+config/log4php.xml
+config/config.xml
+.vscode/
+.phplint-cache
+.phplint.yml
+*.log
+xdelete.sh
+test/unitTests/build/
+dist/
+node_modules/
+package-lock.json

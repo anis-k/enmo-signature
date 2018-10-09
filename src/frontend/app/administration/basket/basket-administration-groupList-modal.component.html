@@ -1,0 +1,12 @@
+<h2 mat-dialog-title color="primary">{{lang.linkGroup}}</h2>
+
+<mat-dialog-content>
+    <mat-nav-list>
+            <span *ngFor="let group of data.groups">
+                <mat-list-item *ngIf="group.isUsed == false" (click)="validateForm(group);">
+                    {{group.group_desc}}
+                </mat-list-item>
+            </span>
+
+    </mat-nav-list>
+</mat-dialog-content>

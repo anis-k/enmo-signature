@@ -1,0 +1,15 @@
+
+<form style="margin-bottom: 0px;" ngNoForm name="choose_query" id="choose_query" method="post" action="index.php?display=true&amp;dir=indexing_searching&amp;page=search_adv_result">
+    <input type="hidden" name="meta[]" value="baskets_clause#baskets_clause#select_simple">
+    <input type="hidden" name="meta[]" value="welcome#welcome#welcome">
+    <input type="hidden" name="baskets_clause" value="true">
+    <mat-form-field id="searchInput" floatLabel="never" style="width:100%">
+        <input matInput type="text" name="welcome" placeholder="{{lang.searchMails}}" style="width:100%">
+        <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="searchHome.submit();" style="opacity:0.5;">
+          <mat-icon class="fa fa-search"></mat-icon>
+        </button>
+    </mat-form-field>
+      
+    <!--<input id="text" type="text" name="welcome" placeholder="{{lang.searchMails}}" class="searchInput" style="width:100%">-->
+    <input #searchHome type="submit" name="submit" value="" style="display:none">
+</form>

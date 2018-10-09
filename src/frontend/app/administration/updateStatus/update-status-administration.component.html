@@ -1,0 +1,82 @@
+<div class="admin-container" [class.admin-is-mobile]="mobileQuery.matches">
+    <mat-sidenav-container autosize class="admin-sidenav-container" >
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            [opened]="mobileQuery.matches ? false : true">
+            <menu-shortcut></menu-shortcut>
+            <menu-nav></menu-nav>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <div *ngIf="loading" style="display:flex;height:100%;">
+                <mat-spinner style="margin:auto;"></mat-spinner>
+            </div>
+            <mat-card *ngIf="!loading" class="card-app-content">
+                <form class="form-horizontal" (ngSubmit)="onSubmit()" #updateStatusForm="ngForm">                    
+                    <mat-tab-group (selectedTabChange)="resetInput($event)" >
+                        <mat-tab label="{{lang.chronoNumber}}" >
+                            <div class="alert alert-info" role="alert">
+                                {{lang.updateStatusInformationsChrono}}
+                            </div>
+                            <mat-form-field>
+                                    <input matInput name="chrono" title="{{lang.chronoNumber}}" placeholder="{{lang.chronoNumber}}" [(ngModel)]="chrono">                                
+                            </mat-form-field>                            
+                            <div class="row">                
+                                <div class="form-group">
+                                    <div class="col-md-12 text-left" style="padding:10px;">
+                                        <button mat-raised-button [disabled]="!chrono" type="button" color="primary" (click)="addChrono()" >{{lang.add}}</button>
+                                    </div>
+                                </div>
+                                <mat-chip-list [(ngModel)]="chronoList" name="chronoChips" #chipList>
+                                    <mat-chip *ngFor="let chrono of chronoList" color="primary" [removable]="true" (removed)="removeChrono(chrono)">  
+                                            <span class="badge badge-pill badge-dark">{{chronoList.indexOf(chrono)+1}}</span> &nbsp;{{chrono}}
+                                            <mat-icon matChipRemove class="fa fa-times-circle"></mat-icon>
+                                    </mat-chip>
+                                </mat-chip-list>  
+                            </div>
+                            <mat-divider></mat-divider>
+                        </mat-tab>
+                        <mat-tab label="{{lang.resId}}" >
+                            <div class="alert alert-info" role="alert">
+                                {{lang.updateStatusInformationsGed}}
+                            </div>
+                            <mat-form-field>
+                                    <input type="number" id="" matInput name="resId" title="{{lang.resId}}" placeholder="{{lang.resId}}" [(ngModel)]="resId">                                
+                            </mat-form-field>
+                            <div class="row">                
+                                <div class="form-group">
+                                    <div class="col-md-12 text-left" style="padding:10px;">
+                                        <button mat-raised-button [disabled]="!resId" color="primary" type="button" (click)="addResId();">{{lang.add}}</button>
+                                    </div>
+                                </div>
+                                <mat-chip-list [(ngModel)]="resIdList" name="resIdChips" #chipList>
+                                    <mat-chip *ngFor="let resId of resIdList" color="primary" [removable]="true" (removed)="removeResId(resId)">  
+                                            <span class="badge badge-pill badge-dark">{{resIdList.indexOf(resId)+1}}</span> &nbsp;{{resId}}
+                                            <mat-icon matChipRemove class="fa fa-times-circle"></mat-icon>
+                                    </mat-chip>
+                                </mat-chip-list>                                
+                            </div>
+                            <mat-divider></mat-divider>
+                        </mat-tab>
+                    </mat-tab-group>
+                    <mat-form-field>
+                            <input matInput [formControl]="statusCtrl" name="statusesList" placeholder="{{lang.availableStatuses}}" [(ngModel)]="this.statusId"
+                                [matAutocomplete]="auto" required>
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let status of filteredStatuses | async" [value]="status.id">
+                                    {{status.idToDisplay}}
+                                    <small style="opacity:0.3;">{{status.id}}</small>
+                                </mat-option>
+                            </mat-autocomplete>    
+                    </mat-form-field>
+                    <div class="form-group">
+                        <div class="col-md-12 text-center" style="padding:10px;">
+                            <button mat-raised-button [disabled]="(resIdList.length == 0 && chronoList.length == 0) || (resIdList.length > 0 && chronoList.length > 0) || !statusId" color="primary">{{lang.save}}</button>
+                        </div>
+                    </div>
+                </form>
+            </mat-card>
+        </mat-sidenav-content>
+        <mat-sidenav #snav2 [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            position='end' [opened]="mobileQuery.matches ? false : false">
+        </mat-sidenav>
+    </mat-sidenav-container>
+</div>

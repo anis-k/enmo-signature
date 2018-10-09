@@ -1,0 +1,101 @@
+<div class="admin-container" [class.admin-is-mobile]="mobileQuery.matches">
+    <mat-sidenav-container autosize class="admin-sidenav-container" >
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            [opened]="mobileQuery.matches ? false : true">
+            <menu-shortcut></menu-shortcut>
+            <menu-nav></menu-nav>
+            <mat-nav-list>
+                <h3 mat-subheader>{{lang.actions}}</h3>
+                <a mat-list-item routerLink="/administration/users/new">
+                    <mat-icon color="primary" mat-list-icon class="fa fa-plus"></mat-icon>
+                    <p mat-line>
+                        {{lang.add}}
+                    </p>
+                </a>
+            </mat-nav-list>
+            <mat-divider></mat-divider>
+            <mat-divider *ngIf="quota.userQuota"></mat-divider>
+            <mat-nav-list *ngIf="quota.userQuota">
+                <h3 mat-subheader>{{lang.quota}}</h3>
+                <p mat-line style="margin-left:20px">{{lang.actives}} : {{quota.actives}}</p>
+                <p mat-line style="margin-left:20px">{{lang.inactives}} : {{quota.inactives}}</p>
+                <p mat-line style="margin-left:20px">{{lang.quota}} : {{quota.userQuota}}</p>
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content>
+            <div *ngIf="loading" style="display:flex;height:100%;">
+                <mat-spinner style="margin:auto;"></mat-spinner>
+            </div>
+            <mat-card *ngIf="!loading" class="card-app-content">
+                <div class="row">
+                    <div class="col-md-6 col-xs-6">
+                        <mat-form-field>
+                            <input matInput (keyup)="applyFilter($event.target.value)" placeholder="{{lang.filterBy}}">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-md-6 col-xs-6">
+                        <mat-paginator #paginator [length]="100" [pageSize]="10">
+                        </mat-paginator>
+                    </div>
+                </div>
+                <mat-table #table [dataSource]="dataSource" matSort matSortActive="user_id" matSortDirection="asc">
+                    <ng-container matColumnDef="user_id">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [class.hide-for-mobile]="mobileQuery.matches">{{lang.id}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element" [class.hide-for-mobile]="mobileQuery.matches"> {{element.user_id}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="lastname">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{lang.lastname}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.lastname}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="firstname">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{lang.firstname}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.firstname}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="status">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>{{lang.status}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element">
+                            <span *ngIf="element.status == 'OK' && element.enabled == 'Y'" color="primary" class="label">{{lang.active}}</span>
+                            <span *ngIf="element.enabled == 'N'" color="warn" class="label">{{lang.inactive}}</span>
+                            <span *ngIf="element.status == 'ABS'" color="warn" class="label">{{lang.abs}}</span>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="mail">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header [class.hide-for-mobile]="mobileQuery.matches">{{lang.email}}</mat-header-cell>
+                        <mat-cell *matCellDef="let element" [class.hide-for-mobile]="mobileQuery.matches"> {{element.mail}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="actions">
+                        <mat-header-cell *matHeaderCellDef>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let element" style="justify-content: flex-end;">
+                            <button mat-icon-button color="primary" [disabled]="element.user_id==user.user_id" *ngIf="element.enabled == 'Y' && element.inDiffListDest == 'Y'" matTooltip="{{lang.suspend}}"
+                                (click)="$event.stopPropagation();suspendUser(element)">
+                                <mat-icon class="fa fa-pause fa-2x" aria-hidden="true"></mat-icon>
+                            </button>
+                            <button mat-icon-button color="primary" [disabled]="element.user_id==user.user_id" *ngIf="element.enabled == 'Y' && element.inDiffListDest == 'N'" matTooltip="{{lang.suspend}}"
+                                (click)="$event.stopPropagation();suspendUser(element)">
+                                <mat-icon class="fa fa-pause fa-2x" aria-hidden="true"></mat-icon>
+                            </button>
+                            <button mat-icon-button color="accent" *ngIf="element.enabled == 'N'" matTooltip="{{lang.authorize}}" (click)="$event.stopPropagation();activateUser(element)">
+                                <mat-icon class="fa fa-check fa-2x" aria-hidden="true"></mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" [disabled]="element.user_id==user.user_id" *ngIf="element.inDiffListDest == 'Y'" matTooltip="{{lang.delete}}" data-toggle="modal"
+                                data-target="#changeDiffListDest" (click)="$event.stopPropagation();deleteUser(element)">
+                                <mat-icon class="fa fa-trash-alt fa-2x" aria-hidden="true"></mat-icon>
+                            </button>
+                            <button mat-icon-button color="warn" [disabled]="element.user_id==user.user_id" *ngIf="element.inDiffListDest == 'N'" matTooltip="{{lang.delete}}" (click)="$event.stopPropagation();deleteUser(element)">
+                                <mat-icon class="fa fa-trash-alt fa-2x" aria-hidden="true"></mat-icon>
+                            </button>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/users/{{row.id}}" style="cursor:pointer;"
+                        matTooltip="{{lang.view}}"></mat-row>
+                </mat-table>
+                <div class="mat-paginator" style="min-height:48px;min-height: 48px;display: flex;justify-content: end;align-items: center;padding-right: 20px;">{{data.length}} {{lang.users}}</div>
+            </mat-card>
+        </mat-sidenav-content>
+        <mat-sidenav #snav2 [mode]="mobileQuery.matches ? 'over' : 'side'" [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"
+            position='end' [opened]="mobileQuery.matches ? false : false">
+        </mat-sidenav>
+    </mat-sidenav-container>
+</div>

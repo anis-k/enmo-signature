@@ -1,0 +1,25 @@
+<div *ngIf="loading">
+    <i class="fa fa-spinner fa-spin fa-5x" style="margin-left: 50%;margin-top: 16%;font-size: 8em"></i>
+</div>
+<div *ngIf="!loading" class="container-fluid">
+    <h1 style="margin-top: 0"><i class="fa fa-file-archive fa-2x"></i> {{lang.saveNumericPackage}}</h1>
+    <nav class="navbar navbar-default" id="toolBox">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="index.php" style="cursor: pointer">
+                    <i class="fa fa-arrow-circle-left" title="{{lang.back}}"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="row row-eq-height">
+        <div class="col-md-4 col-md-offset-4" style="border-left:solid 1px white;border-right:solid 1px white;background-color: #F2F2F2;border-top: solid 2px #F99830;border-bottom: solid 2px #F99830;padding:10px;">
+            <h2>{{lang.saveNumericPackage}}</h2>
+            <form class="form-horizontal" (ngSubmit)="submitNumericPackage()" #saveNumericPackageForm="ngForm">
+              <input id="numericPackageFilePath" type="file" name="files[]"(change)="uploadNumericPackage($event)">
+              <br>
+              <input type="submit" class="btn btn-success" [disabled]="!saveNumericPackageForm.form.valid" value="{{lang.save}}">
+            </form>
+        </div>
+    </div>
+</div>
