@@ -15,6 +15,7 @@ SET default_with_oids = false;
 
 CREATE TABLE docserver_types
 (
+  id serial NOT NULL,
   docserver_type_id character varying(32) NOT NULL,
   docserver_type_label character varying(255) DEFAULT NULL::character varying,
   enabled character(1) NOT NULL DEFAULT 'Y'::bpchar,
@@ -25,7 +26,7 @@ WITH (OIDS=FALSE);
 
 CREATE TABLE docservers
 (
-  id serial,
+  id serial NOT NULL,
   docserver_id character varying(32) NOT NULL DEFAULT '1'::character varying,
   docserver_type_id character varying(32) NOT NULL,
   device_label character varying(255) DEFAULT NULL::character varying,
@@ -59,10 +60,11 @@ WITH (OIDS=FALSE);
 
 CREATE TABLE status
 (
-  identifier serial,
-  id character varying(10) NOT NULL,
-  label_status character varying(50) NOT NULL,
-  CONSTRAINT status_pkey PRIMARY KEY (id)
+  id serial,
+  status_id character varying(10) NOT NULL,
+  label character varying(50) NOT NULL,
+  CONSTRAINT status_pkey PRIMARY KEY (id),
+  CONSTRAINT status_status_id_key UNIQUE (status_id)
 )
 WITH (OIDS=FALSE);
 
@@ -87,77 +89,65 @@ CREATE TABLE users
 )
 WITH (OIDS=FALSE);
 
-
-CREATE TABLE res_attachments
+CREATE TABLE main_documents
 (
-  res_id serial NOT NULL,
+  id serial NOT NULL,
+  external_id character varying(255),
+  reference character varying(255),
+  subject text,
+  doc_date timestamp without time zone,
+  status integer NOT NULL,
+  priority character varying(255),
+  sender text NOT NULL,
+  sender_entity text,
+  processing_user integer NOT NULL,
+  recipient text,
+  creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
+  modification_date timestamp without time zone DEFAULT NOW(),
+  CONSTRAINT main_documents_pkey PRIMARY KEY (id)
+)
+WITH (OIDS=FALSE);
+
+CREATE TABLE attachments
+(
+  id serial NOT NULL,
   subject text,
   format character varying(50) NOT NULL,
   typist character varying(128) NOT NULL,
   creation_date timestamp without time zone NOT NULL,
   identifier character varying(255) DEFAULT NULL::character varying,
-  doc_date timestamp without time zone,
   docserver_id character varying(32) NOT NULL,
   path character varying(255) DEFAULT NULL::character varying,
   filename character varying(255) DEFAULT NULL::character varying,
   fingerprint character varying(255) DEFAULT NULL::character varying,
   filesize bigint,
-  res_id_master bigint,
-  CONSTRAINT res_attachments_pkey PRIMARY KEY (res_id)
+  main_document_id bigint,
+  CONSTRAINT attachments_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
 
 CREATE TABLE baskets
 (
   id serial NOT NULL,
-  basket_id character varying(32) NOT NULL,
-  basket_name character varying(255) NOT NULL,
-  basket_desc character varying(255) NOT NULL,
-  basket_clause text NOT NULL,
-  enabled character(1) NOT NULL DEFAULT 'Y'::bpchar,
-  basket_res_order character varying(255) NOT NULL DEFAULT 'res_id',
-  CONSTRAINT baskets_pkey PRIMARY KEY (basket_id)
+  name character varying(255) NOT NULL,
+  description character varying(255) NOT NULL,
+  clause text NOT NULL,
+  documents_order character varying(255) NOT NULL DEFAULT 'creation_date DESC',
+  CONSTRAINT baskets_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
 
-CREATE TABLE res_letterbox
-(
-  res_id serial NOT NULL,
-  external_id bigint NOT NULL,
-  subject text,
-  type_label character varying(255) NOT NULL,
-  format character varying(50) NOT NULL,
-  typist text NOT NULL,
-  creation_date timestamp without time zone NOT NULL,
-  modification_date timestamp without time zone DEFAULT NOW(),
-  identifier character varying(255) DEFAULT NULL::character varying,
-  doc_date timestamp without time zone,
-  docserver_id character varying(32) NOT NULL,
-  path character varying(255) DEFAULT NULL::character varying,
-  filename character varying(255) DEFAULT NULL::character varying,
-  fingerprint character varying(255) DEFAULT NULL::character varying,
-  filesize bigint,
-  status character varying(10) NOT NULL,
-  priority character varying(255),
-  initiator text,
-  dest_user character varying(128) DEFAULT NULL::character varying,
-  dest_contacts text,
-  confidentiality character(1),
-  CONSTRAINT res_letterbox_pkey PRIMARY KEY  (res_id)
-)
-WITH (OIDS=FALSE);
-
-CREATE TABLE adr_letterbox
+CREATE TABLE adr_main_documents
 (
   id serial NOT NULL,
-  res_id bigint NOT NULL,
+  main_document_id bigint NOT NULL,
   type character varying(32) NOT NULL,
   docserver_id character varying(32) NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
   fingerprint character varying(255) DEFAULT NULL::character varying,
   CONSTRAINT adr_letterbox_pkey PRIMARY KEY (id),
-  CONSTRAINT adr_letterbox_unique_key UNIQUE (res_id, type)
+  CONSTRAINT adr_letterbox_unique_key UNIQUE (main_document_id, type)
 )
 WITH (OIDS=FALSE);
 
@@ -165,9 +155,9 @@ CREATE TABLE user_signatures
 (
   id serial NOT NULL,
   user_serial_id integer NOT NULL,
-  signature_label character varying(255) DEFAULT NULL::character varying,
-  signature_path character varying(255) DEFAULT NULL::character varying,
-  signature_file_name character varying(255) DEFAULT NULL::character varying,
+  label character varying(255) DEFAULT NULL::character varying,
+  path character varying(255) DEFAULT NULL::character varying,
+  filename character varying(255) DEFAULT NULL::character varying,
   fingerprint character varying(255) DEFAULT NULL::character varying,
   CONSTRAINT user_signatures_pkey PRIMARY KEY (id)
 )
