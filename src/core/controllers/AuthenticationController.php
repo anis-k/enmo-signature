@@ -20,19 +20,19 @@ class AuthenticationController
 {
     public static function authentication()
     {
-        $userId = null;
+        $login = null;
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
             if (AuthenticationModel::authentication(['userId' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
-                $userId = $_SERVER['PHP_AUTH_USER'];
+                $login = $_SERVER['PHP_AUTH_USER'];
             }
         } else {
             $cookie = AuthenticationModel::getCookieAuth();
             if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
                 AuthenticationModel::setCookieAuth(['userId' => $cookie['userId']]);
-                $userId = $cookie['userId'];
+                $login = $cookie['userId'];
             }
         }
 
-        return $userId;
+        return $login;
     }
 }

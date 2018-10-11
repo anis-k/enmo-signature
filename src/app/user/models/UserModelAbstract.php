@@ -56,6 +56,25 @@ abstract class UserModelAbstract
         return $aUser[0];
     }
 
+    public static function getByLogin(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['login']);
+        ValidatorModel::stringType($aArgs, ['login']);
+
+        $aUser = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['users'],
+            'where'     => ['login = ?'],
+            'data'      => [$aArgs['login']]
+        ]);
+
+        if (empty($aUser)) {
+            return [];
+        }
+
+        return $aUser[0];
+    }
+
     public static function getByUserId(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['userId']);

@@ -26,10 +26,10 @@ $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRo
 
 //Authentication
 $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, callable $next) {
-    $userId = \SrcCore\controllers\AuthenticationController::authentication();
+    $login = \SrcCore\controllers\AuthenticationController::authentication();
 
-    if (!empty($userId)) {
-        $GLOBALS['userId'] = $userId;
+    if (!empty($login)) {
+        $GLOBALS['login'] = $login;
         $response = $next($request, $response);
         return $response;
     } else {
