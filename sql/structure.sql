@@ -13,32 +13,18 @@ SET search_path = public, pg_catalog;
 SET default_tablespace = '';
 SET default_with_oids = false;
 
-CREATE TABLE docserver_types
-(
-  id serial NOT NULL,
-  docserver_type_id character varying(32) NOT NULL,
-  docserver_type_label character varying(255) DEFAULT NULL::character varying,
-  enabled character(1) NOT NULL DEFAULT 'Y'::bpchar,
-  fingerprint_mode character varying(32) DEFAULT NULL::character varying,
-  CONSTRAINT docserver_types_pkey PRIMARY KEY (docserver_type_id)
-)
-WITH (OIDS=FALSE);
-
 CREATE TABLE docservers
 (
   id serial NOT NULL,
-  docserver_id character varying(32) NOT NULL DEFAULT '1'::character varying,
-  docserver_type_id character varying(32) NOT NULL,
-  device_label character varying(255) DEFAULT NULL::character varying,
+  type character varying(32) NOT NULL,
+  label character varying(255),
   is_readonly character(1) NOT NULL DEFAULT 'N'::bpchar,
-  enabled character(1) NOT NULL DEFAULT 'Y'::bpchar,
   size_limit_number bigint NOT NULL DEFAULT (0)::bigint,
   actual_size_number bigint NOT NULL DEFAULT (0)::bigint,
-  path_template character varying(255) NOT NULL,
+  path character varying(255) NOT NULL,
   creation_date timestamp without time zone NOT NULL,
-  coll_id character varying(32) NOT NULL DEFAULT 'coll_1'::character varying,
-  CONSTRAINT docservers_pkey PRIMARY KEY (docserver_id),
-  CONSTRAINT docservers_id_key UNIQUE (id)
+  CONSTRAINT docservers_pkey PRIMARY KEY (id),
+  CONSTRAINT docservers_type_key UNIQUE (type)
 )
 WITH (OIDS=FALSE);
 
@@ -142,12 +128,24 @@ CREATE TABLE adr_main_documents
   id serial NOT NULL,
   main_document_id bigint NOT NULL,
   type character varying(32) NOT NULL,
-  docserver_id character varying(32) NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
   fingerprint character varying(255) DEFAULT NULL::character varying,
   CONSTRAINT adr_letterbox_pkey PRIMARY KEY (id),
   CONSTRAINT adr_letterbox_unique_key UNIQUE (main_document_id, type)
+)
+WITH (OIDS=FALSE);
+
+CREATE TABLE adr_attachments
+(
+  id serial NOT NULL,
+  attachment_id bigint NOT NULL,
+  type character varying(32) NOT NULL,
+  path character varying(255) NOT NULL,
+  filename character varying(255) NOT NULL,
+  fingerprint character varying(255) DEFAULT NULL::character varying,
+  CONSTRAINT adr_attachments_pkey PRIMARY KEY (id),
+  CONSTRAINT adr_attachments_unique_key UNIQUE (attachment_id, type)
 )
 WITH (OIDS=FALSE);
 
