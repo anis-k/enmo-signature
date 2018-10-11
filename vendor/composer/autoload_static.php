@@ -25,17 +25,9 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             'phpseclib\\' => 10,
         ),
-        'V' => 
-        array (
-            'VersionUpdate\\' => 14,
-        ),
         'U' => 
         array (
             'User\\' => 5,
-        ),
-        'T' => 
-        array (
-            'Template\\' => 9,
         ),
         'S' => 
         array (
@@ -50,23 +42,11 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             'Respect\\Validation\\' => 19,
             'Resource\\' => 9,
-            'Report\\' => 7,
         ),
         'P' => 
         array (
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
-            'Priority\\' => 9,
-            'Parameter\\' => 10,
-        ),
-        'N' => 
-        array (
-            'Notification\\' => 13,
-            'Note\\' => 5,
-        ),
-        'L' => 
-        array (
-            'Link\\' => 5,
         ),
         'I' => 
         array (
@@ -82,7 +62,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
             'Http\\Client\\Common\\' => 19,
             'Http\\Client\\' => 12,
             'Http\\Adapter\\Guzzle6\\' => 21,
-            'Home\\' => 5,
             'History\\' => 8,
         ),
         'G' => 
@@ -90,38 +69,25 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
             'GuzzleHttp\\Psr7\\' => 16,
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
-            'Group\\' => 6,
             'Gitlab\\' => 7,
         ),
         'F' => 
         array (
-            'Folder\\' => 7,
             'FastRoute\\' => 10,
-        ),
-        'E' => 
-        array (
-            'Entity\\' => 7,
         ),
         'D' => 
         array (
-            'Doctype\\' => 8,
+            'Document\\' => 9,
             'Docserver\\' => 10,
         ),
         'C' => 
         array (
             'Convert\\' => 8,
-            'ContentManagement\\' => 18,
-            'Contact\\' => 8,
             'Clue\\StreamFilter\\' => 18,
-        ),
-        'B' => 
-        array (
-            'Basket\\' => 7,
         ),
         'A' => 
         array (
             'Attachment\\' => 11,
-            'Action\\' => 7,
         ),
     );
 
@@ -134,17 +100,9 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             0 => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib',
         ),
-        'VersionUpdate\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/versionUpdate',
-        ),
         'User\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/user',
-        ),
-        'Template\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/template',
         ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
@@ -178,10 +136,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             0 => __DIR__ . '/../..' . '/src/app/resource',
         ),
-        'Report\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/report',
-        ),
         'Psr\\Http\\Message\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/http-message/src',
@@ -189,26 +143,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
-        ),
-        'Priority\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/priority',
-        ),
-        'Parameter\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/parameter',
-        ),
-        'Notification\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/notification',
-        ),
-        'Note\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/note',
-        ),
-        'Link\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/link',
         ),
         'Interop\\Container\\' => 
         array (
@@ -247,10 +181,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             0 => __DIR__ . '/..' . '/php-http/guzzle6-adapter/src',
         ),
-        'Home\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/home',
-        ),
         'History\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/history',
@@ -267,29 +197,17 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
         ),
-        'Group\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/group',
-        ),
         'Gitlab\\' => 
         array (
             0 => __DIR__ . '/..' . '/m4tthumphrey/php-gitlab-api/lib/Gitlab',
-        ),
-        'Folder\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/folder',
         ),
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
         ),
-        'Entity\\' => 
+        'Document\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/app/entity',
-        ),
-        'Doctype\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/doctype',
+            0 => __DIR__ . '/../..' . '/src/app/document',
         ),
         'Docserver\\' => 
         array (
@@ -299,29 +217,13 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         array (
             0 => __DIR__ . '/../..' . '/src/app/convert',
         ),
-        'ContentManagement\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/contentManagement',
-        ),
-        'Contact\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/contact',
-        ),
         'Clue\\StreamFilter\\' => 
         array (
             0 => __DIR__ . '/..' . '/clue/stream-filter/src',
         ),
-        'Basket\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/basket',
-        ),
         'Attachment\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/attachment',
-        ),
-        'Action\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/action',
         ),
     );
 

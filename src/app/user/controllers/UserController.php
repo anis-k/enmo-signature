@@ -246,20 +246,20 @@ class UserController
     public function getProfile(Request $request, Response $response)
     {
         $user = UserModel::getByUserId(['userId' => $GLOBALS['userId'], 'select' => ['id', 'user_id', 'firstname', 'lastname', 'phone', 'mail', 'initials', 'thumbprint']]);
-        $user['signatures'] = UserSignatureModel::getByUserSerialId(['userSerialid' => $user['id']]);
-        $user['emailSignatures'] = UserModel::getEmailSignaturesById(['userId' => $user['user_id']]);
-        $user['groups'] = UserModel::getGroupsByUserId(['userId' => $user['user_id']]);
-        $user['entities'] = UserModel::getEntitiesById(['userId' => $user['user_id']]);
-        $user['baskets'] = BasketModel::getBasketsByUserId(['userId' => $user['user_id'], 'unneededBasketId' => ['IndexingBasket']]);
-        $user['redirectedBaskets'] = BasketModel::getRedirectedBasketsByUserId(['userId' => $user['user_id']]);
-        $user['regroupedBaskets'] = BasketModel::getRegroupedBasketsByUserId(['userId' => $user['user_id']]);
-        $user['passwordRules'] = PasswordModel::getEnabledRules();
-        $user['canModifyPassword'] = true;
-
-        $loggingMethod = CoreConfigModel::getLoggingMethod();
-        if (in_array($loggingMethod['id'], self::ALTERNATIVES_CONNECTIONS_METHODS)) {
-            $user['canModifyPassword'] = false;
-        }
+//        $user['signatures'] = UserSignatureModel::getByUserSerialId(['userSerialid' => $user['id']]);
+//        $user['emailSignatures'] = UserModel::getEmailSignaturesById(['userId' => $user['user_id']]);
+//        $user['groups'] = UserModel::getGroupsByUserId(['userId' => $user['user_id']]);
+//        $user['entities'] = UserModel::getEntitiesById(['userId' => $user['user_id']]);
+//        $user['baskets'] = BasketModel::getBasketsByUserId(['userId' => $user['user_id'], 'unneededBasketId' => ['IndexingBasket']]);
+//        $user['redirectedBaskets'] = BasketModel::getRedirectedBasketsByUserId(['userId' => $user['user_id']]);
+//        $user['regroupedBaskets'] = BasketModel::getRegroupedBasketsByUserId(['userId' => $user['user_id']]);
+//        $user['passwordRules'] = PasswordModel::getEnabledRules();
+//        $user['canModifyPassword'] = true;
+//
+//        $loggingMethod = CoreConfigModel::getLoggingMethod();
+//        if (in_array($loggingMethod['id'], self::ALTERNATIVES_CONNECTIONS_METHODS)) {
+//            $user['canModifyPassword'] = false;
+//        }
 
         return $response->withJson($user);
     }

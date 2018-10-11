@@ -29,7 +29,7 @@ class AuthenticationModel
         $aReturn = DatabaseModel::select([
             'select'    => ['password'],
             'table'     => ['users'],
-            'where'     => ['user_id = ?', 'status != ?', '(locked_until is null OR locked_until < CURRENT_TIMESTAMP)'],
+            'where'     => ['user_id = ?', 'status != ?'],
             'data'      => [$args['userId'], 'DEL']
         ]);
 
@@ -123,59 +123,6 @@ class AuthenticationModel
             $cookiePath = str_replace(['apps/maarch_entreprise/index.php', 'rest/index.php'], '', $_SERVER['SCRIPT_NAME']);
             setcookie('maarchCourrierAuth', '', time() - 1, $cookiePath, '', false, true);
         }
-
-        return true;
-    }
-
-    public static function resetFailedAuthentication(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['userId']);
-        ValidatorModel::stringType($aArgs, ['userId']);
-
-        DatabaseModel::update([
-            'table'     => 'users',
-            'set'       => [
-                'failed_authentication' => 0,
-                'locked_until'          => null,
-            ],
-            'where'     => ['user_id = ?'],
-            'data'      => [$aArgs['userId']]
-        ]);
-
-        return true;
-    }
-
-    public static function increaseFailedAuthentication(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['userId', 'tentatives']);
-        ValidatorModel::stringType($aArgs, ['userId']);
-        ValidatorModel::intVal($aArgs, ['tentatives']);
-
-        DatabaseModel::update([
-            'table'     => 'users',
-            'set'       => [
-                'failed_authentication' => $aArgs['tentatives']
-            ],
-            'where'     => ['user_id = ?'],
-            'data'      => [$aArgs['userId']]
-        ]);
-
-        return true;
-    }
-
-    public static function lockUser(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['userId', 'lockedUntil']);
-        ValidatorModel::stringType($aArgs, ['userId']);
-
-        DatabaseModel::update([
-            'table' => 'users',
-            'set'   => [
-                'locked_until'  => date('Y-m-d H:i:s', $aArgs['lockedUntil'])
-            ],
-            'where' => ['user_id = ?'],
-            'data'  => [$aArgs['userId']]
-        ]);
 
         return true;
     }

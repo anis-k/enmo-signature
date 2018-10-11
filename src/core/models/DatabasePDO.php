@@ -42,35 +42,18 @@ class DatabasePDO
             $password   = $args['password'];
             self::$type = $args['type'];
         } else {
-            if (!empty($args['customId'])) {
-                $customId = $args['customId'];
-            } else {
-                $customId = CoreConfigModel::getCustomId();
-            }
 
-            if (file_exists("custom/{$customId}/apps/maarch_entreprise/xml/config.xml")) {
-                $path = "custom/{$customId}/apps/maarch_entreprise/xml/config.xml";
-            } else {
-                $path = 'apps/maarch_entreprise/xml/config.xml';
-            }
-
-            if (!file_exists($path)) {
-                if (file_exists("{$GLOBALS['MaarchDirectory']}custom/{$customId}/apps/maarch_entreprise/xml/config.xml")) {
-                    $path = "{$GLOBALS['MaarchDirectory']}custom/{$customId}/apps/maarch_entreprise/xml/config.xml";
-                } else {
-                    $path = "{$GLOBALS['MaarchDirectory']}apps/maarch_entreprise/xml/config.xml";
-                }
-            }
+            $path = $_SERVER['CONFIG_DIR'] . 'config.xml';
 
             if (file_exists($path)) {
                 $loadedXml = simplexml_load_file($path);
                 if ($loadedXml) {
-                    $server     = (string)$loadedXml->CONFIG->databaseserver;
-                    $port       = (string)$loadedXml->CONFIG->databaseserverport;
-                    $name       = (string)$loadedXml->CONFIG->databasename;
-                    $user       = (string)$loadedXml->CONFIG->databaseuser;
-                    $password   = (string)$loadedXml->CONFIG->databasepassword;
-                    self::$type = (string)$loadedXml->CONFIG->databasetype;
+                    $server     = (string)$loadedXml->database->server;
+                    $port       = (string)$loadedXml->database->port;
+                    $name       = (string)$loadedXml->database->name;
+                    $user       = (string)$loadedXml->database->user;
+                    $password   = (string)$loadedXml->database->password;
+                    self::$type = (string)$loadedXml->database->type;
                 }
             }
         }

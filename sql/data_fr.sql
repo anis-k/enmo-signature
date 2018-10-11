@@ -17,12 +17,6 @@ DELETE FROM users WHERE user_id = 'mmanfred';
 INSERT INTO users (id, user_id, password, firstname, lastname, mail, enabled, status, loginmode) VALUES (17, 'mmanfred', '$2y$10$C.QSslBKD3yNMfRPuZfcaubFwPKiCkqqOUyAdOr5FSGKPaePwuEjG', 'Martin', 'MANFRED', 'info@maarch.org', 'Y', 'OK', 'standard');
 DELETE FROM users WHERE user_id = 'ddaull';
 INSERT INTO users (id, user_id, password, firstname, lastname, mail, enabled, status, loginmode) VALUES (18, 'ddaull', '$2y$10$C.QSslBKD3yNMfRPuZfcaubFwPKiCkqqOUyAdOr5FSGKPaePwuEjG', 'Denis', 'DAULL', 'info@maarch.org', 'Y', 'OK', 'standard');
-select setval('users_id_seq', (select max(id)+1 from users), false);
-
--- Create BASKETS
-TRUNCATE TABLE baskets;
-DELETE FROM baskets WHERE basket_id = 'MyBasket';
-INSERT INTO baskets (basket_id, basket_name, basket_desc, basket_clause, enabled) VALUES ('MyBasket', 'Courriers à traiter', 'Bannette des courriers à traiter', 'status in (''ANNOT'', ''SIGN'')', 'Y');
 
 -- Donnees manuelles
 ------------

@@ -2,32 +2,15 @@
     "autoload": {
     	"psr-4": {
             "SrcCore\\"           : "src/core/",
-            "Action\\"            : "src/app/action/",
             "Attachment\\"        : "src/app/attachment/",
-            "Basket\\"            : "src/app/basket/",
-            "Contact\\"           : "src/app/contact/",
-            "ContentManagement\\" : "src/app/contentManagement/",
             "Convert\\"           : "src/app/convert/",
             "Docserver\\"         : "src/app/docserver/",
-            "Doctype\\"           : "src/app/doctype/",
-            "Entity\\"            : "src/app/entity/",
-            "Folder\\"            : "src/app/folder/",
-            "Group\\"             : "src/app/group/",
+            "Document\\"          : "src/app/document/",
             "History\\"           : "src/app/history/",
-            "Home\\"              : "src/app/home/",
-            "Link\\"              : "src/app/link/",
-            "Note\\"              : "src/app/note/",
-            "Notification\\"      : "src/app/notification/",
-            "Parameter\\"         : "src/app/parameter/",
-            "Priority\\"          : "src/app/priority/",
-            "Report\\"            : "src/app/report/",
             "Resource\\"          : "src/app/resource/",
             "SignatureBook\\"     : "src/app/signatureBook/",
             "Status\\"            : "src/app/status/",
-            "Template\\"          : "src/app/template/",
-            "User\\"              : "src/app/user/",
-            "VersionUpdate\\"     : "src/app/versionUpdate/"
-
+            "User\\"              : "src/app/user/"
     	}
     },
     "require": {

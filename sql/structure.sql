@@ -57,7 +57,7 @@ WITH (OIDS=FALSE);
 CREATE TABLE users
 (
   id serial NOT NULL,
-  user_id character varying(128) NOT NULL,
+  login character varying(128) NOT NULL,
   "password" character varying(255) DEFAULT NULL::character varying,
   firstname character varying(255) DEFAULT NULL::character varying,
   lastname character varying(255) DEFAULT NULL::character varying,
@@ -112,17 +112,6 @@ CREATE TABLE attachments
 )
 WITH (OIDS=FALSE);
 
-CREATE TABLE baskets
-(
-  id serial NOT NULL,
-  name character varying(255) NOT NULL,
-  description character varying(255) NOT NULL,
-  clause text NOT NULL,
-  documents_order character varying(255) NOT NULL DEFAULT 'creation_date DESC',
-  CONSTRAINT baskets_pkey PRIMARY KEY (id)
-)
-WITH (OIDS=FALSE);
-
 CREATE TABLE adr_main_documents
 (
   id serial NOT NULL,
@@ -149,7 +138,7 @@ CREATE TABLE adr_attachments
 )
 WITH (OIDS=FALSE);
 
-CREATE TABLE user_signatures
+CREATE TABLE users_signatures
 (
   id serial NOT NULL,
   user_serial_id integer NOT NULL,
