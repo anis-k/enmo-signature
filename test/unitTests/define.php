@@ -9,7 +9,8 @@
 
 require_once 'vendor/autoload.php';
 
-$userId = 'superadmin';
+$login = 'jjane';
+$_SERVER['CONFIG_DIR'] = "/var/www/html/MaarchParapheur/config/";
 
 $language = \SrcCore\models\CoreConfigModel::getLanguage();
 require_once("src/core/lang/lang-{$language}.php");

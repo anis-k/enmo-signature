@@ -40,6 +40,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 
 //Documents
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');
+$app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
 
 
 ////Ressources
@@ -95,14 +96,5 @@ $app->get('/documents', \Document\controllers\DocumentController::class . ':get'
 //$app->post('/users/{id}/redirectedBaskets', \User\controllers\UserController::class . ':setRedirectedBaskets');
 //$app->delete('/users/{id}/redirectedBaskets/{basketId}', \User\controllers\UserController::class . ':deleteRedirectedBaskets');
 //$app->put('/users/{id}/baskets', \User\controllers\UserController::class . ':updateBasketsDisplay');
-//
-////CurrentUser
-//$app->get('/currentUser/profile', \User\controllers\UserController::class . ':getProfile');
-//$app->put('/currentUser/profile', \User\controllers\UserController::class . ':updateProfile');
-//$app->put('/currentUser/password', \User\controllers\UserController::class . ':updateCurrentUserPassword');
-//$app->post('/currentUser/emailSignature', \User\controllers\UserController::class . ':createCurrentUserEmailSignature');
-//$app->put('/currentUser/emailSignature/{id}', \User\controllers\UserController::class . ':updateCurrentUserEmailSignature');
-//$app->delete('/currentUser/emailSignature/{id}', \User\controllers\UserController::class . ':deleteCurrentUserEmailSignature');
-//$app->put('/currentUser/groups/{groupId}/baskets/{basketId}', \User\controllers\UserController::class . ':updateCurrentUserBasketPreferences');
 
 $app->run();

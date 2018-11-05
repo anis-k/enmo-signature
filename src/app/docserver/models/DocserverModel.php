@@ -10,11 +10,31 @@
 /**
 * @brief Docserver Model
 * @author dev@maarch.org
-* @ingroup core
 */
 namespace Docserver\models;
 
-class DocserverModel extends DocserverModelAbstract
+use SrcCore\models\DatabaseModel;
+use SrcCore\models\ValidatorModel;
+
+class DocserverModel
 {
-    // Do your stuff in this class
+    public static function getByType(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['type']);
+        ValidatorModel::stringType($aArgs, ['type']);
+        ValidatorModel::arrayType($aArgs, ['select']);
+
+        $aDocserver = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['docservers'],
+            'where'     => ['type = ?'],
+            'data'      => [$aArgs['type']]
+        ]);
+
+        if (empty($aDocserver[0])) {
+            return [];
+        }
+
+        return $aDocserver[0];
+    }
 }
