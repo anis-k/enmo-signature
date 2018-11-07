@@ -1,4 +1,4 @@
-<article class="pad" *ngIf="(pad$ | async)">
+<article class="pad" *ngIf="signaturesService.showPad">
   <section class="pad-actions">
     <div class="pad-actions-boxed">
       <ng-container *ngFor="let color of penColors" let idx="index">

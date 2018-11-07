@@ -1,11 +1,8 @@
 import { Component, ViewChild, Input, Host, Output, EventEmitter } from '@angular/core';
 import { SignaturePad } from 'angular2-signaturepad/signature-pad';
-import { Store, select } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { HIDE_DRAWER, SHOW_DRAWER  } from '../store/drawer';
-import { HIDE_PAD, SHOW_PAD  } from '../store/pad';
-import { HIDE_SIGNATURES, SHOW_SIGNATURES} from '../store/signatures';
 import { MatSnackBar } from '@angular/material';
+import { SignaturesContentService } from '../service/signatures.service';
 
 interface AppState {
   pad: boolean;
@@ -20,9 +17,9 @@ interface AfterViewInit {
 })
 export class SignaturePadPageComponent implements AfterViewInit {
   penColors = [{ id: 'black' }, { id: 'orange' }, { id: '#FF0000'}, { id: '#FF000000'}];
-  selectedColor;
-  selectedWidthPenSize;
-  haveSigned;
+  selectedColor: any;
+  selectedWidthPenSize: any;
+  haveSigned: any;
 
   pad$: Observable<boolean>;
 
@@ -42,9 +39,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
     canvasHeight: 315
   };
 
-  constructor(public snackBar: MatSnackBar, private store: Store<AppState>) {
-    this.pad$ = store.pipe(select('pad'));
-  }
+  constructor(public signaturesService: SignaturesContentService, public snackBar: MatSnackBar) { }
 
   ngAfterViewInit() {
     console.log('v0.6.0');
@@ -56,12 +51,12 @@ export class SignaturePadPageComponent implements AfterViewInit {
     }
   }
 
-  onColorChange(entry) {
+  onColorChange(entry: any) {
     this.selectedColor = Object.assign({}, this.selectedColor, entry);
     this.signaturePad.set('penColor', this.selectedColor.id );
   }
 
-  onDotChange(entry) {
+  onDotChange(entry: any) {
     this.selectedWidthPenSize = parseFloat(entry);
     this.signaturePad.set('minWidth', this.selectedWidthPenSize );
     this.signaturePad.set('maxWidth', this.selectedWidthPenSize + 2 );
@@ -83,8 +78,8 @@ export class SignaturePadPageComponent implements AfterViewInit {
   }
 
   closePad() {
-    this.store.dispatch({ type: HIDE_PAD });
-    this.store.dispatch({ type: SHOW_SIGNATURES });
+    this.signaturesService.showPad = false;
+    this.signaturesService.showSign = true;
   }
 
   enregistrerSignature() {

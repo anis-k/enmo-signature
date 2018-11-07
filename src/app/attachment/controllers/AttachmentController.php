@@ -26,7 +26,7 @@ class AttachmentController
     public function getById(Request $request, Response $response, array $args)
     {
         $attachment = AttachmentModel::getById(['select' => ['*'], 'id' => $args['id']]);
-        if (empty($document)) {
+        if (empty($attachment)) {
             return $response->withStatus(400)->withJson(['errors' => 'Attachment does not exist']);
         }
 

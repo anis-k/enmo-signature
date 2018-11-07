@@ -12,4 +12,7 @@ export class SignaturesContentService {
     signWidth = 200;
     annotationMode = false;
     lockNote = false;
+    showSign = false;
+    showPad = false;
+    showDrawer = false;
 }

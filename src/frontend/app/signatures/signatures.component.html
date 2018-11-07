@@ -1,4 +1,4 @@
-<article class="signatures" *ngIf="(signatures$ | async)">
+<article class="signatures" *ngIf="signaturesService.showSign">
   <section class="signatures-top">
     <button class="btn" (click)="showAnnotation()">
         <i class="fas fa-pen"></i>

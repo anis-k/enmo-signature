@@ -53,24 +53,10 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.listContent.nativeElement.scrollTo(0, 0);
-    // TO DO IMPLEMENT ROUTE DOCUMENTS SIMPLE LIST
-    /*this.http.get("rest/documents")
+    this.http.get('../rest/documents')
       .subscribe((data: any) => {
         this.documentsList = data.documents;
-      });*/
-    // FOR TEST
-    this.countDocumentsList = 93;
-    for (let index = 1; index <= 20; index++) {
-      this.documentsList.push(
-        {
-          'id' : index,
-          'reference' : 'CAB/2018A/' + index,
-          'subject' : 'Document ' + index,
-          'status' : 'A traiter',
-        }
-      );
-    }
+      });
   }
 
 }

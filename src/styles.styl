@@ -1,6 +1,7 @@
 @import './frontend/css/vars.styl'
 @import './frontend/css/atomic.styl'
 
+
 //COLORS
 .c-active-color
   color #135F7F
@@ -9,12 +10,19 @@
 
 html
   height 100%
+  position fixed
+  overflow hidden
 
 body
   height 100%
+  width 100%
+  position fixed
+  overflow hidden
 
 .mat-sidenav-container
-  height 100%
+  height: 100vh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
   
 //forms
 .form-label
