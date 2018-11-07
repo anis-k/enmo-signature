@@ -1,0 +1,10 @@
+<!-- <section class="drawer" [ngClass]="{'open': open}"> -->
+<section class="drawer" [ngClass]="{'open' : (drawer$ | async)}">
+  <button *ngIf="(drawer$ | async) === false" class="btn green btn-action" (click)="openDrawer()">
+      <i class="fas fa-arrow-up"></i>
+      ouvrir
+    </button>
+  <i *ngIf="(drawer$ | async) === true"  class="far fa-times-circle fa-3x btn-action" (click)="closeDrawer()"></i>
+  <app-signatures></app-signatures>
+  <app-pad></app-pad>
+</section>

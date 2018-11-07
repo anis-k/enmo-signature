@@ -1,9 +1,0 @@
-<mat-nav-list *ngIf="router.url != '/home' && router.url != '/profile' && router.url != '/about-us' && router.url != '/administration' && router.url.indexOf('/basketList') == -1">
-    <a mat-list-item (click)="backClicked()">
-        <mat-icon color="primary" mat-list-icon class="fa fa-chevron-left"></mat-icon>
-        <p mat-line>
-            {{lang.back}}
-        </p>
-    </a>
-</mat-nav-list>
-<mat-divider *ngIf="router.url != '/home' && router.url != '/about-us' && router.url != '/administration' && router.url.indexOf('/basketList') == -1"></mat-divider>

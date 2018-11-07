@@ -1,0 +1,48 @@
+<mat-sidenav-container autosize>
+
+  <mat-sidenav #snav mode="over" fixedInViewport="true">
+    <app-sidebar></app-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>
+    <header class="header" *ngIf="!this.signaturesService.annotationMode">
+      <article class="header-infos">
+        <section class="header-left">
+          <button mat-icon-button (click)="this.snav.toggle();">
+            <mat-icon fontSet="far" fontIcon="fa-folder-open"></mat-icon>
+          </button>
+        </section>
+        <div class="header-info">
+          <p class="c-active-color bold">{{mainDocument.reference}}</p>
+          <p>{{mainDocument.subject}}</p>
+        </div>
+        <div class="header-info">
+          <p class="c-active-color bold">Emis par : </p>
+          <p>{{mainDocument.sender}} ({{mainDocument.sender_entity}})</p>
+          <p class="c-active-color bold">Pour : </p>
+          <p>{{mainDocument.recipient}}</p>
+        </div>
+        <div class="header-info">
+          <p class="c-active-color bold">Bannette : </p>
+          <p>???</p>
+          <p class="c-active-color bold">A signer par : </p>
+          <p>{{mainDocument.processingUserDisplay}}</p>
+        </div>
+        <section class="header-right">
+          <button [disabled]="this.signaturesService.signaturesContent.length == 0" mat-icon-button title="Effacer les annotions / signatures"
+            (click)="removeTags();">
+            <mat-icon [ngClass]="[this.signaturesService.signaturesContent.length == 0 ? '' : 'red']" fontSet="fas"
+              fontIcon="fa-eraser"></mat-icon>
+          </button>
+        </section>
+      </article>
+    </header>
+    <app-document [mainDocument]="mainDocument"></app-document>
+    <footer class="footer" *ngIf="!this.signaturesService.annotationMode">
+      <button class="btn red" (click)="openDialog()"><i class="fas fa-backspace fa-2x"></i>Refuser</button>
+      <button class="btn green" (click)="openDrawer()" [disabled]="!this.signaturesService.isTaggable">Parapher le document</button>
+      <button class="btn" (click)="confirmDialog()">Valider<i class="fas fa-check-circle fa-2x"></i></button>
+    </footer>
+    <app-drawer></app-drawer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

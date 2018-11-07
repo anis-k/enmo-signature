@@ -1,0 +1,21 @@
+<article class="signatures" *ngIf="(signatures$ | async)">
+  <section class="signatures-top">
+    <button class="btn" (click)="showAnnotation()">
+        <i class="fas fa-pen"></i>
+        annotation
+      </button>
+    <label for="all" class="form-label">Ajouter la signature sur toutes les pages
+      <input type="checkbox" name="all" id="all" class="toggle" (click)="toggleAllPage()">
+    </label>
+  </section>
+  <section class="list">
+    <div class="list-item create" (click)="openPad()">
+      <i class="fas fa-pen-nib fa-2x"></i>
+      créer une nouvelle signature
+    </div>
+    <div *ngFor="let signature of signaturesService.signaturesList" let idx="index" class="list-item">
+      <img [src]="sanitization.bypassSecurityTrustUrl(signature.fullPath)" (click)="selectSignature(signature)" style="width: 190px;">
+    </div>
+  </section>
+</article>
+<app-pad (reloaded)="reloadSignatures($event)"></app-pad>

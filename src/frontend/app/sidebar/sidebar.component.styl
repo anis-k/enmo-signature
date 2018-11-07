@@ -1,0 +1,85 @@
+.sidebar
+    position relative
+    height 100%
+    overflow hidden
+
+    &-header
+        background #F1F4F4
+        height 10%
+        display flex
+        align-items center
+        justify-content center
+        font-size 14px
+        font-weight 600
+        &-icon
+            margin-right 15px
+            position relative
+            &.notification
+                &:after
+                    position absolute
+                    right -5px
+                    top -5px
+                    width 10px
+                    height 10px
+                    border-radius 50%
+                    background red
+                    content ""
+        &-subtitle
+            color #9B9B9B
+    &-btn
+        height 10%
+        display flex
+        align-items center
+        justify-content space-around
+    .nav
+        height 80%
+        overflow-y scroll
+        margin-top 0px
+        overflow-x hidden
+
+        &-item
+            height 70px
+            display flex
+            align-items center
+            padding 5px
+            margin-right 20px
+            border-bottom 1px solid #e6e6e6
+            cursor pointer
+            &.active
+                &:after
+                    position absolute
+                    right 10px
+                    content ""
+                    /*width 5px*/
+                    height 60px
+                    background #F1F4F4
+            &-left
+                width 50px
+                .fas, .material-icons
+                    background #f1f4f4
+                    border-radius 50%
+                    color #135f7f
+                    font-size 22px
+                    height 25px
+                    width 25px
+                    padding 10px
+                    margin-right 10px
+            &-middle
+                width 180px
+                height 50px
+                font-size 12px
+                color #4F4F4F
+            &-title
+                font-weight 600
+                color #135F7F
+
+.loadList
+    position absolute
+    width 100%
+    height 100%
+    left 0
+    background-color #ffffffb3
+    z-index 1
+    display flex
+    align-items baseline
+    justify-content center

@@ -1,0 +1,24 @@
+<article class="pad" *ngIf="(pad$ | async)">
+  <section class="pad-actions">
+    <div class="pad-actions-boxed">
+      <ng-container *ngFor="let color of penColors" let idx="index">
+        <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)"
+          class="radio" [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
+      </ng-container>
+    </div>
+    <button (click)="drawClear()" class="btn">Effacer</button>
+    <div class="pad-actions-boxed">
+      <input type="range" name="dot" min="1" max="10" step="1" (input)="onDotChange($event.target.value)"
+        class="range">
+      <span>{{selectedWidthPenSize}}</span>
+    </div>
+  </section>
+  <section class="pad-draw">
+    <signature-pad [options]="signaturePadOptions" (onBeginEvent)="drawStart()" (onEndEvent)="drawComplete()"></signature-pad>
+  </section>
+  <section class="pad-actions">
+    <button class="btn red" (click)="closePad()"><i class="fas fa-times-circle fa-2x"></i> Annuler</button>
+    <button class="btn green" (click)="enregistrerSignature()" [disabled]="!haveSigned">Enregistrer <i class="fas fa-check-circle fa-2x"></i></button>
+  </section>
+  <div class="draw"></div>
+</article>

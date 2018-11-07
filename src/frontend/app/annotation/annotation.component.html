@@ -1,0 +1,27 @@
+<article class="annotation" #annotation>
+    <section class="annotation-header">
+      <i class="fas fa-times-circle fa-3x btn-close red" (click)="closeAnnotation($event)"></i>
+      <button class="annotation-drag"><i class="fas fa-arrows-alt fa-3x"></i></button>
+      <i class="fas fa-check-circle fa-3x btn-valid green" (click)="validateAnnotation($event)"></i>
+    </section>
+    <section class="annotation-body">
+      <signature-pad [options]="annotationPadOptions" (onBeginEvent)="drawStart()" (onEndEvent)="drawComplete()"></signature-pad>
+    </section>
+    <section class="annotation-footer"></section>
+  </article>
+
+
+<div class="annotation-actions">
+  <div class="annotation-actions-boxed">
+    <ng-container *ngFor="let color of penColors" let idx="index">
+      <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)"
+        class="radio" [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
+    </ng-container>
+  </div>
+  <button (click)="drawClear()" class="btn">Effacer</button>
+  <div class="annotation-actions-boxed">
+    <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)"
+      class="range">
+    <span>{{(selectedWidthPenSize)? selectedWidthPenSize: 1 }}</span>
+  </div>
+</div>

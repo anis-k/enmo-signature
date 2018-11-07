@@ -1,0 +1,113 @@
+@import '../../css/vars.styl'
+
+.article
+  display flex
+  justify-content center
+  //overflow scroll
+  //height 100%
+
+.canvas-wrapper
+  overflow auto
+  position relative
+  width 100%
+  margin-bottom 0
+  padding 0
+  //border 6px dotted pink
+
+canvas
+  //width 100%
+  margin 0 auto
+  display block
+
+.page
+    &-info
+      position fixed
+      bottom 100px
+      height 30px
+      color #9B9B9B
+      font-size 12px
+      font-weight 300
+      line-height 30px
+      display flex
+      align-items center
+      justify-content center
+      opacity 0.8
+      left 50%
+      transform translateX(-50%)
+      &-doc
+        background-color #F1F4F4
+        border-radius 14px
+        padding 0 20px
+        z-index 1
+        white-space pre
+        width 50%
+        overflow hidden
+        text-overflow ellipsis
+      &-page
+        border-radius 0 14px 14px 0
+        padding 0 20px
+        background #fff
+        border 1px solid #ECF0F1
+        margin-left -15px
+        height 28px
+    &-viewer
+      width 100%
+      overflow auto
+      justify-content center
+      display flex
+
+.btn-next
+    color #666
+    background #c6c6c680
+    border-radius 20px
+    padding 10px
+    border none
+    outline none
+    position fixed
+    right 25px
+    top 50%
+    cursor pointer
+    z-index 1
+    &.disabled
+      cursor not-allowed
+.btn-previous
+    color #666
+    background #c6c6c680
+    border-radius 20px
+    padding 10px
+    border none
+    outline none
+    position fixed
+    left 25px
+    top 50%
+    cursor pointer
+    z-index 1
+    &.disabled
+      cursor not-allowed
+
+button.disabled
+  cursor not-allowed
+
+.overlay
+  position absolute
+  z-index 1
+  left 0
+  top 0
+  right 0
+  bottom 0
+  background rgba(0,0,0,0.5)
+
+.radio
+    appearance none
+    position relative
+    margin 5px
+    width 30px
+    height 30px
+    border-radius 30px
+    border-width none
+    border-style solid
+    outline none
+    cursor pointer
+    transition all 0.2s
+    &:checked, &:hover
+        transform scale(1.5)

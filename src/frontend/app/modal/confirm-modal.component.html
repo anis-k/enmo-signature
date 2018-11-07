@@ -1,0 +1,7 @@
+<h1 mat-dialog-title class="default"><i class="fa fa-question-circle fa-2x"></i><br/>{{data.msg}}</h1>
+<div mat-dialog-content>
+</div>
+<div mat-dialog-actions>
+  <button class="btn green" mat-button (click)="this.dialogRef.close('sucess');"><i class="fas fa-check-circle fa-2x"></i> Valider</button>
+  <button class="btn red" mat-button cdkFocusInitial (click)="this.dialogRef.close();"><i class="fas fa-times-circle fa-2x"></i> Annuler</button>
+</div>
