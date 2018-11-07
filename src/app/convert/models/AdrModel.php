@@ -61,4 +61,18 @@ class AdrModel
 
         return $addresses;
     }
+
+    public static function getAttachmentsAdr(array $aArgs)
+    {
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
+
+        $addresses = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['adr_attachments'],
+            'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
+            'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
+        ]);
+
+        return $addresses;
+    }
 }

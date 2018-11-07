@@ -34,17 +34,11 @@ DROP TABLE IF EXISTS attachments;
 CREATE TABLE attachments
 (
   id serial NOT NULL,
-  subject text,
+  main_document_id bigint NOT NULL,
   reference character varying(255),
-  format character varying(50) NOT NULL,
-  typist character varying(128) NOT NULL,
-  creation_date timestamp without time zone NOT NULL,
-  docserver_id character varying(32) NOT NULL,
-  path character varying(255) DEFAULT NULL::character varying,
-  filename character varying(255) DEFAULT NULL::character varying,
-  fingerprint character varying(255) DEFAULT NULL::character varying,
-  filesize bigint,
-  main_document_id bigint,
+  subject text,
+  creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
+  modification_date timestamp without time zone DEFAULT NOW(),
   CONSTRAINT attachments_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);

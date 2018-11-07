@@ -14,6 +14,7 @@
 
 namespace Document\controllers;
 
+use Attachment\models\AttachmentModel;
 use Convert\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\models\DocumentModel;
@@ -62,8 +63,7 @@ class DocumentController
         $document['statusDisplay'] = $status['label'];
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
 
-
-        $documentAdr = AdrModel::getDocumentsAdr([
+        $adr = AdrModel::getDocumentsAdr([
             'select'    => ['path', 'filename'],
             'where'     => ['main_document_id = ?', 'type = ?'],
             'data'      => [$args['id'], 'DOC']
@@ -74,12 +74,13 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
         }
 
-        $pathToDocument = $docserver['path'] . $documentAdr[0]['path'] . $documentAdr[0]['filename'];
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         if (!file_exists($pathToDocument)) {
             return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
         }
 
         $document['document'] = base64_encode(file_get_contents($pathToDocument));
+        $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
 
         return $response->withJson(['document' => $document]);
     }

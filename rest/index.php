@@ -38,40 +38,14 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 });
 
 
+//Attachments
+$app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
+
 //Documents
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
 
 
-////Ressources
-//$app->post('/res', \Resource\controllers\ResController::class . ':create');
-//$app->post('/resExt', \Resource\controllers\ResController::class . ':createExt');
-//$app->get('/res/{resId}/thumbnail', \Resource\controllers\ResController::class . ':getThumbnailContent');
-//$app->put('/res/resource/status', \Resource\controllers\ResController::class . ':updateStatus');
-//$app->post('/res/list', \Resource\controllers\ResController::class . ':getList');
-//$app->get('/res/{resId}/lock', \Resource\controllers\ResController::class . ':isLock');
-//$app->get('/res/{resId}/notes/count', \Resource\controllers\ResController::class . ':getNotesCountForCurrentUserById');
-//$app->put('/res/externalInfos', \Resource\controllers\ResController::class . ':updateExternalInfos');
-//$app->get('/categories', \Resource\controllers\ResController::class . ':getCategories');
-//$app->get('/natures', \Resource\controllers\ResController::class . ':getNatures');
-//$app->get('/resources/groups/{groupSerialId}/baskets/{basketId}', \Resource\controllers\ResController::class . ':getResourcesByBasket');
-//
-////Attachments
-//$app->post('/attachments', \Attachment\controllers\AttachmentController::class . ':create');
-//$app->get('/res/{resId}/attachments', \Attachment\controllers\AttachmentController::class . ':getAttachmentsListById');
-//$app->get('/res/{resIdMaster}/attachments/{resId}/content', \Attachment\controllers\AttachmentController::class . ':getFileContent');
-//$app->get('/res/{resIdMaster}/attachments/{resId}/thumbnail', \Attachment\controllers\AttachmentController::class . ':getThumbnailContent');
-//
-////SignatureBook
-//$app->get('/{basketId}/signatureBook/resList', \SignatureBook\controllers\SignatureBookController::class . ':getResList');
-//$app->get('/{basketId}/signatureBook/resList/details', \SignatureBook\controllers\SignatureBookController::class . ':getDetailledResList');
-//$app->get('/groups/{groupId}/baskets/{basketId}/signatureBook/{resId}', \SignatureBook\controllers\SignatureBookController::class . ':getSignatureBook');
-//$app->get('/signatureBook/{resId}/attachments', \SignatureBook\controllers\SignatureBookController::class . ':getAttachmentsById');
-//$app->get('/signatureBook/{resId}/incomingMailAttachments', \SignatureBook\controllers\SignatureBookController::class . ':getIncomingMailAndAttachmentsById');
-//$app->put('/signatureBook/{resId}/unsign', \SignatureBook\controllers\SignatureBookController::class . ':unsignFile');
-//$app->put('/attachments/{id}/inSignatureBook', \Attachment\controllers\AttachmentController::class . ':setInSignatureBook');
-//
-//
 ////Users
 //$app->get('/users', \User\controllers\UserController::class . ':get');
 //$app->post('/users', \User\controllers\UserController::class . ':create');

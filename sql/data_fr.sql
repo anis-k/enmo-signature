@@ -9,7 +9,9 @@ INSERT INTO users (login, password, firstname, lastname, mail, enabled, status, 
 ------------
 TRUNCATE TABLE docservers;
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
-VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/manual/', CURRENT_TIMESTAMP);
+VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/documents/', CURRENT_TIMESTAMP);
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
+VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/', CURRENT_TIMESTAMP);
 
 ------------
 --STATUS
