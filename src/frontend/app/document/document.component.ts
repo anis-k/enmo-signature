@@ -12,7 +12,8 @@ import {
     MatBottomSheet,
     MatBottomSheetRef,
     MatBottomSheetConfig,
-    MatSnackBar
+    MatSnackBar,
+    MatSidenav
 } from '@angular/material';
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute } from '@angular/router';
@@ -47,11 +48,13 @@ export class DocumentComponent implements OnInit {
         canvasWidth: 380,
         canvasHeight: 270
     };
+    freezeSidenavClose = false;
     penColors = [{ id: 'black' }, { id: 'orange' }, { id: '#FF0000' }];
 
     @Input() mainDocument: any = {};
 
     @ViewChild('pdfpage') elPdfContainer: ElementRef;
+    @ViewChild('snav') snav: MatSidenav;
     @ViewChild('canvas') canvas: ElementRef;
     @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
     @ViewChild(SignaturePad) signaturePad: SignaturePad;
@@ -82,7 +85,9 @@ export class DocumentComponent implements OnInit {
                         console.log('error !');
                     });
             } else {
-                console.log('error !');
+                this.snav.open();
+                this.freezeSidenavClose = true;
+                console.log('OK !');
             }
         });
     }

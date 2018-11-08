@@ -56,6 +56,9 @@ export class SidebarComponent implements OnInit {
     this.http.get('../rest/documents')
       .subscribe((data: any) => {
         this.documentsList = data.documents;
+        // this.countDocumentsList = data.fullCount;
+        // TO DO REMOVE AFTER INIT IN BACK
+        this.countDocumentsList = this.documentsList.length;
       });
   }
 

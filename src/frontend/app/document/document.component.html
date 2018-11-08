@@ -1,11 +1,11 @@
 <mat-sidenav-container autosize>
 
-  <mat-sidenav #snav mode="over" fixedInViewport="true">
+  <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose">
     <app-sidebar></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content>
     <div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>
-    <header class="header" *ngIf="!this.signaturesService.annotationMode">
+    <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
       <article class="header-infos">
         <section class="header-left">
           <button mat-icon-button (click)="this.snav.toggle();">
@@ -37,7 +37,7 @@
         </section>
       </article>
     </header>
-    <article class="article" #article>
+    <article class="article" #article *ngIf="!freezeSidenavClose">
       <button class="btn-previous" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-previous" (click)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-next" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i class="fas fa-chevron-right fa-3x"></i></button>
@@ -93,7 +93,7 @@
         <div class="page-info-page">page {{ pageNum }} / {{ totalPages }}</div>
       </section>
     </article>
-    <footer class="footer" *ngIf="!this.signaturesService.annotationMode">
+    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
       <button class="btn red" (click)="openDialog()"><i class="fas fa-backspace fa-2x"></i>Refuser</button>
       <button class="btn green" (click)="openDrawer()" [disabled]="!this.signaturesService.isTaggable">Parapher le document</button>
       <button class="btn" (click)="confirmDialog()">Valider<i class="fas fa-check-circle fa-2x"></i></button>
