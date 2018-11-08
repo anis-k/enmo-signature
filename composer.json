@@ -8,7 +8,6 @@
             "Document\\"          : "src/app/document/",
             "History\\"           : "src/app/history/",
             "Resource\\"          : "src/app/resource/",
-            "SignatureBook\\"     : "src/app/signatureBook/",
             "Status\\"            : "src/app/status/",
             "User\\"              : "src/app/user/"
     	}

@@ -70,10 +70,11 @@ class HistoryController
             $aArgs['level'] = 'DEBUG';
         }
 
-        LogsController::add($aArgs);
+        // TODO LOG
+        // LogsController::add($aArgs);
 
         if (empty($aArgs['userId'])) {
-            $aArgs['userId'] = $GLOBALS['userId'];
+            $aArgs['userId'] = $GLOBALS['login'];
         }
 
         HistoryModel::create([
@@ -86,13 +87,6 @@ class HistoryController
             'eventId'   => $aArgs['eventId'],
         ]);
 
-        NotificationsEventsController::fillEventStack([
-            "eventId"   => $aArgs['eventId'],
-            "tableName" => $aArgs['tableName'],
-            "recordId"  => $aArgs['recordId'],
-            "userId"    => $aArgs['userId'],
-            "info"      => $aArgs['info'],
-        ]);
     }
 
     public function getByUserId(Request $request, Response $response, array $aArgs)

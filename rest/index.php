@@ -43,6 +43,7 @@ $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::cla
 //Documents
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
+$app->put('/documents/{id}/images', \Document\controllers\DocumentController::class . ':addImages');
 
 //Users
 $app->post('/users/{id}/signatures', \User\controllers\UserController::class . ':createSignature');

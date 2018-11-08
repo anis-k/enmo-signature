@@ -12,4 +12,4 @@
  * @author dev@maarch.org
  */
 
-define('_EX', 'Ex');
+define('_SIGNED_DOCUMENT', 'Signed document');

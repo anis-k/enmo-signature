@@ -36,7 +36,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
             'Status\\' => 7,
             'SrcCore\\' => 8,
             'Slim\\' => 5,
-            'SignatureBook\\' => 14,
         ),
         'R' => 
         array (
@@ -123,10 +122,6 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
-        ),
-        'SignatureBook\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/signatureBook',
         ),
         'Respect\\Validation\\' => 
         array (

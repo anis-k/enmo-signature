@@ -14,7 +14,6 @@ return array(
     'Status\\' => array($baseDir . '/src/app/status'),
     'SrcCore\\' => array($baseDir . '/src/core'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
-    'SignatureBook\\' => array($baseDir . '/src/app/signatureBook'),
     'Respect\\Validation\\' => array($vendorDir . '/respect/validation/library'),
     'Resource\\' => array($baseDir . '/src/app/resource'),
     'Psr\\Http\\Message\\' => array($vendorDir . '/psr/http-message/src'),
