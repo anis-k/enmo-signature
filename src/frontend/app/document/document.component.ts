@@ -18,6 +18,7 @@ import {
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
     selector: 'app-document',
@@ -81,6 +82,7 @@ export class DocumentComponent implements OnInit {
                         });
                         this.pdfRender(this.docList[this.currentDoc]);
                         this.context = (<HTMLCanvasElement>this.canvas.nativeElement).getContext('2d');
+                        this.loadNextDoc();
                     }, () => {
                         console.log('error !');
                     });
@@ -91,6 +93,7 @@ export class DocumentComponent implements OnInit {
             }
         });
     }
+
 
     pdfRender(document: any) {
 
@@ -164,17 +167,8 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.isTaggable = false;
         this.pageNum = 1;
         this.currentDoc++;
-        if (this.docList[this.currentDoc].document.length === 0) {
-            this.http.get('../rest/attachments/' + this.docList[this.currentDoc].id)
-                .subscribe((data: any) => {
-                    this.docList[this.currentDoc] = data.attachment;
-                    this.pdfRender(this.docList[this.currentDoc]);
-                }, () => {
-                    console.log('error !');
-                });
-        } else {
-            this.pdfRender(this.docList[this.currentDoc]);
-        }
+        this.pdfRender(this.docList[this.currentDoc]);
+        this.loadNextDoc();
     }
 
     prevDoc() {
@@ -359,6 +353,24 @@ export class DocumentComponent implements OnInit {
                 );
             }
         });
+    }
+
+    loadNextDoc () {
+        if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].document === '') {
+            this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
+                .subscribe((dataPj: any) => {
+                    this.docList[this.currentDoc + 1] = dataPj.attachment;
+                    this.snackBar.open('Pièce jointe chargé', null,
+                    {
+                        duration: 3000,
+                        panelClass: 'center-snackbar',
+                        verticalPosition: 'top'
+                    }
+                );
+                }, () => {
+                    console.log('error !');
+                });
+        }
     }
 }
 
