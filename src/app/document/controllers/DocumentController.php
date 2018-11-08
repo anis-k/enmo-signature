@@ -43,13 +43,16 @@ class DocumentController
 
         $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
 
-        $documents = DocumentModel::getByUserId(['select' => ['id', 'reference', 'subject', 'status'], 'userId' => $user['id']]);
+        $fullCount = 0;
+        $documents = DocumentModel::getByUserId(['select' => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'], 'userId' => $user['id']]);
         foreach ($documents as $key => $document) {
             $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
             $documents[$key]['statusDisplay'] = $status['label'];
+            $fullCount = $document['count'];
+            unset($documents[$key]['count']);
         }
 
-        return $response->withJson(['documents' => $documents]);
+        return $response->withJson(['documents' => $documents, 'fullCount' => $fullCount]);
     }
 
     public function getById(Request $request, Response $response, array $args)

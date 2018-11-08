@@ -65,7 +65,21 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
         }
 
-        $rawSignatures = UserModel::getSignatures(['select' => ['path', 'filename', 'fingerprint']]);
+        $data = $request->getQueryParams();
+        if (empty($data['offset']) || !is_numeric($data['offset'])) {
+            $data['offset'] = 0;
+        }
+        if (empty($data['limit']) || !is_numeric($data['limit'])) {
+            $data['limit'] = 0;
+        }
+
+        $rawSignatures = UserModel::getSignatures([
+            'select'    => ['path', 'filename', 'fingerprint'],
+            'where'     => ['user_id = ?'],
+            'data'      => [$args['id']],
+            'offset'    => (int)$data['offset'],
+            'limit'     => (int)$data['limit']
+        ]);
         $docserver = DocserverModel::getByType(['type' => 'SIGNATURE', 'select' => ['path']]);
         if (empty($docserver['path']) || !file_exists($docserver['path'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
