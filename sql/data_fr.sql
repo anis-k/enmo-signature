@@ -12,6 +12,8 @@ INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size
 VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/documents/', CURRENT_TIMESTAMP);
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
 VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/', CURRENT_TIMESTAMP);
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
+VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/', CURRENT_TIMESTAMP);
 
 ------------
 --STATUS

@@ -86,7 +86,6 @@ CREATE TABLE docservers
   size_limit_number bigint NOT NULL DEFAULT (0)::bigint,
   actual_size_number bigint NOT NULL DEFAULT (0)::bigint,
   path character varying(255) NOT NULL,
-  creation_date timestamp without time zone NOT NULL,
   CONSTRAINT docservers_pkey PRIMARY KEY (id),
   CONSTRAINT docservers_type_key UNIQUE (type)
 )
@@ -120,16 +119,15 @@ CREATE TABLE adr_attachments
 )
 WITH (OIDS=FALSE);
 
-DROP TABLE IF EXISTS users_signatures;
-CREATE TABLE users_signatures
+DROP TABLE IF EXISTS signatures;
+CREATE TABLE signatures
 (
   id serial NOT NULL,
   user_id integer NOT NULL,
-  label character varying(255) DEFAULT NULL::character varying,
-  path character varying(255) DEFAULT NULL::character varying,
-  filename character varying(255) DEFAULT NULL::character varying,
-  fingerprint character varying(255) DEFAULT NULL::character varying,
-  CONSTRAINT user_signatures_pkey PRIMARY KEY (id)
+  path character varying(255) NOT NULL,
+  filename character varying(255) NOT NULL,
+  fingerprint character varying(255) NOT NULL,
+  CONSTRAINT signatures_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
 
