@@ -16,6 +16,7 @@ namespace Document\controllers;
 
 use Attachment\models\AttachmentModel;
 use Convert\models\AdrModel;
+use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
 use Document\models\DocumentModel;
 use Slim\Http\Request;
@@ -64,7 +65,7 @@ class DocumentController
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
 
         $adr = AdrModel::getDocumentsAdr([
-            'select'    => ['path', 'filename'],
+            'select'    => ['path', 'filename', 'fingerprint'],
             'where'     => ['main_document_id = ?', 'type = ?'],
             'data'      => [$args['id'], 'DOC']
         ]);
@@ -79,7 +80,13 @@ class DocumentController
             return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
         }
 
-        $document['document'] = base64_encode(file_get_contents($pathToDocument));
+        //TODO Commenté pour tests
+//        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+//        if ($adr[0]['fingerprint'] != $fingerprint) {
+//            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
+//        }
+
+        $document['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
         $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
 
         return $response->withJson(['document' => $document]);

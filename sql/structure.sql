@@ -99,7 +99,7 @@ CREATE TABLE adr_main_documents
   type character varying(32) NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
-  fingerprint character varying(255) DEFAULT NULL::character varying,
+  fingerprint character varying(255) NOT NULL,
   CONSTRAINT adr_letterbox_pkey PRIMARY KEY (id),
   CONSTRAINT adr_letterbox_unique_key UNIQUE (main_document_id, type)
 )
@@ -113,7 +113,7 @@ CREATE TABLE adr_attachments
   type character varying(32) NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
-  fingerprint character varying(255) DEFAULT NULL::character varying,
+  fingerprint character varying(255) NOT NULL,
   CONSTRAINT adr_attachments_pkey PRIMARY KEY (id),
   CONSTRAINT adr_attachments_unique_key UNIQUE (attachment_id, type)
 )

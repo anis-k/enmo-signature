@@ -16,6 +16,7 @@ namespace Attachment\controllers;
 
 use Attachment\models\AttachmentModel;
 use Convert\models\AdrModel;
+use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
 use Document\controllers\DocumentController;
 use Slim\Http\Request;
@@ -35,7 +36,7 @@ class AttachmentController
         }
 
         $adr = AdrModel::getAttachmentsAdr([
-            'select'    => ['path', 'filename'],
+            'select'    => ['path', 'filename', 'fingerprint'],
             'where'     => ['attachment_id = ?', 'type = ?'],
             'data'      => [$args['id'], 'ATTACH']
         ]);
@@ -50,7 +51,13 @@ class AttachmentController
             return $response->withStatus(404)->withJson(['errors' => 'Attachment not found on docserver']);
         }
 
-        $attachment['document'] = base64_encode(file_get_contents($pathToDocument));
+        //TODO Commenté pour tests
+//        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+//        if ($adr[0]['fingerprint'] != $fingerprint) {
+//            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
+//        }
+
+        $attachment['encodedAttachment'] = base64_encode(file_get_contents($pathToDocument));
 
         return $response->withJson(['attachment' => $attachment]);
     }

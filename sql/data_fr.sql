@@ -26,4 +26,4 @@ INSERT INTO status (reference, label) VALUES ('REF', 'Refusé');
 
 /* Tests */
 INSERT INTO main_documents (reference, subject, doc_date, status, priority, sender, sender_entity, processing_user, recipient, creation_date) VALUES ('2018/A/1', 'Mon Courrier', CURRENT_TIMESTAMP, 2, 'Urgent', 'Oliver Queen', 'QE', 1, 'Barry Allen', CURRENT_TIMESTAMP);
-INSERT INTO adr_main_documents (main_document_id, type, path, filename) VALUES (1, 'DOC', 'tests/', 'test.pdf');
+INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) VALUES (1, 'DOC', 'tests/', 'test.pdf', 'toto');
