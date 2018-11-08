@@ -57,7 +57,7 @@ class AttachmentController
 //            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
 //        }
 
-        $attachment['encodedAttachment'] = base64_encode(file_get_contents($pathToDocument));
+        $attachment['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
 
         return $response->withJson(['attachment' => $attachment]);
     }
