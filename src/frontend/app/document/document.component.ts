@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Inject } from '@angular/core';
-import { Observable } from 'rxjs';
 import { SignaturesContentService } from '../service/signatures.service';
 import * as PDFJS from 'pdfjs-dist/build/pdf.js';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -18,7 +17,6 @@ import {
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Component({
     selector: 'app-document',
@@ -76,9 +74,9 @@ export class DocumentComponent implements OnInit {
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.mainDocument = data.document;
-                        this.docList.push({ 'id': this.mainDocument.id, 'document': this.mainDocument.document, 'title': this.mainDocument.subject });
+                        this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'title': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
-                            this.docList.push({ 'id': attach.id, 'document': '', 'title': '' });
+                            this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
                         });
                         this.pdfRender(this.docList[this.currentDoc]);
                         this.context = (<HTMLCanvasElement>this.canvas.nativeElement).getContext('2d');
@@ -89,15 +87,13 @@ export class DocumentComponent implements OnInit {
             } else {
                 this.snav.open();
                 this.freezeSidenavClose = true;
-                console.log('OK !');
             }
         });
     }
 
 
     pdfRender(document: any) {
-
-        const pdfData = atob(document.document);
+        const pdfData = atob(document.encodedDocument);
         PDFJS.getDocument({ data: pdfData }).then((_pdfDoc: any) => {
             this.pdf = _pdfDoc;
             this.totalPages = this.pdf.pdfInfo.numPages;
@@ -123,7 +119,6 @@ export class DocumentComponent implements OnInit {
             const renderTask = page.render(renderContext);
             renderTask.then(() => {
                 this.signaturesService.signWidth = viewport.width / 5;
-                console.log('Page rendered - WIDTH : ' + viewport.width);
                 this.loadingDoc = false;
             });
         });
@@ -139,9 +134,6 @@ export class DocumentComponent implements OnInit {
 
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
-            console.log('Current page : ' + this.signaturesService.currentPage);
-            console.log('Signatures content:');
-            console.log(this.signaturesService.signaturesContent[this.signaturesService.currentPage]);
         }
     }
 
@@ -156,9 +148,6 @@ export class DocumentComponent implements OnInit {
         // only for main document
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
-            console.log('Current page : ' + this.signaturesService.currentPage);
-            console.log('Signatures content:');
-            console.log(this.signaturesService.signaturesContent[this.signaturesService.currentPage]);
         }
     }
 
@@ -183,7 +172,6 @@ export class DocumentComponent implements OnInit {
     }
 
     addAnnotation(e: any) {
-        console.log(e);
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
             this.scale = 1;
             this.signaturesService.annotationMode = true;
@@ -194,31 +182,20 @@ export class DocumentComponent implements OnInit {
         }
     }
 
-    addSignature() {
-        console.log(this.signaturesService.signaturesContent);
-        // this.signaturesContent.push(this.signaturesContent.length);
-    }
-
-    test(event: any, i: number) {
+    moveSign(event: any, i: number) {
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = event.x;
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = event.y;
-        console.log(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i]);
     }
 
-    test2(event: any, i: number) {
+    moveNote(event: any, i: number) {
         this.signaturesService.notesContent[this.signaturesService.currentPage][i].positionX = event.x;
         this.signaturesService.notesContent[this.signaturesService.currentPage][i].positionY = event.y;
-        console.log(this.signaturesService.notesContent[this.signaturesService.currentPage][i]);
     }
 
     movePad(event: any) {
         this.signaturePadPosX = event.x;
         this.signaturePadPosY = event.y;
         $('.page-viewer, .canvas-wrapper, .mat-sidenav-content').css({ 'overflow': 'auto' });
-    }
-
-    resetPos(event: any, i: number) {
-        console.log(event.source);
     }
 
     deleteSignature(index: number) {
@@ -254,7 +231,6 @@ export class DocumentComponent implements OnInit {
                 verticalPosition: 'top'
             }
         );
-        console.log(this.signaturesService.notesContent);
     }
 
     cancelAnnotation() {
@@ -274,7 +250,6 @@ export class DocumentComponent implements OnInit {
     }
 
     onDotChange(entry: any) {
-        console.log(entry);
         this.signaturePad.set('minWidth', parseFloat(entry));
         this.signaturePad.set('maxWidth', parseFloat(entry) + 2);
     }
@@ -286,7 +261,6 @@ export class DocumentComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed');
             if (result === 'sucess') {
                 const config: MatBottomSheetConfig = {
                     disableClose: true,
@@ -310,7 +284,6 @@ export class DocumentComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed');
             if (result) {
                 const config: MatBottomSheetConfig = {
                     disableClose: true,
@@ -325,6 +298,12 @@ export class DocumentComponent implements OnInit {
     }
 
     openDrawer(): void {
+        if (this.signaturesService.signaturesList.length === 0) {
+            this.http.get('../rest/users/' + '1' + '/signatures')
+            .subscribe((data: any) => {
+                this.signaturesService.signaturesList = data.signatures;
+            });
+        }
         this.signaturesService.showSign = true;
         const config: MatBottomSheetConfig = {
             disableClose: false,
@@ -356,7 +335,7 @@ export class DocumentComponent implements OnInit {
     }
 
     loadNextDoc () {
-        if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].document === '') {
+        if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].encodedDocument === '') {
             this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
                 .subscribe((dataPj: any) => {
                     this.docList[this.currentDoc + 1] = dataPj.attachment;

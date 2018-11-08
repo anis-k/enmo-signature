@@ -50,15 +50,15 @@
           </div>
           <ng-container *ngIf="currentDoc == 0">
               <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
-                  <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent" style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="test($event,i)">
+                  <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent" style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="moveSign($event,i)">
                       <span style="position: absolute;width: 100%;height: 100%;top:0;left:0;">
                         <span style="position: absolute;width: 100%;top: -15px;margin-left: -15px;margin-right: 15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteSignature(i);"></i></span>
                       </span>
-                      <img [src]="sanitization.bypassSecurityTrustUrl(signature.fullPath)" [style.width.px]="this.signaturesService.signWidth" pinchout="zoomPlus()">
+                      <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)" [style.width.px]="this.signaturesService.signWidth" pinchout="zoomPlus()">
                   </div>
               </ng-container>
               <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
-                <div [handle]="myHandle" [position]="{'x': note.positionX*scale, 'y': note.positionY*scale}" style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="test2($event,i)">
+                <div [handle]="myHandle" [position]="{'x': note.positionX*scale, 'y': note.positionY*scale}" style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="moveNote($event,i)">
                   <span style="position: absolute;position: absolute;top: -15px;left: -15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteNote(i);"></i></span>
                   <span style="position: absolute;position: absolute;top: -15px;right: -15px;"><i #myHandle style="border-radius: 15px;background: white;right:0px;top:0px;color:blue;" class="fas fa-arrows-alt fa-2x"></i></span>
                   <img [style.width.px]="note.width*scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
@@ -89,7 +89,7 @@
         <div class="page-under-fold"></div>
       </div>
       <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-        <div class="page-info-doc" (click)="addSignature();">Doc {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
+        <div class="page-info-doc">Doc {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
         <div class="page-info-page">page {{ pageNum }} / {{ totalPages }}</div>
       </section>
     </article>

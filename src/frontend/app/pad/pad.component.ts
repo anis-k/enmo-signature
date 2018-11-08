@@ -3,10 +3,8 @@ import { SignaturePad } from 'angular2-signaturepad/signature-pad';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
+import { HttpClient } from '@angular/common/http';
 
-interface AppState {
-  pad: boolean;
-}
 interface AfterViewInit {
   ngAfterViewInit(): void;
 }
@@ -39,10 +37,9 @@ export class SignaturePadPageComponent implements AfterViewInit {
     canvasHeight: 315
   };
 
-  constructor(public signaturesService: SignaturesContentService, public snackBar: MatSnackBar) { }
+  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public snackBar: MatSnackBar) { }
 
   ngAfterViewInit() {
-    console.log('v0.6.0');
     // this.signaturePad.clear();
     // this.signaturePad.resizeCanvas();
     const signPointsData = localStorage.getItem('signature');
@@ -68,10 +65,6 @@ export class SignaturePadPageComponent implements AfterViewInit {
     this.haveSigned = true;
   }
 
-  drawStart() {
-    console.log('begin drawing', this.selectedWidthPenSize);
-  }
-
   drawClear() {
     this.signaturePad.clear();
     this.haveSigned = false;
@@ -84,31 +77,33 @@ export class SignaturePadPageComponent implements AfterViewInit {
 
   enregistrerSignature() {
     this.haveSigned = true;
-    localStorage.setItem('signature', JSON.stringify(this.signaturePad.toDataURL('image/npg')));
+    const newEncodedSign = this.signaturePad.toDataURL('image/npg').replace('data:image/png;base64,', '');
+    localStorage.setItem('signature', JSON.stringify(newEncodedSign));
 
     // Save signature in BDD
-    /*this.http.post("rest/signatures")
-      .subscribe((data: any) => {
-        localStorage.setItem('signature', JSON.stringify(this.signaturePad.toDataURL('image/npg')));
+    const newSign = {
+      'encodedSignature': newEncodedSign,
+      'format': 'png'
+    };
+    this.http.post('../rest/users/' + '1' + '/signatures', newSign)
+      .subscribe(() => {
         this.closePad();
         this.reloaded.emit('reload');
+        // this.store.dispatch({ type: HIDE_DRAWER });
         this.signaturePad.clear();
-      });*/
+        this.snackBar.open('Signature enregistré', null,
+            {
+              duration: 3000,
+              panelClass : 'center-snackbar',
+              verticalPosition: 'top'
+            }
+          );
+      }, (err: any) => {
+          console.log(err);
+      });
 
     // BUG IMAGE CROPPED
     // localStorage.setItem('signature', JSON.stringify(this.signaturePad.toDataURL('image/svg+xml')));
-
-    this.closePad();
-    this.reloaded.emit('reload');
-    // this.store.dispatch({ type: HIDE_DRAWER });
-    this.signaturePad.clear();
-    this.snackBar.open('Signature enregistré', null,
-        {
-          duration: 3000,
-          panelClass : 'center-snackbar',
-          verticalPosition: 'top'
-        }
-      );
   }
 
 }

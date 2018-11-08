@@ -14,7 +14,7 @@
     </div>
   </section>
   <section class="pad-draw">
-    <signature-pad [options]="signaturePadOptions" (onBeginEvent)="drawStart()" (onEndEvent)="drawComplete()"></signature-pad>
+    <signature-pad [options]="signaturePadOptions" (onEndEvent)="drawComplete()"></signature-pad>
   </section>
   <section class="pad-actions">
     <button class="btn red" (click)="closePad()"><i class="fas fa-times-circle fa-2x"></i> Annuler</button>

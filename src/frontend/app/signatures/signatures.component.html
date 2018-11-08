@@ -14,7 +14,7 @@
       créer une nouvelle signature
     </div>
     <div *ngFor="let signature of signaturesService.signaturesList" let idx="index" class="list-item">
-      <img [src]="sanitization.bypassSecurityTrustUrl(signature.fullPath)" (click)="selectSignature(signature)" style="width: 190px;">
+      <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)" (click)="selectSignature(signature)" style="width: 190px;">
     </div>
   </section>
 </article>
