@@ -19,35 +19,6 @@ use SrcCore\models\ValidatorModel;
 
 class AdrModel
 {
-    public static function getConvertedDocumentById(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['resId', 'type', 'collId']);
-        ValidatorModel::intVal($aArgs, ['resId']);
-        ValidatorModel::boolType($aArgs, ['isVersion']);
-        ValidatorModel::arrayType($aArgs, ['select']);
-
-        if ($aArgs['collId'] == 'letterbox_coll') {
-            $table = "adr_letterbox";
-        } else if ($aArgs['isVersion']) {
-            $table = "adr_attachments_version";
-        } else {
-            $table = "adr_attachments";
-        }
-
-        $attachment = DatabaseModel::select([
-            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
-            'table'     => [$table],
-            'where'     => ['res_id = ?', 'type = ?'],
-            'data'      => [$aArgs['resId'], $aArgs['type']],
-        ]);
-
-        if (empty($attachment[0])) {
-            return [];
-        }
-
-        return $attachment[0];
-    }
-
     public static function getDocumentsAdr(array $aArgs)
     {
         ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
@@ -74,5 +45,25 @@ class AdrModel
         ]);
 
         return $addresses;
+    }
+
+    public static function createDocumentAdr(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['documentId', 'type', 'path', 'filename', 'fingerprint']);
+        ValidatorModel::stringType($aArgs, ['type', 'path', 'filename', 'fingerprint']);
+        ValidatorModel::intVal($aArgs, ['documentId']);
+
+        DatabaseModel::insert([
+            'table'         => 'adr_main_documents',
+            'columnsValues' => [
+                'main_document_id'  => $aArgs['documentId'],
+                'type'              => $aArgs['type'],
+                'path'              => $aArgs['path'],
+                'filename'          => $aArgs['filename'],
+                'fingerprint'       => $aArgs['fingerprint'],
+            ]
+        ]);
+
+        return true;
     }
 }
