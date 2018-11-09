@@ -73,7 +73,7 @@ class DocumentController
         $document['statusDisplay'] = $status['label'];
 
         $actions = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['previous_status_id = ?'], 'data' => [$document['status']]]);
-        $document['actionsAllowed'] = $actions[0];
+        $document['actionsAllowed'] = $actions;
 
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
 
