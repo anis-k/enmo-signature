@@ -361,7 +361,7 @@ export class DocumentComponent implements OnInit {
     styleUrls: ['../modal/warn-modal.component.styl']
 })
 export class WarnModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<WarnModalComponent>) { }
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService) { }
 }
 
 @Component({
@@ -369,7 +369,7 @@ export class WarnModalComponent {
     styleUrls: ['../modal/confirm-modal.component.styl']
 })
 export class ConfirmModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmModalComponent>) { }
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
 }
 
 @Component({
