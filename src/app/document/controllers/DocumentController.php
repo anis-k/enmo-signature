@@ -33,18 +33,20 @@ class DocumentController
     public function get(Request $request, Response $response)
     {
         $data = $request->getQueryParams();
+        $data['limit'] = (int)$data['limit'];
+        $data['offset'] = (int)$data['offset'];
 
-        if (empty($data['offset']) || !is_numeric($data['offset'])) {
+        if (empty($data['offset']) || (int)$data['offset'] == 0) {
             $data['offset'] = 0;
         }
-        if (empty($data['limit']) || !is_numeric($data['limit'])) {
+        if (empty($data['limit']) || (int)$data['limit'] == 0) {
             $data['limit'] = 0;
         }
 
         $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
 
         $fullCount = 0;
-        $documents = DocumentModel::getByUserId(['select' => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'], 'userId' => $user['id']]);
+        $documents = DocumentModel::getByUserId(['select' => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'], 'userId' => $user['id'], 'limit' => $data['limit'], 'offset' => $data['offset']]);
         foreach ($documents as $key => $document) {
             $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
             $documents[$key]['statusDisplay'] = $status['label'];

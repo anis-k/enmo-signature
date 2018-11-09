@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
 import { MatSidenav } from '@angular/material';
+import * as $ from 'jquery';
 
 interface AppState {
   sidebar: boolean;
@@ -18,48 +19,35 @@ export class SidebarComponent implements OnInit {
   documentsList: any[] = [];
   countDocumentsList = 0;
   loadingList = false;
+  offset = 0;
+  limit = 25;
 
   @ViewChild('listContent') listContent: ElementRef;
 
   constructor(public http: HttpClient, private sidenav: MatSidenav, private router: Router) { }
 
   handleScroll(event: ScrollEvent) {
-    if (event.isReachingBottom) {
-      // this.listContent.nativeElement.scrollTo(0, 0);
+    if (event.isReachingBottom && !this.loadingList && this.documentsList.length < this.countDocumentsList) {
+
       this.loadingList = true;
       this.listContent.nativeElement.style.overflowY = 'hidden';
       console.log(`the user is reaching the bottom`);
-      const currentCountList = this.documentsList.length;
-      for (let index = currentCountList + 1; index <= currentCountList + 20; index++) {
-        this.documentsList.push(
-          {
-            'id' : index,
-            'reference' : 'CAB/2018A/' + index,
-            'subject' : 'AJOUT Document ' + index,
-            'status' : 'A traiter',
-          }
-        );
-      }
-      setTimeout(() => {
+      this.offset = this.offset + this.limit;
+
+      this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
+      .subscribe((data: any) => {
+        this.documentsList = this.documentsList.concat(data.documents);
         this.loadingList = false;
         this.listContent.nativeElement.style.overflowY = 'auto';
-      }, 3000);
+      });
     }
-    /*if (event.isReachingTop) {
-      console.log(`the user is reaching the bottom`);
-    }
-    if (event.isWindowEvent) {
-      console.log(`This event is fired on Window not on an element.`);
-    }*/
   }
 
   ngOnInit() {
-    this.http.get('../rest/documents')
+    this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
       .subscribe((data: any) => {
         this.documentsList = data.documents;
-        // this.countDocumentsList = data.fullCount;
-        // TO DO REMOVE AFTER INIT IN BACK
-        this.countDocumentsList = this.documentsList.length;
+        this.countDocumentsList = data.fullCount;
       });
   }
 
