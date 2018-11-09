@@ -77,6 +77,7 @@ export class DocumentComponent implements OnInit {
                         this.signaturesService.signaturesContent = [];
                         this.signaturesService.notesContent = [];
                         this.mainDocument = data.document;
+                        this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'title': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
                             this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
@@ -280,10 +281,10 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    confirmDialog(): void {
+    confirmDialog(mode: any): void {
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
-            data: { msg: 'Êtes-vous sûr  ?' }
+            data: { msg: 'Êtes-vous sûr  ?', mode : mode }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -369,7 +370,51 @@ export class WarnModalComponent {
     styleUrls: ['../modal/confirm-modal.component.styl']
 })
 export class ConfirmModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
+
+    confirmDoc () {
+        const signatures: any[] = [];
+        if (this.data.mode) {
+            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                if (this.signaturesService.signaturesContent[index]) {
+                    this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                        signatures.push(
+                            {
+                                'fullPath': signature.encodedSignature,
+                                'height': 'auto',
+                                'width': this.signaturesService.signWidth,
+                                'positionX': 1,
+                                'positionY': 1,
+                                'page': index,
+                            }
+                        );
+                    });
+                }
+                if (this.signaturesService.notesContent[index]) {
+                    this.signaturesService.notesContent[index].forEach((note: any) => {
+                        signatures.push(
+                            {
+                                'fullPath': note.fullPath,
+                                'height': note.height,
+                                'width': note.width,
+                                'positionX': note.positionX,
+                                'positionY': note.positionY,
+                                'page': index,
+                            }
+                        );
+                    });
+                }
+                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': 5, 'signatures': signatures})
+                    .subscribe(() => {
+                        this.dialogRef.close('sucess');
+                    }, (err: any) => {
+                        console.log(err);
+                    });
+            }
+        } else {
+            this.dialogRef.close('sucess');
+        }
+    }
 }
 
 @Component({
@@ -377,6 +422,7 @@ export class ConfirmModalComponent {
     styleUrls: ['../modal/success-info-valid.styl']
 })
 export class SuccessInfoValidBottomSheetComponent {
+    date: Date = new Date();
     constructor(private bottomSheetRef: MatBottomSheetRef<SuccessInfoValidBottomSheetComponent>) { }
 }
 

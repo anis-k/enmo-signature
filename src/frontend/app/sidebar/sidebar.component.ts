@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav, MatSnackBar } from '@angular/material';
 import * as $ from 'jquery';
 
 interface AppState {
@@ -24,7 +24,7 @@ export class SidebarComponent implements OnInit {
 
   @ViewChild('listContent') listContent: ElementRef;
 
-  constructor(public http: HttpClient, private sidenav: MatSidenav, private router: Router) { }
+  constructor(public http: HttpClient, private sidenav: MatSidenav, private router: Router, public snackBar: MatSnackBar) { }
 
   handleScroll(event: ScrollEvent) {
     if (event.isReachingBottom && !this.loadingList && this.documentsList.length < this.countDocumentsList) {
@@ -39,6 +39,13 @@ export class SidebarComponent implements OnInit {
         this.documentsList = this.documentsList.concat(data.documents);
         this.loadingList = false;
         this.listContent.nativeElement.style.overflowY = 'auto';
+        this.snackBar.open('Liste des documents actualisée', null,
+            {
+                duration: 3000,
+                panelClass: 'center-snackbar',
+                verticalPosition: 'top'
+            }
+        );
       });
     }
   }

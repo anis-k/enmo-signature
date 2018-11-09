@@ -96,7 +96,7 @@
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
       <button class="btn red" (click)="openDialog()"><i class="fas fa-backspace fa-2x"></i>Refuser</button>
       <button class="btn green" (click)="openDrawer()" [disabled]="!this.signaturesService.isTaggable">Parapher le document</button>
-      <button class="btn" (click)="confirmDialog()">Valider<i class="fas fa-check-circle fa-2x"></i></button>
+      <button class="btn" (click)="confirmDialog('validate')">Valider<i class="fas fa-check-circle fa-2x"></i></button>
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
