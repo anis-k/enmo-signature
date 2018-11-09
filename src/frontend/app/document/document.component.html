@@ -92,7 +92,7 @@
         <div class="page-under-fold"></div>
       </div>
       <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-        <div class="page-info-doc">Doc {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
+        <div class="page-info-doc">Doc {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].subject}}</div>
         <div class="page-info-page">page {{ pageNum }} / {{ totalPages }}</div>
       </section>
     </article>

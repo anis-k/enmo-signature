@@ -86,7 +86,7 @@ export class DocumentComponent implements OnInit {
                         this.mainDocument = data.document;
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.actionsList = data.document.actionsAllowed;
-                        this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'title': this.mainDocument.subject });
+                        this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'subject': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
                             this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
                         });
@@ -327,6 +327,11 @@ export class DocumentComponent implements OnInit {
     }
 
     openDrawer(): void {
+        if (this.currentDoc > 0) {
+            this.currentDoc = 0;
+            this.pageNum = 1;
+            this.pdfRender(this.docList[this.currentDoc]);
+        }
         if (this.signaturesService.signaturesList.length === 0) {
             this.http.get('../rest/users/' + '1' + '/signatures')
             .subscribe((data: any) => {
