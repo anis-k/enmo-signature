@@ -109,13 +109,15 @@ class DocumentController
     {
         $data = $request->getParams();
 
-        ValidatorModel::notEmpty($data, ['signatures', 'action_id']);
+        ValidatorModel::notEmpty($data, ['action_id']);
         ValidatorModel::intVal($data, ['action_id']);
 
-        foreach ($data['signatures'] as $signature) {
-            foreach (['fullPath', 'width', 'positionX', 'positionY', 'page'] as $value) {
-                if (empty($signature[$value])) {
-                    return $response->withStatus(400)->withJson(['errors' => $value . ' is empty']);
+        if (!empty($data['signatures'])) {
+            foreach ($data['signatures'] as $signature) {
+                foreach (['fullPath', 'width', 'positionX', 'positionY', 'page'] as $value) {
+                    if (empty($signature[$value])) {
+                        return $response->withStatus(400)->withJson(['errors' => $value . ' is empty']);
+                    }
                 }
             }
         }
@@ -162,28 +164,30 @@ class DocumentController
             $pdf->AddPage($size['orientation'], $size);
             $pdf->useImportedPage($page);
 
-            foreach ($data['signatures'] as $signature) {
-                if ($signature['page'] == $i) {
-                    if (preg_match('/^data:image\/(\w+);base64,/', $signature['fullPath'], $extension)) {
-                        $data      = substr($signature['fullPath'], strpos($signature['fullPath'], ',') + 1);
-                        $extension = strtolower($extension[1]);
-    
-                        if ($extension != 'png') {
-                            return $response->withStatus(400)->withJson(['errors' => 'Invalid image type']);
+            if (!empty($data['signatures'])) {
+                foreach ($data['signatures'] as $signature) {
+                    if ($signature['page'] == $i) {
+                        if (preg_match('/^data:image\/(\w+);base64,/', $signature['fullPath'], $extension)) {
+                            $data      = substr($signature['fullPath'], strpos($signature['fullPath'], ',') + 1);
+                            $extension = strtolower($extension[1]);
+        
+                            if ($extension != 'png') {
+                                return $response->withStatus(400)->withJson(['errors' => 'Invalid image type']);
+                            }
+                        } else {
+                            $data = $signature['fullPath'];
                         }
-                    } else {
-                        $data = $signature['fullPath'];
+                        $image = base64_decode($data);
+        
+                        if ($image === false) {
+                            return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
+                        }
+                        
+                        $imageTmpPath = $tmpPath . $GLOBALS['login'] . '_' . rand() . '_writing.png';
+                        file_put_contents($imageTmpPath, $image);
+        
+                        $pdf->Image($imageTmpPath, $signature['positionX'], $signature['positionY']);
                     }
-                    $image = base64_decode($data);
-    
-                    if ($image === false) {
-                        return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
-                    }
-                    
-                    $imageTmpPath = $tmpPath . $GLOBALS['login'] . '_' . rand() . '_writing.png';
-                    file_put_contents($imageTmpPath, $image);
-    
-                    $pdf->Image($imageTmpPath, $signature['positionX'], $signature['positionY']);
                 }
             }
         }
