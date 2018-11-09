@@ -91,7 +91,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
         this.reloaded.emit('reload');
         // this.store.dispatch({ type: HIDE_DRAWER });
         this.signaturePad.clear();
-        this.snackBar.open('Signature enregistré', null,
+        this.snackBar.open('Signature enregistrée', null,
             {
               duration: 3000,
               panelClass : 'center-snackbar',

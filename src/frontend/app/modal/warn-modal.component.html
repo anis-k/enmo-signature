@@ -5,5 +5,5 @@
 </div>
 <div mat-dialog-actions>
   <button class="btn" mat-button (click)="this.dialogRef.close('annotation');" *ngIf="signaturesService.notesContent.length == 0"><i class="fas fa-pen-alt fa-2x"></i> Annoter ce document</button>
-  <button class="btn red" mat-button cdkFocusInitial (click)="this.dialogRef.close('sucess');"><i class="fas fa-times-circle fa-2x"></i> Refuser ce document</button>
+  <button class="btn red" mat-button cdkFocusInitial (click)="confirmDoc();"><i class="fas fa-times-circle fa-2x"></i> Refuser ce document</button>
 </div>

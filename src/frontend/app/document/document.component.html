@@ -94,9 +94,9 @@
       </section>
     </article>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
-      <button class="btn red" (click)="openDialog()"><i class="fas fa-backspace fa-2x"></i>Refuser</button>
-      <button class="btn green" (click)="openDrawer()" [disabled]="!this.signaturesService.isTaggable">Parapher le document</button>
-      <button class="btn" (click)="confirmDialog('validate')">Valider<i class="fas fa-check-circle fa-2x"></i></button>
+      <ng-container *ngFor="let action of actionsList;">
+          <button [style.color]="action.color" [style.borderColor]="action.color" class="btn" (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label}}</button>
+        </ng-container>
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>

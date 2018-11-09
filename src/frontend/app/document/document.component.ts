@@ -39,6 +39,8 @@ export class DocumentComponent implements OnInit {
     signaturePadPosY = 50;
     currentDoc = 0;
     docList: any = [];
+    actionsList: any = [];
+    currentAction = 0;
     annotationPadOptions = {
         throttle: 0,
         minWidth: 0.8,
@@ -76,8 +78,10 @@ export class DocumentComponent implements OnInit {
                         this.docList = [];
                         this.signaturesService.signaturesContent = [];
                         this.signaturesService.notesContent = [];
+                        this.signaturesService.currentAction = 0;
                         this.mainDocument = data.document;
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
+                        this.actionsList = data.document.actionsAllowed;
                         this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'title': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
                             this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
@@ -284,7 +288,7 @@ export class DocumentComponent implements OnInit {
     confirmDialog(mode: any): void {
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
-            data: { msg: 'Êtes-vous sûr  ?', mode : mode }
+            data: { msg: 'Êtes-vous sûr  ?' }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -317,6 +321,7 @@ export class DocumentComponent implements OnInit {
     }
 
     removeTags() {
+        this.signaturesService.currentAction = 0;
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
             data: { msg: 'Effacer toutes les annotations et signatures ?' }
@@ -343,17 +348,15 @@ export class DocumentComponent implements OnInit {
             this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
                 .subscribe((dataPj: any) => {
                     this.docList[this.currentDoc + 1] = dataPj.attachment;
-                    this.snackBar.open('Pièce jointe chargé', null,
-                    {
-                        duration: 3000,
-                        panelClass: 'center-snackbar',
-                        verticalPosition: 'top'
-                    }
-                );
                 }, () => {
                     console.log('error !');
                 });
         }
+    }
+
+    launchEvent(action: any) {
+        this.signaturesService.currentAction = action.id;
+        this[action.event]();
     }
 }
 
@@ -362,19 +365,12 @@ export class DocumentComponent implements OnInit {
     styleUrls: ['../modal/warn-modal.component.styl']
 })
 export class WarnModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService) { }
-}
-
-@Component({
-    templateUrl: '../modal/confirm-modal.component.html',
-    styleUrls: ['../modal/confirm-modal.component.styl']
-})
-export class ConfirmModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService) { }
 
     confirmDoc () {
         const signatures: any[] = [];
-        if (this.data.mode) {
+        console.log(this.signaturesService.currentAction);
+        if (this.signaturesService.currentAction > 0) {
             for (let index = 1; index <= this.signaturesService.totalPage; index++) {
                 if (this.signaturesService.signaturesContent[index]) {
                     this.signaturesService.signaturesContent[index].forEach((signature: any) => {
@@ -404,7 +400,60 @@ export class ConfirmModalComponent {
                         );
                     });
                 }
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': 5, 'signatures': signatures})
+                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
+                    .subscribe(() => {
+                        this.dialogRef.close('sucess');
+                    }, (err: any) => {
+                        console.log(err);
+                    });
+            }
+        } else {
+            this.dialogRef.close('sucess');
+        }
+    }
+}
+
+@Component({
+    templateUrl: '../modal/confirm-modal.component.html',
+    styleUrls: ['../modal/confirm-modal.component.styl']
+})
+export class ConfirmModalComponent {
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
+
+    confirmDoc () {
+        const signatures: any[] = [];
+        console.log(this.signaturesService.currentAction);
+        if (this.signaturesService.currentAction > 0) {
+            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                if (this.signaturesService.signaturesContent[index]) {
+                    this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                        signatures.push(
+                            {
+                                'fullPath': signature.encodedSignature,
+                                'height': 'auto',
+                                'width': this.signaturesService.signWidth,
+                                'positionX': 1,
+                                'positionY': 1,
+                                'page': index,
+                            }
+                        );
+                    });
+                }
+                if (this.signaturesService.notesContent[index]) {
+                    this.signaturesService.notesContent[index].forEach((note: any) => {
+                        signatures.push(
+                            {
+                                'fullPath': note.fullPath,
+                                'height': note.height,
+                                'width': note.width,
+                                'positionX': note.positionX,
+                                'positionY': note.positionY,
+                                'page': index,
+                            }
+                        );
+                    });
+                }
+                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
                     .subscribe(() => {
                         this.dialogRef.close('sucess');
                     }, (err: any) => {

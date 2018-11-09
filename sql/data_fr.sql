@@ -36,12 +36,12 @@ INSERT INTO status (reference, label) VALUES ('REFSIGNED', 'Signature refusée')
 ------------
 TRUNCATE TABLE action;
 ALTER SEQUENCE action_id_seq RESTART WITH 1;
-INSERT INTO action (label, color, logo, event, previous_status_id, next_status_id) VALUES ('Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 1, 4);
-INSERT INTO action (label, color, logo, event, previous_status_id, next_status_id) VALUES ('Annoter', '#2ecc71', '', 'openDrawer', 1, null);
-INSERT INTO action (label, color, logo, event, previous_status_id, next_status_id) VALUES ('Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 1, 3);
-INSERT INTO action (label, color, logo, event, previous_status_id, next_status_id) VALUES ('Refuser signature', '#e74c3c', 'fas fa-backspace', 'openDialog', 2, 6);
-INSERT INTO action (label, color, logo, event, previous_status_id, next_status_id) VALUES ('Parapher', '#2ecc71', '', 'openDrawer', 2, null);
-INSERT INTO action (label, color, logo, event, previous_status_id, next_status_id) VALUES ('Valider signature', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 2, 5);
+INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (1, 'Refuser signature', '#e74c3c', 'fas fa-backspace', 'openDialog', 2, 6);
+INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (2, 'Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 1, 4);
+INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (3, 'Parapher', '#000', '', 'openDrawer', 2, null);
+INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (4, 'Annoter', '#2ecc71', '', 'openDrawer', 1, null);
+INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (5, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 1, 3);
+INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (6, 'Valider signature', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 2, 5);
 
 /* Tests */
 TRUNCATE TABLE main_documents;
