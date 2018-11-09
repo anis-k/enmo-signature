@@ -17,7 +17,7 @@
         <mat-spinner></mat-spinner>
     </div>
     <ng-container *ngFor="let document of documentsList">
-        <li class="nav-item active" matRipple routerLink="/document/{{document.id}}">
+        <li class="nav-item active" matRipple (click)="gotTo(document.id)">
             <div class="nav-item-left">
               <i class="fas fa-mail-bulk"></i>
             </div>

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
+import { MatSidenav } from '@angular/material';
 
 interface AppState {
   sidebar: boolean;
@@ -20,7 +21,7 @@ export class SidebarComponent implements OnInit {
 
   @ViewChild('listContent') listContent: ElementRef;
 
-  constructor(public http: HttpClient) { }
+  constructor(public http: HttpClient, private sidenav: MatSidenav, private router: Router) { }
 
   handleScroll(event: ScrollEvent) {
     if (event.isReachingBottom) {
@@ -60,6 +61,11 @@ export class SidebarComponent implements OnInit {
         // TO DO REMOVE AFTER INIT IN BACK
         this.countDocumentsList = this.documentsList.length;
       });
+  }
+
+  gotTo(documentId: Number) {
+    this.router.navigate(['/document/' + documentId]);
+    this.sidenav.close();
   }
 
 }

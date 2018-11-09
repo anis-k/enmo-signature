@@ -36,7 +36,7 @@ export class DocumentComponent implements OnInit {
     draggable: boolean;
     loadingDoc = true;
     signaturePadPosX = 0;
-    signaturePadPosY = 0;
+    signaturePadPosY = 50;
     currentDoc = 0;
     docList: any = [];
     annotationPadOptions = {
@@ -73,6 +73,8 @@ export class DocumentComponent implements OnInit {
             if (typeof params['id'] !== 'undefined') {
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
+                        this.docList = [];
+                        this.signaturesService.signaturesContent = [];
                         this.mainDocument = data.document;
                         this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'title': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {

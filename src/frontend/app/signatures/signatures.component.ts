@@ -38,7 +38,7 @@ export class SignaturesComponent implements OnInit {
   }
 
   reloadSignatures() {
-    this.signaturesService.signaturesList.push(
+    this.signaturesService.signaturesList.unshift(
         {
           encodedSignature: localStorage.getItem('signature').replace(/\"/gi, '')
         }
