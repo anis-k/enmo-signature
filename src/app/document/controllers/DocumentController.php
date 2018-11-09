@@ -71,6 +71,10 @@ class DocumentController
 
         $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
         $document['statusDisplay'] = $status['label'];
+
+        $actions = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['previous_status_id = ?'], 'data' => [$document['status']]]);
+        $document['actionsAllowed'] = $actions[0];
+
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
 
         $adr = AdrModel::getDocumentsAdr([
@@ -188,7 +192,7 @@ class DocumentController
         $storeInfos = DocserverController::storeResourceOnDocServer([
             'encodedFile'     => base64_encode($fileContent),
             'format'          => 'pdf',
-            'docserverType'   => 'DOC'
+            'docserverType'   => 'HANDWRITTEN'
         ]);
 
         AdrModel::createDocumentAdr([

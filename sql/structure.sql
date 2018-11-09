@@ -59,15 +59,14 @@ CREATE TABLE action
 (
   id serial,
   label character varying(50) NOT NULL,
-  status_id bigint,
   color character varying(50),
   logo character varying(50),
   event character varying(128),
-  mode character varying(50) NOT NULL,
+  previous_status_id bigint NOT NULL,
+  next_status_id bigint,
   CONSTRAINT action_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
-
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
