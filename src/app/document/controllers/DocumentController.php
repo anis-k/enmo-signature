@@ -105,7 +105,7 @@ class DocumentController
         return $response->withJson(['document' => $document]);
     }
 
-    public function addImages(Request $request, Response $response, array $args)
+    public function makeAction(Request $request, Response $response, array $args)
     {
         $data = $request->getParams();
 
