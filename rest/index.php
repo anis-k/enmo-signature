@@ -25,17 +25,18 @@ require_once("src/core/lang/lang-{$language}.php");
 $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRouteBeforeAppMiddleware' => true]]);
 
 //Authentication
-$app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, callable $next) {
-    $login = \SrcCore\controllers\AuthenticationController::authentication();
-    if (!empty($login)) {
-        $GLOBALS['login'] = $login;
-        $response = $next($request, $response);
-        return $response;
-    } else {
-        return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
-    }
-});
+// $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, callable $next) {
+//     $login = \SrcCore\controllers\AuthenticationController::authentication();
+//     if (!empty($login)) {
+//         $GLOBALS['login'] = $login;
+//         $response = $next($request, $response);
+//         return $response;
+//     } else {
+//         return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
+//     }
+// });
 
+$GLOBALS['login'] = 'jjane';
 
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');

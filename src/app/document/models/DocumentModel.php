@@ -17,7 +17,6 @@ namespace Document\models;
 use SrcCore\models\ValidatorModel;
 use SrcCore\models\DatabaseModel;
 
-
 class DocumentModel
 {
     public static function get(array $aArgs)
@@ -74,6 +73,21 @@ class DocumentModel
         ]);
 
         return $aDocuments;
+    }
+
+    public static function update(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['set', 'where', 'data']);
+        ValidatorModel::arrayType($aArgs, ['set', 'where', 'data']);
+
+        DatabaseModel::update([
+            'table' => 'main_documents',
+            'set'   => $aArgs['set'],
+            'where' => $aArgs['where'],
+            'data'  => $aArgs['data']
+        ]);
+
+        return true;
     }
 
     public static function delete(array $aArgs)

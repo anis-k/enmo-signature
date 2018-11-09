@@ -54,6 +54,21 @@ CREATE TABLE status
 )
 WITH (OIDS=FALSE);
 
+DROP TABLE IF EXISTS action;
+CREATE TABLE action
+(
+  id serial,
+  label character varying(50) NOT NULL,
+  status_id bigint,
+  color character varying(50),
+  logo character varying(50),
+  event character varying(128),
+  mode character varying(50) NOT NULL,
+  CONSTRAINT action_pkey PRIMARY KEY (id)
+)
+WITH (OIDS=FALSE);
+
+
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (

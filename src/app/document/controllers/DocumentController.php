@@ -27,6 +27,7 @@ use Status\models\StatusModel;
 use User\models\UserModel;
 use History\controllers\HistoryController;
 use setasign\Fpdi\TcpdfFpdi;
+use Action\models\ActionModel;
 
 class DocumentController
 {
@@ -104,10 +105,11 @@ class DocumentController
     {
         $data = $request->getParams();
 
-        ValidatorModel::notEmpty($data, ['signatures']);
+        ValidatorModel::notEmpty($data, ['signatures', 'action_id']);
+        ValidatorModel::intVal($data, ['action_id']);
 
         foreach ($data['signatures'] as $signature) {
-            foreach (['fullPath', 'height', 'width', 'positionX', 'positionY', 'page'] as $value) {
+            foreach (['fullPath', 'width', 'positionX', 'positionY', 'page'] as $value) {
                 if (empty($signature[$value])) {
                     return $response->withStatus(400)->withJson(['errors' => $value . ' is empty']);
                 }
@@ -116,6 +118,11 @@ class DocumentController
 
         if (!DocumentController::hasRightById(['id' => $args['id'], 'login' => $GLOBALS['login']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $action = ActionModel::getById(['select' => ['status_id', 'label'], 'id' => $data['action_id']]);
+        if (empty($action)) {
+            return $response->withStatus(403)->withJson(['errors' => 'Action does not exist']);
         }
 
         $adr = AdrModel::getDocumentsAdr([
@@ -186,17 +193,23 @@ class DocumentController
 
         AdrModel::createDocumentAdr([
             'documentId'     => $args['id'],
-            'type'           => 'SIGNEDDOC',
+            'type'           => 'HANDWRITTEN',
             'path'           => $storeInfos['path'],
             'filename'       => $storeInfos['filename'],
             'fingerprint'    => $storeInfos['fingerprint']
+        ]);
+
+        DocumentModel::update([
+            'set' => ['status' => $action['status_id']],
+            'where' => ['id = ?'],
+            'data' => [$args['id']]
         ]);
 
         HistoryController::add([
             'tableName' => 'main_documents',
             'recordId'  => $args['id'],
             'eventType' => 'UP',
-            'info'      => _SIGNED_DOCUMENT,
+            'info'      => _ACTION_DONE . ' : ' . $action['label'],
             'moduleId'  => 'document',
             'eventId'   => 'documentup',
         ]);

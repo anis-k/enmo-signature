@@ -3,6 +3,7 @@
     	"psr-4": {
             "SrcCore\\"           : "src/core/",
             "Attachment\\"        : "src/app/attachment/",
+            "Action\\"            : "src/app/action/",
             "Convert\\"           : "src/app/convert/",
             "Docserver\\"         : "src/app/docserver/",
             "Document\\"          : "src/app/document/",

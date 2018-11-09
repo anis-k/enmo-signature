@@ -87,6 +87,7 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         'A' => 
         array (
             'Attachment\\' => 11,
+            'Action\\' => 7,
         ),
     );
 
@@ -219,6 +220,10 @@ class ComposerStaticInitf21aebccfa6df888200dcb099aa69fbd
         'Attachment\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/attachment',
+        ),
+        'Action\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/app/action',
         ),
     );
 

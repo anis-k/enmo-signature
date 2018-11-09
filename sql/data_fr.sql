@@ -13,6 +13,8 @@ VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheu
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
 VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/', CURRENT_TIMESTAMP);
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
+VALUES ('HANDWRITTEN', 'Documents annotés ou signés', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/handwritten/', CURRENT_TIMESTAMP);
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
 VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/', CURRENT_TIMESTAMP);
 
 ------------
@@ -23,6 +25,19 @@ INSERT INTO status (reference, label) VALUES ('ANNOT', 'Annotation');
 INSERT INTO status (reference, label) VALUES ('SIGN', 'Parapheur');
 INSERT INTO status (reference, label) VALUES ('VAL', 'Validé');
 INSERT INTO status (reference, label) VALUES ('REF', 'Refusé');
+INSERT INTO status (reference, label) VALUES ('SIGNED', 'Signé');
+INSERT INTO status (reference, label) VALUES ('REFSIGNED', 'Signature refusée');
+
+------------
+--ACTION
+------------
+TRUNCATE TABLE action;
+INSERT INTO action (label, status_id, color, logo, event, mode) VALUES ('Annoter', null, '#2ecc71', '', 'openDrawer', 'annot');
+INSERT INTO action (label, status_id, color, logo, event, mode) VALUES ('Valider', 3, '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 'annot');
+INSERT INTO action (label, status_id, color, logo, event, mode) VALUES ('Refuser', 4, '#e74c3c', 'fas fa-backspace', 'openDialog', 'annot');
+INSERT INTO action (label, status_id, color, logo, event, mode) VALUES ('Parapher', null, '#2ecc71', '', 'openDrawer', 'sign');
+INSERT INTO action (label, status_id, color, logo, event, mode) VALUES ('Valider signature', 5, '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 'sign');
+INSERT INTO action (label, status_id, color, logo, event, mode) VALUES ('Refuser signature', 6, '#e74c3c', 'fas fa-backspace', 'openDialog', 'sign');
 
 /* Tests */
 TRUNCATE TABLE main_documents;

@@ -38,4 +38,5 @@ return array(
     'Convert\\' => array($baseDir . '/src/app/convert'),
     'Clue\\StreamFilter\\' => array($vendorDir . '/clue/stream-filter/src'),
     'Attachment\\' => array($baseDir . '/src/app/attachment'),
+    'Action\\' => array($baseDir . '/src/app/action'),
 );
