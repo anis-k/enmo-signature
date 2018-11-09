@@ -126,7 +126,7 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $action = ActionModel::getById(['select' => ['status_id', 'label'], 'id' => $data['action_id']]);
+        $action = ActionModel::getById(['select' => ['next_status_id', 'label'], 'id' => $data['action_id']]);
         if (empty($action)) {
             return $response->withStatus(403)->withJson(['errors' => 'Action does not exist']);
         }
@@ -208,7 +208,7 @@ class DocumentController
         ]);
 
         DocumentModel::update([
-            'set' => ['status' => $action['status_id']],
+            'set' => ['status' => $action['next_status_id']],
             'where' => ['id = ?'],
             'data' => [$args['id']]
         ]);
