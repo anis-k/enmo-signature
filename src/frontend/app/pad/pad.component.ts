@@ -14,7 +14,7 @@ interface AfterViewInit {
   styleUrls: ['pad.component.styl']
 })
 export class SignaturePadPageComponent implements AfterViewInit {
-  penColors = [{ id: 'black' }, { id: 'orange' }, { id: '#FF0000'}, { id: '#FF000000'}];
+  penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000'}];
   selectedColor: any;
   selectedWidthPenSize: any;
   haveSigned: any;

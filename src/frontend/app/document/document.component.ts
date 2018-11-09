@@ -50,7 +50,7 @@ export class DocumentComponent implements OnInit {
         canvasHeight: 270
     };
     freezeSidenavClose = false;
-    penColors = [{ id: 'black' }, { id: 'orange' }, { id: '#FF0000' }];
+    penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000' }];
 
     @Input() mainDocument: any = {};
 
