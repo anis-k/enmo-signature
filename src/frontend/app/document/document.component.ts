@@ -75,6 +75,7 @@ export class DocumentComponent implements OnInit {
                     .subscribe((data: any) => {
                         this.docList = [];
                         this.signaturesService.signaturesContent = [];
+                        this.signaturesService.notesContent = [];
                         this.mainDocument = data.document;
                         this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'title': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
