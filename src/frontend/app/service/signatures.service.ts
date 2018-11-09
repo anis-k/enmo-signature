@@ -16,4 +16,5 @@ export class SignaturesContentService {
     showPad = false;
     showDrawer = false;
     currentAction = 0;
+    loadingSign = true;
 }

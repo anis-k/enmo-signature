@@ -6,11 +6,24 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { HttpClient } from '@angular/common/http';
+import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 
 @Component({
   selector: 'app-signatures',
   templateUrl: 'signatures.component.html',
-  styleUrls: ['signatures.component.styl']
+  styleUrls: ['signatures.component.styl'],
+  animations: [
+    trigger('listAnimation', [
+      transition('* => *', [ // each time the binding value changes
+        query(':enter', [
+          style({ opacity: 0 }),
+          stagger(100, [
+            animate('0.5s', style({ opacity: 1 }))
+          ])
+        ], { optional: true })
+      ])
+    ])
+  ],
 })
 export class SignaturesComponent implements OnInit {
 

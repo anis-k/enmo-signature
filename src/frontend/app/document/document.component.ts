@@ -17,11 +17,12 @@ import {
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
     selector: 'app-document',
     templateUrl: 'document.component.html',
-    styleUrls: ['document.component.styl']
+    styleUrls: ['document.component.styl'],
 })
 
 export class DocumentComponent implements OnInit {
@@ -35,6 +36,7 @@ export class DocumentComponent implements OnInit {
     totalPages: number;
     draggable: boolean;
     loadingDoc = true;
+    renderingDoc = true;
     signaturePadPosX = 0;
     signaturePadPosY = 50;
     currentDoc = 0;
@@ -73,6 +75,8 @@ export class DocumentComponent implements OnInit {
     ngOnInit(): void {
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
+                this.renderingDoc = true;
+                this.loadingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.docList = [];
@@ -86,8 +90,12 @@ export class DocumentComponent implements OnInit {
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
                             this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
                         });
+                        this.loadingDoc = false;
                         this.pdfRender(this.docList[this.currentDoc]);
                         this.context = (<HTMLCanvasElement>this.canvas.nativeElement).getContext('2d');
+                        setTimeout(() => {
+                            this.renderingDoc = false;
+                        }, 500);
                         this.loadNextDoc();
                     }, () => {
                         console.log('error !');
@@ -127,17 +135,20 @@ export class DocumentComponent implements OnInit {
             const renderTask = page.render(renderContext);
             renderTask.then(() => {
                 this.signaturesService.signWidth = viewport.width / 5;
-                this.loadingDoc = false;
             });
         });
     }
 
     prevPage() {
+        this.renderingDoc = true;
         this.pageNum--;
         if (this.pageNum === 0) {
             this.pageNum = 1;
         } else {
             this.renderPage(this.pageNum, this.canvas, 1);
+            setTimeout(() => {
+                this.renderingDoc = false;
+            }, 500);
         }
 
         if (this.currentDoc === 0) {
@@ -146,11 +157,15 @@ export class DocumentComponent implements OnInit {
     }
 
     nextPage() {
+        this.renderingDoc = true;
         if (this.pageNum >= this.totalPages) {
             this.pageNum = this.totalPages;
         } else {
             this.pageNum++;
             this.renderPage(this.pageNum, this.canvas, 1);
+            setTimeout(() => {
+                this.renderingDoc = false;
+            }, 500);
         }
 
         // only for main document
@@ -160,16 +175,19 @@ export class DocumentComponent implements OnInit {
     }
 
     nextDoc() {
-        this.loadingDoc = true;
+        this.renderingDoc = true;
         this.signaturesService.isTaggable = false;
         this.pageNum = 1;
         this.currentDoc++;
         this.pdfRender(this.docList[this.currentDoc]);
+        setTimeout(() => {
+            this.renderingDoc = false;
+        }, 500);
         this.loadNextDoc();
     }
 
     prevDoc() {
-        this.loadingDoc = true;
+        this.renderingDoc = true;
         this.pageNum = 1;
         this.currentDoc--;
         if (this.currentDoc === 0) {
@@ -177,6 +195,9 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.isTaggable = true;
         }
         this.pdfRender(this.docList[this.currentDoc]);
+        setTimeout(() => {
+            this.renderingDoc = false;
+        }, 500);
     }
 
     addAnnotation(e: any) {
@@ -310,6 +331,7 @@ export class DocumentComponent implements OnInit {
             this.http.get('../rest/users/' + '1' + '/signatures')
             .subscribe((data: any) => {
                 this.signaturesService.signaturesList = data.signatures;
+                this.signaturesService.loadingSign = false;
             });
         }
         this.signaturesService.showSign = true;

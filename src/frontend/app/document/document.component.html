@@ -1,6 +1,6 @@
 <mat-sidenav-container autosize>
 
-  <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose">
+  <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
     <app-sidebar></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -43,7 +43,7 @@
       <button class="btn-next" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i class="fas fa-chevron-right fa-3x"></i></button>
       <button class="btn-next" (click)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
       <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
-      <section class="page-viewer" #pdfpage >
+      <section class="page-viewer" #pdfpage>
         <div class="canvas-wrapper" #canvasWrapper (click)="addAnnotation($event)">
           <div *ngIf="loadingDoc" style="position: absolute;z-index: 1;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
             <mat-spinner></mat-spinner>
@@ -82,7 +82,10 @@
               </div> -->
             </div>
           </ng-container>
-          <canvas class="pdf-page-canvas" #canvas></canvas>
+          <canvas class="pdf-page-canvas" [ngClass]="{
+            'pdf-page-canvas':!renderingDoc,
+            'pdf-page-canvas-loading-doc':renderingDoc
+          }" #canvas ></canvas>
         </div>
       </section>
       <div class="page-under">
