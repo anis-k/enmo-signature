@@ -10,14 +10,14 @@ INSERT INTO users (login, password, firstname, lastname, mail, enabled, status, 
 ------------
 TRUNCATE TABLE docservers;
 ALTER SEQUENCE docservers_id_seq RESTART WITH 1;
-INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
-VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/documents/', CURRENT_TIMESTAMP);
-INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
-VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/', CURRENT_TIMESTAMP);
-INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
-VALUES ('HANDWRITTEN', 'Documents annotés ou signés', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/handwritten/', CURRENT_TIMESTAMP);
-INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path, creation_date)
-VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/', CURRENT_TIMESTAMP);
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/documents/');
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/');
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+VALUES ('HANDWRITTEN', 'Documents annotés ou signés', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/handwritten/');
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/');
 
 ------------
 --STATUS
@@ -52,11 +52,11 @@ DO $$
 BEGIN
 FOR r in 1..500 LOOP
 INSERT INTO main_documents (id, reference, subject, doc_date, status, priority, sender, sender_entity, processing_user, recipient, creation_date) VALUES (r, '2018/A/' || r, 'Mon Courrier ' || r, CURRENT_TIMESTAMP, 2, 'Urgent', 'Oliver Queen', 'QE', 1, 'Barry Allen', CURRENT_TIMESTAMP);
-INSERT INTO adr_main_documents (main_document_id, type, path, filename) VALUES (r, 'DOC', 'tests/', 'test.pdf');
+INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) VALUES (r, 'DOC', 'tests/', 'test.pdf', '22948029580928509276290285908');
 
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) VALUES (r, r, '2018/PJ/' || r, 'PJ 1', CURRENT_TIMESTAMP);
 
-INSERT INTO adr_attachments (attachment_id, type, path, filename) VALUES (r, 'ATTACH', 'tests/', 'test_pj_1.pdf');
+INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) VALUES (r, 'ATTACH', 'tests/', 'test_pj_1.pdf', '22948029580928509276290285908');
 END LOOP;
 END;
 $$;
