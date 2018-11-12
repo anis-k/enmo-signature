@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MatBottomSheet, MatBottomSheetRef } from '@angular/material';
+import { MatBottomSheet, MatBottomSheetRef, MatSnackBar } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 // TEMP : A effacer une fois l'api en place
 import { DomSanitizer } from '@angular/platform-browser';
@@ -28,9 +28,10 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
 export class SignaturesComponent implements OnInit {
 
   inAllPage = false;
+  count = 0;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
-     private sanitization: DomSanitizer) {
+     private sanitization: DomSanitizer, public snackBar: MatSnackBar) {
   }
   ngOnInit() {
     // TO DO IMPLEMENT ROUTE SIGNATURES USER LIST
@@ -53,10 +54,11 @@ export class SignaturesComponent implements OnInit {
   reloadSignatures() {
     this.signaturesService.signaturesList.unshift(
         {
-          encodedSignature: localStorage.getItem('signature').replace(/\"/gi, '')
+          id : this.signaturesService.newSign.id,
+          encodedSignature: this.signaturesService.newSign.encodedSignature
         }
       );
-      console.log(this.signaturesService.signaturesList);
+      this.signaturesService.newSign = {};
   }
 
   showAnnotation() {
@@ -84,7 +86,38 @@ export class SignaturesComponent implements OnInit {
     this.bottomSheetRef.dismiss();
   }
 
+  removeSignature(signature: any, i: any) {
+    this.http.delete('../rest/users/ ' + '1' + '/signatures/' + signature.id)
+      .subscribe(() => {
+          this.signaturesService.signaturesList.splice(i, 1);
+          this.snackBar.open('Signature supprimée', null,
+              {
+                  duration: 3000,
+                  panelClass: 'center-snackbar',
+                  verticalPosition: 'top'
+              }
+          );
+          this.bottomSheetRef.dismiss();
+      }, () => {
+          console.log('error !');
+      });
+  }
+
   toggleAllPage() {
     this.inAllPage = !this.inAllPage;
+  }
+
+  tapEvent(signature: any, i: any) {
+    this.count++;
+    $('[class*=remove_icon_]').hide();
+    $('.remove_icon_' + i).show();
+    setTimeout(() => {
+      if (this.count === 1) {
+        this.count = 0;
+      } else if (this.count > 1) {
+        this.count = 0;
+        this.selectSignature(signature);
+      }
+    }, 250);
   }
 }

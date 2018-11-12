@@ -82,11 +82,14 @@ export class SignaturePadPageComponent implements AfterViewInit {
 
     // Save signature in BDD
     const newSign = {
+      'id': 0,
       'encodedSignature': newEncodedSign,
       'format': 'png'
     };
     this.http.post('../rest/users/' + '1' + '/signatures', newSign)
-      .subscribe(() => {
+      .subscribe((data: any) => {
+        newSign.id = data.signatureId;
+        this.signaturesService.newSign = newSign;
         this.closePad();
         this.reloaded.emit('reload');
         // this.store.dispatch({ type: HIDE_DRAWER });

@@ -20,4 +20,5 @@ export class SignaturesContentService {
     indexDocumentsList = 0;
     documentsList: any[] = [];
     documentsListCount = 0;
+    newSign: any = {};
 }
