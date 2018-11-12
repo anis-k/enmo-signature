@@ -42,19 +42,14 @@ class DatabasePDO
             $password   = $args['password'];
             self::$type = $args['type'];
         } else {
-
-            $path = $_SERVER['CONFIG_DIR'] . 'config.xml';
-
-            if (file_exists($path)) {
-                $loadedXml = simplexml_load_file($path);
-                if ($loadedXml) {
-                    $server     = (string)$loadedXml->database->server;
-                    $port       = (string)$loadedXml->database->port;
-                    $name       = (string)$loadedXml->database->name;
-                    $user       = (string)$loadedXml->database->user;
-                    $password   = (string)$loadedXml->database->password;
-                    self::$type = (string)$loadedXml->database->type;
-                }
+            $loadedXml = CoreConfigModel::getConfig();
+            if ($loadedXml) {
+                $server     = (string)$loadedXml->database->server;
+                $port       = (string)$loadedXml->database->port;
+                $name       = (string)$loadedXml->database->name;
+                $user       = (string)$loadedXml->database->user;
+                $password   = (string)$loadedXml->database->password;
+                self::$type = (string)$loadedXml->database->type;
             }
         }
 

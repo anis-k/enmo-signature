@@ -17,9 +17,18 @@ namespace SrcCore\models;
 
 class CoreConfigModel
 {
+    public static function getConfig()
+    {
+        $path = empty($_SERVER['CONFIG_DIR']) ? $_SERVER['REDIRECT_CONFIG_DIR'] : $_SERVER['CONFIG_DIR'];
+
+        $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $path . 'config.xml']);
+
+        return $loadedXml;
+    }
+
     public static function getName()
     {
-        $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $_SERVER['CONFIG_DIR'] . 'config.xml']);
+        $loadedXml = CoreConfigModel::getConfig();
 
         if ($loadedXml) {
             return (string)$loadedXml->config->name;
@@ -32,7 +41,7 @@ class CoreConfigModel
     {
         $availableLanguages = ['en', 'fr'];
 
-        $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $_SERVER['CONFIG_DIR'] . 'config.xml']);
+        $loadedXml = CoreConfigModel::getConfig();
 
         if ($loadedXml) {
             $lang = (string)$loadedXml->config->lang;
@@ -53,7 +62,7 @@ class CoreConfigModel
     {
         $timezone = 'Europe/Paris';
 
-        $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $_SERVER['CONFIG_DIR'] . 'config.xml']);
+        $loadedXml = CoreConfigModel::getConfig();
 
         if ($loadedXml) {
             if (!empty((string)$loadedXml->config->timezone)) {
