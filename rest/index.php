@@ -47,7 +47,8 @@ $app->get('/documents/{id}', \Document\controllers\DocumentController::class . '
 $app->put('/documents/{id}/action', \Document\controllers\DocumentController::class . ':makeAction');
 
 //Users
-$app->post('/users/{id}/signatures', \User\controllers\UserController::class . ':createSignature');
 $app->get('/users/{id}/signatures', \User\controllers\UserController::class . ':getSignatures');
+$app->post('/users/{id}/signatures', \User\controllers\UserController::class . ':createSignature');
+$app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\UserController::class . ':deleteSignature');
 
 $app->run();
