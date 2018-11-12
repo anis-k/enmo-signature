@@ -4,7 +4,7 @@
       <i class="fa fa-folder-open fa-2x"></i>
     </section>
     <section>
-      <div class="sidebar-header-title">{{countDocumentsList}} dossiers à traiter</div>
+      <div class="sidebar-header-title">{{signaturesService.documentsListCount}} dossiers à traiter</div>
       <div class="sidebar-header-subtitle">dans la banette</div>
     </section>
   </header>
@@ -16,8 +16,8 @@
     <div *ngIf="loadingList" class="loadList">
         <mat-spinner></mat-spinner>
     </div>
-    <ng-container *ngFor="let document of documentsList">
-        <li class="nav-item active" matRipple (click)="gotTo(document.id)">
+    <ng-container *ngFor="let document of signaturesService.documentsList;let i=index">
+        <li class="nav-item active" matRipple (click)="gotTo(document.id, i)">
             <div class="nav-item-left">
               <i class="fas fa-mail-bulk"></i>
             </div>

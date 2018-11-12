@@ -17,4 +17,7 @@ export class SignaturesContentService {
     showDrawer = false;
     currentAction = 0;
     loadingSign = true;
+    indexDocumentsList = 0;
+    documentsList: any[] = [];
+    documentsListCount = 0;
 }

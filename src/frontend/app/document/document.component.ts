@@ -15,7 +15,7 @@ import {
     MatSidenav
 } from '@angular/material';
 import { SignaturesComponent } from '../signatures/signatures.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { trigger, transition, style, animate } from '@angular/animations';
 
@@ -296,9 +296,6 @@ export class DocumentComponent implements OnInit {
                     direction: 'ltr'
                 };
                 this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
-                setTimeout(() => {
-                    this.bottomSheet.dismiss();
-                }, 2000);
             } else if (result === 'annotation') {
                 this.signaturesService.annotationMode = true;
                 this.signaturesService.lockNote = true;
@@ -319,9 +316,6 @@ export class DocumentComponent implements OnInit {
                     direction: 'ltr'
                 };
                 this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                setTimeout(() => {
-                    this.bottomSheet.dismiss();
-                }, 2000);
             }
         });
     }
@@ -429,6 +423,8 @@ export class WarnModalComponent {
                 }
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
                     .subscribe(() => {
+                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                        this.signaturesService.documentsListCount--;
                         this.dialogRef.close('sucess');
                     }, (err: any) => {
                         console.log(err);
@@ -483,6 +479,8 @@ export class ConfirmModalComponent {
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
                     .subscribe(() => {
                         this.dialogRef.close('sucess');
+                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                        this.signaturesService.documentsListCount--;
                     }, (err: any) => {
                         console.log(err);
                     });
@@ -497,15 +495,31 @@ export class ConfirmModalComponent {
     templateUrl: '../modal/success-info-valid.html',
     styleUrls: ['../modal/success-info-valid.styl']
 })
-export class SuccessInfoValidBottomSheetComponent {
+export class SuccessInfoValidBottomSheetComponent implements OnInit {
     date: Date = new Date();
-    constructor(private bottomSheetRef: MatBottomSheetRef<SuccessInfoValidBottomSheetComponent>) { }
+    constructor(private router: Router, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheetRef<SuccessInfoValidBottomSheetComponent>) { }
+     ngOnInit(): void {
+        setTimeout(() => {
+            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
+                this.router.navigate(['/document/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
+            }
+            this.bottomSheetRef.dismiss();
+        }, 2000);
+     }
 }
 
 @Component({
     templateUrl: '../modal/reject-info.html',
     styleUrls: ['../modal/reject-info.styl']
 })
-export class RejectInfoBottomSheetComponent {
-    constructor(private bottomSheetRef: MatBottomSheetRef<RejectInfoBottomSheetComponent>) { }
+export class RejectInfoBottomSheetComponent implements OnInit {
+    constructor(private router: Router, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheetRef<RejectInfoBottomSheetComponent>) { }
+    ngOnInit(): void {
+        setTimeout(() => {
+            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
+                this.router.navigate(['/document/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
+            }
+            this.bottomSheetRef.dismiss();
+        }, 2000);
+     }
 }

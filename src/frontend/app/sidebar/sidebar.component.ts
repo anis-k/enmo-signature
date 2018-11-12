@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
 import { MatSidenav, MatSnackBar } from '@angular/material';
 import * as $ from 'jquery';
+import { SignaturesContentService } from '../service/signatures.service';
 
 interface AppState {
   sidebar: boolean;
@@ -16,18 +17,16 @@ interface AppState {
 })
 export class SidebarComponent implements OnInit {
   sidebar$: Observable<boolean>;
-  documentsList: any[] = [];
-  countDocumentsList = 0;
   loadingList = false;
   offset = 0;
   limit = 25;
 
   @ViewChild('listContent') listContent: ElementRef;
 
-  constructor(public http: HttpClient, private sidenav: MatSidenav, private router: Router, public snackBar: MatSnackBar) { }
+  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public snackBar: MatSnackBar) { }
 
   handleScroll(event: ScrollEvent) {
-    if (event.isReachingBottom && !this.loadingList && this.documentsList.length < this.countDocumentsList) {
+    if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount) {
 
       this.loadingList = true;
       this.listContent.nativeElement.style.overflowY = 'hidden';
@@ -36,7 +35,7 @@ export class SidebarComponent implements OnInit {
 
       this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
       .subscribe((data: any) => {
-        this.documentsList = this.documentsList.concat(data.documents);
+        this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
         this.loadingList = false;
         this.listContent.nativeElement.style.overflowY = 'auto';
         this.snackBar.open('Liste des documents actualisée', null,
@@ -53,14 +52,14 @@ export class SidebarComponent implements OnInit {
   ngOnInit() {
     this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
       .subscribe((data: any) => {
-        this.documentsList = data.documents;
-        this.countDocumentsList = data.fullCount;
+        this.signaturesService.documentsList = data.documents;
+        this.signaturesService.documentsListCount = data.fullCount;
       });
   }
 
-  gotTo(documentId: Number) {
+  gotTo(documentId: Number, i: any) {
     this.router.navigate(['/document/' + documentId]);
+    this.signaturesService.indexDocumentsList = i;
     this.sidenav.close();
   }
-
 }
