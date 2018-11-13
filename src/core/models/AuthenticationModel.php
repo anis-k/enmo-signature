@@ -31,8 +31,8 @@ class AuthenticationModel
         $aReturn = DatabaseModel::select([
             'select'    => ['password'],
             'table'     => ['users'],
-            'where'     => ['login = ?', 'status != ?'],
-            'data'      => [$args['login'], 'DEL']
+            'where'     => ['login = ?', 'enabled = ?'],
+            'data'      => [$args['login'], 'true']
         ]);
 
         if (empty($aReturn[0])) {
