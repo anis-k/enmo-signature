@@ -76,15 +76,14 @@ CREATE TABLE users
   "password" character varying(255) DEFAULT NULL::character varying,
   firstname character varying(255) DEFAULT NULL::character varying,
   lastname character varying(255) DEFAULT NULL::character varying,
-  phone character varying(32) DEFAULT NULL::character varying,
   mail character varying(255) DEFAULT NULL::character varying,
-  initials character varying(32) DEFAULT NULL::character varying,
-  status character varying(10) NOT NULL DEFAULT 'OK'::character varying,
-  enabled character(1) NOT NULL DEFAULT 'Y'::bpchar,
-  password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-  loginmode character varying(50) DEFAULT NULL::character varying,
+  enabled boolean DEFAULT TRUE,
+  mode character varying(50) DEFAULT NULL::character varying,
   cookie_key character varying(255) DEFAULT NULL::character varying,
   cookie_date timestamp without time zone,
+  password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  failed_authentication INTEGER DEFAULT 0,
+  locked_until TIMESTAMP without time zone,
   CONSTRAINT users_pkey PRIMARY KEY (id),
   CONSTRAINT users_login_key UNIQUE (login)
 )
@@ -159,5 +158,27 @@ CREATE TABLE history
   remote_ip character varying(32) DEFAULT NULL,
   event_id character varying(50),
   CONSTRAINT history_pkey PRIMARY KEY (id)
+)
+WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS password_rules;
+CREATE TABLE password_rules
+(
+  id serial,
+  label character varying(64) NOT NULL,
+  "value" integer NOT NULL,
+  enabled boolean DEFAULT FALSE NOT NULL,
+  CONSTRAINT password_rules_pkey PRIMARY KEY (id),
+  CONSTRAINT password_rules_label_key UNIQUE (label)
+)
+WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS password_history;
+CREATE TABLE password_history
+(
+  id serial,
+  user_id INTEGER NOT NULL,
+  password character varying(255) NOT NULL,
+  CONSTRAINT password_history_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);

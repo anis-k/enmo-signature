@@ -14,6 +14,9 @@
 
 namespace SrcCore\controllers;
 
+use Respect\Validation\Validator;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
 
 class AuthenticationController
@@ -28,11 +31,30 @@ class AuthenticationController
         } else {
             $cookie = AuthenticationModel::getCookieAuth();
             if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
-                AuthenticationModel::setCookieAuth(['userId' => $cookie['userId']]);
-                $login = $cookie['userId'];
+                AuthenticationModel::setCookieAuth(['login' => $cookie['login']]);
+                $login = $cookie['login'];
             }
         }
 
         return $login;
+    }
+
+    public static function log(Request $request, Response $response)
+    {
+        $data = $request->getParams();
+
+        $check = Validator::stringType()->notEmpty()->validate($data['login']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['password']);
+        if (!$check) {
+            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        }
+
+        if (!AuthenticationModel::authentication(['login' => $data['login'], 'password' => $data['password']])) {
+            return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
+        }
+
+        AuthenticationModel::setCookieAuth(['login' => $data['login']]);
+
+        return $response->withJson(['success' => 'success']);
     }
 }

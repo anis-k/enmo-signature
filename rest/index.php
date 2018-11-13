@@ -25,18 +25,30 @@ require_once("src/core/lang/lang-{$language}.php");
 $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRouteBeforeAppMiddleware' => true]]);
 
 //Authentication
-// $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, callable $next) {
-//     $login = \SrcCore\controllers\AuthenticationController::authentication();
-//     if (!empty($login)) {
-//         $GLOBALS['login'] = $login;
-//         $response = $next($request, $response);
-//         return $response;
-//     } else {
-//         return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
-//     }
-// });
+$app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, callable $next) {
+    $routesWithoutAuthentication = ['POST/log'];
+    $route = $request->getAttribute('route');
+    $currentMethod = empty($route) ? '' : $route->getMethods()[0];
+    $currentRoute = empty($route) ? '' : $route->getPattern();
 
-$GLOBALS['login'] = 'jjane';
+    if (in_array($currentMethod.$currentRoute, $routesWithoutAuthentication)) {
+        $response = $next($request, $response);
+    } else {
+        $login = \SrcCore\controllers\AuthenticationController::authentication();
+        if (!empty($login)) {
+            $GLOBALS['login'] = $login;
+            $response = $next($request, $response);
+        } else {
+            $response = $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
+        }
+    }
+
+    return $response;
+});
+
+
+//Authentication
+$app->post('/log', \SrcCore\controllers\AuthenticationController::class . ':log');
 
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');

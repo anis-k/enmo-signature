@@ -96,14 +96,14 @@ class UserController
             return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
         }
 
-        UserModel::createSignature([
+        $id = UserModel::createSignature([
             'userId'        => $args['id'],
             'path'          => $storeInfos['path'],
             'filename'      => $storeInfos['filename'],
             'fingerprint'   => $storeInfos['fingerprint'],
         ]);
 
-        return $response->withJson(['success' => 'success']);
+        return $response->withJson(['signatureId' => $id]);
     }
 
     public function deleteSignature(Request $request, Response $response, array $args)

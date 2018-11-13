@@ -3,7 +3,7 @@
 ------------
 TRUNCATE TABLE users;
 ALTER SEQUENCE users_id_seq RESTART WITH 1;
-INSERT INTO users (login, password, firstname, lastname, mail, enabled, status, loginmode) VALUES ('jjane', '$2y$10$C.QSslBKD3yNMfRPuZfcaubFwPKiCkqqOUyAdOr5FSGKPaePwuEjG', 'Jenny', 'JANE', 'info@maarch.org', 'Y', 'OK', 'standard');
+INSERT INTO users (login, password, firstname, lastname, mail, mode) VALUES ('jjane', '$2y$10$C.QSslBKD3yNMfRPuZfcaubFwPKiCkqqOUyAdOr5FSGKPaePwuEjG', 'Jenny', 'JANE', 'info@maarch.org', 'standard');
 
 ------------
 --DOCSERVERS
@@ -42,6 +42,19 @@ INSERT INTO action (id, label, color, logo, event, previous_status_id, next_stat
 INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (4, 'Annoter', '#2ecc71', '', 'openDrawer', 1, null);
 INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (5, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 1, 3);
 INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (6, 'Valider signature', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 2, 5);
+
+-----
+-- Password management
+-----
+TRUNCATE TABLE password_rules;
+INSERT INTO password_rules (label, "value", enabled) VALUES ('minLength', 6, true);
+INSERT INTO password_rules (label, "value") VALUES ('complexityUpper', 0);
+INSERT INTO password_rules (label, "value") VALUES ('complexityNumber', 0);
+INSERT INTO password_rules (label, "value") VALUES ('complexitySpecial', 0);
+INSERT INTO password_rules (label, "value") VALUES ('lockAttempts', 3);
+INSERT INTO password_rules (label, "value") VALUES ('lockTime', 5);
+INSERT INTO password_rules (label, "value") VALUES ('historyLastUse', 2);
+INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 
 /* Tests */
 TRUNCATE TABLE main_documents;

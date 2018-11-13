@@ -3,7 +3,7 @@
     <config>
         <lang>fr</lang>
         <name>Maarch Parapheur</name>
-        <CookieTime>20</CookieTime> <!-- minutes -->
+        <CookieTime>1440</CookieTime> <!-- minutes -->
         <timezone>Europe/Paris</timezone>
     </config>
     <database>

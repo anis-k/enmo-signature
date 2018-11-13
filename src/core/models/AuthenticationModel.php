@@ -14,6 +14,8 @@
 
 namespace SrcCore\models;
 
+use User\models\UserModel;
+
 class AuthenticationModel
 {
     public static function getPasswordHash($password)
@@ -42,7 +44,7 @@ class AuthenticationModel
 
     public static function getCookieAuth()
     {
-        $rawCookie = $_COOKIE['maarchCourrierAuth'];
+        $rawCookie = $_COOKIE['maarchParapheurAuth'];
         if (empty($rawCookie)) {
             return [];
         }
@@ -55,14 +57,14 @@ class AuthenticationModel
 
     public static function cookieAuthentication(array $args)
     {
-        ValidatorModel::notEmpty($args, ['userId', 'cookieKey']);
-        ValidatorModel::stringType($args, ['userId', 'cookieKey']);
+        ValidatorModel::notEmpty($args, ['login', 'cookieKey']);
+        ValidatorModel::stringType($args, ['login', 'cookieKey']);
 
         $aReturn = DatabaseModel::select([
             'select'    => [1],
             'table'     => ['users'],
-            'where'     => ['user_id = ?', 'cookie_key = ?', 'cookie_date > CURRENT_TIMESTAMP'],
-            'data'      => [$args['userId'], $args['cookieKey']]
+            'where'     => ['login = ?', 'cookie_key = ?', 'cookie_date > CURRENT_TIMESTAMP'],
+            'data'      => [$args['login'], $args['cookieKey']]
         ]);
 
         if (empty($aReturn[0])) {
@@ -74,29 +76,28 @@ class AuthenticationModel
 
     public static function setCookieAuth(array $args)
     {
-        ValidatorModel::notEmpty($args, ['userId']);
-        ValidatorModel::stringType($args, ['userId']);
+        ValidatorModel::notEmpty($args, ['login']);
+        ValidatorModel::stringType($args, ['login']);
 
-        $cookieTime = 0;
+        $cookieTime = 1;
 
-        $loadedXml = CoreConfigModel::getXmlLoaded(['path' => 'apps/maarch_entreprise/xml/config.xml']);
+        $loadedXml = CoreConfigModel::getConfig();
         if ($loadedXml) {
-            $cookieTime = (string)$loadedXml->CONFIG->CookieTime;
+            $cookieTime = (int)$loadedXml->config->CookieTime;
         }
 
-        $user = DatabaseModel::select([
+        $user = UserModel::get([
             'select'    => ['cookie_key'],
-            'table'     => ['users'],
-            'where'     => ['user_id = ?', 'cookie_date > CURRENT_TIMESTAMP'],
-            'data'      => [$args['userId']]
+            'where'     => ['login = ?', 'cookie_date > CURRENT_TIMESTAMP'],
+            'data'      => [$args['login']]
         ]);
         if (empty($user[0]['cookie_key'])) {
-            $cookieKey = AuthenticationModel::getPasswordHash($args['userId']);
+            $cookieKey = AuthenticationModel::getPasswordHash($args['login']);
         } else {
             $cookieKey = $user[0]['cookie_key'];
         }
 
-        $cookiePath = str_replace(['apps/maarch_entreprise/index.php', 'apps/maarch_entreprise/log.php', 'rest/index.php'], '', $_SERVER['SCRIPT_NAME']);
+        $cookiePath = str_replace(['rest/index.php'], '', $_SERVER['SCRIPT_NAME']);
         $cookieTime = time() + 60 * $cookieTime;
 
         DatabaseModel::update([
@@ -105,12 +106,12 @@ class AuthenticationModel
                 'cookie_key'    => $cookieKey,
                 'cookie_date'   => date('Y-m-d H:i:s', $cookieTime),
             ],
-            'where' => ['user_id = ?'],
-            'data'  => [$args['userId']]
+            'where' => ['login = ?'],
+            'data'  => [$args['login']]
         ]);
 
-        $cookieData = json_encode(['userId' => $args['userId'], 'cookieKey' => $cookieKey]);
-        setcookie('maarchCourrierAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, true);
+        $cookieData = json_encode(['login' => $args['login'], 'cookieKey' => $cookieKey]);
+        setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, true);
 
         return true;
     }
@@ -120,8 +121,8 @@ class AuthenticationModel
         $previousCookie = AuthenticationModel::getCookieAuth();
 
         if (!empty($previousCookie)) {
-            $cookiePath = str_replace(['apps/maarch_entreprise/index.php', 'rest/index.php'], '', $_SERVER['SCRIPT_NAME']);
-            setcookie('maarchCourrierAuth', '', time() - 1, $cookiePath, '', false, true);
+            $cookiePath = str_replace(['rest/index.php'], '', $_SERVER['SCRIPT_NAME']);
+            setcookie('maarchParapheurAuth', '', time() - 1, $cookiePath, '', false, true);
         }
 
         return true;

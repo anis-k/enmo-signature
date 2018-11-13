@@ -116,9 +116,12 @@ class UserModel
         ValidatorModel::stringType($aArgs, ['path', 'filename', 'fingerprint']);
         ValidatorModel::intVal($aArgs, ['userId']);
 
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'signatures_id_seq']);
+
         DatabaseModel::insert([
             'table'         => 'signatures',
             'columnsValues' => [
+                'id'            => $nextSequenceId,
                 'user_id'       => $aArgs['userId'],
                 'path'          => $aArgs['path'],
                 'filename'      => $aArgs['filename'],
@@ -126,7 +129,7 @@ class UserModel
             ]
         ]);
 
-        return true;
+        return $nextSequenceId;
     }
 
     public static function deleteSignature(array $aArgs)
