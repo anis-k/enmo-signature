@@ -43,12 +43,13 @@ export class DocumentComponent implements OnInit {
     docList: any = [];
     actionsList: any = [];
     currentAction = 0;
+    lockSignaturePad = false;
     annotationPadOptions = {
         throttle: 0,
         minWidth: 0.8,
         maxWidth: 1,
         backgroundColor: 'rgba(255, 255, 255, 0)',
-        canvasWidth: 380,
+        canvasWidth: 768,
         canvasHeight: 270
     };
     freezeSidenavClose = false;
@@ -131,14 +132,12 @@ export class DocumentComponent implements OnInit {
             const ctx = this.context;
             canvas.height = viewport.height;
             canvas.width = viewport.width;
-            this.annotationPadOptions.canvasWidth = viewport.width;
-            this.annotationPadOptions.canvasHeight = viewport.height / 2;
             const renderContext = {
                 canvasContext: ctx,
                 viewport: viewport
             };
-            this.canvas.nativeElement.style.width = 'auto';
-            this.canvas.nativeElement.style.height = '100vh';
+            this.canvas.nativeElement.style.width = 768*scale+'px';
+            this.canvas.nativeElement.style.height = 'auto';
             const renderTask = page.render(renderContext);
             renderTask.then(() => {
                 this.signaturesService.signWidth = viewport.width / 5;
@@ -209,11 +208,13 @@ export class DocumentComponent implements OnInit {
 
     addAnnotation(e: any) {
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
-            this.scale = 1;
+            this.annotationPadOptions.canvasWidth = 768*this.scale;
+            this.annotationPadOptions.canvasHeight = $('.pdf-page-canvas').height();
+            //this.scale = 1;
             this.signaturesService.annotationMode = true;
-            this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-            this.signaturePadPosX = e.layerX - 40;
-            this.signaturePadPosY = e.layerY - 40;
+            //this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
+            this.signaturePadPosX = 0;
+            this.signaturePadPosY = 0;
             this.signaturesService.lockNote = true;
         }
     }
@@ -271,10 +272,10 @@ export class DocumentComponent implements OnInit {
 
     cancelAnnotation() {
         this.signaturePad.clear();
-        this.scale = 1;
+        //this.scale = 1;
         this.signaturesService.annotationMode = false;
         this.signaturesService.lockNote = false;
-        this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
+        //this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
     }
 
     freezDoc() {
@@ -378,6 +379,32 @@ export class DocumentComponent implements OnInit {
     launchEvent(action: any) {
         this.signaturesService.currentAction = action.id;
         this[action.event]();
+    }
+
+    test() {
+        if (this.lockSignaturePad) {
+            this.lockSignaturePad = false;
+            this.signaturePad.on();
+        } else {
+            this.lockSignaturePad = true;
+            this.signaturePad.off();
+        } 
+    }
+
+    zoomPlus() {
+        this.lockSignaturePad = true;
+        this.scale = 2;
+        this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
+        this.signaturePad.set('canvasWidth', 768*this.scale);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight*this.scale);
+    }
+
+    zoomMinus() {
+        this.lockSignaturePad =true;
+        this.scale = 1;
+        this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
+        this.signaturePad.set('canvasWidth', 768*this.scale);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight*this.scale);
     }
 }
 

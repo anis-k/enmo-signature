@@ -5,7 +5,7 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>
-    <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
+    <header style="position: fixed;" class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
       <article class="header-infos">
         <section class="header-left">
           <button mat-icon-button (click)="this.snav.toggle();">
@@ -37,45 +37,70 @@
         </section>
       </article>
     </header>
-    <article class="article" #article *ngIf="!freezeSidenavClose">
-      <button class="btn-previous" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-previous" (click)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-next" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i class="fas fa-chevron-right fa-3x"></i></button>
-      <button class="btn-next" (click)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
+    <article [style.width.px]="768*scale" style="margin-top: 120px;margin-left: auto;margin-right: auto;margin-bottom: 120px;"
+      class="article" #article *ngIf="!freezeSidenavClose">
+      <button class="btn-previous" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
+          class="fas fa-chevron-left fa-3x"></i></button>
+      <button class="btn-previous" (click)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
+          class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
+      <button class="btn-next" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
+          class="fas fa-chevron-right fa-3x"></i></button>
+      <button class="btn-next" (click)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
+          class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
       <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
       <section class="page-viewer" #pdfpage>
-        <div class="canvas-wrapper" #canvasWrapper (click)="addAnnotation($event)">
+        <div [style.width.px]="768*scale" class="canvas-wrapper" #canvasWrapper (click)="addAnnotation($event)">
           <div *ngIf="loadingDoc" style="position: absolute;z-index: 1;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
             <mat-spinner></mat-spinner>
           </div>
           <ng-container *ngIf="currentDoc == 0">
-              <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
-                  <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent" style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="moveSign($event,i)">
-                      <span style="position: absolute;width: 100%;height: 100%;top:0;left:0;">
-                        <span style="position: absolute;width: 100%;top: -15px;margin-left: -15px;margin-right: 15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteSignature(i);"></i></span>
-                      </span>
-                      <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)" [style.width.px]="this.signaturesService.signWidth" pinchout="zoomPlus()">
-                  </div>
-              </ng-container>
-              <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
-                <div [handle]="myHandle" [position]="{'x': note.positionX*scale, 'y': note.positionY*scale}" style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="moveNote($event,i)">
-                  <span style="position: absolute;position: absolute;top: -15px;left: -15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteNote(i);"></i></span>
-                  <span style="position: absolute;position: absolute;top: -15px;right: -15px;"><i #myHandle style="border-radius: 15px;background: white;right:0px;top:0px;color:blue;" class="fas fa-arrows-alt fa-2x"></i></span>
-                  <img [style.width.px]="note.width*scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
-                </div>
-            </ng-container>
             
-            <div *ngIf="signaturesService.lockNote" [handle]="myHandle" [position]="{'x': signaturePadPosX, 'y': signaturePadPosY}" style="position: absolute;border: dashed 1px grey;" ngDraggable [bounds]="canvas" inBounds="true" (started)="freezDoc()" (endOffset)="movePad($event)">
-              <div style="display: flex;position: absolute;background: white;border-radius: 10px;top: 30px;right: -50px;flex-direction: column;">
+            <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
+              <div style="top:0;left:0;position: absolute;">
+                <span style="position: absolute;position: absolute;top: -15px;left: -15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;"
+                    class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteNote(i);"></i></span>
+                <img [style.width.px]="note.width*scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
+              </div>
+            </ng-container>
+            <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
+              <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent"
+                style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas"
+                inBounds="true" (endOffset)="moveSign($event,i)">
+                <span style="position: absolute;width: 100%;height: 100%;top:0;left:0;">
+                  <span style="position: absolute;width: 100%;top: -15px;margin-left: -15px;margin-right: 15px;"><i
+                      style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x"
+                      (tap)="deleteSignature(i);"></i></span>
+                </span>
+                <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
+                  [style.width.px]="this.signaturesService.signWidth">
+              </div>
+            </ng-container>
+
+            <div *ngIf="signaturesService.lockNote" style="top:0;left:0;position: absolute;border: dashed 1px grey;">
+              <div style="display: flex;position: fixed;background: white;border-radius: 10px;top: 50%;transform: translateY(-50%);right: 0;flex-direction: column;">
                 <ng-container *ngFor="let color of penColors" let idx="index">
                   <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)"
                     class="radio" [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
                 </ng-container>
               </div>
-              <span style="position: absolute;position: absolute;top: -15px;left: -15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();cancelAnnotation(i);"></i></span>
-              <span style="position: absolute;position: absolute;top: -15px;left: 20px;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-check-circle fa-2x" (click)="$event.stopPropagation();validateAnnotation();"></i></span>
-              <span style="position: absolute;position: absolute;top: -15px;right: -15px;"><i #myHandle style="border-radius: 15px;background: white;right:0px;top:0px;color:blue;" class="fas fa-arrows-alt fa-2x"></i></span>
+              <span style="position: fixed;bottom: 10px;top: 10px;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
+                  class="fas fa-arrow-left fa-2x" (tap)="cancelAnnotation(i);"></i></span>
+              <span *ngIf="!lockSignaturePad" style="position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
+                  style="border-radius: 15px;background: white;right:10px;top:0px;color:red;" class="fas fa-lock fa-2x"
+                  (tap)="test();"></i></span>
+              <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
+                  style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-unlock fa-2x"
+                  (tap)="test();"></i></span>
+              <span style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
+                  class="fas fa-plus fa-2x" (tap)="zoomPlus();"></i></span>
+              <span style="z-index:1;position: fixed;top: 10px;right: 60px;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
+                  class="fas fa-minus fa-2x" (tap)="zoomMinus();"></i></span>
+              <span style="position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
+                  style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-check-circle fa-2x"
+                  (click)="$event.stopPropagation();validateAnnotation();"></i></span>
+              <!--<span style="position: absolute;position: absolute;top: -15px;right: -15px;"><i #myHandle style="border-radius: 15px;background: white;right:0px;top:0px;color:blue;" class="fas fa-arrows-alt fa-2x"></i></span>-->
               <signature-pad [options]="annotationPadOptions"></signature-pad>
+              <div *ngIf="lockSignaturePad" style="background: #ffffffb3;position: absolute;top: 0;left: 0;width: 100%;height: 100%;"></div>
               <!-- <div style="display: flex;position: absolute;background: white;border-radius: 10px;bottom: -30px;left: 0px;">
                 <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)"
               class="range">
@@ -85,7 +110,8 @@
           <canvas class="pdf-page-canvas" [ngClass]="{
             'pdf-page-canvas':!renderingDoc,
             'pdf-page-canvas-loading-doc':renderingDoc
-          }" #canvas ></canvas>
+          }"
+            #canvas></canvas>
         </div>
       </section>
       <div class="page-under">
@@ -98,8 +124,9 @@
     </article>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
       <ng-container *ngFor="let action of actionsList;">
-          <button [style.color]="action.color" [style.borderColor]="action.color" class="btn" (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label}}</button>
-        </ng-container>
+        <button [style.color]="action.color" [style.borderColor]="action.color" class="btn" (click)="launchEvent(action)"><i
+            class="{{action.logo}} fa-2x"></i>{{action.label}}</button>
+      </ng-container>
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
