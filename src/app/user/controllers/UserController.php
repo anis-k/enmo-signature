@@ -23,6 +23,17 @@ use User\models\UserModel;
 
 class UserController
 {
+    public function get(Request $request, Response $response)
+    {
+        $users = UserModel::get([
+            'select'    => ['id', 'firstname', 'lastname'],
+            'where'     => ['mode = ?'],
+            'data'      => ['standard']
+        ]);
+
+        return $response->withJson(['users' => $users]);
+    }
+
     public function getSignatures(Request $request, Response $response, array $args)
     {
         $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
