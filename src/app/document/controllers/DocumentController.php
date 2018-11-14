@@ -112,7 +112,7 @@ class DocumentController
         ValidatorModel::notEmpty($data, ['action_id']);
         ValidatorModel::intVal($data, ['action_id']);
 
-        if (!empty($data['signatures'])) {
+        /*if (!empty($data['signatures'])) {
             foreach ($data['signatures'] as $signature) {
                 foreach (['fullPath', 'width', 'positionX', 'positionY', 'page'] as $value) {
                     if (empty($signature[$value])) {
@@ -120,7 +120,7 @@ class DocumentController
                     }
                 }
             }
-        }
+        }*/
 
         if (!DocumentController::hasRightById(['id' => $args['id'], 'login' => $GLOBALS['login']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
@@ -154,16 +154,18 @@ class DocumentController
         $tmpFilename = $tmpPath . $GLOBALS['login'] . '_' . rand() . '_' . $adr[0]['filename'];
         copy($pathToDocument, $tmpFilename);
 
-        $pdf     = new TcpdfFpdi('P', 'pt');
+        $pdf     = new TcpdfFpdi('P');
         $nbPages = $pdf->setSourceFile($tmpFilename);
         $pdf->setPrintHeader(false);
+
 
         for ($i = 1; $i <= $nbPages; $i++) {
             $page = $pdf->importPage($i);
             $size = $pdf->getTemplateSize($page);
             $pdf->AddPage($size['orientation'], $size);
             $pdf->useImportedPage($page);
-
+            $pdf->SetAutoPageBreak(false, 0);
+            $pdf->SetMargins(0, 0, 0);
             if (!empty($data['signatures'])) {
                 foreach ($data['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
@@ -185,8 +187,12 @@ class DocumentController
                         
                         $imageTmpPath = $tmpPath . $GLOBALS['login'] . '_' . rand() . '_writing.png';
                         file_put_contents($imageTmpPath, $image);
-        
-                        $pdf->Image($imageTmpPath, $signature['positionX'], $signature['positionY']);
+
+                        // $pdf->Image($imageTmpPath, $signature['positionX'], $signature['positionY']);
+                        
+                        $pdf->SetY(0);
+                        $html = '<img src="'.$signature['fullPath'].'"/>';
+                        $pdf->writeHTML($html, true, false, true, false, '');
                     }
                 }
             }
