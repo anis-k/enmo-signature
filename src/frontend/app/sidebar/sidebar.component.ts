@@ -34,18 +34,22 @@ export class SidebarComponent implements OnInit {
       this.offset = this.offset + this.limit;
 
       this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
-      .subscribe((data: any) => {
-        this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
-        this.loadingList = false;
-        this.listContent.nativeElement.style.overflowY = 'auto';
-        this.snackBar.open('Liste des documents actualisée', null,
+        .subscribe(
+          (data: any) => {
+          this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
+          this.loadingList = false;
+          this.listContent.nativeElement.style.overflowY = 'auto';
+          this.snackBar.open('Liste des documents actualisée', null,
             {
-                duration: 3000,
-                panelClass: 'center-snackbar',
-                verticalPosition: 'top'
+              duration: 3000,
+              panelClass: 'center-snackbar',
+              verticalPosition: 'top'
             }
-        );
-      });
+          );
+        },
+        () => {
+          console.log('error !');
+        });
     }
   }
 
@@ -54,6 +58,18 @@ export class SidebarComponent implements OnInit {
       .subscribe((data: any) => {
         this.signaturesService.documentsList = data.documents;
         this.signaturesService.documentsListCount = data.fullCount;
+      },
+      (err: any) => {
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+          this.snackBar.open(err.error.errors, null,
+            {
+              duration: 3000,
+              panelClass: 'center-snackbar',
+              verticalPosition: 'top'
+            }
+          );
+        }
       });
   }
 

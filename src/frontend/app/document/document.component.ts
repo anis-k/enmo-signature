@@ -17,7 +17,6 @@ import {
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
     selector: 'app-document',
@@ -65,7 +64,7 @@ export class DocumentComponent implements OnInit {
 
     public context: CanvasRenderingContext2D;
 
-    constructor(private route: ActivatedRoute, public http: HttpClient,
+    constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
         public snackBar: MatSnackBar, public signaturesService: SignaturesContentService,
         private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
@@ -105,8 +104,17 @@ export class DocumentComponent implements OnInit {
                             this.renderingDoc = false;
                         }, 500);
                         this.loadNextDoc();
-                    }, () => {
-                        console.log('error !');
+                    }, (err: any) => {
+                        if (err.status === 401) {
+                            this.router.navigate(['/login']);
+                            this.snackBar.open(err.error.errors, null,
+                              {
+                                duration: 3000,
+                                panelClass: 'center-snackbar',
+                                verticalPosition: 'top'
+                              }
+                            );
+                          }
                     });
             } else {
                 this.snav.open();
@@ -136,7 +144,7 @@ export class DocumentComponent implements OnInit {
                 canvasContext: ctx,
                 viewport: viewport
             };
-            this.canvas.nativeElement.style.width = 768*scale+'px';
+            this.canvas.nativeElement.style.width = 768 * scale + 'px';
             this.canvas.nativeElement.style.height = 'auto';
             const renderTask = page.render(renderContext);
             renderTask.then(() => {
@@ -208,11 +216,11 @@ export class DocumentComponent implements OnInit {
 
     addAnnotation(e: any) {
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
-            this.annotationPadOptions.canvasWidth = 768*this.scale;
+            this.annotationPadOptions.canvasWidth = 768 * this.scale;
             this.annotationPadOptions.canvasHeight = $('.pdf-page-canvas').height();
-            //this.scale = 1;
+            // this.scale = 1;
             this.signaturesService.annotationMode = true;
-            //this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
+            // this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
             this.signaturePadPosX = 0;
             this.signaturePadPosY = 0;
             this.signaturesService.lockNote = true;
@@ -272,10 +280,10 @@ export class DocumentComponent implements OnInit {
 
     cancelAnnotation() {
         this.signaturePad.clear();
-        //this.scale = 1;
+        // this.scale = 1;
         this.signaturesService.annotationMode = false;
         this.signaturesService.lockNote = false;
-        //this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
+        // this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
     }
 
     freezDoc() {
@@ -388,23 +396,23 @@ export class DocumentComponent implements OnInit {
         } else {
             this.lockSignaturePad = true;
             this.signaturePad.off();
-        } 
+        }
     }
 
     zoomPlus() {
         this.lockSignaturePad = true;
         this.scale = 2;
         this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.signaturePad.set('canvasWidth', 768*this.scale);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight*this.scale);
+        this.signaturePad.set('canvasWidth', 768 * this.scale);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale);
     }
 
     zoomMinus() {
-        this.lockSignaturePad =true;
+        this.lockSignaturePad = true;
         this.scale = 1;
         this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.signaturePad.set('canvasWidth', 768*this.scale);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight*this.scale);
+        this.signaturePad.set('canvasWidth', 768 * this.scale);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale);
     }
 }
 

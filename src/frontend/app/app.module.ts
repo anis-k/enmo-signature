@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
@@ -13,6 +14,7 @@ import { AppMaterialModule } from './app-material.module';
 
 // COMPONENTS
 import { AppComponent } from './app.component';
+import { LoginComponent } from './login/login.component';
 import { SignaturesComponent } from './signatures/signatures.component';
 import { SignaturePadPageComponent } from './pad/pad.component';
 import { SignaturePadModule } from 'angular2-signaturepad';
@@ -32,6 +34,7 @@ import { SignaturesContentService } from './service/signatures.service';
 @NgModule({
   declarations: [
     AppComponent,
+    LoginComponent,
     SignaturesComponent,
     SignaturePadPageComponent,
     DrawerComponent,
@@ -43,6 +46,8 @@ import { SignaturesContentService } from './service/signatures.service';
     RejectInfoBottomSheetComponent,
   ],
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
@@ -55,6 +60,7 @@ import { SignaturesContentService } from './service/signatures.service';
     RouterModule.forRoot([
       { path: 'document/:id', component: DocumentComponent},
       { path: 'document', component: DocumentComponent},
+      { path: 'login', component: LoginComponent},
       { path: '**',   redirectTo: 'document', pathMatch: 'full' },
     ], { useHash: true }),
   ],
