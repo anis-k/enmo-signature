@@ -18,6 +18,7 @@ use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
+use User\models\UserModel;
 
 class AuthenticationController
 {
@@ -55,6 +56,8 @@ class AuthenticationController
 
         AuthenticationModel::setCookieAuth(['login' => $data['login']]);
 
-        return $response->withJson(['success' => 'success']);
+        $userInfo = UserModel::getByLogin(['login' => $data['login'], 'select' => ['id', 'firstname', 'lastname', 'mail']]);
+
+        return $response->withJson(['user' => $userInfo]);
     }
 }

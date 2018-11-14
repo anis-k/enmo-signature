@@ -1,3 +1,7 @@
+.main-header
+    height 25%
+    overflow auto
+
 .sidebar
     position relative
     height 100%
@@ -5,12 +9,13 @@
 
     &-header
         background #F1F4F4
-        height 10%
+        height 50px
         display flex
         align-items center
         justify-content center
         font-size 14px
         font-weight 600
+        padding-top 10px
         &-icon
             margin-right 15px
             position relative
@@ -27,12 +32,12 @@
         &-subtitle
             color #9B9B9B
     &-btn
-        height 10%
+        height 50px
         display flex
         align-items center
         justify-content space-around
     .nav
-        height 80%
+        height 75%
         overflow-y scroll
         margin-top 0px
         overflow-x hidden
@@ -83,3 +88,31 @@
     display flex
     align-items baseline
     justify-content center
+
+.profile-header
+    background #135F7F
+    height 95px
+    display flex
+    justify-content center
+    position relative
+
+.avatar
+    position absolute
+    background url(https://image.flaticon.com/icons/svg/147/147144.svg) white
+    width 65px
+    height 65px
+    border-radius 40px
+    bottom -20px
+    border solid 3px white
+
+.user
+    color white
+    padding-top 10px
+    font-weight bold
+    font-size 20px
+    
+.logout-button
+    font-size 30px
+    color white
+    position absolute
+    right 10px

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class SignaturesContentService {
+    userLogged: any = {};
     mainDocumentId: Number = 0;
     signaturesContent: any[] = [];
     notesContent: any[] = [];

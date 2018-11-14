@@ -8,6 +8,7 @@ import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-br
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { CookieService } from 'ngx-cookie-service';
 
 
 import { AppMaterialModule } from './app-material.module';
@@ -75,7 +76,8 @@ import { SignaturesContentService } from './service/signatures.service';
     {
     provide: HAMMER_GESTURE_CONFIG,
     useClass: HammerGestureConfig
-    }],
+    },
+    CookieService],
     exports: [
         RouterModule
     ],
