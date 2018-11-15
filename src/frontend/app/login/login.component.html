@@ -8,7 +8,7 @@
             <mat-form-field class="input-row">
                 <input name="password" matInput placeholder="Mot de passe" type="password" [(ngModel)]="newLogin.password">
             </mat-form-field>
-            <button type="submit" mat-button (click)="login()" [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton}}</button>
+            <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton}}</button>
         </form>
     </mat-card>
     <footer>
