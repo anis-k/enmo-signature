@@ -4,6 +4,7 @@
 TRUNCATE TABLE users;
 ALTER SEQUENCE users_id_seq RESTART WITH 1;
 INSERT INTO users (email, password, firstname, lastname, mode) VALUES ('jjane@maarch.com', '$2y$10$C.QSslBKD3yNMfRPuZfcaubFwPKiCkqqOUyAdOr5FSGKPaePwuEjG', 'Jenny', 'JANE', 'standard');
+INSERT INTO users (email, password, firstname, lastname, mode) VALUES ('ccornillac@maarch.com', '$2y$10$C.QSslBKD3yNMfRPuZfcaubFwPKiCkqqOUyAdOr5FSGKPaePwuEjG', 'Clovis', 'CORNILLAC', 'rest');
 
 ------------
 --DOCSERVERS
