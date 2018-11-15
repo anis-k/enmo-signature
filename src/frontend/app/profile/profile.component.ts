@@ -1,10 +1,9 @@
-import { Component, AfterViewInit, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, AfterViewInit, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatSnackBar, MatSidenav } from '@angular/material';
+import { MatIconRegistry, MatSidenav } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
-import { CookieService } from 'ngx-cookie-service';
+import { NotificationService } from '../service/notification.service';
 
 @Component({
     selector: 'app-my-profile',
@@ -18,7 +17,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
     profileInfo: any = {};
-    constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public snackBar: MatSnackBar, public signaturesService: SignaturesContentService) {
+    constructor(public http: HttpClient, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/assets/logo_white.svg'));
     }
 

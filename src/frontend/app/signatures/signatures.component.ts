@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-import { MatBottomSheet, MatBottomSheetRef, MatSnackBar } from '@angular/material';
+import { MatBottomSheet } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 // TEMP : A effacer une fois l'api en place
 import { DomSanitizer } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { HttpClient } from '@angular/common/http';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
+import { NotificationService } from '../service/notification.service';
 
 @Component({
   selector: 'app-signatures',
@@ -31,7 +31,7 @@ export class SignaturesComponent implements OnInit {
   count = 0;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
-     private sanitization: DomSanitizer, public snackBar: MatSnackBar) {
+     private sanitization: DomSanitizer, public notificationService: NotificationService) {
   }
   ngOnInit() {
     // TO DO IMPLEMENT ROUTE SIGNATURES USER LIST
@@ -83,8 +83,8 @@ export class SignaturesComponent implements OnInit {
       }
       this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
     }
-    $(".mat-sidenav-content").animate({ scrollTop: $(document).height() }, 1000);
-    $(".mat-sidenav-content").animate({ scrollLeft: $(document).width() }, 1000);
+    $('.mat-sidenav-content').animate({ scrollTop: $(document).height() }, 1000);
+    $('.mat-sidenav-content').animate({ scrollLeft: $(document).width() }, 1000);
     this.bottomSheetRef.dismiss();
   }
 
@@ -92,13 +92,7 @@ export class SignaturesComponent implements OnInit {
     this.http.delete('../rest/users/ ' + '1' + '/signatures/' + signature.id)
       .subscribe(() => {
           this.signaturesService.signaturesList.splice(i, 1);
-          this.snackBar.open('Signature supprimée', null,
-              {
-                  duration: 3000,
-                  panelClass: 'center-snackbar',
-                  verticalPosition: 'top'
-              }
-          );
+          this.notificationService.success('Signature supprimée');
           this.bottomSheetRef.dismiss();
       }, () => {
           console.log('error !');

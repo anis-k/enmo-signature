@@ -11,12 +11,12 @@ import {
     MatBottomSheet,
     MatBottomSheetRef,
     MatBottomSheetConfig,
-    MatSnackBar,
     MatSidenav
 } from '@angular/material';
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { NotificationService } from '../service/notification.service';
 
 @Component({
     selector: 'app-document',
@@ -66,7 +66,8 @@ export class DocumentComponent implements OnInit {
     public context: CanvasRenderingContext2D;
 
     constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
-        public snackBar: MatSnackBar, public signaturesService: SignaturesContentService,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
         private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
         PDFJS.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.js';
@@ -108,13 +109,7 @@ export class DocumentComponent implements OnInit {
                     }, (err: any) => {
                         if (err.status === 401) {
                             this.router.navigate(['/login']);
-                            this.snackBar.open('Veuillez vous reconnecter', null,
-                              {
-                                duration: 3000,
-                                panelClass: 'center-snackbar',
-                                verticalPosition: 'top'
-                              }
-                            );
+                            this.notificationService.error('Veuillez vous reconnecter');
                           }
                     });
             } else {
@@ -270,13 +265,7 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.annotationMode = false;
         this.signaturesService.lockNote = false;
         this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.snackBar.open('Annotation ajoutée', null,
-            {
-                duration: 3000,
-                panelClass: 'center-snackbar',
-                verticalPosition: 'top'
-            }
-        );
+        this.notificationService.success('Annotation ajoutée');
     }
 
     cancelAnnotation() {
@@ -363,13 +352,7 @@ export class DocumentComponent implements OnInit {
             if (result) {
                 this.signaturesService.signaturesContent = [];
                 this.signaturesService.notesContent = [];
-                this.snackBar.open('Annotations / signatures supprimées du document', null,
-                    {
-                        duration: 3000,
-                        panelClass: 'center-snackbar',
-                        verticalPosition: 'top'
-                    }
-                );
+                this.notificationService.success('Annotations / signatures supprimées du document');
             }
         });
     }

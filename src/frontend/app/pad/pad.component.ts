@@ -1,9 +1,9 @@
 import { Component, ViewChild, Input, Host, Output, EventEmitter } from '@angular/core';
 import { SignaturePad } from 'angular2-signaturepad/signature-pad';
 import { Observable } from 'rxjs';
-import { MatSnackBar } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
+import { NotificationService } from '../service/notification.service';
 
 interface AfterViewInit {
   ngAfterViewInit(): void;
@@ -37,7 +37,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
     canvasHeight: 315
   };
 
-  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public snackBar: MatSnackBar) { }
+  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
   ngAfterViewInit() {
     // this.signaturePad.clear();
@@ -94,13 +94,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
         this.reloaded.emit('reload');
         // this.store.dispatch({ type: HIDE_DRAWER });
         this.signaturePad.clear();
-        this.snackBar.open('Signature enregistrée', null,
-            {
-              duration: 3000,
-              panelClass : 'center-snackbar',
-              verticalPosition: 'top'
-            }
-          );
+        this.notificationService.success('Signature enregistrée');
       }, (err: any) => {
           console.log(err);
       });

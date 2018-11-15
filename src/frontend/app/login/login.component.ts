@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry, MatSnackBar } from '@angular/material';
@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
 import { CookieService } from 'ngx-cookie-service';
+import { NotificationService } from '../service/notification.service';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     labelButton = 'Se connecter';
     loadingConnexion = false;
 
-    constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public snackBar: MatSnackBar, public signaturesService: SignaturesContentService) {
+    constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/assets/logo_white.svg'));
     }
 
@@ -70,13 +71,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
             }, (err: any) => {
                 this.labelButton = 'Se connecter';
                 this.loadingConnexion = false;
-                this.snackBar.open(err.error.errors, null,
-                    {
-                        duration: 3000,
-                        panelClass: 'center-snackbar',
-                        verticalPosition: 'top'
-                    }
-                );
+                this.notificationService.error(err.error.errors);
             });
     }
 }

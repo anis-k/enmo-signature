@@ -3,10 +3,9 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
-import { MatSidenav, MatSnackBar } from '@angular/material';
-import * as $ from 'jquery';
+import { MatSidenav } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
-import { OutputType } from '@angular/core/src/view';
+import { NotificationService } from '../service/notification.service';
 
 interface AppState {
   sidebar: boolean;
@@ -26,7 +25,7 @@ export class SidebarComponent implements OnInit {
   @Input('snavRightComponent') snavRightComponent: MatSidenav;
   @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
-  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public snackBar: MatSnackBar) { }
+  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) { }
 
   handleScroll(event: ScrollEvent) {
     if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount) {
@@ -42,13 +41,7 @@ export class SidebarComponent implements OnInit {
           this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
           this.loadingList = false;
           this.listContent.nativeElement.style.overflowY = 'auto';
-          this.snackBar.open('Liste des documents actualisée', null,
-            {
-              duration: 3000,
-              panelClass: 'center-snackbar',
-              verticalPosition: 'top'
-            }
-          );
+          this.notificationService.success('Liste des documents actualisée');
         },
         () => {
           console.log('error !');
@@ -65,13 +58,7 @@ export class SidebarComponent implements OnInit {
       (err: any) => {
         if (err.status === 401) {
           this.router.navigate(['/login']);
-          this.snackBar.open('Veuillez vous reconnecter', null,
-            {
-              duration: 3000,
-              panelClass: 'center-snackbar',
-              verticalPosition: 'top'
-            }
-          );
+          this.notificationService.error('Veuillez vous reconnecter');
         }
       });
   }

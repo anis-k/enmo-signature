@@ -29,6 +29,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProfileComponent } from './profile/profile.component';
 
 // SERVICES
+import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
 import { SignaturesContentService } from './service/signatures.service';
 
 
@@ -46,7 +47,8 @@ import { SignaturesContentService } from './service/signatures.service';
     ConfirmModalComponent,
     SuccessInfoValidBottomSheetComponent,
     RejectInfoBottomSheetComponent,
-    ProfileComponent
+    ProfileComponent,
+    CustomSnackbarComponent
   ],
   imports: [
     FormsModule,
@@ -68,6 +70,7 @@ import { SignaturesContentService } from './service/signatures.service';
     ], { useHash: true }),
   ],
   entryComponents: [
+    CustomSnackbarComponent,
     WarnModalComponent,
     ConfirmModalComponent,
     SuccessInfoValidBottomSheetComponent,
@@ -75,6 +78,7 @@ import { SignaturesContentService } from './service/signatures.service';
     SignaturesComponent
   ],
   providers: [SignaturesContentService,
+    NotificationService,
     {
     provide: HAMMER_GESTURE_CONFIG,
     useClass: HammerGestureConfig
