@@ -5,7 +5,7 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>
-    <header style="position: fixed;" class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
+    <header style="position: fixed;" class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideDown]>
       <article class="header-infos">
         <section class="header-left">
           <button mat-icon-button (click)="this.snav.toggle();">
@@ -124,7 +124,7 @@
         <div class="page-info-page">page {{ pageNum }} / {{ totalPages }}</div>
       </section>
     </article>
-    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose">
+    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button [style.color]="action.color" [style.borderColor]="action.color" class="btn" (click)="launchEvent(action)"><i
             class="{{action.logo}} fa-2x"></i>{{action.label}}</button>

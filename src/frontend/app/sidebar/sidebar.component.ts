@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Input, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -15,7 +15,7 @@ interface AppState {
   templateUrl: 'sidebar.component.html',
   styleUrls: ['sidebar.component.styl']
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, AfterViewInit {
   sidebar$: Observable<boolean>;
   loadingList = false;
   offset = 0;
@@ -38,14 +38,14 @@ export class SidebarComponent implements OnInit {
       this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
         .subscribe(
           (data: any) => {
-          this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
-          this.loadingList = false;
-          this.listContent.nativeElement.style.overflowY = 'auto';
-          this.notificationService.success('Liste des documents actualisée');
-        },
-        () => {
-          console.log('error !');
-        });
+            this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
+            this.loadingList = false;
+            this.listContent.nativeElement.style.overflowY = 'auto';
+            this.notificationService.success('Liste des documents actualisée');
+          },
+          () => {
+            console.log('error !');
+          });
     }
   }
 
@@ -55,13 +55,21 @@ export class SidebarComponent implements OnInit {
         this.signaturesService.documentsList = data.documents;
         this.signaturesService.documentsListCount = data.fullCount;
       },
-      (err: any) => {
-        if (err.status === 401) {
-          this.router.navigate(['/login']);
-          this.notificationService.error('Veuillez vous reconnecter');
-        }
-      });
+        (err: any) => {
+          if (err.status === 401) {
+            this.router.navigate(['/login']);
+            this.notificationService.error('Veuillez vous reconnecter');
+          }
+        });
   }
+
+  ngAfterViewInit(): void {
+    if (this.signaturesService.mainDocumentId > 0 && this.signaturesService.documentsList.length > 0) {
+      this.router.navigate(['/document/' + this.signaturesService.documentsList[0].id]);
+    }
+  }
+
+
 
   gotTo(documentId: Number, i: any) {
     this.router.navigate(['/document/' + documentId]);

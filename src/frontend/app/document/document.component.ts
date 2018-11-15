@@ -17,15 +17,51 @@ import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
     selector: 'app-document',
     templateUrl: 'document.component.html',
     styleUrls: ['document.component.styl'],
+    animations: [
+        trigger(
+            'slideDown',
+            [
+                transition(
+                    ':enter', [
+                        style({ transform: 'translateY(-100%)', opacity: 0 }),
+                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                    ]
+                ),
+                transition(
+                    ':leave', [
+                        style({ transform: 'translateY(0)', 'opacity': 1 }),
+                        animate('500ms', style({ transform: 'translateY(-100%)', 'opacity': 0 })),
+                    ]
+                )]
+        ),
+        trigger(
+            'slideUp',
+            [
+                transition(
+                    ':enter', [
+                        style({ transform: 'translateY(100%)', opacity: 0 }),
+                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
+                    ]
+                ),
+                transition(
+                    ':leave', [
+                        style({ transform: 'translateY(0)', 'opacity': 1 }),
+                        animate('500ms', style({ transform: 'translateY(100%)', 'opacity': 0 })),
+                    ]
+                )]
+        )
+    ],
 })
 
 export class DocumentComponent implements OnInit {
 
+    loadingPage = true;
     pdf: any;
     pageNum = 1;
     signaturesContent: any = [];
@@ -103,6 +139,7 @@ export class DocumentComponent implements OnInit {
                         this.pdfRender(this.docList[this.currentDoc]);
                         this.context = (<HTMLCanvasElement>this.canvas.nativeElement).getContext('2d');
                         setTimeout(() => {
+                            this.loadingPage = false;
                             this.renderingDoc = false;
                         }, 500);
                         this.loadNextDoc();
