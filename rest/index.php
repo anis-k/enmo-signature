@@ -54,6 +54,7 @@ $app->get('/logout', \SrcCore\controllers\AuthenticationController::class . ':lo
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
 
 //Documents
+$app->post('/documents', \Document\controllers\DocumentController::class . ':create');
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
 $app->put('/documents/{id}/action', \Document\controllers\DocumentController::class . ':makeAction');

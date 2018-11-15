@@ -69,4 +69,22 @@ class AttachmentModel
 
         return $attachments;
     }
+
+    public static function create(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['main_document_id', 'subject']);
+        ValidatorModel::stringType($aArgs, ['reference', 'subject']);
+        ValidatorModel::intVal($aArgs, ['main_document_id']);
+
+        DatabaseModel::insert([
+            'table'         => 'attachments',
+            'columnsValues' => [
+                'main_document_id'  => $aArgs['main_document_id'],
+                'reference'         => empty($aArgs['reference']) ? null : $aArgs['reference'],
+                'subject'           => $aArgs['subject']
+            ]
+        ]);
+
+        return true;
+    }
 }

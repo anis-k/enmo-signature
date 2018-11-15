@@ -75,6 +75,33 @@ class DocumentModel
         return $aDocuments;
     }
 
+    public static function create(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['subject', 'status', 'processing_user', 'sender']);
+        ValidatorModel::stringType($aArgs, ['reference', 'subject', 'sender', 'sender_entity', 'recipient', 'priority']);
+        ValidatorModel::intVal($aArgs, ['status', 'processing_user']);
+
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'main_documents_id_seq']);
+
+        DatabaseModel::insert([
+            'table'         => 'main_documents',
+            'columnsValues' => [
+                'id'                => $nextSequenceId,
+                'reference'         => empty($aArgs['reference']) ? null : $aArgs['reference'],
+                'subject'           => $aArgs['subject'],
+                'status'            => $aArgs['status'],
+                'processing_user'   => $aArgs['processing_user'],
+                'sender'            => $aArgs['sender'],
+                'sender_entity'     => empty($aArgs['sender_entity']) ? null : $aArgs['sender_entity'],
+                'recipient'         => empty($aArgs['recipient']) ? null : $aArgs['recipient'],
+                'priority'          => empty($aArgs['priority']) ? null : $aArgs['priority'],
+                'limit_date'        => empty($aArgs['limit_date']) ? null : $aArgs['limit_date']
+            ]
+        ]);
+
+        return $nextSequenceId;
+    }
+
     public static function update(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['set', 'where', 'data']);

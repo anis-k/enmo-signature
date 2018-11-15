@@ -14,16 +14,15 @@ DROP TABLE IF EXISTS main_documents;
 CREATE TABLE main_documents
 (
   id serial NOT NULL,
-  external_id character varying(255),
-  reference character varying(255),
-  subject text,
-  doc_date timestamp without time zone,
-  status integer NOT NULL,
-  priority character varying(255),
+  reference CHARACTER VARYING(255),
+  subject text NOT NULL,
+  status INTEGER NOT NULL,
+  processing_user INTEGER NOT NULL,
   sender text NOT NULL,
   sender_entity text,
-  processing_user integer NOT NULL,
   recipient text,
+  priority CHARACTER VARYING(64),
+  limit_date timestamp without time zone,
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),
   CONSTRAINT main_documents_pkey PRIMARY KEY (id)
@@ -48,7 +47,7 @@ CREATE TABLE status
 (
   id serial,
   reference character varying(10) NOT NULL,
-  label character varying(50) NOT NULL,
+  label character varying(64) NOT NULL,
   CONSTRAINT status_pkey PRIMARY KEY (id),
   CONSTRAINT status_reference_key UNIQUE (reference)
 )

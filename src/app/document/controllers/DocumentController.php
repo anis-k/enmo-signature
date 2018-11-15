@@ -14,6 +14,7 @@
 
 namespace Document\controllers;
 
+use Respect\Validation\Validator;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
 use Convert\models\AdrModel;
@@ -103,6 +104,58 @@ class DocumentController
         $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
 
         return $response->withJson(['document' => $document]);
+    }
+
+    public function create(Request $request, Response $response)
+    {
+        $data = $request->getParams();
+
+        $check = Validator::stringType()->notEmpty()->validate($data['encodedZipDocument']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['subject']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['status']);
+        $check = $check && Validator::intVal()->notEmpty()->validate($data['processing_user']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['sender']);
+        if (!$check) {
+            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        }
+
+        $data['attachments'] = empty($data['attachments']) ? [] : $data['attachments'];
+//        foreach ($data['attachments'] as $key => $attachment) {
+//            $check = Validator::stringType()->notEmpty()->validate($attachment['encodedZipDocument']);
+//            $check = $check && Validator::stringType()->notEmpty()->validate($attachment['subject']);
+//            if (!$check) {
+//                return $response->withStatus(400)->withJson(['errors' => "Missing data for attachment {$key}"]);
+//            }
+//        }
+
+        $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $data['encodedZipDocument']]);
+        if (!empty($encodedDocument['errors'])) {
+            return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
+        }
+
+        $storeInfos = DocserverController::storeResourceOnDocServer([
+            'encodedFile'       => $encodedDocument['encodedDocument'],
+            'format'            => 'pdf',
+            'docserverType'     => 'DOC'
+        ]);
+        if (!empty($storeInfos['errors'])) {
+            return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+        }
+
+        $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => [$data['status']]]);
+        $data['status'] = $status[0]['id'];
+
+        $id = DocumentModel::create($data);
+
+        AdrModel::createDocumentAdr([
+            'documentId'     => $id,
+            'type'           => 'DOC',
+            'path'           => $storeInfos['path'],
+            'filename'       => $storeInfos['filename'],
+            'fingerprint'    => $storeInfos['fingerprint']
+        ]);
+
+        return $response->withJson(['documentId' => $id]);
     }
 
     public function makeAction(Request $request, Response $response, array $args)
@@ -245,5 +298,36 @@ class DocumentController
         }
 
         return true;
+    }
+
+    public static function getEncodedDocumentFromEncodedZip(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['encodedZipDocument']);
+        ValidatorModel::stringType($args, ['encodedZipDocument']);
+
+        $tmpPath = CoreConfigModel::getTmpPath();
+
+        $zipDocumentOnTmp = $tmpPath . mt_rand() . '_parapheur.zip';
+        file_put_contents($zipDocumentOnTmp, base64_decode($args['encodedZipDocument']));
+
+        $zipArchive = new \ZipArchive();
+        $open = $zipArchive->open($zipDocumentOnTmp);
+        if ($open != true) {
+            return ['errors' => "getDocumentFromEncodedZip : $open"];
+        }
+
+        $dirOnTmp = $tmpPath . mt_rand() . '_parapheur';
+        if (!$zipArchive->extractTo($dirOnTmp)) {
+            return ['errors' => "getDocumentFromEncodedZip : Extract failed"];
+        }
+
+        $filesOnTmp = scandir($dirOnTmp);
+        foreach ($filesOnTmp as $fileOnTmp) {
+            if ($fileOnTmp != '.' && $fileOnTmp != '..') {
+                return ['encodedDocument' => base64_encode(file_get_contents("{$dirOnTmp}/{$fileOnTmp}"))];
+            }
+        }
+
+        return ['errors' => "getDocumentFromEncodedZip : No document was found in Zip"];
     }
 }

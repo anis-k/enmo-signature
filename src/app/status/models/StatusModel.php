@@ -19,6 +19,21 @@ use SrcCore\models\ValidatorModel;
 
 class StatusModel
 {
+    public static function get(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['select']);
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
+
+        $statuses = DatabaseModel::select([
+            'select'    => $aArgs['select'],
+            'table'     => ['status'],
+            'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
+            'data'      => empty($aArgs['data']) ? [] : $aArgs['data']
+        ]);
+
+        return $statuses;
+    }
+
     public static function getById(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['id']);
