@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatSnackBar } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';

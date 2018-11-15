@@ -1,7 +1,7 @@
 <h1 mat-dialog-title><i class="fa fa-exclamation-triangle fa-2x"></i><br/>Attention !</h1>
 <div mat-dialog-content>
-  <p *ngIf="signaturesService.notesContent.length == 0">Vous êtes sur le point de refuser ce document sans annotation !</p>
-  <p *ngIf="signaturesService.notesContent.length > 0">Souhaitez-vous confirmer ?</p>
+  <p *ngIf="signaturesService.notesContent.length == 0 && signaturesService.signaturesContent.length == 0">Vous êtes sur le point de refuser ce document sans annotation !</p>
+  <p *ngIf="signaturesService.notesContent.length > 0 || signaturesService.signaturesContent.length > 0">Souhaitez-vous confirmer ?</p>
 </div>
 <div mat-dialog-actions>
   <button class="btn" mat-button (click)="this.dialogRef.close('annotation');" *ngIf="signaturesService.notesContent.length == 0"><i class="fas fa-pen-alt fa-2x"></i> Annoter ce document</button>
