@@ -58,6 +58,7 @@ export class DocumentComponent implements OnInit {
 
     @ViewChild('pdfpage') elPdfContainer: ElementRef;
     @ViewChild('snav') snav: MatSidenav;
+    @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('canvas') canvas: ElementRef;
     @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
     @ViewChild(SignaturePad) signaturePad: SignaturePad;

@@ -3,7 +3,7 @@
     <mat-card class="login-form" *ngIf="!loadingForm" [@myAnimation]>
         <form (ngSubmit)="login()">
             <mat-form-field class="input-row">
-                <input name="login" matInput placeholder="Courriel" [(ngModel)]="newLogin.mail" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()">
+                <input name="login" matInput placeholder="Courriel" [(ngModel)]="newLogin.mail" type="mail" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()">
             </mat-form-field>
             <mat-form-field class="input-row">
                 <input name="password" matInput placeholder="Mot de passe" type="password" [(ngModel)]="newLogin.password">

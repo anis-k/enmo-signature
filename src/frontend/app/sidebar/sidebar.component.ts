@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { ScrollEvent } from 'ngx-scroll-event';
 import { MatSidenav, MatSnackBar } from '@angular/material';
 import * as $ from 'jquery';
 import { SignaturesContentService } from '../service/signatures.service';
+import { OutputType } from '@angular/core/src/view';
 
 interface AppState {
   sidebar: boolean;
@@ -22,6 +23,7 @@ export class SidebarComponent implements OnInit {
   limit = 25;
 
   @ViewChild('listContent') listContent: ElementRef;
+  @Input('snavComponent') snavComponent: MatSidenav;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public snackBar: MatSnackBar) { }
 

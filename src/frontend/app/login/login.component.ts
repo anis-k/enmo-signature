@@ -64,11 +64,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
         this.http.post('../rest/log', { 'email': this.newLogin.mail, 'password': this.newLogin.password })
             .subscribe((data: any) => {
-                this.signaturesService.userLogged = data.user;
-                this.cookieService.set( 'maarchParafUserId', data.user.id );
-                this.cookieService.set( 'maarchParafUserFirstname', data.user.firstname );
-                this.cookieService.set( 'maarchParafUserLastname', data.user.lastname );
-                this.cookieService.set( 'maarchParafUserMail', data.user.mail );
+                const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
+                this.signaturesService.userLogged = cookieInfo;
                 this.router.navigate(['/document/']);
             }, (err: any) => {
                 this.labelButton = 'Se connecter';
