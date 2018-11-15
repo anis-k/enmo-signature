@@ -1,0 +1,37 @@
+<nav class="sidebar">
+    <div class="main-header">
+        <header class="profile-header">
+            <div class="user">
+                Mon Profil
+            </div>
+            <div class="avatar">
+            </div>
+        </header>
+    </div>
+    <div class="nav">
+        <form class="profile-content">
+            <mat-form-field class="input-row">
+                <input name="login" matInput placeholder="Courriel" type="mail" [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()" disabled>
+            </mat-form-field>
+            <mat-form-field class="input-row">
+                <input name="firstname" matInput placeholder="Prénom" [(ngModel)]="profileInfo.firstname">
+            </mat-form-field>
+            <mat-form-field class="input-row">
+                <input name="nom" matInput placeholder="Nom" [(ngModel)]="profileInfo.lastname">
+            </mat-form-field>
+            <mat-form-field class="input-row">
+                <input name="password" matInput placeholder="Mot de passe" type="password">
+            </mat-form-field>
+            <mat-form-field class="input-row">
+                <input name="password" matInput placeholder="Nouveau mot de passe" type="password">
+            </mat-form-field>
+            <mat-form-field class="input-row">
+                <input name="password" matInput placeholder="Confirmer le nouveau mot de passe" type="password">
+            </mat-form-field>
+            <span class="actions">
+                <button mat-raised-button color="primary" type="submit">Valider</button>
+                <button mat-raised-button (click)="closeProfile();">Annuler</button>
+            </span>
+        </form>
+    </div>
+</nav>

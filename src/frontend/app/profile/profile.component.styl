@@ -1,0 +1,81 @@
+.sidebar
+    position relative
+    height 100%
+    overflow hidden
+
+    &-header
+        background #F1F4F4
+        height 50px
+        display flex
+        align-items center
+        justify-content center
+        font-size 14px
+        font-weight 600
+        padding-top 10px
+        &-icon
+            margin-right 15px
+            position relative
+            &.notification
+                &:after
+                    position absolute
+                    right -5px
+                    top -5px
+                    width 10px
+                    height 10px
+                    border-radius 50%
+                    background red
+                    content ""
+        &-subtitle
+            color #9B9B9B
+    &-btn
+        height 50px
+        display flex
+        align-items center
+        justify-content space-around
+    .nav
+        margin-top 0px
+
+.profile-header
+    background #135F7F
+    height 95px
+    display flex
+    justify-content center
+    position relative
+
+.avatar
+    position absolute
+    background url(https://image.flaticon.com/icons/svg/147/147144.svg) white
+    width 65px
+    height 65px
+    border-radius 40px
+    bottom -20px
+    border solid 3px white
+
+.user
+    color white
+    padding-top 10px
+    font-weight bold
+    font-size 20px
+
+.input-row
+  width 100%
+  padding-top 10px
+  padding-bottom 10px
+
+.profile-content
+  padding 10px
+  text-align center
+
+.profile-content button
+  font-size 30px
+  padding 10px
+  margin 10px
+
+.actions
+    position absolute
+    bottom 0px
+    left 0
+    display flex
+    width 100%
+    justify-content center
+    

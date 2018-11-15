@@ -1,7 +1,7 @@
 <mat-sidenav-container autosize>
 
   <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
-    <app-sidebar [snavComponent]="this.snavRight" ></app-sidebar>
+    <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight" ></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content>
     <div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>
@@ -130,8 +130,7 @@
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350" position='end'>
-    <!--<my-profile></my-profile>-->
-    toto
+  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width.%]="80" position='end' disableClose='true'>
+    <app-my-profile [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
   </mat-sidenav>
 </mat-sidenav-container>

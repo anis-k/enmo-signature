@@ -23,7 +23,8 @@ export class SidebarComponent implements OnInit {
   limit = 25;
 
   @ViewChild('listContent') listContent: ElementRef;
-  @Input('snavComponent') snavComponent: MatSidenav;
+  @Input('snavRightComponent') snavRightComponent: MatSidenav;
+  @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public snackBar: MatSnackBar) { }
 
@@ -79,5 +80,10 @@ export class SidebarComponent implements OnInit {
     this.router.navigate(['/document/' + documentId]);
     this.signaturesService.indexDocumentsList = i;
     this.sidenav.close();
+  }
+
+  openProfile() {
+    this.snavLeftComponent.close();
+    this.snavRightComponent.open();
   }
 }

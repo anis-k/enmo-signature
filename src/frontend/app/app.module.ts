@@ -26,6 +26,7 @@ import { DocumentComponent,
   SuccessInfoValidBottomSheetComponent,
   RejectInfoBottomSheetComponent } from './document/document.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { ProfileComponent } from './profile/profile.component';
 
 // SERVICES
 import { SignaturesContentService } from './service/signatures.service';
@@ -45,6 +46,7 @@ import { SignaturesContentService } from './service/signatures.service';
     ConfirmModalComponent,
     SuccessInfoValidBottomSheetComponent,
     RejectInfoBottomSheetComponent,
+    ProfileComponent
   ],
   imports: [
     FormsModule,
