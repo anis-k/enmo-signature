@@ -3,14 +3,14 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2017 Setasign - Jan Slabon (https://www.setasign.com)
+ * @copyright Copyright (c) 2018 Setasign - Jan Slabon (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
- * @version   2.0.3
- */
+  */
 
 namespace setasign\Fpdi;
 
 use setasign\Fpdi\PdfParser\CrossReference\CrossReferenceException;
+use setasign\Fpdi\PdfParser\PdfParserException;
 use setasign\Fpdi\PdfParser\Type\PdfIndirectObject;
 use setasign\Fpdi\PdfParser\Type\PdfNull;
 
@@ -30,7 +30,7 @@ class Fpdi extends FpdfTpl
      *
      * @string
      */
-    const VERSION = '2.0.3';
+    const VERSION = '2.1.1';
 
     /**
      * Draws an imported page or a template onto the page or another template.
@@ -75,7 +75,7 @@ class Fpdi extends FpdfTpl
     public function getTemplateSize($tpl, $width = null, $height = null)
     {
         $size = parent::getTemplateSize($tpl, $width, $height);
-        if (false === $size) {
+        if ($size === false) {
             return $this->getImportedPageSize($tpl, $width, $height);
         }
 
@@ -84,6 +84,8 @@ class Fpdi extends FpdfTpl
 
     /**
      * @inheritdoc
+     * @throws CrossReferenceException
+     * @throws PdfParserException
      */
     protected function _putimages()
     {

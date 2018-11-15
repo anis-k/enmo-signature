@@ -7,8 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Datamatrix' => $vendorDir . '/tecnickcom/tcpdf/include/barcodes/datamatrix.php',
-    'OpenIDConnectClient' => $vendorDir . '/jumbojett/openid-connect-php/OpenIDConnectClient.php',
-    'OpenIDConnectClientException' => $vendorDir . '/jumbojett/openid-connect-php/OpenIDConnectClient.php',
     'PDF417' => $vendorDir . '/tecnickcom/tcpdf/include/barcodes/pdf417.php',
     'QRcode' => $vendorDir . '/tecnickcom/tcpdf/include/barcodes/qrcode.php',
     'TCPDF' => $vendorDir . '/tecnickcom/tcpdf/tcpdf.php',
