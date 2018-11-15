@@ -13,7 +13,9 @@
           </button>
         </section>
         <div class="header-info">
-          <p class="c-active-color bold">{{mainDocument.reference}}</p>
+          <p class="c-active-color bold">Référence : </p>
+          <p>{{mainDocument.reference}}</p>
+          <p class="c-active-color bold">Sujet : </p>
           <p>{{mainDocument.subject}}</p>
         </div>
         <div class="header-info">
@@ -23,9 +25,9 @@
           <p>{{mainDocument.recipient}}</p>
         </div>
         <div class="header-info">
-          <p class="c-active-color bold">Bannette : </p>
-          <p>???</p>
-          <p class="c-active-color bold">A signer par : </p>
+          <p class="c-active-color bold">Rédigé le : </p>
+          <p>{{mainDocument.doc_date}}</p>
+          <p class="c-active-color bold">À signer par : </p>
           <p>{{mainDocument.processingUserDisplay}}</p>
         </div>
         <section class="header-right">

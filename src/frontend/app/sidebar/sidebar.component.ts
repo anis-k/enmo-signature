@@ -65,7 +65,7 @@ export class SidebarComponent implements OnInit {
       (err: any) => {
         if (err.status === 401) {
           this.router.navigate(['/login']);
-          this.snackBar.open(err.error.errors, null,
+          this.snackBar.open('Veuillez vous reconnecter', null,
             {
               duration: 3000,
               panelClass: 'center-snackbar',
