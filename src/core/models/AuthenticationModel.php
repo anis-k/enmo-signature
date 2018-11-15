@@ -87,7 +87,7 @@ class AuthenticationModel
         }
 
         $user = UserModel::get([
-            'select'    => ['cookie_key'],
+            'select'    => ['id', 'cookie_key', 'firstname', 'lastname'],
             'where'     => ['email = ?', 'cookie_date > CURRENT_TIMESTAMP'],
             'data'      => [$args['email']]
         ]);
@@ -110,8 +110,14 @@ class AuthenticationModel
             'data'  => [$args['email']]
         ]);
 
-        $cookieData = json_encode(['email' => $args['email'], 'cookieKey' => $cookieKey]);
-        setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, true);
+        $cookieData = json_encode([
+            'id'        => $user[0]['id'],
+            'email'     => $args['email'],
+            'firstname' => $user[0]['firstname'],
+            'lastname'  => $user[0]['lastname'],
+            'cookieKey' => $cookieKey
+        ]);
+        setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, false);
 
         return true;
     }
