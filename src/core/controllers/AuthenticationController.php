@@ -24,40 +24,40 @@ class AuthenticationController
 {
     public static function authentication()
     {
-        $login = null;
+        $email = null;
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
-            if (AuthenticationModel::authentication(['login' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
-                $login = $_SERVER['PHP_AUTH_USER'];
+            if (AuthenticationModel::authentication(['email' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
+                $email = $_SERVER['PHP_AUTH_USER'];
             }
         } else {
             $cookie = AuthenticationModel::getCookieAuth();
             if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
-                AuthenticationModel::setCookieAuth(['login' => $cookie['login']]);
-                $login = $cookie['login'];
+                AuthenticationModel::setCookieAuth(['email' => $cookie['email']]);
+                $email = $cookie['email'];
             }
         }
 
-        return $login;
+        return $email;
     }
 
     public static function log(Request $request, Response $response)
     {
         $data = $request->getParams();
 
-        $check = Validator::stringType()->notEmpty()->validate($data['login']);
+        $check = Validator::stringType()->notEmpty()->validate($data['email']);
         $check = $check && Validator::stringType()->notEmpty()->validate($data['password']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        if (!AuthenticationModel::authentication(['login' => $data['login'], 'password' => $data['password']])) {
+        if (!AuthenticationModel::authentication(['email' => $data['email'], 'password' => $data['password']])) {
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        AuthenticationModel::setCookieAuth(['login' => $data['login']]);
+        AuthenticationModel::setCookieAuth(['email' => $data['email']]);
 
-        $userInfo = UserModel::getByLogin(['login' => $data['login'], 'select' => ['id', 'firstname', 'lastname', 'mail']]);
+        $user = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id', 'email', 'firstname', 'lastname']]);
 
-        return $response->withJson(['user' => $userInfo]);
+        return $response->withJson(['user' => $user]);
     }
 }

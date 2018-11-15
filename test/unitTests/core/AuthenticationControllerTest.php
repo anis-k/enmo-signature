@@ -20,7 +20,7 @@ class AuthenticationControllerTest extends TestCase
 
         //  ERRORS
         $aArgs = [
-            'login'     => 'jjane',
+            'email'     => 'jjane@maarch.com',
             'password'  => 'maarche'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
@@ -31,7 +31,7 @@ class AuthenticationControllerTest extends TestCase
 
         //  ERRORS
         $aArgs = [
-            'logi'     => 'jjane',
+            'logi'     => 'jjane@maarch.com',
             'password'  => 'maarche'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);

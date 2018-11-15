@@ -40,8 +40,11 @@ class DocserverController
         if (!empty($docinfo['errors'])) {
             return ['errors' => '[storeRessourceOnDocserver] ' . $docinfo['errors']];
         }
-        $docinfo['fileDestinationName'] .= ".{$args['format']}";
+        if (!DocserverController::isPathAvailable(['path' => $docinfo['destinationDir']])) {
+            return ['errors' => '[storeRessourceOnDocserver] Path to docserver is not available'];
+        }
 
+        $docinfo['fileDestinationName'] .= ".{$args['format']}";
         $file = base64_decode($args['encodedFile']);
         file_put_contents($docinfo['destinationDir'] . $docinfo['fileDestinationName'], $file);
         chmod($docinfo['destinationDir'] . $docinfo['fileDestinationName'], 0770);
@@ -178,5 +181,23 @@ class DocserverController
         ValidatorModel::stringType($args, ['path']);
 
         return hash_file(self::FINGERPRINT_MODE, $args['path']);
+    }
+
+    private static function isPathAvailable(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['path']);
+        ValidatorModel::stringType($aArgs, ['path']);
+
+        if (!is_dir($aArgs['path'])) {
+            return false;
+        }
+        if (!is_readable($aArgs['path'])) {
+            return false;
+        }
+        if (!is_writable($aArgs['path'])) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -37,14 +37,14 @@ class DocumentController
         $data['limit'] = (int)$data['limit'];
         $data['offset'] = (int)$data['offset'];
 
-        if (empty($data['offset']) || (int)$data['offset'] == 0) {
+        if (empty($data['offset'])) {
             $data['offset'] = 0;
         }
-        if (empty($data['limit']) || (int)$data['limit'] == 0) {
+        if (empty($data['limit'])) {
             $data['limit'] = 0;
         }
 
-        $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
 
         $fullCount = 0;
         $documents = DocumentModel::getByUserId(['select' => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'], 'userId' => $user['id'], 'limit' => $data['limit'], 'offset' => $data['offset']]);
@@ -60,7 +60,7 @@ class DocumentController
 
     public function getById(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'login' => $GLOBALS['login']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -122,7 +122,7 @@ class DocumentController
             }
         }*/
 
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'login' => $GLOBALS['login']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -151,7 +151,7 @@ class DocumentController
         }
 
         $tmpPath     = CoreConfigModel::getTmpPath();
-        $tmpFilename = $tmpPath . $GLOBALS['login'] . '_' . rand() . '_' . $adr[0]['filename'];
+        $tmpFilename = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_' . $adr[0]['filename'];
         copy($pathToDocument, $tmpFilename);
 
         $pdf     = new TcpdfFpdi('P');
@@ -185,7 +185,7 @@ class DocumentController
                             return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                         }
                         
-                        $imageTmpPath = $tmpPath . $GLOBALS['login'] . '_' . rand() . '_writing.png';
+                        $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.png';
                         file_put_contents($imageTmpPath, $image);
 
                         // $pdf->Image($imageTmpPath, $signature['positionX'], $signature['positionY']);
@@ -233,11 +233,11 @@ class DocumentController
 
     public static function hasRightById(array $args)
     {
-        ValidatorModel::notEmpty($args, ['id', 'login']);
+        ValidatorModel::notEmpty($args, ['id', 'email']);
         ValidatorModel::intVal($args, ['id']);
-        ValidatorModel::stringType($args, ['login']);
+        ValidatorModel::stringType($args, ['email']);
 
-        $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
 
         $document = DocumentModel::get(['select' => [1], 'where' => ['processing_user = ?', 'id = ?'], 'data' => [$user['id'], $args['id']]]);
         if (empty($document)) {

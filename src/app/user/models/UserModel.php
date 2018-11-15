@@ -55,16 +55,16 @@ class UserModel
         return $aUser[0];
     }
 
-    public static function getByLogin(array $aArgs)
+    public static function getByEmail(array $aArgs)
     {
-        ValidatorModel::notEmpty($aArgs, ['login']);
-        ValidatorModel::stringType($aArgs, ['login']);
+        ValidatorModel::notEmpty($aArgs, ['email']);
+        ValidatorModel::stringType($aArgs, ['email']);
 
         $aUser = DatabaseModel::select([
             'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
             'table'     => ['users'],
-            'where'     => ['login = ?'],
-            'data'      => [$aArgs['login']]
+            'where'     => ['email = ?'],
+            'data'      => [$aArgs['email']]
         ]);
 
         if (empty($aUser)) {
@@ -77,12 +77,12 @@ class UserModel
     public static function getLabelledUserById(array $aArgs)
     {
         ValidatorModel::intVal($aArgs, ['id']);
-        ValidatorModel::stringType($aArgs, ['login']);
+        ValidatorModel::stringType($aArgs, ['email']);
 
         if (!empty($aArgs['id'])) {
             $rawUser = UserModel::getById(['id' => $aArgs['id'], 'select' => ['firstname', 'lastname']]);
-        } elseif (!empty($aArgs['login'])) {
-            $rawUser = UserModel::getByLogin(['login' => $aArgs['login'], 'select' => ['firstname', 'lastname']]);
+        } elseif (!empty($aArgs['email'])) {
+            $rawUser = UserModel::getByEmail(['email' => $aArgs['email'], 'select' => ['firstname', 'lastname']]);
         }
 
         $labelledUser = '';

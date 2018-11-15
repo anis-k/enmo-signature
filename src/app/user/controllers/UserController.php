@@ -36,7 +36,7 @@ class UserController
 
     public function getSignatures(Request $request, Response $response, array $args)
     {
-        $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
         if ($user['id'] != $args['id']) {
             return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
         }
@@ -84,7 +84,7 @@ class UserController
 
     public function createSignature(Request $request, Response $response, array $args)
     {
-        $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
         if ($user['id'] != $args['id']) {
             return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
         }
@@ -119,7 +119,7 @@ class UserController
 
     public function deleteSignature(Request $request, Response $response, array $args)
     {
-        $user = UserModel::getByLogin(['login' => $GLOBALS['login'], 'select' => ['id']]);
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
         if ($user['id'] != $args['id']) {
             return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
         }

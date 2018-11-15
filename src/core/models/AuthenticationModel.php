@@ -25,14 +25,14 @@ class AuthenticationModel
 
     public static function authentication(array $args)
     {
-        ValidatorModel::notEmpty($args, ['login', 'password']);
-        ValidatorModel::stringType($args, ['login', 'password']);
+        ValidatorModel::notEmpty($args, ['email', 'password']);
+        ValidatorModel::stringType($args, ['email', 'password']);
 
         $aReturn = DatabaseModel::select([
             'select'    => ['password'],
             'table'     => ['users'],
-            'where'     => ['login = ?', 'enabled = ?'],
-            'data'      => [$args['login'], 'true']
+            'where'     => ['email = ?', 'enabled = ?'],
+            'data'      => [$args['email'], 'true']
         ]);
 
         if (empty($aReturn[0])) {
@@ -57,14 +57,14 @@ class AuthenticationModel
 
     public static function cookieAuthentication(array $args)
     {
-        ValidatorModel::notEmpty($args, ['login', 'cookieKey']);
-        ValidatorModel::stringType($args, ['login', 'cookieKey']);
+        ValidatorModel::notEmpty($args, ['email', 'cookieKey']);
+        ValidatorModel::stringType($args, ['email', 'cookieKey']);
 
         $aReturn = DatabaseModel::select([
             'select'    => [1],
             'table'     => ['users'],
-            'where'     => ['login = ?', 'cookie_key = ?', 'cookie_date > CURRENT_TIMESTAMP'],
-            'data'      => [$args['login'], $args['cookieKey']]
+            'where'     => ['email = ?', 'cookie_key = ?', 'cookie_date > CURRENT_TIMESTAMP'],
+            'data'      => [$args['email'], $args['cookieKey']]
         ]);
 
         if (empty($aReturn[0])) {
@@ -76,8 +76,8 @@ class AuthenticationModel
 
     public static function setCookieAuth(array $args)
     {
-        ValidatorModel::notEmpty($args, ['login']);
-        ValidatorModel::stringType($args, ['login']);
+        ValidatorModel::notEmpty($args, ['email']);
+        ValidatorModel::stringType($args, ['email']);
 
         $cookieTime = 1;
 
@@ -88,11 +88,11 @@ class AuthenticationModel
 
         $user = UserModel::get([
             'select'    => ['cookie_key'],
-            'where'     => ['login = ?', 'cookie_date > CURRENT_TIMESTAMP'],
-            'data'      => [$args['login']]
+            'where'     => ['email = ?', 'cookie_date > CURRENT_TIMESTAMP'],
+            'data'      => [$args['email']]
         ]);
         if (empty($user[0]['cookie_key'])) {
-            $cookieKey = AuthenticationModel::getPasswordHash($args['login']);
+            $cookieKey = AuthenticationModel::getPasswordHash($args['email']);
         } else {
             $cookieKey = $user[0]['cookie_key'];
         }
@@ -106,11 +106,11 @@ class AuthenticationModel
                 'cookie_key'    => $cookieKey,
                 'cookie_date'   => date('Y-m-d H:i:s', $cookieTime),
             ],
-            'where' => ['login = ?'],
-            'data'  => [$args['login']]
+            'where' => ['email = ?'],
+            'data'  => [$args['email']]
         ]);
 
-        $cookieData = json_encode(['login' => $args['login'], 'cookieKey' => $cookieKey]);
+        $cookieData = json_encode(['email' => $args['email'], 'cookieKey' => $cookieKey]);
         setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, true);
 
         return true;

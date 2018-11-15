@@ -72,20 +72,19 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
   id serial NOT NULL,
-  login character varying(128) NOT NULL,
-  "password" character varying(255) DEFAULT NULL::character varying,
-  firstname character varying(255) DEFAULT NULL::character varying,
-  lastname character varying(255) DEFAULT NULL::character varying,
-  mail character varying(255) DEFAULT NULL::character varying,
+  email character varying(128) NOT NULL,
+  "password" character varying(255) NOT NULL,
+  firstname character varying(128) NOT NULL,
+  lastname character varying(128) NOT NULL,
   enabled boolean DEFAULT TRUE,
-  mode character varying(50) DEFAULT NULL::character varying,
+  mode character varying(50) NOT NULL,
   cookie_key character varying(255) DEFAULT NULL::character varying,
   cookie_date timestamp without time zone,
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   failed_authentication INTEGER DEFAULT 0,
   locked_until TIMESTAMP without time zone,
   CONSTRAINT users_pkey PRIMARY KEY (id),
-  CONSTRAINT users_login_key UNIQUE (login)
+  CONSTRAINT users_login_key UNIQUE (email)
 )
 WITH (OIDS=FALSE);
 

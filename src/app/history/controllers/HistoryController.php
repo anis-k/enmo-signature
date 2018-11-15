@@ -74,7 +74,7 @@ class HistoryController
         // LogsController::add($aArgs);
 
         if (empty($aArgs['userId'])) {
-            $aArgs['userId'] = $GLOBALS['login'];
+            $aArgs['userId'] = $GLOBALS['email'];
         }
 
         HistoryModel::create([
