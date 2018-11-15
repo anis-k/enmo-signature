@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry, MatSnackBar } from '@angular/material';
@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     loadingForm = true;
     newLogin = {
-        id: '',
+        mail: '',
         password: ''
     };
     labelButton = 'Se connecter';
@@ -62,7 +62,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.labelButton = 'Connexion ...';
         this.loadingConnexion = true;
 
-        this.http.post('../rest/log', { 'login': this.newLogin.id, 'password': this.newLogin.password })
+        this.http.post('../rest/log', { 'email': this.newLogin.mail, 'password': this.newLogin.password })
             .subscribe((data: any) => {
                 this.signaturesService.userLogged = data.user;
                 this.cookieService.set( 'maarchParafUserId', data.user.id );

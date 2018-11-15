@@ -29,9 +29,9 @@
           <p>{{mainDocument.processingUserDisplay}}</p>
         </div>
         <section class="header-right">
-          <button [disabled]="this.signaturesService.signaturesContent.length == 0" mat-icon-button title="Effacer les annotions / signatures"
+          <button [disabled]="this.signaturesService.signaturesContent.length == 0 && this.signaturesService.notesContent.length == 0" mat-icon-button title="Effacer les annotions / signatures"
             (click)="removeTags();">
-            <mat-icon [ngClass]="[this.signaturesService.signaturesContent.length == 0 ? '' : 'red']" fontSet="fas"
+            <mat-icon [ngClass]="[this.signaturesService.signaturesContent.length == 0  && this.signaturesService.notesContent.length == 0 ? '' : 'red']" fontSet="fas"
               fontIcon="fa-eraser"></mat-icon>
           </button>
         </section>

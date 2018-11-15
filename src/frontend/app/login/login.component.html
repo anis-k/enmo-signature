@@ -3,11 +3,10 @@
     <mat-card class="login-form" *ngIf="!loadingForm" [@myAnimation]>
         <form (ngSubmit)="login()">
             <mat-form-field class="input-row">
-                <input name="login" matInput placeholder="Adresse mail" [(ngModel)]="newLogin.id">
+                <input name="login" matInput placeholder="Courriel" [(ngModel)]="newLogin.mail" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()" required>
             </mat-form-field>
-
             <mat-form-field class="input-row">
-                <input name="password" matInput placeholder="Mot de passe" type="password" [(ngModel)]="newLogin.password">
+                <input name="password" matInput placeholder="Mot de passe" type="password" [(ngModel)]="newLogin.password" required>
             </mat-form-field>
             <button type="submit" mat-button (click)="login()" [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton}}</button>
         </form>
