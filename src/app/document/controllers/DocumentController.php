@@ -232,6 +232,7 @@ class DocumentController
             $pdf->useImportedPage($page);
             $pdf->SetAutoPageBreak(false, 0);
             $pdf->SetMargins(0, 0, 0);
+            $pdf->SetAutoPageBreak(false, 0);
             if (!empty($data['signatures'])) {
                 foreach ($data['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
@@ -254,11 +255,7 @@ class DocumentController
                         $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.png';
                         file_put_contents($imageTmpPath, $image);
 
-                        // $pdf->Image($imageTmpPath, $signature['positionX'], $signature['positionY']);
-                        
-                        $pdf->SetY(0);
-                        $html = '<img src="'.$signature['fullPath'].'"/>';
-                        $pdf->writeHTML($html, true, false, true, false, '');
+                        $pdf->Image($imageTmpPath, 0, 0, $size['width'], '', '', '', false, '800');
                     }
                 }
             }
