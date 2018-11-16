@@ -477,15 +477,15 @@ export class WarnModalComponent {
                         );
                     });
                 }
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
-                    .subscribe(() => {
-                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                        this.signaturesService.documentsListCount--;
-                        this.dialogRef.close('sucess');
-                    }, (err: any) => {
-                        console.log(err);
-                    });
             }
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
+                .subscribe(() => {
+                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                    this.signaturesService.documentsListCount--;
+                    this.dialogRef.close('sucess');
+                }, (err: any) => {
+                    console.log(err);
+                });
         } else {
             this.dialogRef.close('sucess');
         }
@@ -532,15 +532,15 @@ export class ConfirmModalComponent {
                         );
                     });
                 }
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
-                    .subscribe(() => {
-                        this.dialogRef.close('sucess');
-                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                        this.signaturesService.documentsListCount--;
-                    }, (err: any) => {
-                        console.log(err);
-                    });
             }
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
+                .subscribe(() => {
+                    this.dialogRef.close('sucess');
+                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                    this.signaturesService.documentsListCount--;
+                }, (err: any) => {
+                    console.log(err);
+                });
         } else {
             this.dialogRef.close('sucess');
         }
