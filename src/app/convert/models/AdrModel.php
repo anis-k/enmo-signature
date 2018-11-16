@@ -66,4 +66,24 @@ class AdrModel
 
         return true;
     }
+
+    public static function createAttachmentAdr(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['attachmentId', 'type', 'path', 'filename', 'fingerprint']);
+        ValidatorModel::stringType($aArgs, ['type', 'path', 'filename', 'fingerprint']);
+        ValidatorModel::intVal($aArgs, ['attachmentId']);
+
+        DatabaseModel::insert([
+            'table'         => 'adr_attachments',
+            'columnsValues' => [
+                'attachment_id'     => $aArgs['attachmentId'],
+                'type'              => $aArgs['type'],
+                'path'              => $aArgs['path'],
+                'filename'          => $aArgs['filename'],
+                'fingerprint'       => $aArgs['fingerprint'],
+            ]
+        ]);
+
+        return true;
+    }
 }

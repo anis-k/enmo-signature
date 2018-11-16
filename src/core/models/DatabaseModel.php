@@ -252,4 +252,46 @@ class DatabaseModel
 
         return true;
     }
+
+    /**
+     * Database Begin Transaction Function
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public static function beginTransaction()
+    {
+        $db = new DatabasePDO();
+        $db->query('BEGIN');
+
+        return true;
+    }
+
+    /**
+     * Database Commit Transaction Function
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public static function commitTransaction()
+    {
+        $db = new DatabasePDO();
+        $db->query('COMMIT');
+
+        return true;
+    }
+
+    /**
+     * Database Rollback Transaction Function
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    public static function rollbackTransaction()
+    {
+        $db = new DatabasePDO();
+        $db->query('ROLLBACK');
+
+        return true;
+    }
 }

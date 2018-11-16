@@ -14,7 +14,9 @@
 
 namespace Document\controllers;
 
+use Attachment\controllers\AttachmentController;
 use Respect\Validation\Validator;
+use setasign\Fpdi\Tcpdf\Fpdi;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
 use Convert\models\AdrModel;
@@ -23,11 +25,11 @@ use Docserver\models\DocserverModel;
 use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
 use Status\models\StatusModel;
 use User\models\UserModel;
 use History\controllers\HistoryController;
-use setasign\Fpdi\TcpdfFpdi;
 use Action\models\ActionModel;
 
 class DocumentController
@@ -120,13 +122,13 @@ class DocumentController
         }
 
         $data['attachments'] = empty($data['attachments']) ? [] : $data['attachments'];
-//        foreach ($data['attachments'] as $key => $attachment) {
-//            $check = Validator::stringType()->notEmpty()->validate($attachment['encodedZipDocument']);
-//            $check = $check && Validator::stringType()->notEmpty()->validate($attachment['subject']);
-//            if (!$check) {
-//                return $response->withStatus(400)->withJson(['errors' => "Missing data for attachment {$key}"]);
-//            }
-//        }
+        foreach ($data['attachments'] as $key => $attachment) {
+            $check = Validator::stringType()->notEmpty()->validate($attachment['encodedZipDocument']);
+            $check = $check && Validator::stringType()->notEmpty()->validate($attachment['subject']);
+            if (!$check) {
+                return $response->withStatus(400)->withJson(['errors' => "Missing data for attachment {$key}"]);
+            }
+        }
 
         $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $data['encodedZipDocument']]);
         if (!empty($encodedDocument['errors'])) {
@@ -145,6 +147,7 @@ class DocumentController
         $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => [$data['status']]]);
         $data['status'] = $status[0]['id'];
 
+        DatabaseModel::beginTransaction();
         $id = DocumentModel::create($data);
 
         AdrModel::createDocumentAdr([
@@ -154,6 +157,16 @@ class DocumentController
             'filename'       => $storeInfos['filename'],
             'fingerprint'    => $storeInfos['fingerprint']
         ]);
+
+        foreach ($data['attachments'] as $key => $value) {
+            $value['main_document_id'] = $id;
+            $attachment = AttachmentController::create($value);
+            if (!empty($attachment['errors'])) {
+                DatabaseModel::rollbackTransaction();
+                return $response->withStatus(500)->withJson(['errors' => "An error occured for attachment {$key} : {$attachment['errors']}"]);
+            }
+        }
+        DatabaseModel::commitTransaction();
 
         return $response->withJson(['documentId' => $id]);
     }
@@ -207,7 +220,7 @@ class DocumentController
         $tmpFilename = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_' . $adr[0]['filename'];
         copy($pathToDocument, $tmpFilename);
 
-        $pdf     = new TcpdfFpdi('P');
+        $pdf     = new Fpdi('P');
         $nbPages = $pdf->setSourceFile($tmpFilename);
         $pdf->setPrintHeader(false);
 

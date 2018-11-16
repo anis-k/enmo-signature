@@ -76,15 +76,18 @@ class AttachmentModel
         ValidatorModel::stringType($aArgs, ['reference', 'subject']);
         ValidatorModel::intVal($aArgs, ['main_document_id']);
 
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'attachments_id_seq']);
+
         DatabaseModel::insert([
             'table'         => 'attachments',
             'columnsValues' => [
+                'id'                => $nextSequenceId,
                 'main_document_id'  => $aArgs['main_document_id'],
                 'reference'         => empty($aArgs['reference']) ? null : $aArgs['reference'],
                 'subject'           => $aArgs['subject']
             ]
         ]);
 
-        return true;
+        return $nextSequenceId;
     }
 }

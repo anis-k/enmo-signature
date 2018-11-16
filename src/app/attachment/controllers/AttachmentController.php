@@ -19,8 +19,10 @@ use Convert\models\AdrModel;
 use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
 use Document\controllers\DocumentController;
+use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\ValidatorModel;
 
 class AttachmentController
 {
@@ -60,5 +62,38 @@ class AttachmentController
         $attachment['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
 
         return $response->withJson(['attachment' => $attachment]);
+    }
+
+    public static function create(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['encodedZipDocument', 'subject', 'main_document_id']);
+        ValidatorModel::stringType($args, ['encodedZipDocument', 'subject']);
+        ValidatorModel::intVal($args, ['main_document_id']);
+
+        $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $args['encodedZipDocument']]);
+        if (!empty($encodedDocument['errors'])) {
+            return ['errors' => $encodedDocument['errors']];
+        }
+
+        $storeInfos = DocserverController::storeResourceOnDocServer([
+            'encodedFile'       => $encodedDocument['encodedDocument'],
+            'format'            => 'pdf',
+            'docserverType'     => 'ATTACH'
+        ]);
+        if (!empty($storeInfos['errors'])) {
+            return ['errors' => $storeInfos['errors']];
+        }
+
+        $id = AttachmentModel::create($args);
+
+        AdrModel::createAttachmentAdr([
+            'attachmentId'   => $id,
+            'type'           => 'ATTACH',
+            'path'           => $storeInfos['path'],
+            'filename'       => $storeInfos['filename'],
+            'fingerprint'    => $storeInfos['fingerprint']
+        ]);
+
+        return ['attachmentId' => $id];
     }
 }
