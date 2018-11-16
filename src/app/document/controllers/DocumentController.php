@@ -294,6 +294,54 @@ class DocumentController
         return $response->withJson(['success' => 'success']);
     }
 
+    public function getHandwrittenDocumentById(Request $request, Response $response, array $args)
+    {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $adr = AdrModel::getDocumentsAdr([
+            'select'    => ['path', 'filename', 'fingerprint'],
+            'where'     => ['main_document_id = ?', 'type = ?'],
+            'data'      => [$args['id'], 'HANDWRITTEN']
+        ]);
+
+        $docserver = DocserverModel::getByType(['type' => 'HANDWRITTEN', 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
+        }
+
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!file_exists($pathToDocument)) {
+            return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
+        }
+
+        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+        if ($adr[0]['fingerprint'] != $fingerprint) {
+            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
+        }
+
+        return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
+    }
+
+    public function getStatusById(Request $request, Response $response, array $args)
+    {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $document = DocumentModel::getById(['select' => ['status'], 'id' => $args['id']]);
+        if (empty($document)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        }
+
+        $status = StatusModel::getById(['select' => ['reference', 'label'], 'id' => $document['status']]);
+        $document['statusReference'] = $status['reference'];
+        $document['statusLabel'] = $status['label'];
+
+        return $response->withJson(['status' => $document]);
+    }
+
     public static function hasRightById(array $args)
     {
         ValidatorModel::notEmpty($args, ['id', 'email']);
