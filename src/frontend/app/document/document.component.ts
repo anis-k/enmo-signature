@@ -99,6 +99,7 @@ export class DocumentComponent implements OnInit {
     @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
     @ViewChild(SignaturePad) signaturePad: SignaturePad;
 
+
     public context: CanvasRenderingContext2D;
 
     constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
@@ -248,7 +249,7 @@ export class DocumentComponent implements OnInit {
         }, 500);
     }
 
-    addAnnotation(e: any) {
+    addAnnotation() {
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
             this.annotationPadOptions.canvasWidth = 768 * this.scale;
             this.annotationPadOptions.canvasHeight = $('.pdf-page-canvas').height();
@@ -430,18 +431,25 @@ export class DocumentComponent implements OnInit {
         this.lockSignaturePad = true;
         this.scale = 2;
         this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-
-        const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-        this.signaturePad.set('canvasWidth', 768 * this.scale * ratio);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale * ratio);
+        this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth * this.scale);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale);
     }
 
     zoomMinus() {
+        this.signaturePad.clear();
         this.lockSignaturePad = true;
         this.scale = 1;
         this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.signaturePad.set('canvasWidth', 768 * this.scale);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale);
+        this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight);
+    }
+
+    undo() {
+        const data = this.signaturePad.toData();
+        if (data) {
+            data.pop(); // remove the last dot or line
+            this.signaturePad.fromData(data);
+        }
     }
 }
 

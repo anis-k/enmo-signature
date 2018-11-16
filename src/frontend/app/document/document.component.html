@@ -4,7 +4,7 @@
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight" ></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content>
-    <div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>
+    <!--<div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>-->
     <header style="position: fixed;" class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideDown]>
       <article class="header-infos">
         <section class="header-left">
@@ -104,8 +104,10 @@
                   <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)"
                     class="radio" [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
                 </ng-container>
+                <hr>
+                <i class="fa fa-undo fa-2x undo" (click)="undo()"></i>    
               </div>
-              <signature-pad [options]="annotationPadOptions"></signature-pad>
+              <signature-pad id="notePad" [options]="annotationPadOptions"></signature-pad>
               <div *ngIf="lockSignaturePad" style="background: #ffffffb3;position: absolute;top: 0;left: 0;width: 100%;height: 100%;"></div>
             </div>
           </ng-container>
