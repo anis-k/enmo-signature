@@ -335,11 +335,9 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
-        $status = StatusModel::getById(['select' => ['reference', 'label'], 'id' => $document['status']]);
-        $document['statusReference'] = $status['reference'];
-        $document['statusLabel'] = $status['label'];
+        $status = StatusModel::getById(['select' => ['id', 'reference', 'label'], 'id' => $document['status']]);
 
-        return $response->withJson(['status' => $document]);
+        return $response->withJson(['status' => $status]);
     }
 
     public static function hasRightById(array $args)
