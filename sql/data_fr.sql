@@ -74,3 +74,6 @@ INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) V
 END LOOP;
 END;
 $$;
+
+ALTER SEQUENCE main_documents_id_seq RESTART WITH 501;
+ALTER SEQUENCE attachments_id_seq RESTART WITH 501;
