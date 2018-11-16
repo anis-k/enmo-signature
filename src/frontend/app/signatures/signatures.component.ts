@@ -70,6 +70,8 @@ export class SignaturesComponent implements OnInit {
   selectSignature(signature: any) {
     signature.positionX = $('.pdf-page-canvas').width() - 140;
     signature.positionY = $('.pdf-page-canvas').height() - 140;
+    signature.pdfAreaX = $('.pdf-page-canvas').width();
+    signature.pdfAreaY = $('.pdf-page-canvas').height();
     if (this.inAllPage) {
       for (let index = 1; index <= this.signaturesService.totalPage; index++) {
         if (!this.signaturesService.signaturesContent[index]) {

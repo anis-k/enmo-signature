@@ -236,6 +236,16 @@ class DocumentController
             if (!empty($data['signatures'])) {
                 foreach ($data['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
+                        if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
+                            $signWidth = $size['width'];
+                            $signPosX = 0;
+                            $signPosY = 0;
+
+                        } else {
+                            $signWidth = $size['width'] / 4;
+                            $signPosX = ($signature['positionX'] * $size['width']) / 100;
+                            $signPosY = ($signature['positionY'] * $size['height']) / 100;
+                        }
                         if (preg_match('/^data:image\/(\w+);base64,/', $signature['fullPath'], $extension)) {
                             $data      = substr($signature['fullPath'], strpos($signature['fullPath'], ',') + 1);
                             $extension = strtolower($extension[1]);
@@ -251,11 +261,8 @@ class DocumentController
                         if ($image === false) {
                             return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                         }
-                        
-                        $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.png';
-                        file_put_contents($imageTmpPath, $image);
 
-                        $pdf->Image($imageTmpPath, 0, 0, $size['width'], '', '', '', false, '800');
+                        $pdf->Image('@'.$image, $signPosX, $signPosY, $signWidth, '', 'PNG', '', false, '800');
                     }
                 }
             }

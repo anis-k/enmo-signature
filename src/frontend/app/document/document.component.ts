@@ -170,7 +170,7 @@ export class DocumentComponent implements OnInit {
 
     renderPage(pageNumber: any, canvas: any, scale: number) {
         this.pdf.getPage(pageNumber).then((page: any) => {
-            const viewport = page.getViewport(scale);
+            const viewport = page.getViewport(2);
             const ctx = this.context;
             canvas.height = viewport.height;
             canvas.width = viewport.width;
@@ -182,7 +182,7 @@ export class DocumentComponent implements OnInit {
             this.canvas.nativeElement.style.height = 'auto';
             const renderTask = page.render(renderContext);
             renderTask.then(() => {
-                this.signaturesService.signWidth = viewport.width / 5;
+                this.signaturesService.signWidth = viewport.width / 4;
             });
         });
     }
@@ -292,12 +292,13 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.notesContent[this.signaturesService.currentPage].push(
             {
                 'fullPath': this.signaturePad.toDataURL('image/npg'),
-                'positionX': this.signaturePadPosX,
-                'positionY': this.signaturePadPosY,
+                'positionX': (this.signaturePadPosX * 100) / this.annotationPadOptions.canvasWidth,
+                'positionY': (this.signaturePadPosY * 100) / this.annotationPadOptions.canvasHeight,
                 'height': this.annotationPadOptions.canvasHeight,
                 'width': this.annotationPadOptions.canvasWidth,
             }
         );
+        console.log();
         this.signaturePad.clear();
         this.scale = 1;
         this.signaturesService.annotationMode = false;
@@ -457,8 +458,8 @@ export class WarnModalComponent {
                                 'fullPath': signature.encodedSignature,
                                 'height': 'auto',
                                 'width': this.signaturesService.signWidth,
-                                'positionX': 1,
-                                'positionY': 1,
+                                'positionX': (signature.positionX * 100) / signature.pdfAreaX,
+                                'positionY': (signature.positionY * 100) / signature.pdfAreaY,
                                 'page': index,
                             }
                         );
@@ -512,8 +513,8 @@ export class ConfirmModalComponent {
                                 'fullPath': signature.encodedSignature,
                                 'height': 'auto',
                                 'width': this.signaturesService.signWidth,
-                                'positionX': 1,
-                                'positionY': 1,
+                                'positionX': (signature.positionX * 100) / signature.pdfAreaX,
+                                'positionY': (signature.positionY * 100) / signature.pdfAreaY,
                                 'page': index,
                             }
                         );
