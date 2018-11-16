@@ -81,8 +81,8 @@ export class DocumentComponent implements OnInit {
     lockSignaturePad = false;
     annotationPadOptions = {
         throttle: 0,
-        minWidth: 0.8,
-        maxWidth: 1,
+        minWidth: 1,
+        maxWidth: 2.5,
         backgroundColor: 'rgba(255, 255, 255, 0)',
         canvasWidth: 768,
         canvasHeight: 270

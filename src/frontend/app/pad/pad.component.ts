@@ -16,7 +16,7 @@ interface AfterViewInit {
 export class SignaturePadPageComponent implements AfterViewInit {
   penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000'}];
   selectedColor: any;
-  selectedWidthPenSize: any;
+  selectedWidthPenSize: any = 1;
   haveSigned: any;
 
   pad$: Observable<boolean>;
@@ -29,8 +29,8 @@ export class SignaturePadPageComponent implements AfterViewInit {
 
   private signaturePadOptions: Object = {
     // passed through to szimek/signature_pad constructor
-    // minWidth: 0.5,
-    // maxWidth: 2.5,
+    minWidth: 1,
+    maxWidth: 2.5,
     // dotSize: 0,
     backgroundColor: 'rgba(255, 255, 255, 0)',
     canvasWidth: 600,
