@@ -121,6 +121,7 @@ export class DocumentComponent implements OnInit {
                         this.signaturesService.signaturesContent = [];
                         this.signaturesService.notesContent = [];
                         this.signaturesService.currentAction = 0;
+                        this.signaturesService.currentPage = 1;
                         this.mainDocument = data.document;
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.actionsList = data.document.actionsAllowed;

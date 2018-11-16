@@ -14,21 +14,21 @@
         </section>
         <div class="header-info">
           <p class="c-active-color bold">Référence : </p>
-          <p>{{mainDocument.reference}}</p>
+          <p class="ellipsis">{{mainDocument.reference}}</p>
           <p class="c-active-color bold">Sujet : </p>
-          <p>{{mainDocument.subject}}</p>
+          <p class="ellipsis">{{mainDocument.subject}}</p>
         </div>
         <div class="header-info">
           <p class="c-active-color bold">Emis par : </p>
-          <p>{{mainDocument.sender}} ({{mainDocument.sender_entity}})</p>
+          <p class="ellipsis">{{mainDocument.sender}} ({{mainDocument.sender_entity}})</p>
           <p class="c-active-color bold">Pour : </p>
-          <p>{{mainDocument.recipient}}</p>
+          <p class="ellipsis">{{mainDocument.recipient}}</p>
         </div>
         <div class="header-info">
-          <p class="c-active-color bold">Rédigé le : </p>
-          <p>{{mainDocument.doc_date}}</p>
+          <p class="c-active-color bold">Date limite de traitement : </p>
+          <p class="ellipsis">{{mainDocument.limit_date}} (<b>{{mainDocument.priority}}</b>)</p>
           <p class="c-active-color bold">À signer par : </p>
-          <p>{{mainDocument.processingUserDisplay}}</p>
+          <p class="ellipsis">{{mainDocument.processingUserDisplay}}</p>
         </div>
         <section class="header-right">
           <button [disabled]="this.signaturesService.signaturesContent.length == 0 && this.signaturesService.notesContent.length == 0" mat-icon-button title="Effacer les annotions / signatures"
