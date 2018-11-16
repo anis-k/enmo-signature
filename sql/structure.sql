@@ -111,8 +111,8 @@ CREATE TABLE adr_main_documents
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
   fingerprint character varying(255) NOT NULL,
-  CONSTRAINT adr_letterbox_pkey PRIMARY KEY (id),
-  CONSTRAINT adr_letterbox_unique_key UNIQUE (main_document_id, type)
+  CONSTRAINT adr_main_documents_pkey PRIMARY KEY (id),
+  CONSTRAINT adr_main_documents_unique_key UNIQUE (main_document_id, type)
 )
 WITH (OIDS=FALSE);
 
