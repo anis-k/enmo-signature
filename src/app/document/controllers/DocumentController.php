@@ -240,29 +240,38 @@ class DocumentController
                             $signWidth = $size['width'];
                             $signPosX = 0;
                             $signPosY = 0;
-
                         } else {
-                            $signWidth = $size['width'] / 4;
+                            $signWidth = ($signature['width'] * $size['width']) / 100;
                             $signPosX = ($signature['positionX'] * $size['width']) / 100;
                             $signPosY = ($signature['positionY'] * $size['height']) / 100;
                         }
-                        if (preg_match('/^data:image\/(\w+);base64,/', $signature['fullPath'], $extension)) {
-                            $data      = substr($signature['fullPath'], strpos($signature['fullPath'], ',') + 1);
-                            $extension = strtolower($extension[1]);
-        
-                            if ($extension != 'png') {
-                                return $response->withStatus(400)->withJson(['errors' => 'Invalid image type']);
+                        if ($signature['type'] == 'SVG') {
+                            $data = str_replace('data:image/svg+xml;base64,', '', $signature['fullPath']);
+
+                            $image = base64_decode($data);
+            
+                            if ($image === false) {
+                                return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                             }
+
+                            $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.svg';
+                            file_put_contents($imageTmpPath, $image);
+
+                            $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth);
                         } else {
                             $data = $signature['fullPath'];
-                        }
-                        $image = base64_decode($data);
-        
-                        if ($image === false) {
-                            return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
-                        }
 
-                        $pdf->Image('@'.$image, $signPosX, $signPosY, $signWidth, '', 'PNG', '', false, '800');
+                            $image = base64_decode($data);
+            
+                            if ($image === false) {
+                                return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
+                            }
+
+                            $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.png';
+                            file_put_contents($imageTmpPath, $image);
+
+                            $pdf->Image($imageTmpPath, $signPosX, $signPosY, $signWidth);
+                        }
                     }
                 }
             }

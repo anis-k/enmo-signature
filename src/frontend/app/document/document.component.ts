@@ -182,7 +182,7 @@ export class DocumentComponent implements OnInit {
             this.canvas.nativeElement.style.height = 'auto';
             const renderTask = page.render(renderContext);
             renderTask.then(() => {
-                this.signaturesService.signWidth = viewport.width / 4;
+                this.signaturesService.signWidth = viewport.width / 4.5;
             });
         });
     }
@@ -252,6 +252,9 @@ export class DocumentComponent implements OnInit {
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
             this.annotationPadOptions.canvasWidth = 768 * this.scale;
             this.annotationPadOptions.canvasHeight = $('.pdf-page-canvas').height();
+            const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            this.annotationPadOptions.canvasHeight = this.annotationPadOptions.canvasHeight * ratio;
+            this.annotationPadOptions.canvasWidth = this.annotationPadOptions.canvasWidth * ratio;
             // this.scale = 1;
             this.signaturesService.annotationMode = true;
             // this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
@@ -291,11 +294,12 @@ export class DocumentComponent implements OnInit {
         }
         this.signaturesService.notesContent[this.signaturesService.currentPage].push(
             {
-                'fullPath': this.signaturePad.toDataURL('image/npg'),
+                // 'fullPath': this.signaturePad.toDataURL('image/npg'),
+                'fullPath': this.signaturePad.toDataURL('image/svg+xml'),
                 'positionX': (this.signaturePadPosX * 100) / this.annotationPadOptions.canvasWidth,
                 'positionY': (this.signaturePadPosY * 100) / this.annotationPadOptions.canvasHeight,
                 'height': this.annotationPadOptions.canvasHeight,
-                'width': this.annotationPadOptions.canvasWidth,
+                'width': 768,
             }
         );
         console.log();
@@ -426,8 +430,10 @@ export class DocumentComponent implements OnInit {
         this.lockSignaturePad = true;
         this.scale = 2;
         this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.signaturePad.set('canvasWidth', 768 * this.scale);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale);
+
+        const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+        this.signaturePad.set('canvasWidth', 768 * this.scale * ratio);
+        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale * ratio);
     }
 
     zoomMinus() {
@@ -457,9 +463,10 @@ export class WarnModalComponent {
                             {
                                 'fullPath': signature.encodedSignature,
                                 'height': 'auto',
-                                'width': this.signaturesService.signWidth,
+                                'width': (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
                                 'positionX': (signature.positionX * 100) / signature.pdfAreaX,
                                 'positionY': (signature.positionY * 100) / signature.pdfAreaY,
+                                'type': 'PNG',
                                 'page': index,
                             }
                         );
@@ -474,6 +481,7 @@ export class WarnModalComponent {
                                 'width': note.width,
                                 'positionX': note.positionX,
                                 'positionY': note.positionY,
+                                'type': 'SVG',
                                 'page': index,
                             }
                         );
@@ -512,9 +520,10 @@ export class ConfirmModalComponent {
                             {
                                 'fullPath': signature.encodedSignature,
                                 'height': 'auto',
-                                'width': this.signaturesService.signWidth,
+                                'width': (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
                                 'positionX': (signature.positionX * 100) / signature.pdfAreaX,
                                 'positionY': (signature.positionY * 100) / signature.pdfAreaY,
+                                'type': 'PNG',
                                 'page': index,
                             }
                         );
@@ -529,6 +538,7 @@ export class ConfirmModalComponent {
                                 'width': note.width,
                                 'positionX': note.positionX,
                                 'positionY': note.positionY,
+                                'type': 'SVG',
                                 'page': index,
                             }
                         );
