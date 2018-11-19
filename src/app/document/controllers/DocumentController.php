@@ -112,13 +112,15 @@ class DocumentController
     {
         $data = $request->getParams();
 
-        $check = Validator::stringType()->notEmpty()->validate($data['encodedZipDocument']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['subject']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['status']);
-        $check = $check && Validator::intVal()->notEmpty()->validate($data['processing_user']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['sender']);
-        if (!$check) {
-            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        $check = DocumentController::controlData([
+            ['type' => 'string', 'value' => $data['encodedZipDocument']],
+            ['type' => 'string', 'value' => $data['subject']],
+            ['type' => 'string', 'value' => $data['status']],
+            ['type' => 'int', 'value' => $data['processing_user']],
+            ['type' => 'string', 'value' => $data['sender']],
+        ]);
+        if (!empty($check['errors'])) {
+            return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
         }
 
         $data['attachments'] = empty($data['attachments']) ? [] : $data['attachments'];
@@ -401,5 +403,18 @@ class DocumentController
         }
 
         return ['errors' => "getDocumentFromEncodedZip : No document was found in Zip"];
+    }
+
+    private static function controlData(array $args)
+    {
+        foreach ($args as $value) {
+            if ($value['type'] == 'string' && !Validator::stringType()->notEmpty()->validate($value['value'])) {
+                return ['errors' => "Data {$value['value']} is empty or not a {$value['type']}"];
+            } elseif ($value['type'] == 'int' && !Validator::intVal()->notEmpty()->validate($value['value'])) {
+                return ['errors' => "Data {$value['value']} is empty or not a {$value['type']}"];
+            }
+        }
+
+        return ['success' => 'success'];
     }
 }
