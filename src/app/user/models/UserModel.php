@@ -14,6 +14,7 @@
 
 namespace User\models;
 
+use SrcCore\models\AuthenticationModel;
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
 
@@ -72,6 +73,44 @@ class UserModel
         }
 
         return $aUser[0];
+    }
+
+    public static function update(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['id', 'firstname', 'lastname']);
+        ValidatorModel::intVal($aArgs, ['id']);
+        ValidatorModel::stringType($aArgs, ['firstname', 'lastname']);
+
+        DatabaseModel::update([
+            'table'     => 'users',
+            'set'       => [
+                'firstname' => $aArgs['firstname'],
+                'lastname'  => $aArgs['lastname'],
+            ],
+            'where'     => ['id = ?'],
+            'data'      => [$aArgs['id']]
+        ]);
+
+        return true;
+    }
+
+    public static function updatePassword(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['id', 'password']);
+        ValidatorModel::intVal($aArgs, ['id']);
+        ValidatorModel::stringType($aArgs, ['password']);
+
+        DatabaseModel::update([
+            'table'     => 'users',
+            'set'       => [
+                'password'                      => AuthenticationModel::getPasswordHash($aArgs['password']),
+                'password_modification_date'    => 'CURRENT_TIMESTAMP'
+            ],
+            'where'     => ['id = ?'],
+            'data'      => [$aArgs['id']]
+        ]);
+
+        return true;
     }
 
     public static function getLabelledUserById(array $aArgs)

@@ -19,6 +19,8 @@ use Docserver\models\DocserverModel;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\PasswordController;
+use SrcCore\models\AuthenticationModel;
 use User\models\UserModel;
 
 class UserController
@@ -32,6 +34,54 @@ class UserController
         ]);
 
         return $response->withJson(['users' => $users]);
+    }
+
+    public function update(Request $request, Response $response, array $args)
+    {
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
+        if ($user['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+        }
+
+        $data = $request->getParams();
+        $check = Validator::stringType()->notEmpty()->validate($data['firstname']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['lastname']);
+        if (!$check) {
+            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        }
+
+        $data['id'] = $args['id'];
+        UserModel::update($data);
+
+        return $response->withJson(['success' => 'success']);
+    }
+
+    public function updatePassword(Request $request, Response $response, array $args)
+    {
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
+        if ($user['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+        }
+
+        $data = $request->getParams();
+        $check = Validator::stringType()->notEmpty()->validate($data['currentPassword']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['newPassword']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['passwordConfirmation']);
+        if (!$check) {
+            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        }
+
+        if ($data['newPassword'] != $data['passwordConfirmation']) {
+            return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
+        } elseif (!AuthenticationModel::authentication(['email' => $GLOBALS['email'], 'password' => $data['currentPassword']])) {
+            return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
+        } elseif (!PasswordController::isPasswordValid(['password' => $data['newPassword']])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
+        }
+
+        UserModel::updatePassword(['id' => $args['id'], 'password' => $data['newPassword']]);
+
+        return $response->withJson(['success' => 'success']);
     }
 
     public function getSignatures(Request $request, Response $response, array $args)

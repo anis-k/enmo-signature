@@ -16,6 +16,20 @@ namespace SrcCore\models;
 
 class PasswordModel
 {
+    public static function getRules(array $aArgs = [])
+    {
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
+
+        $aRules = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['password_rules'],
+            'where'     => $aArgs['where'],
+            'data'      => $aArgs['data'],
+        ]);
+
+        return $aRules;
+    }
+
     public static function getEnabledRules()
     {
         $aRules = DatabaseModel::select([

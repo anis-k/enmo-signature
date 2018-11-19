@@ -14,11 +14,18 @@
 
 namespace SrcCore\controllers;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SrcCore\models\PasswordModel;
 use SrcCore\models\ValidatorModel;
 
 class PasswordController
 {
+    public function get(Request $request, Response $response)
+    {
+        return $response->withJson(['rules' => PasswordModel::getRules()]);
+    }
+
     public static function isPasswordValid(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['password']);

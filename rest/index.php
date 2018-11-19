@@ -61,8 +61,13 @@ $app->get('/documents/{id}/status', \Document\controllers\DocumentController::cl
 $app->get('/documents/{id}/handwrittenDocument', \Document\controllers\DocumentController::class . ':getHandwrittenDocumentById');
 $app->put('/documents/{id}/action', \Document\controllers\DocumentController::class . ':makeAction');
 
+//Password Rules
+$app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
+
 //Users
 $app->get('/users', \User\controllers\UserController::class . ':get');
+$app->put('/users/{id}', \User\controllers\UserController::class . ':update');
+$app->put('/users/{id}/password', \User\controllers\UserController::class . ':updatePassword');
 $app->get('/users/{id}/signatures', \User\controllers\UserController::class . ':getSignatures');
 $app->post('/users/{id}/signatures', \User\controllers\UserController::class . ':createSignature');
 $app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\UserController::class . ':deleteSignature');
