@@ -26,7 +26,7 @@ class ActionModel
 
         $actions = DatabaseModel::select([
             'select'    => $aArgs['select'],
-            'table'     => ['action'],
+            'table'     => ['actions'],
             'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
             'data'      => empty($aArgs['data']) ? [] : $aArgs['data']
         ]);
@@ -42,7 +42,7 @@ class ActionModel
 
         $action = DatabaseModel::select([
             'select'    => $aArgs['select'],
-            'table'     => ['action'],
+            'table'     => ['actions'],
             'where'     => ['id = ?'],
             'data'      => [$aArgs['id']]
         ]);

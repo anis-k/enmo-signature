@@ -72,14 +72,6 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
-        $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
-        $document['statusDisplay'] = $status['label'];
-
-        $actions = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['previous_status_id = ?'], 'data' => [$document['status']]]);
-        $document['actionsAllowed'] = $actions;
-
-        $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
-
         $adr = AdrModel::getDocumentsAdr([
             'select'    => ['path', 'filename', 'fingerprint'],
             'where'     => ['main_document_id = ?', 'type = ?'],
@@ -103,6 +95,9 @@ class DocumentController
 //        }
 
         $document['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
+        $document['statusDisplay'] = StatusModel::getById(['select' => ['label'], 'id' => $document['status']])['label'];
+        $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?'], 'data' => [$document['mode']]]);
+        $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
         $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
 
         return $response->withJson(['document' => $document]);
@@ -115,7 +110,7 @@ class DocumentController
         $check = DocumentController::controlData([
             ['type' => 'string', 'value' => $data['encodedZipDocument']],
             ['type' => 'string', 'value' => $data['subject']],
-            ['type' => 'string', 'value' => $data['status']],
+            ['type' => 'string', 'value' => $data['mode']],
             ['type' => 'int', 'value' => $data['processing_user']],
             ['type' => 'string', 'value' => $data['sender']],
         ]);
@@ -146,7 +141,7 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
         }
 
-        $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => [$data['status']]]);
+        $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => ['NEW']]);
         $data['status'] = $status[0]['id'];
 
         DatabaseModel::beginTransaction();
@@ -295,9 +290,9 @@ class DocumentController
         ]);
 
         DocumentModel::update([
-            'set' => ['status' => $action['next_status_id']],
+            'set'   => ['status' => $action['next_status_id']],
             'where' => ['id = ?'],
-            'data' => [$args['id']]
+            'data'  => [$args['id']]
         ]);
 
         HistoryController::add([
@@ -348,12 +343,13 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $document = DocumentModel::getById(['select' => ['status'], 'id' => $args['id']]);
+        $document = DocumentModel::getById(['select' => ['status', 'mode'], 'id' => $args['id']]);
         if (empty($document)) {
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
         $status = StatusModel::getById(['select' => ['id', 'reference', 'label'], 'id' => $document['status']]);
+        $satus['mode'] = $document['mode'];
 
         return $response->withJson(['status' => $status]);
     }

@@ -25,24 +25,21 @@ VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarc
 ------------
 TRUNCATE TABLE status;
 ALTER SEQUENCE status_id_seq RESTART WITH 1;
-INSERT INTO status (reference, label) VALUES ('ANNOT', 'Annotation');
-INSERT INTO status (reference, label) VALUES ('SIGN', 'Parapheur');
-INSERT INTO status (reference, label) VALUES ('VAL', 'Validé');
-INSERT INTO status (reference, label) VALUES ('REF', 'Refusé');
-INSERT INTO status (reference, label) VALUES ('SIGNED', 'Signé');
-INSERT INTO status (reference, label) VALUES ('REFSIGNED', 'Signature refusée');
+INSERT INTO status (id, reference, label) VALUES (1, 'NEW', 'En cours');
+INSERT INTO status (id, reference, label) VALUES (2 ,'VAL', 'Validé');
+INSERT INTO status (id, reference, label) VALUES (3, 'REF', 'Refusé');
 
 ------------
---ACTION
+--ACTIONS
 ------------
-TRUNCATE TABLE action;
-ALTER SEQUENCE action_id_seq RESTART WITH 1;
-INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (1, 'Refuser signature', '#e74c3c', 'fas fa-backspace', 'openDialog', 2, 6);
-INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (2, 'Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 1, 4);
-INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (3, 'Parapher', '#000', '', 'openDrawer', 2, null);
-INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (4, 'Annoter', '#2ecc71', '', 'openDrawer', 1, null);
-INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (5, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 1, 3);
-INSERT INTO action (id, label, color, logo, event, previous_status_id, next_status_id) VALUES (6, 'Valider signature', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 2, 5);
+TRUNCATE TABLE actions;
+ALTER SEQUENCE actions_id_seq RESTART WITH 1;
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (1, 'Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 'SIGN', 6);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (2, 'Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 'NOTE', 4);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (3, 'Parapher', '#000', '', 'openDrawer', 'SIGN', null);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (4, 'Annoter', '#2ecc71', '', 'openDrawer', 'NOTE', null);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (5, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 'SIGN', 3);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (6, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 'NOTE', 5);
 
 -----
 -- Password management

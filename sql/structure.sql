@@ -14,8 +14,9 @@ DROP TABLE IF EXISTS main_documents;
 CREATE TABLE main_documents
 (
   id serial NOT NULL,
-  reference CHARACTER VARYING(255),
+  reference CHARACTER VARYING(64),
   subject text NOT NULL,
+  mode CHARACTER VARYING(16) NOT NULL,
   status INTEGER NOT NULL,
   processing_user INTEGER NOT NULL,
   sender text NOT NULL,
@@ -34,7 +35,7 @@ CREATE TABLE attachments
 (
   id serial NOT NULL,
   main_document_id bigint NOT NULL,
-  reference character varying(255),
+  reference character varying(64),
   subject text,
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),
@@ -53,17 +54,17 @@ CREATE TABLE status
 )
 WITH (OIDS=FALSE);
 
-DROP TABLE IF EXISTS action;
-CREATE TABLE action
+DROP TABLE IF EXISTS actions;
+CREATE TABLE actions
 (
   id serial,
-  label character varying(50) NOT NULL,
-  color character varying(50),
-  logo character varying(50),
-  event character varying(128),
-  previous_status_id bigint NOT NULL,
-  next_status_id bigint,
-  CONSTRAINT action_pkey PRIMARY KEY (id)
+  label character varying(64) NOT NULL,
+  color character varying(8) NOT NULL,
+  logo character varying(64),
+  event character varying(128) NOT NULL,
+  mode CHARACTER VARYING(16) NOT NULL,
+  next_status_id INTEGER,
+  CONSTRAINT actions_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
 
