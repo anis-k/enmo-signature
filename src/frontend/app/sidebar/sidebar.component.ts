@@ -78,4 +78,13 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     this.snavLeftComponent.close();
     this.snavRightComponent.open();
   }
+
+  logout() {
+    this.http.get('../rest/logout')
+      .subscribe((data: any) => {
+        this.router.navigate(['/login']);
+      }, (err: any) => {
+          this.notificationService.handleErrors(err);
+      });
+  }
 }

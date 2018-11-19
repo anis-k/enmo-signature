@@ -1,7 +1,7 @@
 <nav class="sidebar" *ngIf="snavLeftComponent.opened">
   <div class="main-header">
     <header class="profile-header">
-        <button class="logout-button" mat-icon-button routerLink="/login">
+        <button class="logout-button" mat-icon-button (click)="logout()">
             <mat-icon  fontSet="fas" fontIcon="fa-sign-out-alt"></mat-icon>
         </button>
       <div class="user">
