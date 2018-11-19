@@ -1,6 +1,7 @@
 import { MatSnackBar } from '@angular/material';
 import { Injectable, Component, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-custom-snackbar',
@@ -12,7 +13,7 @@ export class CustomSnackbarComponent {
 
 @Injectable()
 export class NotificationService {
-    constructor(public snackBar: MatSnackBar) {
+    constructor(private router: Router, public snackBar: MatSnackBar) {
     }
     success(message: string) {
         this.snackBar.openFromComponent(CustomSnackbarComponent, {
@@ -30,5 +31,14 @@ export class NotificationService {
             verticalPosition: 'top',
             data: { message: message }
         });
+    }
+
+    handleErrors(err: any) {
+        if (err.status === 401) {
+            this.router.navigate(['/login']);
+            this.error('Veuillez vous reconnecter');
+        } else {
+            this.error(err.error.errors);
+        }
     }
 }

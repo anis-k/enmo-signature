@@ -146,10 +146,7 @@ export class DocumentComponent implements OnInit {
                         }, 500);
                         this.loadNextDoc();
                     }, (err: any) => {
-                        if (err.status === 401) {
-                            this.router.navigate(['/login']);
-                            this.notificationService.error('Veuillez vous reconnecter');
-                          }
+                        this.notificationService.handleErrors(err);
                     });
             } else {
                 this.snav.open();

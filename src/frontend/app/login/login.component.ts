@@ -69,9 +69,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 this.signaturesService.userLogged = cookieInfo;
                 this.router.navigate(['/document/']);
             }, (err: any) => {
+                this.notificationService.handleErrors(err);
                 this.labelButton = 'Se connecter';
-                this.loadingConnexion = false;
-                this.notificationService.error(err.error.errors);
             });
     }
 }
