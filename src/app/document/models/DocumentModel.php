@@ -31,7 +31,8 @@ class DocumentModel
             'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
             'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
             'offset'    => empty($aArgs['offset']) ? 0 : $aArgs['offset'],
-            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit']
+            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit'],
+            'order_by'  => empty($aArgs['order_by']) ? [] : $aArgs['order_by'],
         ]);
 
         return $aDocuments;

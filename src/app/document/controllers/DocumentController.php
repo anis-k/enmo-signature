@@ -55,7 +55,8 @@ class DocumentController
             'where'     => $where,
             'data'      => $dataGet,
             'limit'     => $data['limit'],
-            'offset'    => $data['offset']
+            'offset'    => $data['offset'],
+            'order_by'  => ['creation_date desc']
         ]);
         $fullCount = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
