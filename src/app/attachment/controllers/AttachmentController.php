@@ -19,6 +19,7 @@ use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\controllers\DocumentController;
+use History\controllers\HistoryController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
@@ -91,6 +92,13 @@ class AttachmentController
             'path'           => $storeInfos['path'],
             'filename'       => $storeInfos['filename'],
             'fingerprint'    => $storeInfos['fingerprint']
+        ]);
+
+        HistoryController::add([
+            'tableName' => 'attachments',
+            'recordId'  => $id,
+            'eventType' => 'CREATION',
+            'info'      => "attachmentAdded {$args['subject']}",
         ]);
 
         return ['attachmentId' => $id];

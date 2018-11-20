@@ -26,7 +26,6 @@ use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
-use SrcCore\models\LangModel;
 use SrcCore\models\ValidatorModel;
 use Status\models\StatusModel;
 use User\models\UserModel;
@@ -56,7 +55,7 @@ class DocumentController
             'data'      => $dataGet,
             'limit'     => $data['limit'],
             'offset'    => $data['offset'],
-            'order_by'  => ['creation_date desc']
+            'orderBy'   => ['creation_date desc']
         ]);
         $fullCount = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
@@ -106,6 +105,13 @@ class DocumentController
         $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?'], 'data' => [$document['mode']]]);
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
         $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
+
+        HistoryController::add([
+            'tableName' => 'main_documents',
+            'recordId'  => $args['id'],
+            'eventType' => 'VIEW',
+            'info'      => "documentViewed {$document['subject']}"
+        ]);
 
         return $response->withJson(['document' => $document]);
     }
@@ -173,6 +179,13 @@ class DocumentController
                 return $response->withStatus(500)->withJson(['errors' => "An error occured for attachment {$key} : {$attachment['errors']}"]);
             }
         }
+        HistoryController::add([
+            'tableName' => 'main_documents',
+            'recordId'  => $id,
+            'eventType' => 'CREATION',
+            'info'      => "documentAdded {$data['subject']}"
+        ]);
+
         DatabaseModel::commitTransaction();
 
         return $response->withJson(['documentId' => $id]);
@@ -309,9 +322,7 @@ class DocumentController
             'tableName' => 'main_documents',
             'recordId'  => $args['id'],
             'eventType' => 'UP',
-            'info'      => 'actionDone' . ' : ' . $action['label'],
-            'moduleId'  => 'document',
-            'eventId'   => 'documentup',
+            'info'      => 'actionDone' . ' : ' . $action['label']
         ]);
 
         return $response->withJson(['success' => 'success']);

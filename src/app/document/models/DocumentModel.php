@@ -22,7 +22,7 @@ class DocumentModel
     public static function get(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['select']);
-        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);
         ValidatorModel::intType($aArgs, ['limit', 'offset']);
 
         $aDocuments = DatabaseModel::select([
@@ -30,9 +30,9 @@ class DocumentModel
             'table'     => ['main_documents'],
             'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
             'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
+            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
             'offset'    => empty($aArgs['offset']) ? 0 : $aArgs['offset'],
             'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit'],
-            'order_by'  => empty($aArgs['order_by']) ? [] : $aArgs['order_by'],
         ]);
 
         return $aDocuments;
@@ -55,25 +55,6 @@ class DocumentModel
         }
 
         return $document[0];
-    }
-
-    public static function getByUserId(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['select', 'userId']);
-        ValidatorModel::intVal($aArgs, ['userId']);
-        ValidatorModel::arrayType($aArgs, ['select']);
-        ValidatorModel::intType($aArgs, ['limit', 'offset']);
-
-        $aDocuments = DatabaseModel::select([
-            'select'    => $aArgs['select'],
-            'table'     => ['main_documents'],
-            'where'     => ['processing_user = ?'],
-            'data'      => [$aArgs['userId']],
-            'offset'    => empty($aArgs['offset']) ? 0 : $aArgs['offset'],
-            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit']
-        ]);
-
-        return $aDocuments;
     }
 
     public static function create(array $aArgs)

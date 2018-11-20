@@ -16,6 +16,7 @@ namespace User\controllers;
 
 use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
+use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -53,6 +54,13 @@ class UserController
         $data['id'] = $args['id'];
         UserModel::update($data);
 
+        HistoryController::add([
+            'tableName' => 'users',
+            'recordId'  => $args['id'],
+            'eventType' => 'MODIFICATION',
+            'info'      => "userUpdated",
+        ]);
+
         return $response->withJson(['success' => 'success']);
     }
 
@@ -80,6 +88,13 @@ class UserController
         }
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $data['newPassword']]);
+
+        HistoryController::add([
+            'tableName' => 'users',
+            'recordId'  => $args['id'],
+            'eventType' => 'MODIFICATION',
+            'info'      => "passwordUpdated",
+        ]);
 
         return $response->withJson(['success' => 'success']);
     }
@@ -164,6 +179,13 @@ class UserController
             'fingerprint'   => $storeInfos['fingerprint'],
         ]);
 
+        HistoryController::add([
+            'tableName' => 'signatures',
+            'recordId'  => $id,
+            'eventType' => 'CREATION',
+            'info'      => "signatureAdded",
+        ]);
+
         return $response->withJson(['signatureId' => $id]);
     }
 
@@ -175,6 +197,13 @@ class UserController
         }
 
         UserModel::deleteSignature(['where' => ['user_id = ?', 'id = ?'], 'data' => [$args['id'], $args['signatureId']]]);
+
+        HistoryController::add([
+            'tableName' => 'signatures',
+            'recordId'  => $args['signatureId'],
+            'eventType' => 'SUPPRESSION',
+            'info'      => "signatureDeleted",
+        ]);
 
         return $response->withJson(['success' => 'success']);
     }

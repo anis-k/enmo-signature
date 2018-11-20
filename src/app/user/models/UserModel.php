@@ -30,7 +30,7 @@ class UserModel
             'table'     => ['users'],
             'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
             'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
-            'order_by'  => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
+            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
             'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit']
         ]);
 

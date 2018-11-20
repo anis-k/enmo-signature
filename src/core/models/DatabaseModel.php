@@ -103,11 +103,11 @@ class DatabaseModel
             $groupBy = ' GROUP BY ' . implode(', ', $args['group_by']);
         }
 
-        if (empty($args['order_by'])) {
+        if (empty($args['orderBy'])) {
             $orderBy = '';
         } else {
-            ValidatorModel::arrayType($args, ['order_by']);
-            $orderBy = ' ORDER BY ' . implode(', ', $args['order_by']);
+            ValidatorModel::arrayType($args, ['orderBy']);
+            $orderBy = ' ORDER BY ' . implode(', ', $args['orderBy']);
         }
 
         if (empty($args['offset'])) {

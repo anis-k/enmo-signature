@@ -14,6 +14,7 @@
 
 namespace SrcCore\controllers;
 
+use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -65,12 +66,27 @@ class AuthenticationController
 
         AuthenticationModel::setCookieAuth(['email' => $data['email']]);
 
+        $GLOBALS['email'] = $data['email'];
+        HistoryController::add([
+            'tableName' => 'users',
+            'recordId'  => $data['email'],
+            'eventType' => 'AUTHENTICATION',
+            'info'      => "userLogin"
+        ]);
+
         return $response->withJson(['success' => 'success']);
     }
 
     public static function logout(Request $request, Response $response)
     {
         AuthenticationModel::deleteCookieAuth();
+
+        HistoryController::add([
+            'tableName' => 'users',
+            'recordId'  => $GLOBALS['email'],
+            'eventType' => 'AUTHENTICATION',
+            'info'      => "userLogout"
+        ]);
 
         return $response->withJson(['success' => 'success']);
     }
