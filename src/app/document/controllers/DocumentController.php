@@ -37,24 +37,29 @@ class DocumentController
     public function get(Request $request, Response $response)
     {
         $data = $request->getQueryParams();
-        $data['limit'] = (int)$data['limit'];
-        $data['offset'] = (int)$data['offset'];
 
-        if (empty($data['offset'])) {
-            $data['offset'] = 0;
-        }
-        if (empty($data['limit'])) {
-            $data['limit'] = 0;
-        }
+        $data['offset'] = empty($data['offset']) ? 0 : (int)$data['offset'];
+        $data['limit'] = empty($data['limit']) ? 0 : (int)$data['limit'];
 
         $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
 
-        $fullCount = 0;
-        $documents = DocumentModel::getByUserId(['select' => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'], 'userId' => $user['id'], 'limit' => $data['limit'], 'offset' => $data['offset']]);
+        $where = ['processing_user = ?'];
+        $dataGet = [$user['id']];
+        if (!empty($data['mode'])) {
+            $where[] = 'mode = ?';
+            $dataGet[] = $data['mode'];
+        }
+        $documents = DocumentModel::get([
+            'select'    => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'],
+            'where'     => $where,
+            'data'      => $dataGet,
+            'limit'     => $data['limit'],
+            'offset'    => $data['offset']
+        ]);
+        $fullCount = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
             $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
             $documents[$key]['statusDisplay'] = $status['label'];
-            $fullCount = $document['count'];
             unset($documents[$key]['count']);
         }
 
@@ -143,6 +148,9 @@ class DocumentController
 
         $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => ['NEW']]);
         $data['status'] = $status[0]['id'];
+        if ($data['mode'] != 'SIGN') {
+            $data['mode'] = 'NOTE';
+        }
 
         DatabaseModel::beginTransaction();
         $id = DocumentModel::create($data);
@@ -331,7 +339,7 @@ class DocumentController
 
         $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
         if ($adr[0]['fingerprint'] != $fingerprint) {
-            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
+            return $response->withStatus(400)->withJson(['errors' => 'Fingerprints do not match']);
         }
 
         return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
