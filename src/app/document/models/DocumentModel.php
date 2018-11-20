@@ -77,8 +77,8 @@ class DocumentModel
 
     public static function create(array $aArgs)
     {
-        ValidatorModel::notEmpty($aArgs, ['subject', 'status', 'processing_user', 'sender']);
-        ValidatorModel::stringType($aArgs, ['reference', 'subject', 'sender', 'sender_entity', 'recipient', 'priority']);
+        ValidatorModel::notEmpty($aArgs, ['subject', 'status', 'mode', 'processing_user', 'sender']);
+        ValidatorModel::stringType($aArgs, ['reference', 'subject', 'mode', 'sender', 'sender_entity', 'recipient', 'priority']);
         ValidatorModel::intVal($aArgs, ['status', 'processing_user']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'main_documents_id_seq']);
@@ -89,6 +89,7 @@ class DocumentModel
                 'id'                => $nextSequenceId,
                 'reference'         => empty($aArgs['reference']) ? null : $aArgs['reference'],
                 'subject'           => $aArgs['subject'],
+                'mode'              => $aArgs['mode'],
                 'status'            => $aArgs['status'],
                 'processing_user'   => $aArgs['processing_user'],
                 'sender'            => $aArgs['sender'],

@@ -15,11 +15,10 @@
 namespace Attachment\controllers;
 
 use Attachment\models\AttachmentModel;
-use Convert\models\AdrModel;
 use Docserver\controllers\DocserverController;
+use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\controllers\DocumentController;
-use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
@@ -53,7 +52,7 @@ class AttachmentController
             return $response->withStatus(404)->withJson(['errors' => 'Attachment not found on docserver']);
         }
 
-        //TODO Commenté pour tests
+        // TODO Commenté pour tests
 //        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
 //        if ($adr[0]['fingerprint'] != $fingerprint) {
 //            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);

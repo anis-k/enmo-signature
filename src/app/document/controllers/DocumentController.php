@@ -15,11 +15,11 @@
 namespace Document\controllers;
 
 use Attachment\controllers\AttachmentController;
+use Docserver\models\AdrModel;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
-use Convert\models\AdrModel;
 use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
 use Document\models\DocumentModel;
@@ -326,6 +326,9 @@ class DocumentController
             'where'     => ['main_document_id = ?', 'type = ?'],
             'data'      => [$args['id'], 'HANDWRITTEN']
         ]);
+        if (empty($adr[0])) {
+            return $response->withJson(['encodedDocument' => null]);
+        }
 
         $docserver = DocserverModel::getByType(['type' => 'HANDWRITTEN', 'select' => ['path']]);
         if (empty($docserver['path']) || !file_exists($docserver['path'])) {
@@ -357,7 +360,7 @@ class DocumentController
         }
 
         $status = StatusModel::getById(['select' => ['id', 'reference', 'label'], 'id' => $document['status']]);
-        $satus['mode'] = $document['mode'];
+        $status['mode'] = $document['mode'];
 
         return $response->withJson(['status' => $status]);
     }

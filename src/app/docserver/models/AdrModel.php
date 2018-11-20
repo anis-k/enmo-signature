@@ -12,7 +12,7 @@
  * @author dev@maarch.org
  */
 
-namespace Convert\models;
+namespace Docserver\models;
 
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
@@ -82,6 +82,20 @@ class AdrModel
                 'filename'          => $aArgs['filename'],
                 'fingerprint'       => $aArgs['fingerprint'],
             ]
+        ]);
+
+        return true;
+    }
+
+    public static function deleteDocumentAdr(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['where', 'data']);
+        ValidatorModel::arrayType($aArgs, ['where', 'data']);
+
+        DatabaseModel::delete([
+            'table' => 'adr_main_documents',
+            'where' => $aArgs['where'],
+            'data'  => $aArgs['data']
         ]);
 
         return true;
