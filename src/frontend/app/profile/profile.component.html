@@ -9,28 +9,50 @@
         </header>
     </div>
     <div class="nav">
-        <form class="profile-content">
+        <form class="profile-content" (ngSubmit)="submitProfile()" #profileForm="ngForm">
             <mat-form-field class="input-row">
-                <input name="login" matInput placeholder="Courriel" type="mail" [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()" disabled>
+                <input name="login" matInput placeholder="Courriel" type="mail" [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()"
+                    disabled required>
             </mat-form-field>
             <mat-form-field class="input-row">
-                <input name="firstname" matInput placeholder="Prénom" [(ngModel)]="profileInfo.firstname">
+                <input name="firstname" matInput placeholder="Prénom" [(ngModel)]="profileInfo.firstname" required>
             </mat-form-field>
             <mat-form-field class="input-row">
-                <input name="nom" matInput placeholder="Nom" [(ngModel)]="profileInfo.lastname">
+                <input name="nom" matInput placeholder="Nom" [(ngModel)]="profileInfo.lastname" required>
             </mat-form-field>
-            <mat-form-field class="input-row">
-                <input name="password" matInput placeholder="Mot de passe" type="password">
-            </mat-form-field>
-            <mat-form-field class="input-row">
-                <input name="password" matInput placeholder="Nouveau mot de passe" type="password">
-            </mat-form-field>
-            <mat-form-field class="input-row">
-                <input name="password" matInput placeholder="Confirmer le nouveau mot de passe" type="password">
-            </mat-form-field>
+            <mat-accordion>
+                <mat-expansion-panel (closed)="showPassword=false" (opened)="changePasswd()">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Modifier mon mot de passe
+                        </mat-panel-title>
+                        <mat-panel-description>
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <ng-container *ngIf="showPassword">
+                        <mat-form-field class="input-row">
+                            <input name="currentPassword" matInput [(ngModel)]="password.currentPassword" placeholder="Mot de passe actuel"
+                                type="password">
+                        </mat-form-field>
+                        <mat-form-field class="input-row">
+                            <input name="newPassword" matInput [(ngModel)]="password.newPassword" placeholder="Nouveau mot de passe"
+                                type="password" (keyup)="checkPasswordValidity(password.newPassword)">
+                            <mat-hint style="color:red;">{{handlePassword.errorMsg}}</mat-hint>
+                        </mat-form-field>
+                        <mat-form-field class="input-row">
+                            <input name="passwordConfirmation" matInput [(ngModel)]="password.passwordConfirmation"
+                                placeholder="Confirmer le nouveau mot de passe" type="password">
+                            <mat-hint style="color:red;" *ngIf="password.passwordConfirmation !== password.newPassword">Les
+                                mots de passe ne correspondent pas !</mat-hint>
+                            <mat-hint style="color:green;" *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">Les
+                                mots de passe sont identiques</mat-hint>
+                        </mat-form-field>
+                    </ng-container>
+                </mat-expansion-panel>
+            </mat-accordion>
             <span class="actions">
-                <button mat-raised-button color="primary" type="submit">Valider</button>
-                <button mat-raised-button (click)="closeProfile();">Annuler</button>
+                <button mat-raised-button color="primary" type="submit" [disabled]="allowValidate() || !profileForm.form.valid">Valider</button>
+                <button mat-raised-button type="button" (click)="closeProfile();">Annuler</button>
             </span>
         </form>
     </div>

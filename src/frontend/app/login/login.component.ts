@@ -71,6 +71,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
                 this.labelButton = 'Se connecter';
+                this.loadingConnexion = false;
             });
     }
 }
