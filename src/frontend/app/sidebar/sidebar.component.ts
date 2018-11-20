@@ -18,6 +18,7 @@ interface AppState {
 export class SidebarComponent implements OnInit, AfterViewInit {
   sidebar$: Observable<boolean>;
   loadingList = false;
+  mode = 'SIGN';
   offset = 0;
   limit = 25;
 
@@ -35,7 +36,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       console.log(`the user is reaching the bottom`);
       this.offset = this.offset + this.limit;
 
-      this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
+      this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
         .subscribe(
           (data: any) => {
             this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
@@ -50,7 +51,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset)
+    this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
       .subscribe((data: any) => {
         this.signaturesService.documentsList = data.documents;
         this.signaturesService.documentsListCount = data.fullCount;
@@ -86,5 +87,18 @@ export class SidebarComponent implements OnInit, AfterViewInit {
       }, (err: any) => {
           this.notificationService.handleErrors(err);
       });
+  }
+
+  filter(mode: string) {
+    this.mode = mode;
+    this.offset = 0;
+    this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
+      .subscribe((data: any) => {
+        this.signaturesService.documentsList = data.documents;
+        this.signaturesService.documentsListCount = data.fullCount;
+      },
+        (err: any) => {
+          this.notificationService.handleErrors(err);
+        });
   }
 }
