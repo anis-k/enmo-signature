@@ -67,7 +67,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
             .subscribe((data: any) => {
                 const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
                 this.signaturesService.userLogged = cookieInfo;
-                this.router.navigate(['/document/']);
+                this.router.navigate(['/documents/']);
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
                 this.labelButton = 'Se connecter';

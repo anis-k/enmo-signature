@@ -574,7 +574,7 @@ export class SuccessInfoValidBottomSheetComponent implements OnInit {
      ngOnInit(): void {
         setTimeout(() => {
             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
-                this.router.navigate(['/document/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
+                this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
             }
             this.bottomSheetRef.dismiss();
         }, 2000);
@@ -591,7 +591,7 @@ export class RejectInfoBottomSheetComponent implements OnInit {
     ngOnInit(): void {
         setTimeout(() => {
             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
-                this.router.navigate(['/document/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
+                this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
             }
             this.bottomSheetRef.dismiss();
         }, 2000);

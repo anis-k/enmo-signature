@@ -63,10 +63,10 @@ import { SignaturesContentService } from './service/signatures.service';
     AngularDraggableModule,
     AppMaterialModule,
     RouterModule.forRoot([
-      { path: 'document/:id', component: DocumentComponent},
-      { path: 'document', component: DocumentComponent},
+      { path: 'documents/:id', component: DocumentComponent},
+      { path: 'documents', component: DocumentComponent},
       { path: 'login', component: LoginComponent},
-      { path: '**',   redirectTo: 'document', pathMatch: 'full' },
+      { path: '**',   redirectTo: 'documents', pathMatch: 'full' },
     ], { useHash: true }),
   ],
   entryComponents: [

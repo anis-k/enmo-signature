@@ -62,14 +62,14 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     if (this.signaturesService.mainDocumentId > 0 && this.signaturesService.documentsList.length > 0) {
-      this.router.navigate(['/document/' + this.signaturesService.documentsList[0].id]);
+      this.router.navigate(['/documents/' + this.signaturesService.documentsList[0].id]);
     }
   }
 
 
 
   gotTo(documentId: Number, i: any) {
-    this.router.navigate(['/document/' + documentId]);
+    this.router.navigate(['/documents/' + documentId]);
     this.signaturesService.indexDocumentsList = i;
     this.sidenav.close();
   }

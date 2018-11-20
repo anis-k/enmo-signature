@@ -34,7 +34,7 @@ export class NotificationService {
     }
 
     handleErrors(err: any) {
-        if (err.status === 401) {
+        if (err.status === 401 && this.router.url !== '/login') {
             this.router.navigate(['/login']);
             this.error('Veuillez vous reconnecter');
         } else {
