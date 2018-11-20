@@ -11,7 +11,7 @@ interface AfterViewInit {
 @Component({
   selector: 'app-pad',
   templateUrl: 'pad.component.html',
-  styleUrls: ['pad.component.styl']
+  styleUrls: ['pad.component.scss']
 })
 export class SignaturePadPageComponent implements AfterViewInit {
   penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000'}];

@@ -1,0 +1,21 @@
+.drawer {
+  width: 100vw;
+  height: 0;
+  background: #FCFCFC;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.08);
+  transition: 0.25s all ease-in-out;
+  z-index: 2;
+  &.open {
+    height: 470px;
+  }
+  .btn-action {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+  }
+}

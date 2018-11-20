@@ -13,7 +13,7 @@ interface AppState {
 @Component({
   selector: 'app-sidebar',
   templateUrl: 'sidebar.component.html',
-  styleUrls: ['sidebar.component.styl']
+  styleUrls: ['sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit, AfterViewInit {
   sidebar$: Observable<boolean>;

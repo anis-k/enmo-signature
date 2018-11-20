@@ -1,0 +1,53 @@
+@import 'vars.scss';
+
+@import './node_modules/@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// theme colors
+// @function mat-palette($base-palette, $default: 500, $lighter: 100, $darker: 700)
+$mat-maarch-primary: (
+  100: lighten( $primary, 10% ),
+  500: $primary,
+  700: darken( $primary, 10% ),
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$mat-maarch-warn: (
+  100: lighten( $warn, 10% ),
+  500: $warn,
+  700: darken( $warn, 10% ),
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$mat-maarch-accent: (
+  100: lighten( $accent, 10% ),
+  500: $accent,
+  700: darken( $accent, 10% ),
+  contrast: (
+    100: $dark-primary-text,
+    500: $light-primary-text,
+    700: $light-primary-text
+  )
+);
+
+$primary: mat-palette($mat-maarch-primary,500);
+$accent: mat-palette($mat-maarch-accent,500);
+$warn: mat-palette($mat-maarch-warn,500);
+
+// create theme from palettes
+$theme: mat-light-theme($primary, $accent, $warn);
+// apply theme
+@include angular-material-theme($theme);

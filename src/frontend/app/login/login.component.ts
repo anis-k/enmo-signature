@@ -10,7 +10,7 @@ import { NotificationService } from '../service/notification.service';
 
 @Component({
     templateUrl: 'login.component.html',
-    styleUrls: ['login.component.styl'],
+    styleUrls: ['login.component.scss'],
     animations: [
         trigger(
             'myAnimation',

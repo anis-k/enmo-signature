@@ -22,7 +22,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 @Component({
     selector: 'app-document',
     templateUrl: 'document.component.html',
-    styleUrls: ['document.component.styl'],
+    styleUrls: ['document.component.scss'],
     animations: [
         trigger(
             'slideDown',
@@ -450,7 +450,7 @@ export class DocumentComponent implements OnInit {
 
 @Component({
     templateUrl: '../modal/warn-modal.component.html',
-    styleUrls: ['../modal/warn-modal.component.styl']
+    styleUrls: ['../modal/warn-modal.component.scss']
 })
 export class WarnModalComponent {
     constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService) { }
@@ -505,7 +505,7 @@ export class WarnModalComponent {
 
 @Component({
     templateUrl: '../modal/confirm-modal.component.html',
-    styleUrls: ['../modal/confirm-modal.component.styl']
+    styleUrls: ['../modal/confirm-modal.component.scss']
 })
 export class ConfirmModalComponent {
     constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
@@ -560,7 +560,7 @@ export class ConfirmModalComponent {
 
 @Component({
     templateUrl: '../modal/success-info-valid.html',
-    styleUrls: ['../modal/success-info-valid.styl']
+    styleUrls: ['../modal/success-info-valid.scss']
 })
 export class SuccessInfoValidBottomSheetComponent implements OnInit {
     date: Date = new Date();
@@ -577,7 +577,7 @@ export class SuccessInfoValidBottomSheetComponent implements OnInit {
 
 @Component({
     templateUrl: '../modal/reject-info.html',
-    styleUrls: ['../modal/reject-info.styl']
+    styleUrls: ['../modal/reject-info.scss']
 })
 export class RejectInfoBottomSheetComponent implements OnInit {
     date: Date = new Date();

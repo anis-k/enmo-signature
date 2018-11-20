@@ -1,13 +1,12 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { empty } from 'rxjs';
 import { SignaturesContentService } from './service/signatures.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   encapsulation: ViewEncapsulation.None,
-  styleUrls: ['app.component.styl']
+  styleUrls: ['app.component.scss']
 })
 
 export class AppComponent {

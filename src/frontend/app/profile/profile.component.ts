@@ -10,7 +10,7 @@ import { CookieService } from 'ngx-cookie-service';
 @Component({
     selector: 'app-my-profile',
     templateUrl: 'profile.component.html',
-    styleUrls: ['profile.component.styl'],
+    styleUrls: ['profile.component.scss'],
 })
 
 export class ProfileComponent implements OnInit, AfterViewInit {

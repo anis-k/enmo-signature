@@ -11,7 +11,7 @@ import { NotificationService } from '../service/notification.service';
 @Component({
   selector: 'app-signatures',
   templateUrl: 'signatures.component.html',
-  styleUrls: ['signatures.component.styl'],
+  styleUrls: ['signatures.component.scss'],
   animations: [
     trigger('listAnimation', [
       transition('* => *', [ // each time the binding value changes

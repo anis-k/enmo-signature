@@ -1,0 +1,221 @@
+
+// CORE VARS COLOR
+@import './frontend/css/vars.scss';
+
+// COMPILATED MATERIAL THEMING
+@import './frontend/css/maarch-material.css';
+
+
+.default {
+  color: $color-main;
+}
+
+.primary {
+  color: $primary;
+}
+
+.red {
+  color: $warn;
+}
+
+.green {
+  color: $accent;
+}
+
+i, input, button, .mat-bottom-sheet-container, .mat-sidenav-container  {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+.c-active-color {
+  color: $color-main;
+}
+.bold {
+  font-weight: bold;
+}
+
+html {
+  height: 100%;
+  position: fixed;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  overflow: hidden;
+}
+
+.mat-sidenav-container {
+  height: 100vh;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+.form-label {
+  display: flex;
+  align-items: center;
+}
+.btn {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid black;
+  background-color: #fff;
+  padding: 0 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  outline: none;
+  &.btn-xs {
+    height: 35px;
+  }
+  &.green {
+    color: $accent;
+    border: 1px solid $accent;
+  }
+  &.red {
+    color: $warn;
+    border: 1px solid $warn;
+  }
+  &.blue {
+    color: $primary;
+    background: #fff;
+    border: 1px solid $primary;
+    &.active {
+      color: #fff;
+      background: $primary;
+    }
+  }
+  &:disabled {
+    opacity: 0.5;
+    color: #000;
+    border: 1px solid #000;
+    cursor: not-allowed;
+  }
+  .fas, i, .material-icons {
+    margin: 0 5px;
+  }
+}
+.toggle {
+  appearance: none;
+  position: relative;
+  width: 60px;
+  height: 38px;
+  border-radius: 19px;
+  outline: none;
+  transition: all 0.1s;
+  border: solid 1px #ECF0F1;
+  background: #ECF0F1;
+  &:after {
+    content: "";
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #ECF0F1;
+    border-radius: 18px;
+    box-shadow: 0 1px 2px 0 rgba(9, 11, 15, 0.06);
+  }
+  &:checked {
+    border-color: $accent;
+    background: $accent;
+    &:after {
+      right: 0;
+      top: 0;
+    }
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'lato', sans-serif;
+  color: $color-main;
+  -webkit-font-smoothing: antialiased;
+}
+.header {
+  width: 100vw;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  /*&-left
+      position absolute
+      top 15px
+      left -60px
+    &-right
+      position absolute
+      top 15px
+      right -60px*/
+  &-infos {
+    background: #F1F4F4;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    position: relative;
+  }
+  &-info {
+    border-right: 1px solid #979797;
+    width: 200px;
+    height: 60px;
+    font-size: 12px;
+    padding-left: 20px;
+    &:last-child {
+      border: none;
+    }
+    p {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+.footer {
+  width: 100vw;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 10px;
+  z-index: 1;
+}
+
+button.disabled {
+  cursor: not-allowed;
+}
+
+.dragger {
+  position: absolute;
+  z-index: 10;
+  background: cyan;
+}
+
+.cdk-global-scrollblock  {
+  overflow: hidden !important;
+}
+
+.mat-snack-bar-container {
+  text-align: center;
+  font-weight: bold;
+}
+
+.mat-snack-bar-container.error-snackbar  {
+  color: $warn;
+  background: white;
+  border: solid 1px $warn;
+}
+
+.mat-snack-bar-container.success-snackbar  {
+  color: $primary;
+  background: white;
+  border: solid 1px $primary;
+}

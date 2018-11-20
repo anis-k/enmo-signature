@@ -4,7 +4,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 @Component({
   selector: 'app-drawer',
   templateUrl: 'drawer.component.html',
-  styleUrls: ['drawer.component.styl']
+  styleUrls: ['drawer.component.scss']
 })
 export class DrawerComponent {
 
