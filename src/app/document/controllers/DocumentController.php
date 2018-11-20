@@ -191,69 +191,62 @@ class DocumentController
         return $response->withJson(['documentId' => $id]);
     }
 
-    public function makeAction(Request $request, Response $response, array $args)
+    public function setAction(Request $request, Response $response, array $args)
     {
-        $data = $request->getParams();
-
-        ValidatorModel::notEmpty($data, ['action_id']);
-        ValidatorModel::intVal($data, ['action_id']);
-
-        /*if (!empty($data['signatures'])) {
-            foreach ($data['signatures'] as $signature) {
-                foreach (['fullPath', 'width', 'positionX', 'positionY', 'page'] as $value) {
-                    if (empty($signature[$value])) {
-                        return $response->withStatus(400)->withJson(['errors' => $value . ' is empty']);
-                    }
-                }
-            }
-        }*/
-
         if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $action = ActionModel::getById(['select' => ['next_status_id', 'label'], 'id' => $data['action_id']]);
+        $action = ActionModel::getById(['select' => ['next_status_id'], 'id' => $args['actionId']]);
         if (empty($action)) {
-            return $response->withStatus(403)->withJson(['errors' => 'Action does not exist']);
+            return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
 
-        $adr = AdrModel::getDocumentsAdr([
-            'select'  => ['path', 'filename'],
-            'where'   => ['main_document_id = ?', 'type = ?'],
-            'data'    => [$args['id'], 'DOC']
-        ]);
-        if (empty($adr)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist in database']);
-        }
+        $data = $request->getParams();
+        if (!empty($data['signatures'])) {
+            foreach ($data['signatures'] as $signature) {
+                foreach (['encodedImage', 'width', 'positionX', 'positionY', 'page', 'type'] as $value) {
+                    if (!isset($signature[$value])) {
+                        return $response->withStatus(400)->withJson(['errors' => $value . ' is empty']);
+                    }
+                }
+            }
 
-        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
+            $adr = AdrModel::getDocumentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['main_document_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'DOC']
+            ]);
+            if (empty($adr)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+            }
 
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!file_exists($pathToDocument)) {
-            return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
-        }
+            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+            if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
+            }
 
-        $tmpPath     = CoreConfigModel::getTmpPath();
-        $tmpFilename = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_' . $adr[0]['filename'];
-        copy($pathToDocument, $tmpFilename);
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            if (!file_exists($pathToDocument)) {
+                return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
+            }
 
-        $pdf     = new Fpdi('P');
-        $nbPages = $pdf->setSourceFile($tmpFilename);
-        $pdf->setPrintHeader(false);
+            $tmpPath     = CoreConfigModel::getTmpPath();
+            $tmpFilename = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_' . $adr[0]['filename'];
+            copy($pathToDocument, $tmpFilename);
 
+            $pdf     = new Fpdi('P');
+            $nbPages = $pdf->setSourceFile($tmpFilename);
+            $pdf->setPrintHeader(false);
 
-        for ($i = 1; $i <= $nbPages; $i++) {
-            $page = $pdf->importPage($i);
-            $size = $pdf->getTemplateSize($page);
-            $pdf->AddPage($size['orientation'], $size);
-            $pdf->useImportedPage($page);
-            $pdf->SetAutoPageBreak(false, 0);
-            $pdf->SetMargins(0, 0, 0);
-            $pdf->SetAutoPageBreak(false, 0);
-            if (!empty($data['signatures'])) {
+            for ($i = 1; $i <= $nbPages; $i++) {
+                $page = $pdf->importPage($i);
+                $size = $pdf->getTemplateSize($page);
+                $pdf->AddPage($size['orientation'], $size);
+                $pdf->useImportedPage($page);
+                $pdf->SetAutoPageBreak(false, 0);
+                $pdf->SetMargins(0, 0, 0);
+                $pdf->SetAutoPageBreak(false, 0);
                 foreach ($data['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
                         if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
@@ -266,51 +259,44 @@ class DocumentController
                             $signPosY = ($signature['positionY'] * $size['height']) / 100;
                         }
                         if ($signature['type'] == 'SVG') {
-                            $data = str_replace('data:image/svg+xml;base64,', '', $signature['fullPath']);
-
-                            $image = base64_decode($data);
-            
+                            $image = str_replace('data:image/svg+xml;base64,', '', $signature['encodedImage']);
+                            $image = base64_decode($image);
                             if ($image === false) {
                                 return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                             }
 
                             $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.svg';
                             file_put_contents($imageTmpPath, $image);
-
                             $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth);
                         } else {
-                            $data = $signature['fullPath'];
-
-                            $image = base64_decode($data);
-            
+                            $image = base64_decode($signature['encodedImage']);
                             if ($image === false) {
                                 return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                             }
 
                             $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.png';
                             file_put_contents($imageTmpPath, $image);
-
                             $pdf->Image($imageTmpPath, $signPosX, $signPosY, $signWidth);
                         }
                     }
                 }
             }
+            $fileContent = $pdf->Output('', 'S');
+
+            $storeInfos = DocserverController::storeResourceOnDocServer([
+                'encodedFile'     => base64_encode($fileContent),
+                'format'          => 'pdf',
+                'docserverType'   => 'HANDWRITTEN'
+            ]);
+
+            AdrModel::createDocumentAdr([
+                'documentId'     => $args['id'],
+                'type'           => 'HANDWRITTEN',
+                'path'           => $storeInfos['path'],
+                'filename'       => $storeInfos['filename'],
+                'fingerprint'    => $storeInfos['fingerprint']
+            ]);
         }
-        $fileContent = $pdf->Output('', 'S');
-
-        $storeInfos = DocserverController::storeResourceOnDocServer([
-            'encodedFile'     => base64_encode($fileContent),
-            'format'          => 'pdf',
-            'docserverType'   => 'HANDWRITTEN'
-        ]);
-
-        AdrModel::createDocumentAdr([
-            'documentId'     => $args['id'],
-            'type'           => 'HANDWRITTEN',
-            'path'           => $storeInfos['path'],
-            'filename'       => $storeInfos['filename'],
-            'fingerprint'    => $storeInfos['fingerprint']
-        ]);
 
         DocumentModel::update([
             'set'   => ['status' => $action['next_status_id']],
@@ -322,7 +308,7 @@ class DocumentController
             'tableName' => 'main_documents',
             'recordId'  => $args['id'],
             'eventType' => 'UP',
-            'info'      => 'actionDone' . ' : ' . $action['label']
+            'info'      => "actionDone : {$args['actionId']}"
         ]);
 
         return $response->withJson(['success' => 'success']);

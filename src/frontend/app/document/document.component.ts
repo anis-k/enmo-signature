@@ -292,7 +292,6 @@ export class DocumentComponent implements OnInit {
         }
         this.signaturesService.notesContent[this.signaturesService.currentPage].push(
             {
-                // 'fullPath': this.signaturePad.toDataURL('image/npg'),
                 'fullPath': this.signaturePad.toDataURL('image/svg+xml'),
                 'positionX': (this.signaturePadPosX * 100) / this.annotationPadOptions.canvasWidth,
                 'positionY': (this.signaturePadPosY * 100) / this.annotationPadOptions.canvasHeight,
@@ -300,7 +299,6 @@ export class DocumentComponent implements OnInit {
                 'width': 768,
             }
         );
-        console.log();
         this.signaturePad.clear();
         this.scale = 1;
         this.signaturesService.annotationMode = false;
@@ -466,13 +464,12 @@ export class WarnModalComponent {
                     this.signaturesService.signaturesContent[index].forEach((signature: any) => {
                         signatures.push(
                             {
-                                'fullPath': signature.encodedSignature,
-                                'height': 'auto',
-                                'width': (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
-                                'positionX': (signature.positionX * 100) / signature.pdfAreaX,
-                                'positionY': (signature.positionY * 100) / signature.pdfAreaY,
-                                'type': 'PNG',
-                                'page': index,
+                                'encodedImage'  : signature.encodedSignature,
+                                'width'         : (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
+                                'positionX'     : (signature.positionX * 100) / signature.pdfAreaX,
+                                'positionY'     : (signature.positionY * 100) / signature.pdfAreaY,
+                                'type'          : 'PNG',
+                                'page'          : index
                             }
                         );
                     });
@@ -481,19 +478,18 @@ export class WarnModalComponent {
                     this.signaturesService.notesContent[index].forEach((note: any) => {
                         signatures.push(
                             {
-                                'fullPath': note.fullPath,
-                                'height': note.height,
-                                'width': note.width,
-                                'positionX': note.positionX,
-                                'positionY': note.positionY,
-                                'type': 'SVG',
-                                'page': index,
+                                'encodedImage'  : note.fullPath,
+                                'width'         : note.width,
+                                'positionX'     : note.positionX,
+                                'positionY'     : note.positionY,
+                                'type'          : 'SVG',
+                                'page'          : index
                             }
                         );
                     });
                 }
             }
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                     this.signaturesService.documentsListCount--;
@@ -523,13 +519,12 @@ export class ConfirmModalComponent {
                     this.signaturesService.signaturesContent[index].forEach((signature: any) => {
                         signatures.push(
                             {
-                                'fullPath': signature.encodedSignature,
-                                'height': 'auto',
-                                'width': (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
-                                'positionX': (signature.positionX * 100) / signature.pdfAreaX,
-                                'positionY': (signature.positionY * 100) / signature.pdfAreaY,
-                                'type': 'PNG',
-                                'page': index,
+                                'encodedImage'  : signature.encodedSignature,
+                                'width'         : (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
+                                'positionX'     : (signature.positionX * 100) / signature.pdfAreaX,
+                                'positionY'     : (signature.positionY * 100) / signature.pdfAreaY,
+                                'type'          : 'PNG',
+                                'page'          : index,
                             }
                         );
                     });
@@ -538,19 +533,18 @@ export class ConfirmModalComponent {
                     this.signaturesService.notesContent[index].forEach((note: any) => {
                         signatures.push(
                             {
-                                'fullPath': note.fullPath,
-                                'height': note.height,
-                                'width': note.width,
-                                'positionX': note.positionX,
-                                'positionY': note.positionY,
-                                'type': 'SVG',
-                                'page': index,
+                                'encodedImage'  : note.fullPath,
+                                'width'         : note.width,
+                                'positionX'     : note.positionX,
+                                'positionY'     : note.positionY,
+                                'type'          : 'SVG',
+                                'page'          : index,
                             }
                         );
                     });
                 }
             }
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/action', {'action_id': this.signaturesService.currentAction, 'signatures': signatures})
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.dialogRef.close('sucess');
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);

@@ -55,7 +55,7 @@ $app->get('/documents', \Document\controllers\DocumentController::class . ':get'
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
 $app->get('/documents/{id}/status', \Document\controllers\DocumentController::class . ':getStatusById');
 $app->get('/documents/{id}/handwrittenDocument', \Document\controllers\DocumentController::class . ':getHandwrittenDocumentById');
-$app->put('/documents/{id}/action', \Document\controllers\DocumentController::class . ':makeAction');
+$app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 
 //Password Rules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
