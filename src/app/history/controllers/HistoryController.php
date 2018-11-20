@@ -23,7 +23,7 @@ class HistoryController
     public static function add(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['tableName', 'recordId', 'eventType', 'info']);
-        ValidatorModel::stringType($aArgs, ['tableName', 'recordId', 'eventType', 'info']);
+        ValidatorModel::stringType($aArgs, ['tableName', 'eventType', 'info']);
 
         $user = UserModel::getByEmail(['select' => ['id'], 'email' => $GLOBALS['email']]);
 

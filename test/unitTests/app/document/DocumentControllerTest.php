@@ -53,6 +53,14 @@ class DocumentControllerTest extends TestCase
 
         $this->assertInternalType('array', $responseBody->documents);
         $this->assertNotEmpty($responseBody->documents);
+
+
+        $fullRequest = $request->withQueryParams(['mode' => 'SIGN']);
+        $response     = $documentController->get($fullRequest, new \Slim\Http\Response());
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertInternalType('array', $responseBody->documents);
+        $this->assertNotEmpty($responseBody->documents);
     }
 
     public function testGetById()

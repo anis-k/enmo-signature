@@ -22,7 +22,7 @@ abstract class HistoryModelAbstract
     public static function create(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['tableName', 'recordId', 'eventType', 'userId', 'info']);
-        ValidatorModel::stringType($aArgs, ['tableName', 'recordId', 'eventType', 'info']);
+        ValidatorModel::stringType($aArgs, ['tableName', 'eventType', 'info']);
         ValidatorModel::intVal($aArgs, ['userId']);
 
         DatabaseModel::insert([
