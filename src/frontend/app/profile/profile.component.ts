@@ -172,6 +172,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
                         this.password.passwordConfirmation = '';
                         this.password.currentPassword = '';
                         this.notificationService.success('Profil modifié');
+                        this.closeProfile();
                     }, (err) => {
                         this.notificationService.handleErrors(err);
                     });
@@ -179,6 +180,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
                 if (!this.showPassword) {
                     this.notificationService.success('Profil modifié');
+                    this.closeProfile();
                 }
             }, (err) => {
                 this.notificationService.handleErrors(err);
