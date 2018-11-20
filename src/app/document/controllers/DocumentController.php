@@ -26,6 +26,7 @@ use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
+use SrcCore\models\LangModel;
 use SrcCore\models\ValidatorModel;
 use Status\models\StatusModel;
 use User\models\UserModel;
@@ -307,7 +308,7 @@ class DocumentController
             'tableName' => 'main_documents',
             'recordId'  => $args['id'],
             'eventType' => 'UP',
-            'info'      => _ACTION_DONE . ' : ' . $action['label'],
+            'info'      => 'actionDone' . ' : ' . $action['label'],
             'moduleId'  => 'document',
             'eventId'   => 'documentup',
         ]);

@@ -12,4 +12,6 @@
  * @author dev@maarch.org
  */
 
-define('_ACTION_DONE', 'Action done');
+$lang = [
+    'actionDone'    => 'Action effectuée'
+];

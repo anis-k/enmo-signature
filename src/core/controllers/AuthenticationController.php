@@ -18,6 +18,8 @@ use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
+use SrcCore\models\CoreConfigModel;
+use SrcCore\models\LangModel;
 use User\models\UserModel;
 
 class AuthenticationController
@@ -28,12 +30,14 @@ class AuthenticationController
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
             if (AuthenticationModel::authentication(['email' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
                 $email = $_SERVER['PHP_AUTH_USER'];
+                new LangModel(['language' => CoreConfigModel::getLanguage()]);
             }
         } else {
             $cookie = AuthenticationModel::getCookieAuth();
             if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
                 AuthenticationModel::setCookieAuth(['email' => $cookie['email']]);
                 $email = $cookie['email'];
+                new LangModel(['language' => $cookie['lang']]);
             }
         }
 

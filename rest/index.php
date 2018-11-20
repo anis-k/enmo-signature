@@ -18,10 +18,6 @@ require '../vendor/autoload.php';
 chdir('..');
 date_default_timezone_set(\SrcCore\models\CoreConfigModel::getTimezone());
 
-$language = \SrcCore\models\CoreConfigModel::getLanguage();
-require_once("src/core/lang/lang-{$language}.php");
-
-
 $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRouteBeforeAppMiddleware' => true]]);
 
 //Authentication
