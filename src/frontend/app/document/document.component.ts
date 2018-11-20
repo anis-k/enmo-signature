@@ -25,6 +25,16 @@ import { trigger, transition, style, animate } from '@angular/animations';
     styleUrls: ['document.component.scss'],
     animations: [
         trigger(
+            'enterApp',
+            [
+                transition(
+                    ':leave', [
+                        style({ transform: 'translateY(0)' }),
+                        animate('500ms', style({ transform: 'translateY(-100%)' })),
+                    ]
+                )]
+        ),
+        trigger(
             'slideDown',
             [
                 transition(
@@ -60,7 +70,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 })
 
 export class DocumentComponent implements OnInit {
-
+    enterApp = true;
     loadingPage = true;
     pdf: any;
     pageNum = 1;
@@ -112,6 +122,9 @@ export class DocumentComponent implements OnInit {
 
     // TO DO REMOVE DEFINE EXEMPLE
     ngOnInit(): void {
+        setTimeout(() => {
+            this.enterApp = false;
+        }, 500);
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
                 this.renderingDoc = true;
