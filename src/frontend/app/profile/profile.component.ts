@@ -13,16 +13,12 @@ import { CookieService } from 'ngx-cookie-service';
     styleUrls: ['profile.component.scss'],
 })
 
-export class ProfileComponent implements OnInit, AfterViewInit {
+export class ProfileComponent implements OnInit {
 
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
-    profileInfo: any = {
-        email: '',
-        firstname: '',
-        lastanme: ''
-    };
+    profileInfo: any = {};
 
 
     // HANDLE PASSWORD
@@ -52,15 +48,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
 
-    ngOnInit(): void {
-        this.profileInfo.email = this.signaturesService.userLogged.email;
-        this.profileInfo.firstname = this.signaturesService.userLogged.firstname;
-        this.profileInfo.lastname = this.signaturesService.userLogged.lastname;
-    }
-
-    ngAfterViewInit(): void {
-
-    }
+    ngOnInit(): void { }
 
     closeProfile() {
         this.snavLeftComponent.open();
@@ -185,5 +173,16 @@ export class ProfileComponent implements OnInit, AfterViewInit {
             }, (err) => {
                 this.notificationService.handleErrors(err);
             });
+    }
+
+    showProfile() {
+        if (this.signaturesService.showProfile) {
+            this.profileInfo.email = this.signaturesService.userLogged.email;
+            this.profileInfo.firstname = this.signaturesService.userLogged.firstname;
+            this.profileInfo.lastname = this.signaturesService.userLogged.lastname;
+            return true;
+        } else {
+            return false;
+        }
     }
 }

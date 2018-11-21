@@ -59,7 +59,7 @@ class AuthenticationController
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        $user = UserModel::getByEmail(['email' => $data['email'], 'select' => ['mode']]);
+        $user = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id', 'firstname', 'lastname', 'email', 'picture', 'mode']]);
         if ($user['mode'] != 'standard') {
             return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
         }
@@ -74,7 +74,7 @@ class AuthenticationController
             'info'      => "userLogin"
         ]);
 
-        return $response->withJson(['success' => 'success']);
+        return $response->withJson(['user' => $user]);
     }
 
     public static function logout(Request $request, Response $response)

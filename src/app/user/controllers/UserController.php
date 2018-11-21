@@ -44,7 +44,7 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
         }
 
-        $user = UserModel::getById(['select' => ['firstname', 'lastname', 'picture'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['id', 'email', 'firstname', 'lastname', 'picture'], 'id' => $args['id']]);
 
         return $response->withJson(['user' => $user]);
     }

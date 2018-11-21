@@ -76,6 +76,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   }
 
   openProfile() {
+    this.signaturesService.showProfile = true;
     this.snavLeftComponent.close();
     this.snavRightComponent.open();
   }

@@ -1,11 +1,12 @@
-<nav class="sidebar">
+<nav class="sidebar" *ngIf="showProfile();">
     <div class="main-header">
         <header class="profile-header">
-            <div class="user">
+            <div class="user" (click)="uploadFile.click();">
                 Mon Profil
             </div>
             <div class="avatar">
             </div>
+            <input #uploadFile type="file" style="display:none;">
         </header>
     </div>
     <div class="nav">
