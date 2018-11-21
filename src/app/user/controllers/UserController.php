@@ -105,7 +105,7 @@ class UserController
         if ($data['newPassword'] != $data['passwordConfirmation']) {
             return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
         } elseif (!AuthenticationModel::authentication(['email' => $GLOBALS['email'], 'password' => $data['currentPassword']])) {
-            return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
+            return $response->withStatus(400)->withJson(['errors' => 'Wrong Password']);
         } elseif (!PasswordController::isPasswordValid(['password' => $data['newPassword']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
         }
