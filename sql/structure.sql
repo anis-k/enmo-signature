@@ -76,6 +76,7 @@ CREATE TABLE users
   "password" character varying(255) NOT NULL,
   firstname character varying(128) NOT NULL,
   lastname character varying(128) NOT NULL,
+  picture text,
   enabled boolean DEFAULT TRUE,
   mode character varying(50) NOT NULL,
   cookie_key character varying(255) DEFAULT NULL::character varying,

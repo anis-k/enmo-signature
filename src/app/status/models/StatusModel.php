@@ -53,4 +53,24 @@ class StatusModel
 
         return $status[0];
     }
+
+    public static function getByReference(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['reference']);
+        ValidatorModel::stringType($aArgs, ['reference']);
+        ValidatorModel::arrayType($aArgs, ['select']);
+
+        $status = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['status'],
+            'where'     => ['reference = ?'],
+            'data'      => [$aArgs['reference']]
+        ]);
+
+        if (empty($status[0])) {
+            return [];
+        }
+
+        return $status[0];
+    }
 }

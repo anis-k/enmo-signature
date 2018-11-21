@@ -37,6 +37,18 @@ class UserController
         return $response->withJson(['users' => $users]);
     }
 
+    public function getById(Request $request, Response $response, array $args)
+    {
+        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
+        if ($user['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+        }
+
+        $user = UserModel::getById(['select' => ['firstname', 'lastname', 'picture'], 'id' => $args['id']]);
+
+        return $response->withJson(['user' => $user]);
+    }
+
     public function update(Request $request, Response $response, array $args)
     {
         $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
@@ -49,6 +61,17 @@ class UserController
         $check = $check && Validator::stringType()->notEmpty()->validate($data['lastname']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        }
+
+        if (!empty($data['picture'])) {
+            $picture    = base64_decode($data['picture']);
+            $finfo      = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType   = $finfo->buffer($picture);
+            $type       = explode('/', $mimeType);
+
+            if ($type[0] != 'image') {
+                return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
+            }
         }
 
         $data['id'] = $args['id'];

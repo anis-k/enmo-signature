@@ -62,6 +62,7 @@ $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':g
 
 //Users
 $app->get('/users', \User\controllers\UserController::class . ':get');
+$app->get('/users/{id}', \User\controllers\UserController::class . ':getById');
 $app->put('/users/{id}', \User\controllers\UserController::class . ':update');
 $app->put('/users/{id}/password', \User\controllers\UserController::class . ':updatePassword');
 $app->get('/users/{id}/signatures', \User\controllers\UserController::class . ':getSignatures');

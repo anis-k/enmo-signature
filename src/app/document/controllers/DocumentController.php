@@ -42,9 +42,10 @@ class DocumentController
         $data['limit'] = empty($data['limit']) ? 0 : (int)$data['limit'];
 
         $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
+        $status = StatusModel::getByReference(['select' => ['id'], 'reference' => 'NEW']);
 
-        $where = ['processing_user = ?'];
-        $dataGet = [$user['id']];
+        $where = ['processing_user = ?', 'status = ?'];
+        $dataGet = [$user['id'], $status['id']];
         if (!empty($data['mode'])) {
             $where[] = 'mode = ?';
             $dataGet[] = $data['mode'];

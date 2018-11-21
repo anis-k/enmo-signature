@@ -79,13 +79,14 @@ class UserModel
     {
         ValidatorModel::notEmpty($aArgs, ['id', 'firstname', 'lastname']);
         ValidatorModel::intVal($aArgs, ['id']);
-        ValidatorModel::stringType($aArgs, ['firstname', 'lastname']);
+        ValidatorModel::stringType($aArgs, ['firstname', 'lastname', 'picture']);
 
         DatabaseModel::update([
             'table'     => 'users',
             'set'       => [
                 'firstname' => $aArgs['firstname'],
                 'lastname'  => $aArgs['lastname'],
+                'picture'   => empty($aArgs['picture']) ? null : $aArgs['picture']
             ],
             'where'     => ['id = ?'],
             'data'      => [$aArgs['id']]
