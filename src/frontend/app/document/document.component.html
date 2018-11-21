@@ -71,21 +71,32 @@
       <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
       <section class="page-viewer" #pdfpage>
         <div [style.width.px]="768*scale" class="canvas-wrapper" #canvasWrapper (click)="addAnnotation($event)">
+          <pdf-viewer [ngClass]="{
+            'pdf-page-canvas':!renderingDoc,
+            'pdf-page-canvas-loading-doc':renderingDoc
+          }" [src]="pdfDataArr" [render-text]="false" [zoom]="scale" [show-all]="false" [(page)]="pageNum" [original-size]="true" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)"></pdf-viewer>
+
           <div *ngIf="loadingDoc" style="position: absolute;z-index: 1;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
             <mat-spinner></mat-spinner>
           </div>
           <ng-container *ngIf="currentDoc == 0">
             <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
-              <div style="top:0;left:0;position: absolute;">
+              <div style="top:0;left:0;position: absolute;" [ngClass]="{
+                'pdf-page-canvas':!renderingDoc,
+                'pdf-page-canvas-loading-doc':renderingDoc
+              }">
                 <span style="position: absolute;position: absolute;top: -15px;left: -15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;"
                     class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteNote(i);"></i></span>
-                <img [style.width.px]="note.width*scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
+                <img [style.width.px]="this.signaturesService.workingAreaWidth" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
               </div>
             </ng-container>
             <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
               <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent"
-                style="position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas"
-                inBounds="true" (endOffset)="moveSign($event,i)">
+                style="top:0;left:0;position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas"
+                inBounds="true" (endOffset)="moveSign($event,i)" [ngClass]="{
+                  'pdf-page-canvas':!renderingDoc,
+                  'pdf-page-canvas-loading-doc':renderingDoc
+                }">
                 <span style="position: absolute;width: 100%;height: 100%;top:0;left:0;">
                   <span style="position: absolute;width: 100%;top: -15px;margin-left: -15px;margin-right: 15px;"><i
                       style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x"
@@ -96,7 +107,10 @@
               </div>
             </ng-container>
 
-            <div *ngIf="signaturesService.lockNote" style="top:0;left:0;position: absolute;border: dashed 1px grey;">
+            <div *ngIf="signaturesService.lockNote" style="top:0;left:0;position: absolute;border: dashed 1px grey;" [ngClass]="{
+              'pdf-page-canvas':!renderingDoc,
+              'pdf-page-canvas-loading-doc':renderingDoc
+            }">
               <div class="tool-content tool-content-left">     
                 <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)"
               class="range">
@@ -114,11 +128,11 @@
               <div *ngIf="lockSignaturePad" style="background: #ffffffb3;position: absolute;top: 0;left: 0;width: 100%;height: 100%;"></div>
             </div>
           </ng-container>
-          <canvas class="pdf-page-canvas" [ngClass]="{
+          <!--<canvas class="pdf-page-canvas" [ngClass]="{
             'pdf-page-canvas':!renderingDoc,
             'pdf-page-canvas-loading-doc':renderingDoc
           }"
-            #canvas></canvas>
+            #canvas></canvas> -->
         </div>
       </section>
       <div class="page-under">

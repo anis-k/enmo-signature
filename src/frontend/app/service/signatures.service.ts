@@ -23,4 +23,6 @@ export class SignaturesContentService {
     documentsList: any[] = [];
     documentsListCount = 0;
     newSign: any = {};
+    workingAreaWidth = 0;
+    workingAreaHeight = 0;
 }

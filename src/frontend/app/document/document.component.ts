@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Inject } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
-import * as PDFJS from 'pdfjs-dist/build/pdf.min.js';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { SignaturePad } from 'angular2-signaturepad/signature-pad';
@@ -18,6 +17,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { PDFDocumentProxy } from 'ng2-pdf-viewer';
 
 @Component({
     selector: 'app-document',
@@ -72,7 +72,6 @@ import { trigger, transition, style, animate } from '@angular/animations';
 export class DocumentComponent implements OnInit {
     enterApp = true;
     loadingPage = true;
-    pdf: any;
     pageNum = 1;
     signaturesContent: any = [];
     pageRendering = false;
@@ -89,6 +88,7 @@ export class DocumentComponent implements OnInit {
     actionsList: any = [];
     currentAction = 0;
     lockSignaturePad = false;
+    pdfDataArr: any;
     annotationPadOptions = {
         throttle: 0,
         minWidth: 1,
@@ -117,10 +117,8 @@ export class DocumentComponent implements OnInit {
         public notificationService: NotificationService,
         private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
-        PDFJS.GlobalWorkerOptions.workerSrc = './node_modules/pdfjs-dist/build/pdf.worker.js';
     }
 
-    // TO DO REMOVE DEFINE EXEMPLE
     ngOnInit(): void {
         setTimeout(() => {
             this.enterApp = false;
@@ -153,7 +151,6 @@ export class DocumentComponent implements OnInit {
                         });
                         this.loadingDoc = false;
                         this.pdfRender(this.docList[this.currentDoc]);
-                        this.context = (<HTMLCanvasElement>this.canvas.nativeElement).getContext('2d');
                         setTimeout(() => {
                             this.loadingPage = false;
                             this.renderingDoc = false;
@@ -171,44 +168,50 @@ export class DocumentComponent implements OnInit {
 
 
     pdfRender(document: any) {
-        const pdfData = atob(document.encodedDocument);
-        PDFJS.getDocument({ data: pdfData }).then((_pdfDoc: any) => {
-            this.pdf = _pdfDoc;
-            this.totalPages = this.pdf.pdfInfo.numPages;
-            this.signaturesService.totalPage = this.totalPages;
-            this.renderPage(this.pageNum, this.canvas.nativeElement, 1);
-        });
+        const binary_string = window.atob(document.encodedDocument);
+        const len = binary_string.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binary_string.charCodeAt(i);
+        }
+        this.pdfDataArr = bytes.buffer;
     }
 
-    renderPage(pageNumber: any, canvas: any, scale: number) {
-        this.pdf.getPage(pageNumber).then((page: any) => {
-            const viewport = page.getViewport(2);
-            const ctx = this.context;
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            const renderContext = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
-            this.canvas.nativeElement.style.width = 768 * scale + 'px';
-            this.canvas.nativeElement.style.height = 'auto';
-            const renderTask = page.render(renderContext);
-            renderTask.then(() => {
-                this.signaturesService.signWidth = viewport.width / 4.5;
-            });
-        });
-    }
+    pdfRendered(pdf: PDFDocumentProxy) {
+        this.totalPages = pdf.numPages;
+        this.signaturesService.totalPage = this.totalPages; 
+     }
+
+     pageRendered(e: any) {
+
+        this.signaturesService.workingAreaWidth = e.target.clientWidth;
+        this.signaturesService.workingAreaHeight = e.target.clientHeight;
+
+        this.canvasWrapper.nativeElement.style.width = this.signaturesService.workingAreaWidth + 'px';
+        this.canvasWrapper.nativeElement.style.height = this.signaturesService.workingAreaHeight + 'px';
+        
+        this.annotationPadOptions.canvasWidth = this.signaturesService.workingAreaWidth;
+        this.annotationPadOptions.canvasHeight = this.signaturesService.workingAreaHeight;
+
+        const ratio =  Math.max(window.devicePixelRatio || 1, 1);
+        this.annotationPadOptions.canvasHeight = this.annotationPadOptions.canvasHeight * ratio;
+        this.annotationPadOptions.canvasWidth = this.annotationPadOptions.canvasWidth * ratio;
+
+        if (this.signaturePad !== undefined) {
+            this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth);
+            this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight);
+        }
+        
+        this.signaturesService.signWidth = this.signaturesService.workingAreaWidth / 4.5;
+
+        this.renderingDoc = false;
+      }
 
     prevPage() {
-        this.renderingDoc = true;
         this.pageNum--;
         if (this.pageNum === 0) {
             this.pageNum = 1;
         } else {
-            this.renderPage(this.pageNum, this.canvas, 1);
-            setTimeout(() => {
-                this.renderingDoc = false;
-            }, 500);
         }
 
         if (this.currentDoc === 0) {
@@ -217,15 +220,10 @@ export class DocumentComponent implements OnInit {
     }
 
     nextPage() {
-        this.renderingDoc = true;
         if (this.pageNum >= this.totalPages) {
             this.pageNum = this.totalPages;
         } else {
             this.pageNum++;
-            this.renderPage(this.pageNum, this.canvas, 1);
-            setTimeout(() => {
-                this.renderingDoc = false;
-            }, 500);
         }
 
         // only for main document
@@ -240,9 +238,6 @@ export class DocumentComponent implements OnInit {
         this.pageNum = 1;
         this.currentDoc++;
         this.pdfRender(this.docList[this.currentDoc]);
-        setTimeout(() => {
-            this.renderingDoc = false;
-        }, 500);
         this.loadNextDoc();
     }
 
@@ -255,21 +250,11 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.isTaggable = true;
         }
         this.pdfRender(this.docList[this.currentDoc]);
-        setTimeout(() => {
-            this.renderingDoc = false;
-        }, 500);
     }
 
     addAnnotation() {
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
-            this.annotationPadOptions.canvasWidth = 768 * this.scale;
-            this.annotationPadOptions.canvasHeight = $('.pdf-page-canvas').height();
-            const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-            this.annotationPadOptions.canvasHeight = this.annotationPadOptions.canvasHeight * ratio;
-            this.annotationPadOptions.canvasWidth = this.annotationPadOptions.canvasWidth * ratio;
-            // this.scale = 1;
             this.signaturesService.annotationMode = true;
-            // this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
             this.signaturePadPosX = 0;
             this.signaturePadPosY = 0;
             this.signaturesService.lockNote = true;
@@ -314,19 +299,20 @@ export class DocumentComponent implements OnInit {
             }
         );
         this.signaturePad.clear();
+        if (this.scale > 1) {
+            this.renderingDoc = true;
+        }
         this.scale = 1;
         this.signaturesService.annotationMode = false;
         this.signaturesService.lockNote = false;
-        this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
         this.notificationService.success('Annotation ajoutée');
     }
 
     cancelAnnotation() {
         this.signaturePad.clear();
-        // this.scale = 1;
+        this.scale = 1;
         this.signaturesService.annotationMode = false;
         this.signaturesService.lockNote = false;
-        // this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
     }
 
     freezDoc() {
@@ -401,7 +387,6 @@ export class DocumentComponent implements OnInit {
         });
 
         dialogRef.afterClosed().subscribe(result => {
-            console.log('The dialog was closed');
             if (result) {
                 this.signaturesService.signaturesContent = [];
                 this.signaturesService.notesContent = [];
@@ -415,8 +400,8 @@ export class DocumentComponent implements OnInit {
             this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
                 .subscribe((dataPj: any) => {
                     this.docList[this.currentDoc + 1] = dataPj.attachment;
-                }, () => {
-                    console.log('error !');
+                }, (err: any) => {
+                    this.notificationService.handleErrors(err);
                 });
         }
     }
@@ -437,20 +422,16 @@ export class DocumentComponent implements OnInit {
     }
 
     zoomPlus() {
+        this.renderingDoc = true
         this.lockSignaturePad = true;
         this.scale = 2;
-        this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth * this.scale);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight * this.scale);
     }
 
     zoomMinus() {
+        this.renderingDoc = true
         this.signaturePad.clear();
         this.lockSignaturePad = true;
         this.scale = 1;
-        this.renderPage(this.pageNum, this.canvas.nativeElement, this.scale);
-        this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth);
-        this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight);
     }
 
     undo() {
@@ -467,11 +448,10 @@ export class DocumentComponent implements OnInit {
     styleUrls: ['../modal/warn-modal.component.scss']
 })
 export class WarnModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService) { }
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     confirmDoc () {
         const signatures: any[] = [];
-        console.log(this.signaturesService.currentAction);
         if (this.signaturesService.currentAction > 0) {
             for (let index = 1; index <= this.signaturesService.totalPage; index++) {
                 if (this.signaturesService.signaturesContent[index]) {
@@ -509,7 +489,7 @@ export class WarnModalComponent {
                     this.signaturesService.documentsListCount--;
                     this.dialogRef.close('sucess');
                 }, (err: any) => {
-                    console.log(err);
+                    this.notificationService.handleErrors(err);
                 });
         } else {
             this.dialogRef.close('sucess');
@@ -522,11 +502,10 @@ export class WarnModalComponent {
     styleUrls: ['../modal/confirm-modal.component.scss']
 })
 export class ConfirmModalComponent {
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService) { }
+    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     confirmDoc () {
         const signatures: any[] = [];
-        console.log(this.signaturesService.currentAction);
         if (this.signaturesService.currentAction > 0) {
             for (let index = 1; index <= this.signaturesService.totalPage; index++) {
                 if (this.signaturesService.signaturesContent[index]) {
@@ -564,7 +543,7 @@ export class ConfirmModalComponent {
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                     this.signaturesService.documentsListCount--;
                 }, (err: any) => {
-                    console.log(err);
+                    this.notificationService.handleErrors(err);
                 });
         } else {
             this.dialogRef.close('sucess');

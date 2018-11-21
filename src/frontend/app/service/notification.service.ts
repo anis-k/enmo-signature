@@ -2,6 +2,7 @@ import { MatSnackBar } from '@angular/material';
 import { Injectable, Component, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material';
 import { Router } from '@angular/router';
+import { empty } from 'rxjs';
 
 @Component({
     selector: 'app-custom-snackbar',
@@ -38,7 +39,12 @@ export class NotificationService {
             this.router.navigate(['/login']);
             this.error('Veuillez vous reconnecter');
         } else {
-            this.error(err.error.errors);
+            if (err.error.errors !== undefined) {
+                this.error(err.error.errors);
+            } else {
+                this.error(err.error.exception[0].message);
+                console.log(err.error.exception[0]);
+            }
         }
     }
 }

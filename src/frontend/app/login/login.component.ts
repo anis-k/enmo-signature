@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
 import { CookieService } from 'ngx-cookie-service';
 import { NotificationService } from '../service/notification.service';
+import { environment } from '../../core/environments/environment';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -40,12 +41,16 @@ export class LoginComponent implements OnInit, AfterViewInit {
     };
     labelButton = 'Se connecter';
     loadingConnexion = false;
+    appVersion = '';
+    appAuthor = '';
 
     constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
 
     ngOnInit(): void {
+        this.appVersion = environment.VERSION;
+        this.appAuthor = environment.AUTHOR;
         this.signaturesService.userLogged = {};
         this.cookieService.deleteAll();
     }
