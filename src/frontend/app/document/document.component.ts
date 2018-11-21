@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Inject } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
-import * as PDFJS from 'pdfjs-dist/build/pdf.js';
+import * as PDFJS from 'pdfjs-dist/build/pdf.min.js';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { SignaturePad } from 'angular2-signaturepad/signature-pad';

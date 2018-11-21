@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 class DocumentControllerTest extends TestCase
 {
     private static $id = null;
+    private static $attachmentId = null;
 
     public function testCreate()
     {
@@ -30,7 +31,12 @@ class DocumentControllerTest extends TestCase
             'recipient'             => 'Barry Allen',
             'priority'              => 'Urgent',
             'limit_date'            => '2018-12-25',
-            'encodedZipDocument'    => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip'))
+            'encodedZipDocument'    => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
+            'attachments'           => [[
+                'encodedZipDocument'    => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
+                'subject'               => 'Ma pj de mon courrier',
+                'reference'             => '2018/ZZ/10',
+            ]]
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
@@ -82,13 +88,37 @@ class DocumentControllerTest extends TestCase
         $this->assertSame('QE', $responseBody->document->sender_entity);
         $this->assertSame(1, $responseBody->document->processing_user);
         $this->assertSame('Barry Allen', $responseBody->document->recipient);
+        $this->assertInternalType('string', $responseBody->document->encodedDocument);
         $this->assertInternalType('array', $responseBody->document->attachments);
-        $this->assertEmpty($responseBody->document->attachments);
+        $this->assertNotEmpty($responseBody->document->attachments);
+        $this->assertNotEmpty($responseBody->document->attachments[0]->id);
+        self::$attachmentId = $responseBody->document->attachments[0]->id;
 
         $response     = $documentController->getById($request, new \Slim\Http\Response(), ['id' => -1]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('Document out of perimeter', $responseBody->errors);
+        $this->assertSame('Document does not exist', $responseBody->errors);
+    }
+
+    // AttachmentController
+    public function testGetById_AttachmentController()
+    {
+        $attachmentController = new \Attachment\controllers\AttachmentController();
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $response     = $attachmentController->getById($request, new \Slim\Http\Response(), ['id' => self::$attachmentId]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('2018/ZZ/10', $responseBody->attachment->reference);
+        $this->assertSame('Ma pj de mon courrier', $responseBody->attachment->subject);
+        $this->assertInternalType('string', $responseBody->attachment->encodedDocument);
+
+        $response     = $attachmentController->getById($request, new \Slim\Http\Response(), ['id' => -1]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('Attachment does not exist', $responseBody->errors);
     }
 
     public function testGetStatusById()
@@ -124,10 +154,17 @@ class DocumentControllerTest extends TestCase
             'where' => ['id = ?'],
             'data'  => [self::$id]
         ]);
-
         \Docserver\models\AdrModel::deleteDocumentAdr([
             'where' => ['main_document_id = ?'],
             'data'  => [self::$id]
+        ]);
+        \Attachment\models\AttachmentModel::delete([
+            'where' => ['id = ?'],
+            'data'  => [self::$attachmentId]
+        ]);
+        \Docserver\models\AdrModel::deleteAttachmentAdr([
+            'where' => ['attachment_id = ?'],
+            'data'  => [self::$attachmentId]
         ]);
 
         $documentController = new \Document\controllers\DocumentController();
@@ -138,6 +175,6 @@ class DocumentControllerTest extends TestCase
         $response     = $documentController->getById($request, new \Slim\Http\Response(), ['id' => self::$id]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('Document out of perimeter', $responseBody->errors);
+        $this->assertSame('Document does not exist', $responseBody->errors);
     }
 }

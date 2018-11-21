@@ -70,13 +70,13 @@ class DocumentController
 
     public function getById(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-        }
-
         $document = DocumentModel::getById(['select' => ['*'], 'id' => $args['id']]);
         if (empty($document)) {
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        }
+
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
         $adr = AdrModel::getDocumentsAdr([

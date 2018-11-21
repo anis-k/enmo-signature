@@ -144,27 +144,6 @@ class DatabasePDO
         return $query;
     }
 
-    public function setLimit(array $args)
-    {
-        ValidatorModel::notEmpty($args, ['limit']);
-        ValidatorModel::intVal($args, ['limit']);
-        ValidatorModel::stringType($args, ['where']);
-
-        if (self::$type == 'ORACLE') {
-            if (empty($args['where'])) {
-                $where = ' WHERE ROWNUM <= ' . $args['limit'];
-            } else {
-                $where = "{$args['where']} AND ROWNUM <= {$args['limit']}";
-            }
-            $limit = '';
-        } else {
-            $where = $args['where'];
-            $limit = " LIMIT {$args['limit']}";
-        }
-
-        return ['where' => $where, 'limit' => $limit];
-    }
-
     public static function reset()
     {
         self::$pdo = null;

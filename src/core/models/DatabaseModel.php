@@ -121,7 +121,7 @@ class DatabaseModel
             $limit = '';
         } else {
             ValidatorModel::intType($args, ['limit']);
-            $limit = $args['limit'];
+            $limit = " LIMIT {$args['limit']}";
         }
 
         if (empty($args['data'])) {
@@ -130,16 +130,9 @@ class DatabaseModel
         ValidatorModel::arrayType($args, ['data']);
 
 
-        $db = new DatabasePDO();
-
-        if (!empty($limit)) {
-            $limitData = $db->setLimit(['where' => $where, 'limit' => $limit]);
-            $where = $limitData['where'];
-            $limit = $limitData['limit'];
-        }
-
         $query = "SELECT {$select} FROM {$args['table']}{$where}{$groupBy}{$orderBy}{$offset}{$limit}";
 
+        $db = new DatabasePDO();
         $stmt = $db->query($query, $args['data']);
 
         $rowset = [];
