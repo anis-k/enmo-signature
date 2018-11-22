@@ -1,9 +1,5 @@
 <article class="signatures" *ngIf="signaturesService.showSign">
   <section class="signatures-top">
-    <button class="btn" (click)="showAnnotation()">
-      <i class="fas fa-pen"></i>
-      annotation
-    </button>
     <label for="all" class="form-label">Ajouter la signature sur toutes les pages
       <input type="checkbox" name="all" id="all" class="toggle" (click)="toggleAllPage()">
     </label>
@@ -11,7 +7,7 @@
   <section class="list">
     <div class="list-item create" (click)="openPad()">
       <i class="fas fa-pen-nib fa-2x"></i>
-      créer une nouvelle signature
+      Créer une nouvelle signature
     </div>
     <div [@listAnimation]="signaturesService.signaturesList.length" style="display: contents;">
       <div *ngFor="let signature of signaturesService.signaturesList;let i=index" class="list-item" style="position: relative;" (tap)="tapEvent(signature,i)">

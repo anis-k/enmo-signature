@@ -168,7 +168,7 @@ body {
     height: 60px;
     font-size: 12px;
     padding-left: 20px;
-    &:last-child {
+    &:last-of-type {
       border: none;
     }
     p {

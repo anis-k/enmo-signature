@@ -61,12 +61,6 @@ export class SignaturesComponent implements OnInit {
       this.signaturesService.newSign = {};
   }
 
-  showAnnotation() {
-    this.signaturesService.annotationMode = true;
-    this.signaturesService.lockNote = true;
-    this.bottomSheetRef.dismiss();
-  }
-
   selectSignature(signature: any) {
     signature.positionX = this.signaturesService.workingAreaWidth - 140;
     signature.positionY = this.signaturesService.workingAreaHeight - 140;
