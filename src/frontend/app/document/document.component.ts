@@ -68,7 +68,6 @@ import { PDFDocumentProxy } from 'ng2-pdf-viewer';
         )
     ],
 })
-
 export class DocumentComponent implements OnInit {
     enterApp = true;
     loadingPage = true;
@@ -166,7 +165,6 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-
     pdfRender(document: any) {
         const binary_string = window.atob(document.encodedDocument);
         const len = binary_string.length;
@@ -179,10 +177,10 @@ export class DocumentComponent implements OnInit {
 
     pdfRendered(pdf: PDFDocumentProxy) {
         this.totalPages = pdf.numPages;
-        this.signaturesService.totalPage = this.totalPages; 
-     }
+        this.signaturesService.totalPage = this.totalPages;
+    }
 
-     pageRendered(e: any) {
+    pageRendered(e: any) {
 
         this.signaturesService.workingAreaWidth = e.target.clientWidth;
         this.signaturesService.workingAreaHeight = e.target.clientHeight;
@@ -205,7 +203,7 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.signWidth = this.signaturesService.workingAreaWidth / 4.5;
 
         this.renderingDoc = false;
-      }
+    }
 
     prevPage() {
         this.pageNum--;
@@ -562,6 +560,8 @@ export class SuccessInfoValidBottomSheetComponent implements OnInit {
         setTimeout(() => {
             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
                 this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
+            } else {
+                this.router.navigate(['/documents']);
             }
             this.bottomSheetRef.dismiss();
         }, 2000);
@@ -579,6 +579,8 @@ export class RejectInfoBottomSheetComponent implements OnInit {
         setTimeout(() => {
             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
                 this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
+            } else {
+                this.router.navigate(['/documents']);
             }
             this.bottomSheetRef.dismiss();
         }, 2000);
