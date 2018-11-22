@@ -9,11 +9,8 @@
 
 require_once 'vendor/autoload.php';
 
-$email = 'jjane@maarch.com';
+$id = 1;
 $_SERVER['CONFIG_DIR'] = "/var/www/html/MaarchParapheur/config/";
-
-$language = \SrcCore\models\CoreConfigModel::getLanguage();
-require_once("src/core/lang/lang-{$language}.php");
 
 class httpRequestCustom
 {

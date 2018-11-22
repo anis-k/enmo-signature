@@ -24,7 +24,7 @@ VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarc
 --STATUS
 ------------
 TRUNCATE TABLE status;
-ALTER SEQUENCE status_id_seq RESTART WITH 1;
+ALTER SEQUENCE status_id_seq RESTART WITH 4;
 INSERT INTO status (id, reference, label) VALUES (1, 'NEW', 'En cours');
 INSERT INTO status (id, reference, label) VALUES (2 ,'VAL', 'Validé');
 INSERT INTO status (id, reference, label) VALUES (3, 'REF', 'Refusé');
