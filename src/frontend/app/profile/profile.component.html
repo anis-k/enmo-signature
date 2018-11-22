@@ -1,7 +1,7 @@
 <nav class="sidebar" *ngIf="this.signaturesService.showProfile">
     <div class="main-header">
         <header class="profile-header">
-            <div class="user">
+            <div class="user" style="color: #F99830">
                 Mon Profil
             </div>
             <div class="avatar" [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}" (tap)="uploadFile.click();">

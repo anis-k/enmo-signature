@@ -192,7 +192,7 @@ export class ProfileComponent implements OnInit {
         const fileToUpload = files.item(0);
 
         if (fileToUpload.size <=  2000000) {
-            if (['image/png', 'image/svg+xml', 'image/jpg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
+            if (['image/png', 'image/svg+xml', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
                 const myReader: FileReader = new FileReader();
                 myReader.onloadend = (e) => {
                     this.profileInfo.picture = myReader.result;

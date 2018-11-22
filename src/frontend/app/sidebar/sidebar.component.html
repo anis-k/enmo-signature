@@ -4,7 +4,7 @@
         <button class="logout-button" mat-icon-button (click)="logout()">
             <mat-icon  fontSet="fas" fontIcon="fa-sign-out-alt"></mat-icon>
         </button>
-      <div class="user">
+      <div class="user" style="color: #F99830">
         {{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}
       </div>
       <div class="avatar" [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}" (click)="openProfile()">
