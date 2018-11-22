@@ -5,7 +5,7 @@
                 Mon Profil
             </div>
             <canvas class="avatar" id="avatar"></canvas>
-            <div class="avatar" [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}" (tap)="uploadFile.click();">
+            <div class="avatar" [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}" (tap)="uploadFile.click();">
             </div>
             <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
         </header>

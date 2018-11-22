@@ -61,6 +61,7 @@ export class ProfileComponent implements OnInit {
     }
 
     closeProfile() {
+        this.profileInfo = this.signaturesService.userLogged;
         this.snavLeftComponent.open();
         this.snavRightComponent.close();
     }
@@ -214,7 +215,6 @@ export class ProfileComponent implements OnInit {
                                 break;
                             }
                             console.log(deg);
-                            $('.avatar').css({'background': 'url(' + myReader.result + ') no-repeat #135F7F'});
                             $('.avatar').css({'background-size': 'cover'});
                             $('.avatar').css({'background-position': 'center'});
                         });
