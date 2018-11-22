@@ -31,18 +31,17 @@ import { environment } from '../../core/environments/environment';
         )
     ],
 })
-
 export class LoginComponent implements OnInit, AfterViewInit {
 
-    loadingForm = true;
-    newLogin = {
+    loadingForm         : boolean   = true;
+    loadingConnexion    : boolean   = false;
+    newLogin            : any       = {
         mail: '',
         password: ''
     };
-    labelButton = 'Se connecter';
-    loadingConnexion = false;
-    appVersion = '';
-    appAuthor = '';
+    labelButton         : string    = 'Se connecter';
+    appVersion          : string    = '';
+    appAuthor           : string    = '';
 
     constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
@@ -77,7 +76,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
                     this.router.navigate(['/documents/']);
                 }, 700);
             }, (err: any) => {
-                this.notificationService.handleErrors(err);
+                if (err.status === 401) {
+                    this.notificationService.error('Mauvais courriel ou mauvais mot de passe');
+                } else {
+                    this.notificationService.handleErrors(err);
+                }
                 this.labelButton = 'Se connecter';
                 this.loadingConnexion = false;
             });

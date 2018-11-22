@@ -25,13 +25,11 @@ class HistoryController
         ValidatorModel::notEmpty($aArgs, ['tableName', 'recordId', 'eventType', 'info']);
         ValidatorModel::stringType($aArgs, ['tableName', 'eventType', 'info']);
 
-        $user = UserModel::getByEmail(['select' => ['id'], 'email' => $GLOBALS['email']]);
-
         HistoryModel::create([
             'tableName' => $aArgs['tableName'],
             'recordId'  => $aArgs['recordId'],
             'eventType' => $aArgs['eventType'],
-            'userId'    => $user['id'],
+            'userId'    => $GLOBALS['id'],
             'info'      => $aArgs['info'],
         ]);
 

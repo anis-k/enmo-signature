@@ -33,7 +33,7 @@ class AttachmentController
             return $response->withStatus(400)->withJson(['errors' => 'Attachment does not exist']);
         }
 
-        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'email' => $GLOBALS['email']])) {
+        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 

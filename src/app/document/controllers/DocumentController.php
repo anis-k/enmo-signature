@@ -41,11 +41,10 @@ class DocumentController
         $data['offset'] = empty($data['offset']) ? 0 : (int)$data['offset'];
         $data['limit'] = empty($data['limit']) ? 0 : (int)$data['limit'];
 
-        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
         $status = StatusModel::getByReference(['select' => ['id'], 'reference' => 'NEW']);
 
         $where = ['processing_user = ?', 'status = ?'];
-        $dataGet = [$user['id'], $status['id']];
+        $dataGet = [$GLOBALS['id'], $status['id']];
         if (!empty($data['mode'])) {
             $where[] = 'mode = ?';
             $dataGet[] = $data['mode'];
@@ -75,7 +74,7 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -101,6 +100,8 @@ class DocumentController
 //            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
 //        }
 
+        $date = new \DateTime($document['limit_date']);
+        $document['limit_date'] = $date->format('d-m-Y H:i');
         $document['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
         $document['statusDisplay'] = StatusModel::getById(['select' => ['label'], 'id' => $document['status']])['label'];
         $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?'], 'data' => [$document['mode']]]);
@@ -194,7 +195,7 @@ class DocumentController
 
     public function setAction(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -233,7 +234,7 @@ class DocumentController
             }
 
             $tmpPath     = CoreConfigModel::getTmpPath();
-            $tmpFilename = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_' . $adr[0]['filename'];
+            $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_' . $adr[0]['filename'];
             copy($pathToDocument, $tmpFilename);
 
             $pdf     = new Fpdi('P');
@@ -266,7 +267,7 @@ class DocumentController
                                 return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                             }
 
-                            $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.svg';
+                            $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.svg';
                             file_put_contents($imageTmpPath, $image);
                             $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth);
                         } else {
@@ -275,7 +276,7 @@ class DocumentController
                                 return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
                             }
 
-                            $imageTmpPath = $tmpPath . $GLOBALS['email'] . '_' . rand() . '_writing.png';
+                            $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
                             file_put_contents($imageTmpPath, $image);
                             $pdf->Image($imageTmpPath, $signPosX, $signPosY, $signWidth);
                         }
@@ -317,7 +318,7 @@ class DocumentController
 
     public function getHandwrittenDocumentById(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -350,7 +351,7 @@ class DocumentController
 
     public function getStatusById(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'email' => $GLOBALS['email']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -367,13 +368,10 @@ class DocumentController
 
     public static function hasRightById(array $args)
     {
-        ValidatorModel::notEmpty($args, ['id', 'email']);
-        ValidatorModel::intVal($args, ['id']);
-        ValidatorModel::stringType($args, ['email']);
+        ValidatorModel::notEmpty($args, ['id', 'userId']);
+        ValidatorModel::intVal($args, ['id', 'userId']);
 
-        $user = UserModel::getByEmail(['email' => $GLOBALS['email'], 'select' => ['id']]);
-
-        $document = DocumentModel::get(['select' => [1], 'where' => ['processing_user = ?', 'id = ?'], 'data' => [$user['id'], $args['id']]]);
+        $document = DocumentModel::get(['select' => [1], 'where' => ['processing_user = ?', 'id = ?'], 'data' => [$args['userId'], $args['id']]]);
         if (empty($document)) {
             return false;
         }

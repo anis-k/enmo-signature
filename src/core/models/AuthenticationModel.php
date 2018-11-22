@@ -57,14 +57,15 @@ class AuthenticationModel
 
     public static function cookieAuthentication(array $args)
     {
-        ValidatorModel::notEmpty($args, ['email', 'cookieKey']);
-        ValidatorModel::stringType($args, ['email', 'cookieKey']);
+        ValidatorModel::notEmpty($args, ['id', 'cookieKey']);
+        ValidatorModel::stringType($args, ['cookieKey']);
+        ValidatorModel::intVal($args, ['id']);
 
         $aReturn = DatabaseModel::select([
             'select'    => [1],
             'table'     => ['users'],
-            'where'     => ['email = ?', 'cookie_key = ?', 'cookie_date > CURRENT_TIMESTAMP'],
-            'data'      => [$args['email'], $args['cookieKey']]
+            'where'     => ['id = ?', 'cookie_key = ?', 'cookie_date > CURRENT_TIMESTAMP'],
+            'data'      => [$args['id'], $args['cookieKey']]
         ]);
 
         if (empty($aReturn[0])) {
@@ -76,8 +77,8 @@ class AuthenticationModel
 
     public static function setCookieAuth(array $args)
     {
-        ValidatorModel::notEmpty($args, ['email']);
-        ValidatorModel::stringType($args, ['email']);
+        ValidatorModel::notEmpty($args, ['id']);
+        ValidatorModel::intVal($args, ['id']);
 
         $cookieTime = 1;
 
@@ -87,12 +88,12 @@ class AuthenticationModel
         }
 
         $user = UserModel::get([
-            'select'    => ['id', 'cookie_key', 'firstname', 'lastname'],
-            'where'     => ['email = ?', 'cookie_date > CURRENT_TIMESTAMP'],
-            'data'      => [$args['email']]
+            'select'    => ['cookie_key'],
+            'where'     => ['id = ?', 'cookie_date > CURRENT_TIMESTAMP'],
+            'data'      => [$args['id']]
         ]);
         if (empty($user[0]['cookie_key'])) {
-            $cookieKey = AuthenticationModel::getPasswordHash($args['email']);
+            $cookieKey = AuthenticationModel::getPasswordHash($args['id']);
         } else {
             $cookieKey = $user[0]['cookie_key'];
         }
@@ -106,16 +107,13 @@ class AuthenticationModel
                 'cookie_key'    => $cookieKey,
                 'cookie_date'   => date('Y-m-d H:i:s', $cookieTime),
             ],
-            'where' => ['email = ?'],
-            'data'  => [$args['email']]
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
         ]);
 
         $previousCookie = AuthenticationModel::getCookieAuth();
         $cookieData = json_encode([
-            'id'        => $user[0]['id'],
-            'email'     => $args['email'],
-            'firstname' => $user[0]['firstname'],
-            'lastname'  => $user[0]['lastname'],
+            'id'        => $args['id'],
             'lang'      => empty($previousCookie['lang']) ? CoreConfigModel::getLanguage() : $previousCookie['lang'],
             'cookieKey' => $cookieKey
         ]);

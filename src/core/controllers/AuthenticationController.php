@@ -27,22 +27,23 @@ class AuthenticationController
 {
     public static function authentication()
     {
-        $email = null;
+        $id = null;
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
             if (AuthenticationModel::authentication(['email' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
-                $email = $_SERVER['PHP_AUTH_USER'];
+                $user = UserModel::getByEmail(['select' => ['id'], 'email' => $_SERVER['PHP_AUTH_USER']]);
+                $id = $user['id'];
                 new LangModel(['language' => CoreConfigModel::getLanguage()]);
             }
         } else {
             $cookie = AuthenticationModel::getCookieAuth();
             if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
-                AuthenticationModel::setCookieAuth(['email' => $cookie['email']]);
-                $email = $cookie['email'];
+                AuthenticationModel::setCookieAuth(['id' => $cookie['id']]);
+                $id = $cookie['id'];
                 new LangModel(['language' => $cookie['lang']]);
             }
         }
 
-        return $email;
+        return $id;
     }
 
     public static function log(Request $request, Response $response)
@@ -64,12 +65,12 @@ class AuthenticationController
             return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
         }
 
-        AuthenticationModel::setCookieAuth(['email' => $data['email']]);
+        AuthenticationModel::setCookieAuth(['id' => $user['id']]);
 
-        $GLOBALS['email'] = $data['email'];
+        $GLOBALS['id'] = $user['id'];
         HistoryController::add([
             'tableName' => 'users',
-            'recordId'  => $data['email'],
+            'recordId'  => $user['id'],
             'eventType' => 'AUTHENTICATION',
             'info'      => "userLogin"
         ]);
@@ -83,7 +84,7 @@ class AuthenticationController
 
         HistoryController::add([
             'tableName' => 'users',
-            'recordId'  => $GLOBALS['email'],
+            'recordId'  => $GLOBALS['id'],
             'eventType' => 'AUTHENTICATION',
             'info'      => "userLogout"
         ]);

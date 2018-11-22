@@ -30,9 +30,9 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
     if (in_array($currentMethod.$currentRoute, $routesWithoutAuthentication)) {
         $response = $next($request, $response);
     } else {
-        $email = \SrcCore\controllers\AuthenticationController::authentication();
-        if (!empty($email)) {
-            $GLOBALS['email'] = $email;
+        $id = \SrcCore\controllers\AuthenticationController::authentication();
+        if (!empty($id)) {
+            $GLOBALS['id'] = $id;
             $response = $next($request, $response);
         } else {
             $response = $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
