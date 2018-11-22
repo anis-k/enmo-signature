@@ -146,11 +146,10 @@ body {
   /*&-left
       position absolute
       top 15px
-      left -60px
-    &-right
-      position absolute
-      top 15px
-      right -60px*/
+      left -60px*/
+    &-action {
+      color: $primary;
+    }
   &-infos {
     background: #F1F4F4;
     border-radius: 5px;

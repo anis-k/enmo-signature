@@ -10,7 +10,7 @@
     <!--<div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>-->
     <header style="position: fixed;" class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideDown]>
       <article class="header-infos">
-        <section class="header-left">
+        <section class="header-action">
           <button mat-icon-button (click)="this.snav.toggle();">
             <mat-icon fontSet="far" fontIcon="fa-folder-open"></mat-icon>
           </button>
@@ -33,12 +33,12 @@
           <p class="c-active-color bold">À signer par : </p>
           <p class="ellipsis">{{mainDocument.processingUserDisplay}}</p>
         </div>
-        <section class="header-right">
-          <button [disabled]="this.signaturesService.signaturesContent.length == 0 && this.signaturesService.notesContent.length == 0" mat-icon-button title="Effacer les annotions / signatures"
-            (click)="removeTags();">
-            <mat-icon [ngClass]="[this.signaturesService.signaturesContent.length == 0  && this.signaturesService.notesContent.length == 0 ? '' : 'red']" fontSet="fas"
-              fontIcon="fa-eraser"></mat-icon>
-          </button>
+        <section class="header-action">
+            <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon fontSet="fas" fontIcon="fa-ellipsis-v"></mat-icon></button>
+            <mat-menu #menu="matMenu">
+              <button [disabled]="this.signaturesService.signaturesContent.length == 0 && this.signaturesService.notesContent.length == 0" mat-menu-item (click)="removeTags();">Tout effacer</button>
+              <button mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
+            </mat-menu>
         </section>
       </article>
     </header>
@@ -85,8 +85,6 @@
                 'pdf-page-canvas':!renderingDoc,
                 'pdf-page-canvas-loading-doc':renderingDoc
               }">
-                <span style="position: absolute;position: absolute;top: -15px;left: -15px;"><i style="border-radius: 15px;background: white;left:0px;top:0px;color:red;"
-                    class="fa fa-times-circle fa-2x" (click)="$event.stopPropagation();deleteNote(i);"></i></span>
                 <img [style.width.px]="this.signaturesService.workingAreaWidth" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
               </div>
             </ng-container>

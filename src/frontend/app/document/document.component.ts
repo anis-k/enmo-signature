@@ -393,6 +393,12 @@ export class DocumentComponent implements OnInit {
         });
     }
 
+    undoTag() {
+        if (this.signaturesService.notesContent[this.pageNum]) {
+            this.signaturesService.notesContent[this.pageNum].pop();
+        }
+    }
+
     loadNextDoc () {
         if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].encodedDocument === '') {
             this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
