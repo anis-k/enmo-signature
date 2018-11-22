@@ -16,7 +16,6 @@ interface AfterViewInit {
 export class SignaturePadPageComponent implements AfterViewInit {
   penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000'}];
   selectedColor: any;
-  selectedWidthPenSize: any = 1;
   haveSigned: any;
 
   pad$: Observable<boolean>;
@@ -54,9 +53,8 @@ export class SignaturePadPageComponent implements AfterViewInit {
   }
 
   onDotChange(entry: any) {
-    this.selectedWidthPenSize = parseFloat(entry);
-    this.signaturePad.set('minWidth', this.selectedWidthPenSize );
-    this.signaturePad.set('maxWidth', this.selectedWidthPenSize + 2 );
+    this.signaturePad.set('minWidth', parseFloat(entry) );
+    this.signaturePad.set('maxWidth', parseFloat(entry) + 2 );
   }
 
   drawComplete() {
