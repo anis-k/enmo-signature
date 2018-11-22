@@ -50,9 +50,9 @@
       <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
           style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-unlock fa-2x"
           (tap)="test();"></i></span>
-      <span style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
+      <span *ngIf="scale==1" style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
           class="fas fa-plus fa-2x" (tap)="zoomPlus();"></i></span>
-      <span style="z-index:1;position: fixed;top: 10px;right: 60px;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
+      <span *ngIf="scale==2" style="z-index:1;position: fixed;top: 10px;right: 0px;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
           class="fas fa-minus fa-2x" (tap)="zoomMinus();"></i></span>
       <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
           style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-check-circle fa-2x"
