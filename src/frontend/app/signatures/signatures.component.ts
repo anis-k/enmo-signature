@@ -27,15 +27,14 @@ import { NotificationService } from '../service/notification.service';
 })
 export class SignaturesComponent implements OnInit {
 
-  inAllPage = false;
-  count = 0;
+  inAllPage : boolean   = false;
+  count     : number    = 0;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
      private sanitization: DomSanitizer, public notificationService: NotificationService) {
   }
-  ngOnInit() {
-    // TO DO IMPLEMENT ROUTE SIGNATURES USER LIST
 
+  ngOnInit() {
   }
 
   openSignatures() {
@@ -85,14 +84,18 @@ export class SignaturesComponent implements OnInit {
   }
 
   removeSignature(signature: any, i: any) {
-    this.http.delete('../rest/users/ ' + '1' + '/signatures/' + signature.id)
-      .subscribe(() => {
-          this.signaturesService.signaturesList.splice(i, 1);
-          this.notificationService.success('Signature supprimée');
-          this.bottomSheetRef.dismiss();
-      }, () => {
-          console.log('error !');
-      });
+      let r = confirm('Voulez-vous supprimer cette signature ?');
+
+      if (r) {
+          this.http.delete('../rest/users/ ' + '1' + '/signatures/' + signature.id)
+              .subscribe(() => {
+                  this.signaturesService.signaturesList.splice(i, 1);
+                  this.notificationService.success('Signature supprimée');
+                  this.bottomSheetRef.dismiss();
+              }, (err: any) => {
+                  this.notificationService.error(err.error.errors);
+              });
+      }
   }
 
   toggleAllPage() {

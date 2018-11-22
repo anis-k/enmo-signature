@@ -34,9 +34,9 @@ DROP TABLE IF EXISTS attachments;
 CREATE TABLE attachments
 (
   id serial NOT NULL,
-  main_document_id bigint NOT NULL,
+  main_document_id INTEGER NOT NULL,
   reference character varying(64),
-  subject text,
+  subject text NOT NULL,
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),
   CONSTRAINT attachments_pkey PRIMARY KEY (id)
@@ -46,7 +46,7 @@ WITH (OIDS=FALSE);
 DROP TABLE IF EXISTS status;
 CREATE TABLE status
 (
-  id serial,
+  id serial NOT NULL,
   reference character varying(10) NOT NULL,
   label character varying(64) NOT NULL,
   CONSTRAINT status_pkey PRIMARY KEY (id),
@@ -57,7 +57,7 @@ WITH (OIDS=FALSE);
 DROP TABLE IF EXISTS actions;
 CREATE TABLE actions
 (
-  id serial,
+  id serial NOT NULL,
   label character varying(64) NOT NULL,
   color character varying(8) NOT NULL,
   logo character varying(64),
@@ -108,7 +108,7 @@ DROP TABLE IF EXISTS adr_main_documents;
 CREATE TABLE adr_main_documents
 (
   id serial NOT NULL,
-  main_document_id bigint NOT NULL,
+  main_document_id INTEGER NOT NULL,
   type character varying(32) NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
@@ -122,7 +122,7 @@ DROP TABLE IF EXISTS adr_attachments;
 CREATE TABLE adr_attachments
 (
   id serial NOT NULL,
-  attachment_id bigint NOT NULL,
+  attachment_id INTEGER NOT NULL,
   type character varying(32) NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
@@ -136,7 +136,7 @@ DROP TABLE IF EXISTS signatures;
 CREATE TABLE signatures
 (
   id serial NOT NULL,
-  user_id integer NOT NULL,
+  user_id INTEGER NOT NULL,
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
   fingerprint character varying(255) NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE password_rules
 (
   id serial,
   label character varying(64) NOT NULL,
-  "value" integer NOT NULL,
+  "value" INTEGER NOT NULL,
   enabled boolean DEFAULT FALSE NOT NULL,
   CONSTRAINT password_rules_pkey PRIMARY KEY (id),
   CONSTRAINT password_rules_label_key UNIQUE (label)
