@@ -54,6 +54,7 @@
 }
 
 .avatar {
+  cursor: pointer;
   position: absolute;
   /*background: url(../../assets/user_sample.svg) $primary;*/
   width: 65px;
@@ -64,6 +65,11 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  transition: all 0.2s;
+}
+
+.avatar:active {
+  box-shadow: 0px 0px 5px 0px #656565;
 }
 
 
