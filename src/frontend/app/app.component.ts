@@ -3,6 +3,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { SignaturesContentService } from './service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from './service/notification.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ import { NotificationService } from './service/notification.service';
 
 export class AppComponent {
 
-  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private cookieService: CookieService, public notificationService: NotificationService) {
+  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService) {
 
     if (this.cookieService.check('maarchParapheurAuth')) {
       const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));

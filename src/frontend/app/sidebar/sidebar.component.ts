@@ -51,6 +51,9 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    $('.avatar').css({'background': 'url(data:image/png;base64,' + this.signaturesService.userLogged.picture + ') no-repeat #135F7F'});
+    $('.avatar').css({'background-size': 'cover'});
+    $('.avatar').css({'background-position': 'center'});
     this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
       .subscribe((data: any) => {
         this.signaturesService.documentsList = data.documents;

@@ -119,15 +119,15 @@
 .avatar {
   cursor: pointer;
   position: absolute;
-  background: url(../../assets/user_sample.svg) $primary;
+  //background: url(../../assets/user_sample.svg) $primary;
   width: 65px;
   height: 65px;
   border-radius: 40px;
   bottom: -20px;
   border: solid 3px #ddd;
-  background-size: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
-  background-position-y: 10px;
+  background-position: center;
   transition: all 0.2s;
 }
 

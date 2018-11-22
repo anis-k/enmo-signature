@@ -187,7 +187,7 @@ export class DocumentComponent implements OnInit {
 
         this.canvasWrapper.nativeElement.style.width = this.signaturesService.workingAreaWidth + 'px';
         this.canvasWrapper.nativeElement.style.height = this.signaturesService.workingAreaHeight + 'px';
-        
+
         this.annotationPadOptions.canvasWidth = this.signaturesService.workingAreaWidth;
         this.annotationPadOptions.canvasHeight = this.signaturesService.workingAreaHeight;
 
@@ -199,7 +199,7 @@ export class DocumentComponent implements OnInit {
             this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth);
             this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight);
         }
-        
+
         this.signaturesService.signWidth = this.signaturesService.workingAreaWidth / 4.5;
 
         this.renderingDoc = false;
@@ -420,13 +420,13 @@ export class DocumentComponent implements OnInit {
     }
 
     zoomPlus() {
-        this.renderingDoc = true
+        this.renderingDoc = true;
         this.lockSignaturePad = true;
         this.scale = 2;
     }
 
     zoomMinus() {
-        this.renderingDoc = true
+        this.renderingDoc = true;
         this.signaturePad.clear();
         this.lockSignaturePad = true;
         this.scale = 1;

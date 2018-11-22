@@ -3,7 +3,7 @@
 .sidebar {
   position: relative;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 
   &-header {
     background: #F1F4F4;
@@ -55,15 +55,15 @@
 
 .avatar {
   position: absolute;
-  background: url(../../assets/user_sample.svg) $primary;
+  /*background: url(../../assets/user_sample.svg) $primary;*/
   width: 65px;
   height: 65px;
   border-radius: 40px;
   bottom: -20px;
   border: solid 3px #ddd;
-  background-size: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
-  background-position-y: 10px;
+  background-position: center;
 }
 
 
@@ -85,16 +85,34 @@
   text-align: center;
 }
 
-.actions {
+/*.actions {
   position: absolute;
-  bottom: 0px;
-  left: 0;
+  top: 0;
   display: flex;
   width: 100%;
   justify-content: center;
-}
+  z-index: 1;
+}*/
 
 .actions button {
   padding: 10px;
   margin: 10px;
+  color: white;
+  font-size: 20px;
+}
+
+.actions .cancel {
+  position: absolute;
+  top: 0px;
+  left: 0px; 
+  height: 65px;
+  width: 65px;
+  font-size: 35px;
+}
+
+.actions .validate {
+  position: absolute;
+  top: 10px;
+  right: 0px;
+  font-size: 20px;
 }

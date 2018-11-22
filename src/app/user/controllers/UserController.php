@@ -61,7 +61,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        if (!empty($data['picture'])) {
+        /*if (!empty($data['picture'])) {
             $picture    = base64_decode($data['picture']);
             $finfo      = new \finfo(FILEINFO_MIME_TYPE);
             $mimeType   = $finfo->buffer($picture);
@@ -70,7 +70,7 @@ class UserController
             if ($type[0] != 'image') {
                 return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
             }
-        }
+        }*/
 
         $data['id'] = $args['id'];
         UserModel::update($data);

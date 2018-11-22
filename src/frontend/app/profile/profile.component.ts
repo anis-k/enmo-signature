@@ -6,6 +6,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { ValidatorFn, AbstractControl, ValidationErrors, FormBuilder } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
+import * as EXIF from 'exif-js';
 
 @Component({
     selector: 'app-my-profile',
@@ -44,11 +45,20 @@ export class ProfileComponent implements OnInit {
 
     showPassword = false;
 
-    constructor(public http: HttpClient, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
+    constructor(public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
+        this.http.get('../rest/users/' + cookieInfo.id)
+            .subscribe((data: any) => {
+                this.profileInfo = data.user;
+            },
+            (err: any) => {
+                this.notificationService.handleErrors(err);
+            });
+    }
 
     closeProfile() {
         this.snavLeftComponent.open();
@@ -148,7 +158,9 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.email = this.profileInfo.email;
                 this.signaturesService.userLogged.firstname = this.profileInfo.firstname;
                 this.signaturesService.userLogged.lastname = this.profileInfo.lastname;
+                this.signaturesService.userLogged.picture = this.profileInfo.picture;
 
+                console.log(this.signaturesService.userLogged);
                 // MAJ COOKIE
                 this.cookieService.delete('maarchParapheurAuth');
                 this.cookieService.set(btoa(JSON.stringify(this.signaturesService.userLogged)), 'maarchParapheurAuth');
@@ -175,14 +187,36 @@ export class ProfileComponent implements OnInit {
             });
     }
 
-    showProfile() {
-        if (this.signaturesService.showProfile) {
-            this.profileInfo.email = this.signaturesService.userLogged.email;
-            this.profileInfo.firstname = this.signaturesService.userLogged.firstname;
-            this.profileInfo.lastname = this.signaturesService.userLogged.lastname;
-            return true;
-        } else {
-            return false;
-        }
+    handleFileInput(files: FileList) {
+        const fileToUpload = files.item(0);
+        const myReader: FileReader = new FileReader();
+        myReader.onloadend = (e) => {
+            this.profileInfo.picture = myReader.result;
+            const image = new Image();
+
+            image.src = myReader.result.toString();
+            image.onload = function() {
+                EXIF.getData(image, function() {
+                    let deg = 0;
+                    const orientation = EXIF.getTag(this, 'Orientation');
+                    switch (orientation) {
+                        case 3:
+                        deg = 180;
+                        break;
+                        case 6:
+                        deg = 90;
+                        break;
+                        case 8:
+                        deg = -90;
+                        break;
+                    }
+                    console.log(deg);
+                    $('.avatar').css({'background': 'url(' + myReader.result + ') no-repeat #135F7F'});
+                    $('.avatar').css({'background-size': 'cover'});
+                    $('.avatar').css({'background-position': 'center'});
+                });
+            };
+        };
+        myReader.readAsDataURL(fileToUpload);
     }
 }
