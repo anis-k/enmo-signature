@@ -36,8 +36,8 @@ TRUNCATE TABLE actions;
 ALTER SEQUENCE actions_id_seq RESTART WITH 1;
 INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (1, 'Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 'SIGN', 3);
 INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (2, 'Refuser', '#e74c3c', 'fas fa-backspace', 'openDialog', 'NOTE', 3);
-INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (3, 'Parapher', '#000', '', 'openDrawer', 'SIGN', null);
-INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (4, 'Annoter', '#2ecc71', '', 'openDrawer', 'NOTE', null);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (3, 'Signatures', '#135F7F', '', 'openDrawer', 'SIGN', null);
+INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (4, 'Signatures', '#135F7F', '', 'openDrawer', 'NOTE', null);
 INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (5, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 'SIGN', 2);
 INSERT INTO actions (id, label, color, logo, event, mode, next_status_id) VALUES (6, 'Valider', '#2ecc71', 'fas fa-check-circle', 'confirmDialog', 'NOTE', 2);
 
