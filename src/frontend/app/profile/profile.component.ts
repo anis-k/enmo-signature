@@ -189,34 +189,43 @@ export class ProfileComponent implements OnInit {
 
     handleFileInput(files: FileList) {
         const fileToUpload = files.item(0);
-        const myReader: FileReader = new FileReader();
-        myReader.onloadend = (e) => {
-            this.profileInfo.picture = myReader.result;
-            const image = new Image();
 
-            image.src = myReader.result.toString();
-            image.onload = function() {
-                EXIF.getData(image, function() {
-                    let deg = 0;
-                    const orientation = EXIF.getTag(this, 'Orientation');
-                    switch (orientation) {
-                        case 3:
-                        deg = 180;
-                        break;
-                        case 6:
-                        deg = 90;
-                        break;
-                        case 8:
-                        deg = -90;
-                        break;
-                    }
-                    console.log(deg);
-                    $('.avatar').css({'background': 'url(' + myReader.result + ') no-repeat #135F7F'});
-                    $('.avatar').css({'background-size': 'cover'});
-                    $('.avatar').css({'background-position': 'center'});
-                });
-            };
-        };
-        myReader.readAsDataURL(fileToUpload);
+        if (fileToUpload.size <=  2000000) {
+            if (['image/png', 'image/svg+xml', 'image/jpg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
+                const myReader: FileReader = new FileReader();
+                myReader.onloadend = (e) => {
+                    this.profileInfo.picture = myReader.result;
+                    const image = new Image();
+
+                    image.src = myReader.result.toString();
+                    image.onload = function() {
+                        EXIF.getData(image, function() {
+                            let deg = 0;
+                            const orientation = EXIF.getTag(this, 'Orientation');
+                            switch (orientation) {
+                                case 3:
+                                deg = 180;
+                                break;
+                                case 6:
+                                deg = 90;
+                                break;
+                                case 8:
+                                deg = -90;
+                                break;
+                            }
+                            console.log(deg);
+                            $('.avatar').css({'background': 'url(' + myReader.result + ') no-repeat #135F7F'});
+                            $('.avatar').css({'background-size': 'cover'});
+                            $('.avatar').css({'background-position': 'center'});
+                        });
+                    };
+                };
+                myReader.readAsDataURL(fileToUpload);
+            } else {
+                this.notificationService.error('Ceci n\'est pas une image');
+            }
+        } else {
+            this.notificationService.error('Image trop volumineuse (2mo max.)');
+        }
     }
 }
