@@ -2,7 +2,6 @@
   <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
 </div>
 <mat-sidenav-container autosize>
-
   <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight" ></app-sidebar>
   </mat-sidenav>
@@ -85,7 +84,7 @@
                 'pdf-page-canvas':!renderingDoc,
                 'pdf-page-canvas-loading-doc':renderingDoc
               }">
-                <img [style.width.px]="this.signaturesService.workingAreaWidth" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
+                <img [style.width.px]="this.signaturesService.workingAreaWidth" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)" (click)="addAnnotation($event)">
               </div>
             </ng-container>
             <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">

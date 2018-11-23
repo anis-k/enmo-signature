@@ -359,10 +359,12 @@ export class DocumentComponent implements OnInit {
     }
 
     cancelAnnotation() {
-        this.signaturePad.clear();
-        this.scale = 1;
-        this.signaturesService.annotationMode = false;
-        this.signaturesService.lockNote = false;
+        setTimeout(() => {
+            this.signaturesService.annotationMode = false;
+            this.signaturePad.clear();
+            this.scale = 1;
+            this.signaturesService.lockNote = false;
+        }, 200);
     }
 
     freezDoc() {
