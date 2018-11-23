@@ -161,7 +161,6 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.lastname = this.profileInfo.lastname;
                 this.signaturesService.userLogged.picture = this.profileInfo.picture;
 
-                console.log(this.signaturesService.userLogged);
                 // MAJ COOKIE
                 this.cookieService.delete('maarchParapheurAuth');
                 this.cookieService.set(btoa(JSON.stringify(this.signaturesService.userLogged)), 'maarchParapheurAuth');
@@ -214,7 +213,6 @@ export class ProfileComponent implements OnInit {
                                 deg = -90;
                                 break;
                             }
-                            console.log(deg);
                             $('.avatar').css({'background-size': 'cover'});
                             $('.avatar').css({'background-position': 'center'});
                         });
