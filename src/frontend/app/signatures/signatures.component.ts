@@ -7,6 +7,7 @@ import * as $ from 'jquery';
 import { HttpClient } from '@angular/common/http';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { NotificationService } from '../service/notification.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-signatures',
@@ -31,7 +32,7 @@ export class SignaturesComponent implements OnInit {
   count     : number    = 0;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
-     private sanitization: DomSanitizer, public notificationService: NotificationService) {
+     private sanitization: DomSanitizer, public notificationService: NotificationService, private cookieService: CookieService) {
   }
 
   ngOnInit() {
@@ -87,7 +88,8 @@ export class SignaturesComponent implements OnInit {
       let r = confirm('Voulez-vous supprimer cette signature ?');
 
       if (r) {
-          this.http.delete('../rest/users/ ' + '1' + '/signatures/' + signature.id)
+          const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
+          this.http.delete('../rest/users/ ' + cookieInfo.id + '/signatures/' + signature.id)
               .subscribe(() => {
                   this.signaturesService.signaturesList.splice(i, 1);
                   this.notificationService.success('Signature supprimée');

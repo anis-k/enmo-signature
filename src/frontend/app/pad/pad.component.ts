@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { SignaturesContentService } from '../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
+import { CookieService } from 'ngx-cookie-service';
 
 interface AfterViewInit {
   ngAfterViewInit(): void;
@@ -36,7 +37,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
     canvasHeight: 315
   };
 
-  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService, private cookieService: CookieService) { }
 
   ngAfterViewInit() {
     // this.signaturePad.clear();
@@ -84,7 +85,8 @@ export class SignaturePadPageComponent implements AfterViewInit {
       'encodedSignature': newEncodedSign,
       'format': 'png'
     };
-    this.http.post('../rest/users/' + '1' + '/signatures', newSign)
+    const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
+    this.http.post('../rest/users/' + cookieInfo.id + '/signatures', newSign)
       .subscribe((data: any) => {
         newSign.id = data.signatureId;
         this.signaturesService.newSign = newSign;
