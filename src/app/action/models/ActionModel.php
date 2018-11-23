@@ -22,13 +22,14 @@ class ActionModel
     public static function get(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['select']);
-        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);
 
         $actions = DatabaseModel::select([
             'select'    => $aArgs['select'],
             'table'     => ['actions'],
             'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
-            'data'      => empty($aArgs['data']) ? [] : $aArgs['data']
+            'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
+            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy']
         ]);
 
         return $actions;

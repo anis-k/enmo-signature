@@ -177,7 +177,11 @@ export class ProfileComponent implements OnInit {
                         this.notificationService.success('Profil modifié');
                         this.closeProfile();
                     }, (err) => {
-                        this.notificationService.handleErrors(err);
+                        if (err.status === 401) {
+                            this.notificationService.error('Mauvais mot de passe');
+                        } else {
+                            this.notificationService.handleErrors(err);
+                        }
                     });
                 }
 

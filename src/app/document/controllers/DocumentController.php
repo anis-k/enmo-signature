@@ -104,7 +104,7 @@ class DocumentController
         $document['limit_date'] = $date->format('d-m-Y H:i');
         $document['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
         $document['statusDisplay'] = StatusModel::getById(['select' => ['label'], 'id' => $document['status']])['label'];
-        $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?'], 'data' => [$document['mode']]]);
+        $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?'], 'data' => [$document['mode']], 'orderBy' => ['id']]);
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
         $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
 
