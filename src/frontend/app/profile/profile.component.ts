@@ -20,7 +20,9 @@ export class ProfileComponent implements OnInit {
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
     profileInfo: any = {};
-
+    hideCurrentPassword: Boolean = true;
+    hideNewPassword: Boolean = true;
+    hideNewPasswordConfirm: Boolean = true;
 
     // HANDLE PASSWORD
     passwordRules: any = {
