@@ -19,7 +19,6 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PDFDocumentProxy } from 'ng2-pdf-viewer';
-import {environment} from "../../core/environments/environment";
 import { CookieService } from 'ngx-cookie-service';
 
 
@@ -548,7 +547,9 @@ export class WarnModalComponent {
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                    this.signaturesService.documentsListCount--;
+                    if (this.signaturesService.documentsListCount > 0) {
+                        this.signaturesService.documentsListCount--;
+                    }
                     this.dialogRef.close('sucess');
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
@@ -603,7 +604,9 @@ export class ConfirmModalComponent {
                 .subscribe(() => {
                     this.dialogRef.close('sucess');
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                    this.signaturesService.documentsListCount--;
+                    if (this.signaturesService.documentsListCount > 0) {
+                        this.signaturesService.documentsListCount--;
+                    }
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                 });
