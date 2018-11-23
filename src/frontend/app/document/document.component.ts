@@ -17,7 +17,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { CookieService } from 'ngx-cookie-service';
 import { PDFDocumentProxy } from 'ng2-pdf-viewer';
 
 @Component({
@@ -115,13 +114,11 @@ export class DocumentComponent implements OnInit {
     constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
-        private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet, 
-        private cookieService: CookieService) {
+        private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
     }
 
     ngOnInit(): void {
-        const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
         setTimeout(() => {
             this.enterApp = false;
         }, 500);
@@ -136,7 +133,7 @@ export class DocumentComponent implements OnInit {
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.actionsList = data.document.actionsAllowed;
                         if (this.signaturesService.signaturesList.length === 0) {
-                            this.http.get('../rest/users/' + cookieInfo.id + '/signatures')
+                            this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
                             .subscribe((dataSign: any) => {
                                 this.signaturesService.signaturesList = dataSign.signatures;
                                 this.signaturesService.loadingSign = false;
