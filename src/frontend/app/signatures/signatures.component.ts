@@ -66,19 +66,12 @@ export class SignaturesComponent implements OnInit {
     signature.positionY = this.signaturesService.workingAreaHeight - 140;
     signature.pdfAreaX = this.signaturesService.workingAreaWidth;
     signature.pdfAreaY = this.signaturesService.workingAreaHeight;
-    if (this.inAllPage) {
-      for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-        if (!this.signaturesService.signaturesContent[index]) {
-          this.signaturesService.signaturesContent[index] = [];
-        }
-        this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(signature)));
-      }
-    } else {
-      if (!this.signaturesService.signaturesContent[this.signaturesService.currentPage]) {
-        this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
-      }
-      this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
+
+    if (!this.signaturesService.signaturesContent[this.signaturesService.currentPage]) {
+      this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
     }
+    this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
+
     $('.mat-sidenav-content').animate({ scrollTop: $(document).height() }, 1000);
     $('.mat-sidenav-content').animate({ scrollLeft: $(document).width() }, 1000);
     this.bottomSheetRef.dismiss();

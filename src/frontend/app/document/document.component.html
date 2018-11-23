@@ -12,7 +12,7 @@
       <article class="header-infos">
         <section class="header-action">
           <button mat-icon-button (click)="this.snav.toggle();">
-            <mat-icon fontSet="far" fontIcon="fa-folder-open"></mat-icon>
+            <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
         </section>
         <div class="header-info">
@@ -34,7 +34,7 @@
           <p class="ellipsis">{{mainDocument.processingUserDisplay}}</p>
         </div>
         <section class="header-action">
-            <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon fontSet="fas" fontIcon="fa-ellipsis-v"></mat-icon></button>
+            <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon></button>
             <mat-menu #menu="matMenu">
               <button [disabled]="this.signaturesService.signaturesContent.length == 0 && this.signaturesService.notesContent.length == 0" mat-menu-item (click)="removeTags();">Tout effacer</button>
               <button mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
@@ -70,11 +70,11 @@
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
       <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
       <section class="page-viewer" #pdfpage>
-        <div [style.width.px]="768*scale" class="canvas-wrapper" #canvasWrapper (click)="addAnnotation($event)">
+        <div [style.width.px]="768*scale" class="canvas-wrapper" #canvasWrapper>
           <pdf-viewer [ngClass]="{
             'pdf-page-canvas':!renderingDoc,
             'pdf-page-canvas-loading-doc':renderingDoc
-          }" [src]="pdfDataArr" [render-text]="false" [zoom]="scale" [show-all]="false" [(page)]="pageNum" [original-size]="true" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)"></pdf-viewer>
+          }" [src]="pdfDataArr" [render-text]="false" [zoom]="scale" [show-all]="false" [(page)]="pageNum" [original-size]="true" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)" (click)="addAnnotation($event)"></pdf-viewer>
 
           <div *ngIf="loadingDoc" style="position: absolute;z-index: 1;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
             <mat-spinner></mat-spinner>
@@ -89,17 +89,26 @@
               </div>
             </ng-container>
             <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
+              
               <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent"
-                style="top:0;left:0;position: absolute;border: dashed 1px grey;" ngDraggable preventDefaultEvent="true" [bounds]="canvas"
+                style="top:0;left:0;position: absolute;border: dashed 1px grey;background: rgba(255, 255, 255, 0.6) none repeat scroll 0% 0%;" ngDraggable preventDefaultEvent="true" [bounds]="canvas"
                 inBounds="true" (endOffset)="moveSign($event,i)" [ngClass]="{
                   'pdf-page-canvas':!renderingDoc,
                   'pdf-page-canvas-loading-doc':renderingDoc
                 }">
-                <span style="position: absolute;width: 100%;height: 100%;top:0;left:0;">
-                  <span style="position: absolute;width: 100%;top: -15px;margin-left: -15px;margin-right: 15px;"><i
-                      style="border-radius: 15px;background: white;left:0px;top:0px;color:red;" class="fa fa-times-circle fa-2x"
-                      (tap)="deleteSignature(i);"></i></span>
-                </span>
+                <button (tap)="openMenu(menuTrigger)" mat-icon-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu" style="right: 0;position: absolute;color:#F99830;">
+                  <mat-icon fontSet="fas" fontIcon="fa-ellipsis-v"></mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="$event.stopPropagation();deleteSignature(i);">
+                    <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
+                    <span>Supprimer la signature</span>
+                  </button>
+                  <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);">
+                    <mat-icon fontSet="fas" fontIcon="fa-clone"></mat-icon>
+                    <span>Cloner la signature</span>
+                  </button>
+                </mat-menu> 
                 <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
                   [style.width.px]="this.signaturesService.signWidth">
               </div>
