@@ -19,6 +19,9 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PDFDocumentProxy } from 'ng2-pdf-viewer';
+import {environment} from "../../core/environments/environment";
+import { CookieService } from 'ngx-cookie-service';
+
 
 @Component({
     selector: 'app-document',
@@ -74,8 +77,6 @@ export class DocumentComponent implements OnInit {
     loadingPage = true;
     pageNum = 1;
     signaturesContent: any = [];
-    pageRendering = false;
-    pageNumPending: null;
     scale = 1;
     totalPages: number;
     draggable: boolean;
@@ -86,7 +87,6 @@ export class DocumentComponent implements OnInit {
     currentDoc = 0;
     docList: any = [];
     actionsList: any = [];
-    currentAction = 0;
     lockSignaturePad = false;
     pdfDataArr: any;
     annotationPadOptions = {
@@ -110,13 +110,15 @@ export class DocumentComponent implements OnInit {
     @ViewChild(SignaturePad) signaturePad: SignaturePad;
 
 
-    public context: CanvasRenderingContext2D;
-
     constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
+        private cookieService: CookieService,
         private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
+        if (!this.cookieService.check('maarchParapheurAuth')) {
+            this.router.navigate(['/login']);
+        }
     }
 
     ngOnInit(): void {

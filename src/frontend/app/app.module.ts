@@ -66,7 +66,7 @@ import { SignaturesContentService } from './service/signatures.service';
       { path: 'documents/:id', component: DocumentComponent},
       { path: 'documents', component: DocumentComponent},
       { path: 'login', component: LoginComponent},
-      { path: '**',   redirectTo: 'documents', pathMatch: 'full' },
+      { path: '**',   redirectTo: 'login', pathMatch: 'full' },
     ], { useHash: true }),
   ],
   entryComponents: [

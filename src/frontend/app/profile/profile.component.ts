@@ -1,10 +1,9 @@
-import { Component, AfterViewInit, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry, MatSidenav } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
-import { ValidatorFn, AbstractControl, ValidationErrors, FormBuilder } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import * as EXIF from 'exif-js';
 
@@ -52,14 +51,16 @@ export class ProfileComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
-        this.http.get('../rest/users/' + cookieInfo.id)
-            .subscribe((data: any) => {
-                this.profileInfo = data.user;
-            },
-            (err: any) => {
-                this.notificationService.handleErrors(err);
-            });
+        if (this.cookieService.check('maarchParapheurAuth')) {
+            const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
+            this.http.get('../rest/users/' + cookieInfo.id)
+                .subscribe((data: any) => {
+                    this.profileInfo = data.user;
+                },
+                (err: any) => {
+                    this.notificationService.handleErrors(err);
+                });
+        }
     }
 
     closeProfile() {

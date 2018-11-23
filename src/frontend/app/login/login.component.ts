@@ -45,13 +45,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
+        if (this.cookieService.check('maarchParapheurAuth')) {
+            this.router.navigate(['/documents']);
+        }
     }
 
     ngOnInit(): void {
         this.appVersion = environment.VERSION;
         this.appAuthor = environment.AUTHOR;
         this.signaturesService.userLogged = {};
-        this.cookieService.deleteAll();
     }
 
     ngAfterViewInit(): void {

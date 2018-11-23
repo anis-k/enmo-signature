@@ -7,7 +7,7 @@
       <div class="user" style="color: #F99830">
         {{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}
       </div>
-      <div class="avatar" [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}" (click)="openProfile()">
+      <div *ngIf="signaturesService.userLogged.picture" class="avatar" [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}" (click)="openProfile()">
       </div>
     </header>
     <header class="sidebar-header">
