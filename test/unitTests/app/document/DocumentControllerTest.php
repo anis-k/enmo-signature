@@ -135,6 +135,56 @@ class DocumentControllerTest extends TestCase
         $this->assertSame('SIGN', $responseBody->status->mode);
     }
 
+    public function testSetAction()
+    {
+        $documentController = new \Document\controllers\DocumentController();
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $aArgs = [
+            'signatures' => [
+                [
+                    'encodedImage' => base64_encode(file_get_contents('test/unitTests/samples/signature.jpg')),
+                    'width' => 120,
+                    'positionX' => 0,
+                    'positionY' => 0,
+                    'page' => 1,
+                    'type' => 'jpg',
+                ],
+                [
+                    'encodedImage' => base64_encode(file_get_contents('test/unitTests/samples/signature.jpg')),
+                    'width' => 300,
+                    'positionX' => 140,
+                    'positionY' => 120,
+                    'page' => 2,
+                    'type' => 'jpg',
+                ]
+            ]
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $documentController->setAction($fullRequest, new \Slim\Http\Response(), ['id' => self::$id, 'actionId' => 5]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('success', $responseBody->success);
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $response     = $documentController->getStatusById($request, new \Slim\Http\Response(), ['id' => self::$id]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('VAL', $responseBody->status->reference);
+        $this->assertSame('SIGN', $responseBody->status->mode);
+
+        // Error action
+        $response     = $documentController->setAction($fullRequest, new \Slim\Http\Response(), ['id' => self::$id, 'actionId' => 203]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('Action does not exist', $responseBody->errors);
+    }
+
     public function testGetHandwrittenDocumentById()
     {
         $documentController = new \Document\controllers\DocumentController();
@@ -145,7 +195,7 @@ class DocumentControllerTest extends TestCase
         $response     = $documentController->getHandwrittenDocumentById($request, new \Slim\Http\Response(), ['id' => self::$id]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertEmpty($responseBody->encodedDocument);
+        $this->assertNotEmpty($responseBody->encodedDocument);
     }
 
     public function testDelete()
