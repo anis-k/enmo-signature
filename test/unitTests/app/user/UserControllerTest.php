@@ -64,7 +64,8 @@ class UserControllerTest extends TestCase
         $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => 1]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('success', $responseBody->success);
+        $this->assertInternalType('array', $responseBody->user);
+        $this->assertNotEmpty($responseBody->user);
 
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => 1]);
         $responseBody = json_decode((string)$response->getBody());
@@ -81,7 +82,8 @@ class UserControllerTest extends TestCase
         $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => 1]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('success', $responseBody->success);
+        $this->assertInternalType('array', $responseBody->user);
+        $this->assertNotEmpty($responseBody->user);
 
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => 1]);
         $responseBody = json_decode((string)$response->getBody());

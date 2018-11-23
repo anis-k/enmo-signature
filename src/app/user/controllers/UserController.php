@@ -61,6 +61,17 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
+        if (!empty($data['picture']) && !empty($data['pictureOrientation'])) {
+            $infoContent = '';
+            if (preg_match('/^data:image\/(\w+);base64,/', $data['picture'])) {
+                $infoContent = substr($data['picture'], 0, strpos($data['picture'], ',') + 1);
+                $data['picture'] = substr($data['picture'], strpos($data['picture'], ',') + 1);
+            }
+            $imagick = new \Imagick();
+            $imagick->readImageBlob(base64_decode($data['picture']));
+            $imagick->rotateImage(new \ImagickPixel(), $data['pictureOrientation']);
+            $data['picture'] = $infoContent . base64_encode($imagick->getImageBlob());
+        }
         /*if (!empty($data['picture'])) {
             $picture    = base64_decode($data['picture']);
             $finfo      = new \finfo(FILEINFO_MIME_TYPE);
@@ -82,7 +93,9 @@ class UserController
             'info'      => "userUpdated",
         ]);
 
-        return $response->withJson(['success' => 'success']);
+        $user = UserModel::getById(['select' => ['firstname', 'lastname', 'picture'], 'id' => $args['id']]);
+
+        return $response->withJson(['user' => $user]);
     }
 
     public function updatePassword(Request $request, Response $response, array $args)
