@@ -116,14 +116,10 @@ class UserModel
 
     public static function getLabelledUserById(array $aArgs)
     {
+        ValidatorModel::notEmpty($aArgs, ['id']);
         ValidatorModel::intVal($aArgs, ['id']);
-        ValidatorModel::stringType($aArgs, ['email']);
 
-        if (!empty($aArgs['id'])) {
-            $rawUser = UserModel::getById(['id' => $aArgs['id'], 'select' => ['firstname', 'lastname']]);
-        } elseif (!empty($aArgs['email'])) {
-            $rawUser = UserModel::getByEmail(['email' => $aArgs['email'], 'select' => ['firstname', 'lastname']]);
-        }
+        $rawUser = UserModel::getById(['id' => $aArgs['id'], 'select' => ['firstname', 'lastname']]);
 
         $labelledUser = '';
         if (!empty($rawUser)) {
