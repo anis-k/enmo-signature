@@ -128,12 +128,7 @@ export class DocumentComponent implements OnInit {
                 this.loadingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
-                        this.docList = [];
-                        this.signaturesService.signaturesContent = [];
-                        this.signaturesService.notesContent = [];
-                        this.signaturesService.currentAction = 0;
-                        this.signaturesService.currentPage = 1;
-                        this.signaturesContent.currentDoc = 1;
+                        this.initDoc();
                         this.mainDocument = data.document;
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.actionsList = data.document.actionsAllowed;
@@ -149,6 +144,7 @@ export class DocumentComponent implements OnInit {
                             this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
                         });
                         this.loadingDoc = false;
+
                         this.pdfRender(this.docList[this.currentDoc]);
                         setTimeout(() => {
                             this.loadingPage = false;
@@ -163,6 +159,17 @@ export class DocumentComponent implements OnInit {
                 this.freezeSidenavClose = true;
             }
         });
+    }
+
+    initDoc() {
+        this.docList = [];
+        this.signaturesService.signaturesContent = [];
+        this.signaturesService.notesContent = [];
+        this.signaturesService.currentAction = 0;
+        this.signaturesService.currentPage = 1;
+        this.pageNum = 1;
+        this.signaturesContent.currentDoc = 1;
+        this.currentDoc = 0;
     }
 
     pdfRender(document: any) {
