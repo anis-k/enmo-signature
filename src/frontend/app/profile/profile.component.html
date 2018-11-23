@@ -4,7 +4,7 @@
             <div class="user" style="color: #F99830">
                 Mon Profil
             </div>
-            <div class="avatar" [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}" (tap)="uploadFile.click();">
+            <div class="avatarProfile" [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}" (tap)="uploadFile.click();">
             </div>
             <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
         </header>

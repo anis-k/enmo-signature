@@ -157,15 +157,16 @@ export class ProfileComponent implements OnInit {
     }
 
     submitProfile() {
-        const orientation = $('.avatar').css('content');
+        const orientation = $('.avatarProfile').css('content');
         this.profileInfo.pictureOrientation = orientation.replace(/\"/g, '');
         this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.profileInfo)
-            .subscribe(() => {
+            .subscribe((data: any) => {
                 this.signaturesService.userLogged.email = this.profileInfo.email;
                 this.signaturesService.userLogged.firstname = this.profileInfo.firstname;
                 this.signaturesService.userLogged.lastname = this.profileInfo.lastname;
-                this.signaturesService.userLogged.picture = this.profileInfo.picture;
-
+                this.signaturesService.userLogged.picture = data.user.picture;
+                this.profileInfo.picture = data.user.picture;
+                $('.avatarProfile').css({'transform': 'rotate(0deg)'});
                 // MAJ COOKIE
                 this.cookieService.delete('maarchParapheurAuth');
                 this.cookieService.set(btoa(JSON.stringify(this.signaturesService.userLogged)), 'maarchParapheurAuth');
@@ -198,7 +199,7 @@ export class ProfileComponent implements OnInit {
 
     handleFileInput(files: FileList) {
         const fileToUpload = files.item(0);
-        $('.avatar').css({'content': '' });
+        $('.avatarProfile').css({'content': '' });
 
         if (fileToUpload.size <=  2000000) {
             if (['image/png', 'image/svg+xml', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
@@ -223,11 +224,10 @@ export class ProfileComponent implements OnInit {
                                 deg = -90;
                                 break;
                             }
-                            console.log(deg);
-                            $('.avatar').css({'background-size': 'cover'});
-                            $('.avatar').css({'background-position': 'center'});
-                            $('.avatar').css({'transform': 'rotate(' + deg + 'deg)'});
-                            $('.avatar').css({'content': '\'' + deg + '\'' });
+                            $('.avatarProfile').css({'background-size': 'cover'});
+                            $('.avatarProfile').css({'background-position': 'center'});
+                            $('.avatarProfile').css({'transform': 'rotate(' + deg + 'deg)'});
+                            $('.avatarProfile').css({'content': '\'' + deg + '\'' });
                         });
                     };
                 };

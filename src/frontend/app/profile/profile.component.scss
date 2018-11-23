@@ -53,7 +53,7 @@
   position: relative;
 }
 
-.avatar {
+.avatarProfile {
   cursor: pointer;
   position: absolute;
   /*background: url(../../assets/user_sample.svg) $primary;*/
@@ -68,7 +68,7 @@
   transition: all 0.2s;
 }
 
-.avatar:active {
+.avatarProfile:active {
   box-shadow: 0px 0px 5px 0px #656565;
 }
 
