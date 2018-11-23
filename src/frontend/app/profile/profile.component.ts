@@ -157,6 +157,8 @@ export class ProfileComponent implements OnInit {
     }
 
     submitProfile() {
+        const orientation = $('.avatar').css('content');
+        this.profileInfo.pictureOrientation = orientation.replace(/\"/g, '');
         this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.profileInfo)
             .subscribe(() => {
                 this.signaturesService.userLogged.email = this.profileInfo.email;
@@ -196,6 +198,7 @@ export class ProfileComponent implements OnInit {
 
     handleFileInput(files: FileList) {
         const fileToUpload = files.item(0);
+        $('.avatar').css({'content': '' });
 
         if (fileToUpload.size <=  2000000) {
             if (['image/png', 'image/svg+xml', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
@@ -206,7 +209,7 @@ export class ProfileComponent implements OnInit {
 
                     image.src = myReader.result.toString();
                     image.onload = function() {
-                        EXIF.getData(image, function() {
+                        EXIF.getData(image, () => {
                             let deg = 0;
                             const orientation = EXIF.getTag(this, 'Orientation');
                             switch (orientation) {
@@ -220,8 +223,11 @@ export class ProfileComponent implements OnInit {
                                 deg = -90;
                                 break;
                             }
+                            console.log(deg);
                             $('.avatar').css({'background-size': 'cover'});
                             $('.avatar').css({'background-position': 'center'});
+                            $('.avatar').css({'transform': 'rotate(' + deg + 'deg)'});
+                            $('.avatar').css({'content': '\'' + deg + '\'' });
                         });
                     };
                 };
