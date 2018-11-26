@@ -201,7 +201,7 @@ export class ProfileComponent implements OnInit {
         const fileToUpload = files.item(0);
         $('.avatarProfile').css({'content': '' });
 
-        if (fileToUpload.size <=  2000000) {
+        if (fileToUpload.size <=  5000000) {
             if (['image/png', 'image/svg+xml', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
                 const myReader: FileReader = new FileReader();
                 myReader.onloadend = (e) => {
@@ -236,7 +236,7 @@ export class ProfileComponent implements OnInit {
                 this.notificationService.error('Ceci n\'est pas une image');
             }
         } else {
-            this.notificationService.error('Image trop volumineuse (2mo max.)');
+            this.notificationService.error('Image trop volumineuse (5mo max.)');
         }
     }
 }
