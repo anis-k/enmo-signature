@@ -75,6 +75,11 @@ class AuthenticationController
             'info'      => "userLogin"
         ]);
 
+        if (empty($user['picture'])) {
+            $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
+            $user['picture'] = 'data:image/png;base64,' . $user['picture'];
+        }
+
         return $response->withJson(['user' => $user]);
     }
 
