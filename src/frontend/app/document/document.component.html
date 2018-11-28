@@ -6,6 +6,9 @@
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight" ></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content>
+    <div *ngIf="loadingDoc" style="position: fixed;z-index: 2;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
+      <mat-spinner></mat-spinner>
+    </div>
     <!--<div class="swipe-panel-area" (swiperight)="this.snav.open();"></div>-->
     <header style="position: fixed;" class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideDown]>
       <article class="header-infos">
@@ -84,10 +87,6 @@
             'pdf-page-canvas':!renderingDoc,
             'pdf-page-canvas-loading-doc':renderingDoc
           }" [src]="pdfDataArr" [render-text]="false" [zoom]="scale" [show-all]="false" [(page)]="pageNum" [original-size]="true" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)" (click)="addAnnotation($event)"></pdf-viewer>
-
-          <div *ngIf="loadingDoc" style="position: absolute;z-index: 1;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
-            <mat-spinner></mat-spinner>
-          </div>
           <ng-container *ngIf="currentDoc == 0">
             <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
               <div style="top:0;left:0;position: absolute;" [ngClass]="{

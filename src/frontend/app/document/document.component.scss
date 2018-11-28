@@ -191,14 +191,14 @@ button.disabled {
   position: fixed;
   background: #8080804d;
   border-radius: 20px;
-  top: 50%;
+  top: 170px;
   transform: translateY(-50%) rotate(-90deg);
   padding: 10px;
   &-left {
-    left: 0;
+    left: -40px;
   }
   &-right {
-    right: 0;
+    right: -40px;
   }
 }
 

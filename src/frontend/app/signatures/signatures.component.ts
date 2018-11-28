@@ -28,8 +28,8 @@ import { CookieService } from 'ngx-cookie-service';
 })
 export class SignaturesComponent implements OnInit {
 
-  inAllPage : boolean   = false;
-  count     : number    = 0;
+  inAllPage: boolean   = false;
+  count: number    = 0;
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
      private sanitization: DomSanitizer, public notificationService: NotificationService, private cookieService: CookieService) {
@@ -62,8 +62,8 @@ export class SignaturesComponent implements OnInit {
   }
 
   selectSignature(signature: any) {
-    signature.positionX = this.signaturesService.workingAreaWidth - 140;
-    signature.positionY = this.signaturesService.workingAreaHeight - 140;
+    signature.positionX = (this.signaturesService.workingAreaWidth * 70) / 100;
+    signature.positionY = (this.signaturesService.workingAreaHeight * 90) / 100;
     signature.pdfAreaX = this.signaturesService.workingAreaWidth;
     signature.pdfAreaY = this.signaturesService.workingAreaHeight;
 

@@ -17,7 +17,7 @@
   </section>
   <section class="pad-actions">
     <button class="btn red" (click)="closePad()"><i class="fas fa-times-circle fa-2x"></i> Annuler</button>
-    <button class="btn green" (click)="enregistrerSignature()" [disabled]="!haveSigned">Enregistrer <i class="fas fa-check-circle fa-2x"></i></button>
+    <button class="btn green" (click)="enregistrerSignature()" [disabled]="!haveSigned || disableState">Enregistrer <i class="fas fa-check-circle fa-2x"></i></button>
   </section>
   <div class="draw"></div>
 </article>

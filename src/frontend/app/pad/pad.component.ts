@@ -18,6 +18,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
   penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000'}];
   selectedColor: any;
   haveSigned: any;
+  disableState = false;
 
   pad$: Observable<boolean>;
 
@@ -75,6 +76,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
   }
 
   enregistrerSignature() {
+    this.disableState = true;
     this.haveSigned = true;
     const newEncodedSign = this.signaturePad.toDataURL('image/npg').replace('data:image/png;base64,', '');
     localStorage.setItem('signature', JSON.stringify(newEncodedSign));
@@ -86,6 +88,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
       'format': 'png'
     };
     const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
+
     this.http.post('../rest/users/' + cookieInfo.id + '/signatures', newSign)
       .subscribe((data: any) => {
         newSign.id = data.signatureId;
@@ -95,8 +98,10 @@ export class SignaturePadPageComponent implements AfterViewInit {
         // this.store.dispatch({ type: HIDE_DRAWER });
         this.signaturePad.clear();
         this.notificationService.success('Signature enregistrée');
+        this.disableState = false;
       }, (err: any) => {
-          console.log(err);
+        this.disableState = false;
+        this.notificationService.handleErrors(err);
       });
 
     // BUG IMAGE CROPPED

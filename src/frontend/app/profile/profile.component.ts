@@ -46,6 +46,8 @@ export class ProfileComponent implements OnInit {
 
     showPassword = false;
 
+    disableState = false;
+
     constructor(public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
@@ -151,7 +153,9 @@ export class ProfileComponent implements OnInit {
     }
 
     allowValidate() {
-        if (this.showPassword && (this.handlePassword.error || this.password.newPassword !== this.password.passwordConfirmation || this.password.currentPassword.length === 0 || this.password.newPassword.length === 0 || this.password.passwordConfirmation.length === 0)) {
+        if (this.disableState) {
+            return true;
+        } else if (this.showPassword && (this.handlePassword.error || this.password.newPassword !== this.password.passwordConfirmation || this.password.currentPassword.length === 0 || this.password.newPassword.length === 0 || this.password.passwordConfirmation.length === 0)) {
             return true;
         } else {
             return false;
@@ -159,8 +163,14 @@ export class ProfileComponent implements OnInit {
     }
 
     submitProfile() {
-        const orientation = $('.avatarProfile').css('content');
-        this.profileInfo.pictureOrientation = orientation.replace(/\"/g, '');
+        this.disableState = true;
+        if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
+            this.profileInfo.picture = '';
+        } else {
+            const orientation = $('.avatarProfile').css('content');
+            this.profileInfo.pictureOrientation = orientation.replace(/\"/g, '');
+        }
+
         this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.profileInfo)
             .subscribe((data: any) => {
                 this.signaturesService.userLogged.email = this.profileInfo.email;
@@ -180,6 +190,7 @@ export class ProfileComponent implements OnInit {
                         this.password.passwordConfirmation = '';
                         this.password.currentPassword = '';
                         this.notificationService.success('Profil modifié');
+                        this.disableState = false;
                         this.closeProfile();
                     }, (err) => {
                         if (err.status === 401) {
@@ -192,10 +203,12 @@ export class ProfileComponent implements OnInit {
 
                 if (!this.showPassword) {
                     this.notificationService.success('Profil modifié');
+                    this.disableState = false;
                     this.closeProfile();
                 }
             }, (err) => {
                 this.notificationService.handleErrors(err);
+                this.disableState = false;
             });
     }
 

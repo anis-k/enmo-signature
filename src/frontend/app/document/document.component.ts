@@ -11,7 +11,8 @@ import {
     MatBottomSheetRef,
     MatBottomSheetConfig,
     MatSidenav,
-    MatMenuTrigger
+    MatMenuTrigger,
+    MatMenu
 } from '@angular/material';
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -106,6 +107,7 @@ export class DocumentComponent implements OnInit {
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('canvas') canvas: ElementRef;
     @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
+    @ViewChild('menuTrigger') menuSign: MatMenuTrigger;
     @ViewChild(SignaturePad) signaturePad: SignaturePad;
 
 
@@ -290,6 +292,7 @@ export class DocumentComponent implements OnInit {
                 }
               }
         }
+        this.menuSign.closeMenu();
     }
 
     moveNote(event: any, i: number) {
@@ -424,6 +427,7 @@ export class DocumentComponent implements OnInit {
             this.pdfRender(this.docList[this.currentDoc]);
         }
         this.signaturesService.showSign = true;
+        this.signaturesService.showPad = false;
         const config: MatBottomSheetConfig = {
             disableClose: false,
             direction: 'ltr'
@@ -511,6 +515,8 @@ export class DocumentComponent implements OnInit {
     styleUrls: ['../modal/warn-modal.component.scss']
 })
 export class WarnModalComponent {
+    disableState = false;
+
     constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     confirmDoc () {
@@ -546,15 +552,18 @@ export class WarnModalComponent {
                     });
                 }
             }
+            this.disableState = true;
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                     if (this.signaturesService.documentsListCount > 0) {
                         this.signaturesService.documentsListCount--;
                     }
+                    this.disableState = false;
                     this.dialogRef.close('sucess');
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
+                    this.disableState = false;
                 });
         } else {
             this.dialogRef.close('sucess');
@@ -567,6 +576,8 @@ export class WarnModalComponent {
     styleUrls: ['../modal/confirm-modal.component.scss']
 })
 export class ConfirmModalComponent {
+    disableState = false;
+
     constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     confirmDoc () {
@@ -602,8 +613,10 @@ export class ConfirmModalComponent {
                     });
                 }
             }
+            this.disableState = true;
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
+                    this.disableState = false;
                     this.dialogRef.close('sucess');
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                     if (this.signaturesService.documentsListCount > 0) {
@@ -611,6 +624,7 @@ export class ConfirmModalComponent {
                     }
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
+                    this.disableState = false;
                 });
         } else {
             this.dialogRef.close('sucess');
