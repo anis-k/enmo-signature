@@ -103,13 +103,16 @@ class UserModel
         ValidatorModel::intVal($aArgs, ['id']);
         ValidatorModel::stringType($aArgs, ['firstname', 'lastname', 'picture']);
 
+        $set = [
+            'firstname' => $aArgs['firstname'],
+            'lastname'  => $aArgs['lastname']
+        ];
+        if (!empty($aArgs['picture'])) {
+            $set['picture'] = $aArgs['picture'];
+        }
         DatabaseModel::update([
             'table'     => 'users',
-            'set'       => [
-                'firstname' => $aArgs['firstname'],
-                'lastname'  => $aArgs['lastname'],
-                'picture'   => empty($aArgs['picture']) ? null : $aArgs['picture']
-            ],
+            'set'       => $set,
             'where'     => ['id = ?'],
             'data'      => [$aArgs['id']]
         ]);
