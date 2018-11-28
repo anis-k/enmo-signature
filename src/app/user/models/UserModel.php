@@ -56,6 +56,28 @@ class UserModel
         return $aUser[0];
     }
 
+    public static function create(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['user']);
+        ValidatorModel::notEmpty($aArgs['user'], ['email', 'firstname', 'lastname']);
+        ValidatorModel::stringType($aArgs['user'], ['email', 'firstname', 'lastname', 'picture', 'mode']);
+
+        DatabaseModel::insert([
+            'table'         => 'users',
+            'columnsValues' => [
+                'email'                               => $aArgs['user']['email'],
+                'password'                            => AuthenticationModel::getPasswordHash('maarch'),
+                'firstname'                           => $aArgs['user']['firstname'],
+                'lastname'                            => $aArgs['user']['lastname'],
+                'picture'                             => $aArgs['user']['picture'],
+                'mode'                                => $aArgs['user']['mode'],
+                'password_modification_date'          => 'CURRENT_TIMESTAMP'
+            ]
+        ]);
+
+        return true;
+    }
+
     public static function getByEmail(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['email']);

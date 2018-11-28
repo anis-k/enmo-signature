@@ -53,6 +53,47 @@ class UserController
         return $response->withJson(['user' => $user]);
     }
 
+    public function create(Request $request, Response $response)
+    {
+        $data = $request->getParams();
+
+        if (!Validator::stringType()->notEmpty()->validate($data['firstname'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'firstname is empty']);
+        }
+        if (!Validator::stringType()->notEmpty()->validate($data['lastname'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'lastname is empty']);
+        }
+        if (!(empty($data['email']) || filter_var($data['email'], FILTER_VALIDATE_EMAIL))) {
+            return $response->withStatus(400)->withJson(['errors' => 'email is empty or format is not correct']);
+        }
+
+        $existingUser = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id']]);
+        if (!empty($existingUser)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User already exist']);
+        }
+
+        $logingModes = ['standard', 'rest'];
+        if (!in_array($data['mode'], $logingModes)) {
+            $data['mode'] = 'standard';
+        }
+
+        UserModel::create(['user' => $data]);
+
+        $newUser = UserModel::getByEmail(['email' => $data['email']]);
+        if (!Validator::intType()->notEmpty()->validate($newUser['id'])) {
+            return $response->withStatus(500)->withJson(['errors' => 'User Creation Error']);
+        }
+
+        HistoryController::add([
+            'tableName' => 'users',
+            'recordId'  => $newUser['id'],
+            'eventType' => 'ADD',
+            'info'      => "userCreation",
+        ]);
+
+        return $response->withJson(['user' => $newUser]);
+    }
+
     public function update(Request $request, Response $response, array $args)
     {
         if ($GLOBALS['id'] != $args['id']) {

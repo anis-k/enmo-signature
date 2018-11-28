@@ -61,6 +61,7 @@ $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentCo
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
 
 //Users
+$app->post('/users', \User\controllers\UserController::class . ':create');
 $app->get('/users', \User\controllers\UserController::class . ':get');
 $app->get('/users/{id}', \User\controllers\UserController::class . ':getById');
 $app->put('/users/{id}', \User\controllers\UserController::class . ':update');
