@@ -64,7 +64,9 @@ export class ProfileComponent implements OnInit {
     }
 
     closeProfile() {
-        this.profileInfo = this.signaturesService.userLogged;
+        $('.avatarProfile').css({'transform': 'rotate(0deg)'});
+        $('.avatarProfile').css({'content': '' });
+        this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
         this.snavLeftComponent.open();
         this.snavRightComponent.close();
     }
