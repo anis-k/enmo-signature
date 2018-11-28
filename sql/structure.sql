@@ -89,6 +89,37 @@ CREATE TABLE users
 )
 WITH (OIDS=FALSE);
 
+DROP TABLE IF EXISTS groups;
+CREATE TABLE groups
+(
+  id serial NOT NULL,
+  label character varying(128) NOT NULL,
+  CONSTRAINT groups_pkey PRIMARY KEY (id)
+)
+WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS groups_privileges;
+CREATE TABLE groups_privileges
+(
+  id serial NOT NULL,
+  group_id INTEGER NOT NULL,
+  privilege character varying(128) NOT NULL,
+  CONSTRAINT groups_privileges_pkey PRIMARY KEY (id),
+  CONSTRAINT groups_privileges_unique_key UNIQUE (group_id, privilege)
+)
+WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS users_groups;
+CREATE TABLE users_groups
+(
+    id serial NOT NULL,
+    group_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    CONSTRAINT users_groups_pkey PRIMARY KEY (id),
+    CONSTRAINT users_groups_unique_key UNIQUE (group_id, user_id)
+)
+WITH (OIDS=FALSE);
+
 DROP TABLE IF EXISTS docservers;
 CREATE TABLE docservers
 (

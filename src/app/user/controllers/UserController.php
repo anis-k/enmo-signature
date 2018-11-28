@@ -22,12 +22,19 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\controllers\PasswordController;
 use SrcCore\models\AuthenticationModel;
+use SrcCore\models\ValidatorModel;
+use User\models\UserGroupModel;
 use User\models\UserModel;
 
 class UserController
 {
     public function get(Request $request, Response $response)
     {
+        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
+        if ($user['mode'] != 'rest') {
+            return $response->withStatus(403)->withJson(['errors' => 'Route forbidden']);
+        }
+
         $users = UserModel::get([
             'select'    => ['id', 'firstname', 'lastname'],
             'where'     => ['mode = ?'],
@@ -50,11 +57,18 @@ class UserController
             $user['picture'] = 'data:image/png;base64,' . $user['picture'];
         }
 
+        $user['canManageRestUsers'] = UserController::hasPrivilege(['userId' => $args['id'], 'privilege' => 'manage_rest_users']);
+
         return $response->withJson(['user' => $user]);
     }
 
     public function create(Request $request, Response $response)
     {
+        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
+        if ($user['mode'] != 'rest') {
+            return $response->withStatus(403)->withJson(['errors' => 'Route forbidden']);
+        }
+
         $data = $request->getParams();
 
         if (!Validator::stringType()->notEmpty()->validate($data['firstname'])) {
@@ -69,7 +83,7 @@ class UserController
 
         $existingUser = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id']]);
         if (!empty($existingUser)) {
-            return $response->withStatus(400)->withJson(['errors' => 'User already exist']);
+            return $response->withStatus(400)->withJson(['errors' => 'User already exists']);
         }
 
         $logingModes = ['standard', 'rest'];
@@ -146,8 +160,12 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
+        $user = UserModel::getById(['select' => ['email', 'mode'], 'id' => $args['id']]);
+
         if ($GLOBALS['id'] != $args['id']) {
-            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+            if ($user['mode'] != 'rest' || !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+            }
         }
 
         $data = $request->getParams();
@@ -158,7 +176,6 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        $user = UserModel::getById(['select' => ['email'], 'id' => $args['id']]);
         if ($data['newPassword'] != $data['passwordConfirmation']) {
             return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
         } elseif (!AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
@@ -283,5 +300,23 @@ class UserController
         ]);
 
         return $response->withJson(['success' => 'success']);
+    }
+
+    public function hasPrivilege(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['userId', 'privilege']);
+        ValidatorModel::intVal($args, ['userId']);
+        ValidatorModel::stringType($args, ['privilege']);
+
+        $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['userId']]]);
+
+        foreach ($groups as $group) {
+            $privilege = UserGroupModel::getPrivileges(['select' => [1], 'where' => ['group_id = ?', 'privilege = ?'], 'data' => [$group['group_id'], $args['privilege']]]);
+            if (!empty($privilege)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

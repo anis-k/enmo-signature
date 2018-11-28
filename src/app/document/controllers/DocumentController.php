@@ -318,10 +318,13 @@ class DocumentController
 
     public function getHandwrittenDocumentById(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
+        if ($user['mode'] != 'rest') {
+            if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+            }
         }
-
+        
         $adr = AdrModel::getDocumentsAdr([
             'select'    => ['path', 'filename', 'fingerprint'],
             'where'     => ['main_document_id = ?', 'type = ?'],
@@ -351,8 +354,11 @@ class DocumentController
 
     public function getStatusById(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
+        if ($user['mode'] != 'rest') {
+            if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+            }
         }
 
         $document = DocumentModel::getById(['select' => ['status', 'mode'], 'id' => $args['id']]);
