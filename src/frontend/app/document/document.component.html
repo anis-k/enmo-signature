@@ -42,20 +42,30 @@
       </article>
     </header>
     <div *ngIf="signaturesService.lockNote">
-      <span style="z-index:1;position: fixed;bottom: 10px;top: 10px;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
-          class="fas fa-arrow-left fa-2x" (tap)="cancelAnnotation(i);"></i></span>
-      <span *ngIf="!lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
-          style="border-radius: 15px;background: white;right:10px;top:0px;color:red;" class="fas fa-lock fa-2x" (tap)="test();"></i></span>
-      <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
-          style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-unlock fa-2x"
-          (tap)="test();"></i></span>
-      <span *ngIf="scale==1" style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
-          class="fas fa-plus fa-2x" (tap)="zoomPlus();"></i></span>
-      <span *ngIf="scale==2" style="z-index:1;position: fixed;top: 10px;right: 0px;font-size: 25px;opacity: 0.4;"><i style="border-radius: 15px;background: white;right:10px;top:0px;color:black;"
-          class="fas fa-minus fa-2x" (tap)="zoomMinus();"></i></span>
-      <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;opacity: 0.4;"><i
-          style="border-radius: 15px;background: white;right:10px;top:0px;color:green;" class="fas fa-check-circle fa-2x"
-          (click)="$event.stopPropagation();validateAnnotation();"></i></span>
+      <span style="z-index:1;position: fixed;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
+        <button class="btn blue" (tap)="cancelAnnotation(i);"><i
+          class="fas fa-arrow-left fa-2x"></i>Quitter l'annotation</button>
+      </span>
+      <span *ngIf="!lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
+        <button class="btn red" (tap)="test();"><i
+          class="fas fa-lock fa-2x"></i>Vérouiller la zone de travaille</button>
+      </span>
+      <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
+          <button class="btn green" (tap)="test();"><i
+            class="fas fa-lock fa-2x"></i>Dévérouiller la zone de travaille</button>
+      </span>
+      <span *ngIf="scale==1" style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;">
+        <button class="btn blue" (tap)="zoomPlus();"><i
+          class="fas fa-plus fa-2x"></i>Zoomer</button>
+        </span>
+      <span *ngIf="scale==2" style="z-index:1;position: fixed;top: 10px;right: 0px;font-size: 25px;">
+        <button class="btn blue" (tap)="zoomMinus();"><i
+          class="fas fa-plus fa-2x"></i>Dézoomer</button>
+      </span>
+      <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
+        <button class="btn green" (click)="$event.stopPropagation();validateAnnotation();"><i
+          class="fas fa-check-circle fa-2x"></i>Valider l'annotation</button>
+      </span>
     </div>
     <article [style.width.px]="768*scale" style="margin-top: 120px;margin-left: auto;margin-right: auto;margin-bottom: 120px;"
       class="article" #article *ngIf="!freezeSidenavClose">
