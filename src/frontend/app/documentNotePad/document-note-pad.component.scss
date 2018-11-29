@@ -1,0 +1,41 @@
+.tool-content {
+  display: flex;
+  position: fixed;
+  background: #8080804d;
+  border-radius: 20px;
+  top: 170px;
+  transform: translateY(-50%) rotate(-90deg);
+  padding: 10px;
+  &-left {
+    left: -40px;
+  }
+  &-right {
+    right: -40px;
+  }
+}
+
+.undo {
+  cursor: pointer;
+  transform: rotate(90deg);
+  transition: all 0.2s;
+  &:active {
+    transform: rotate(90deg) scale(1.5);
+  }
+}
+
+.radio {
+  appearance: none;
+  position: relative;
+  margin: 5px;
+  width: 30px;
+  height: 30px;
+  border-radius: 30px;
+  border-width: none;
+  border-style: solid;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:checked, &:hover {
+    transform: scale(1.5);
+  }
+}

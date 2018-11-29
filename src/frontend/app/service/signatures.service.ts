@@ -25,4 +25,6 @@ export class SignaturesContentService {
     newSign: any = {};
     workingAreaWidth = 0;
     workingAreaHeight = 0;
+    renderingDoc = true;
+    scale = 1;
 }

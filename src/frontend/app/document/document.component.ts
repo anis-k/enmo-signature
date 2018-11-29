@@ -1,19 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Inject } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import * as $ from 'jquery';
-import { SignaturePad } from 'angular2-signaturepad/signature-pad';
-import {
-    MatDialogRef,
-    MatDialog,
-    MAT_DIALOG_DATA,
-    MatBottomSheet,
-    MatBottomSheetRef,
-    MatBottomSheetConfig,
-    MatSidenav,
-    MatMenuTrigger,
-    MatMenu
-} from '@angular/material';
+import { MatDialog, MatBottomSheet, MatBottomSheetConfig, MatSidenav } from '@angular/material';
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -21,6 +9,11 @@ import { NotificationService } from '../service/notification.service';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { PDFDocumentProxy } from 'ng2-pdf-viewer';
 import { CookieService } from 'ngx-cookie-service';
+import { DocumentNotePadComponent } from '../documentNotePad/document-note-pad.component';
+import { WarnModalComponent } from '../modal/warn-modal.component';
+import { RejectInfoBottomSheetComponent } from '../modal/reject-info.component';
+import { ConfirmModalComponent } from '../modal/confirm-modal.component';
+import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 
 
 @Component({
@@ -77,28 +70,16 @@ export class DocumentComponent implements OnInit {
     loadingPage = true;
     pageNum = 1;
     signaturesContent: any = [];
-    scale = 1;
     totalPages: number;
     draggable: boolean;
     loadingDoc = true;
-    renderingDoc = true;
     signaturePadPosX = 0;
     signaturePadPosY = 50;
     currentDoc = 0;
     docList: any = [];
     actionsList: any = [];
-    lockSignaturePad = false;
     pdfDataArr: any;
-    annotationPadOptions = {
-        throttle: 0,
-        minWidth: 1,
-        maxWidth: 2.5,
-        backgroundColor: 'rgba(255, 255, 255, 0)',
-        canvasWidth: 768,
-        canvasHeight: 270
-    };
     freezeSidenavClose = false;
-    penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000' }];
 
     @Input() mainDocument: any = {};
 
@@ -106,8 +87,8 @@ export class DocumentComponent implements OnInit {
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('canvas') canvas: ElementRef;
     @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
-    @ViewChild('menuTrigger') menuSign: MatMenuTrigger;
-    @ViewChild(SignaturePad) signaturePad: SignaturePad;
+
+    @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
 
 
     constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
@@ -127,7 +108,7 @@ export class DocumentComponent implements OnInit {
         }, 500);
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
-                this.renderingDoc = true;
+                this.signaturesService.renderingDoc = true;
                 this.loadingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
@@ -151,7 +132,7 @@ export class DocumentComponent implements OnInit {
                         this.pdfRender(this.docList[this.currentDoc]);
                         setTimeout(() => {
                             this.loadingPage = false;
-                            this.renderingDoc = false;
+                            this.signaturesService.renderingDoc = false;
                         }, 500);
                         this.loadNextDoc();
                     }, (err: any) => {
@@ -198,21 +179,11 @@ export class DocumentComponent implements OnInit {
         this.canvasWrapper.nativeElement.style.width = this.signaturesService.workingAreaWidth + 'px';
         this.canvasWrapper.nativeElement.style.height = this.signaturesService.workingAreaHeight + 'px';
 
-        this.annotationPadOptions.canvasWidth = this.signaturesService.workingAreaWidth;
-        this.annotationPadOptions.canvasHeight = this.signaturesService.workingAreaHeight;
-
-        const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-        this.annotationPadOptions.canvasHeight = this.annotationPadOptions.canvasHeight * ratio;
-        this.annotationPadOptions.canvasWidth = this.annotationPadOptions.canvasWidth * ratio;
-
-        if (this.signaturePad !== undefined) {
-            this.signaturePad.set('canvasWidth', this.annotationPadOptions.canvasWidth);
-            this.signaturePad.set('canvasHeight', this.annotationPadOptions.canvasHeight);
-        }
+        this.appDocumentNotePad.resizePad();
 
         this.signaturesService.signWidth = this.signaturesService.workingAreaWidth / 4.5;
 
-        this.renderingDoc = false;
+        this.signaturesService.renderingDoc = false;
     }
 
     prevPage() {
@@ -241,7 +212,7 @@ export class DocumentComponent implements OnInit {
     }
 
     nextDoc() {
-        this.renderingDoc = true;
+        this.signaturesService.renderingDoc = true;
         this.signaturesService.isTaggable = false;
         this.pageNum = 1;
         this.currentDoc++;
@@ -250,7 +221,7 @@ export class DocumentComponent implements OnInit {
     }
 
     prevDoc() {
-        this.renderingDoc = true;
+        this.signaturesService.renderingDoc = true;
         this.pageNum = 1;
         this.currentDoc--;
         if (this.currentDoc === 0) {
@@ -263,123 +234,8 @@ export class DocumentComponent implements OnInit {
     addAnnotation() {
         if (!this.signaturesService.lockNote && this.currentDoc === 0) {
             this.signaturesService.annotationMode = true;
-            this.signaturePadPosX = 0;
-            this.signaturePadPosY = 0;
             this.signaturesService.lockNote = true;
         }
-    }
-
-    moveSign(event: any, i: number) {
-        this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = event.x;
-        this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = event.y;
-    }
-
-    cloneSign(i: number) {
-
-        const r = confirm('Voulez-vous apposer la signature sur les autres pages ?');
-
-        if (r) {
-            this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
-            this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].token = Math.random().toString(36).substr(2, 9);
-
-            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                if (!this.signaturesService.signaturesContent[index]) {
-                  this.signaturesService.signaturesContent[index] = [];
-                }
-                if (index !== this.signaturesService.currentPage) {
-                    this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i])));
-                }
-              }
-        }
-        this.menuSign.closeMenu();
-    }
-
-    moveNote(event: any, i: number) {
-        this.signaturesService.notesContent[this.signaturesService.currentPage][i].positionX = event.x;
-        this.signaturesService.notesContent[this.signaturesService.currentPage][i].positionY = event.y;
-    }
-
-    movePad(event: any) {
-        this.signaturePadPosX = event.x;
-        this.signaturePadPosY = event.y;
-        $('.page-viewer, .canvas-wrapper, .mat-sidenav-content').css({ 'overflow': 'auto' });
-    }
-
-    deleteSignature(i: number) {
-
-        if (this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage === true) {
-            const token = this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].token;
-            const r = confirm('Voulez-vous supprimer la signature sur les autres pages ?');
-
-            if (r) {
-
-                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                    if (!this.signaturesService.signaturesContent[index]) {
-                        this.signaturesService.signaturesContent[index] = [];
-                    }
-                    for (let index2 = 0; index2 <= this.signaturesService.signaturesContent[index].length; index2++) {
-                        if (this.signaturesService.signaturesContent[index][index2]) {
-                            if (token === this.signaturesService.signaturesContent[index][index2].token) {
-                                this.signaturesService.signaturesContent[index].splice(index2, 1);
-                            }
-                        }
-                    }
-                }
-            } else {
-                this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
-            }
-        } else {
-            this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
-        }
-    }
-
-    deleteNote(index: number) {
-        this.signaturesService.notesContent[this.signaturesService.currentPage].splice(index, 1);
-    }
-
-    validateAnnotation() {
-        if (!this.signaturesService.notesContent[this.signaturesService.currentPage]) {
-            this.signaturesService.notesContent[this.signaturesService.currentPage] = [];
-        }
-        this.signaturesService.notesContent[this.signaturesService.currentPage].push(
-            {
-                'fullPath': this.signaturePad.toDataURL('image/svg+xml'),
-                'positionX': (this.signaturePadPosX * 100) / this.annotationPadOptions.canvasWidth,
-                'positionY': (this.signaturePadPosY * 100) / this.annotationPadOptions.canvasHeight,
-                'height': this.annotationPadOptions.canvasHeight,
-                'width': 768,
-            }
-        );
-        this.signaturePad.clear();
-        if (this.scale > 1) {
-            this.renderingDoc = true;
-        }
-        this.scale = 1;
-        this.signaturesService.annotationMode = false;
-        this.signaturesService.lockNote = false;
-        this.notificationService.success('Annotation ajoutée');
-    }
-
-    cancelAnnotation() {
-        setTimeout(() => {
-            this.signaturesService.annotationMode = false;
-            this.signaturePad.clear();
-            this.scale = 1;
-            this.signaturesService.lockNote = false;
-        }, 200);
-    }
-
-    freezDoc() {
-        $('.page-viewer, .canvas-wrapper, .mat-sidenav-content').css({ 'overflow': 'hidden' });
-    }
-
-    onColorChange(entry: any) {
-        this.signaturePad.set('penColor', entry.id);
-    }
-
-    onDotChange(entry: any) {
-        this.signaturePad.set('minWidth', parseFloat(entry));
-        this.signaturePad.set('maxWidth', parseFloat(entry) + 2);
     }
 
     openDialog(): void {
@@ -450,12 +306,6 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    undoTag() {
-        if (this.signaturesService.notesContent[this.pageNum]) {
-            this.signaturesService.notesContent[this.pageNum].pop();
-        }
-    }
-
     loadNextDoc () {
         if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].encodedDocument === '') {
             this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
@@ -471,200 +321,4 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.currentAction = action.id;
         this[action.event]();
     }
-
-    test() {
-        if (this.lockSignaturePad) {
-            this.lockSignaturePad = false;
-            this.signaturePad.on();
-        } else {
-            this.lockSignaturePad = true;
-            this.signaturePad.off();
-        }
-    }
-
-    zoomPlus() {
-        this.renderingDoc = true;
-        this.lockSignaturePad = true;
-        this.scale = 2;
-    }
-
-    zoomMinus() {
-        this.renderingDoc = true;
-        this.signaturePad.clear();
-        this.lockSignaturePad = true;
-        this.scale = 1;
-    }
-
-    undo() {
-        const data = this.signaturePad.toData();
-        if (data) {
-            data.pop(); // remove the last dot or line
-            this.signaturePad.fromData(data);
-        }
-    }
-
-    // USE TO PREVENT ISSUE IN MOBILE
-    openMenu(menu: MatMenuTrigger) {
-        menu.openMenu();
-    }
-}
-
-@Component({
-    templateUrl: '../modal/warn-modal.component.html',
-    styleUrls: ['../modal/warn-modal.component.scss']
-})
-export class WarnModalComponent {
-    disableState = false;
-
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
-
-    confirmDoc () {
-        const signatures: any[] = [];
-        if (this.signaturesService.currentAction > 0) {
-            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                if (this.signaturesService.signaturesContent[index]) {
-                    this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                        signatures.push(
-                            {
-                                'encodedImage'  : signature.encodedSignature,
-                                'width'         : (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
-                                'positionX'     : (signature.positionX * 100) / signature.pdfAreaX,
-                                'positionY'     : (signature.positionY * 100) / signature.pdfAreaY,
-                                'type'          : 'PNG',
-                                'page'          : index
-                            }
-                        );
-                    });
-                }
-                if (this.signaturesService.notesContent[index]) {
-                    this.signaturesService.notesContent[index].forEach((note: any) => {
-                        signatures.push(
-                            {
-                                'encodedImage'  : note.fullPath,
-                                'width'         : note.width,
-                                'positionX'     : note.positionX,
-                                'positionY'     : note.positionY,
-                                'type'          : 'SVG',
-                                'page'          : index
-                            }
-                        );
-                    });
-                }
-            }
-            this.disableState = true;
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
-                .subscribe(() => {
-                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                    if (this.signaturesService.documentsListCount > 0) {
-                        this.signaturesService.documentsListCount--;
-                    }
-                    this.disableState = false;
-                    this.dialogRef.close('sucess');
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
-                    this.disableState = false;
-                });
-        } else {
-            this.dialogRef.close('sucess');
-        }
-    }
-}
-
-@Component({
-    templateUrl: '../modal/confirm-modal.component.html',
-    styleUrls: ['../modal/confirm-modal.component.scss']
-})
-export class ConfirmModalComponent {
-    disableState = false;
-
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
-
-    confirmDoc () {
-        const signatures: any[] = [];
-        if (this.signaturesService.currentAction > 0) {
-            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                if (this.signaturesService.signaturesContent[index]) {
-                    this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                        signatures.push(
-                            {
-                                'encodedImage'  : signature.encodedSignature,
-                                'width'         : (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
-                                'positionX'     : (signature.positionX * 100) / signature.pdfAreaX,
-                                'positionY'     : (signature.positionY * 100) / signature.pdfAreaY,
-                                'type'          : 'PNG',
-                                'page'          : index,
-                            }
-                        );
-                    });
-                }
-                if (this.signaturesService.notesContent[index]) {
-                    this.signaturesService.notesContent[index].forEach((note: any) => {
-                        signatures.push(
-                            {
-                                'encodedImage'  : note.fullPath,
-                                'width'         : note.width,
-                                'positionX'     : note.positionX,
-                                'positionY'     : note.positionY,
-                                'type'          : 'SVG',
-                                'page'          : index,
-                            }
-                        );
-                    });
-                }
-            }
-            this.disableState = true;
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
-                .subscribe(() => {
-                    this.disableState = false;
-                    this.dialogRef.close('sucess');
-                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                    if (this.signaturesService.documentsListCount > 0) {
-                        this.signaturesService.documentsListCount--;
-                    }
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
-                    this.disableState = false;
-                });
-        } else {
-            this.dialogRef.close('sucess');
-        }
-    }
-}
-
-@Component({
-    templateUrl: '../modal/success-info-valid.html',
-    styleUrls: ['../modal/success-info-valid.scss']
-})
-export class SuccessInfoValidBottomSheetComponent implements OnInit {
-    date: Date = new Date();
-    constructor(private router: Router, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheetRef<SuccessInfoValidBottomSheetComponent>) { }
-     ngOnInit(): void {
-        setTimeout(() => {
-            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
-                this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
-            } else {
-                this.router.navigate(['/documents']);
-            }
-            this.bottomSheetRef.dismiss();
-        }, 2000);
-     }
-}
-
-@Component({
-    templateUrl: '../modal/reject-info.html',
-    styleUrls: ['../modal/reject-info.scss']
-})
-export class RejectInfoBottomSheetComponent implements OnInit {
-    date: Date = new Date();
-    constructor(private router: Router, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheetRef<RejectInfoBottomSheetComponent>) { }
-    ngOnInit(): void {
-        setTimeout(() => {
-            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
-                this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
-            } else {
-                this.router.navigate(['/documents']);
-            }
-            this.bottomSheetRef.dismiss();
-        }, 2000);
-     }
 }

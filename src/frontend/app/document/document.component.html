@@ -43,32 +43,6 @@
         </section>
       </article>
     </header>
-    <div *ngIf="signaturesService.lockNote">
-      <span style="z-index:1;position: fixed;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
-        <button class="btn blue" (tap)="cancelAnnotation(i);"><i
-          class="fas fa-arrow-left fa-2x"></i>Quitter l'annotation</button>
-      </span>
-      <span *ngIf="!lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-        <button class="btn red" (tap)="test();"><i
-          class="fas fa-lock fa-2x"></i>Vérouiller la zone de travaille</button>
-      </span>
-      <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-          <button class="btn green" (tap)="test();"><i
-            class="fas fa-lock fa-2x"></i>Dévérouiller la zone de travaille</button>
-      </span>
-      <span *ngIf="scale==1" style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;">
-        <button class="btn blue" (tap)="zoomPlus();"><i
-          class="fas fa-plus fa-2x"></i>Zoomer</button>
-        </span>
-      <span *ngIf="scale==2" style="z-index:1;position: fixed;top: 10px;right: 0px;font-size: 25px;">
-        <button class="btn blue" (tap)="zoomMinus();"><i
-          class="fas fa-plus fa-2x"></i>Dézoomer</button>
-      </span>
-      <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-        <button class="btn green" (click)="$event.stopPropagation();validateAnnotation();"><i
-          class="fas fa-check-circle fa-2x"></i>Valider l'annotation</button>
-      </span>
-    </div>
     <article class="article" #article *ngIf="!freezeSidenavClose">
       <button class="btn-previous" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i></button>
@@ -79,66 +53,18 @@
       <button class="btn-next" (click)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
       <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
-        <div [style.width.px]="768*scale" class="canvas-wrapper" #canvasWrapper>
+        <div [style.width.px]="768*signaturesService.scale" class="canvas-wrapper" #canvasWrapper>
           <pdf-viewer [ngClass]="{
             'pdf-page-canvas':!renderingDoc,
             'pdf-page-canvas-loading-doc':renderingDoc
-          }" [src]="pdfDataArr" [render-text]="false" [zoom]="scale" [show-all]="false" [(page)]="pageNum" [original-size]="false" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)" (click)="addAnnotation($event)"></pdf-viewer>
+          }" [src]="pdfDataArr" [render-text]="false" [zoom]="signaturesService.scale" [show-all]="false" [(page)]="pageNum" [original-size]="false" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)" (click)="addAnnotation($event)"></pdf-viewer>
           <ng-container *ngIf="currentDoc == 0">
-            <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
-              <div style="top:0;left:0;position: absolute;" [ngClass]="{
-                'pdf-page-canvas':!renderingDoc,
-                'pdf-page-canvas-loading-doc':renderingDoc
-              }">
-                <img [style.width.px]="note.width*scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)" (click)="addAnnotation($event)">
-              </div>
-            </ng-container>
-            <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
-              
-              <div [position]="{'x': signature.positionX*scale, 'y': signature.positionY*scale}" id="signaturesContent"
-                style="top:0;left:0;position: absolute;border: dashed 1px grey;background: rgba(255, 255, 255, 0.6) none repeat scroll 0% 0%;" ngDraggable preventDefaultEvent="true" [bounds]="canvas"
-                inBounds="true" (endOffset)="moveSign($event,i)" [ngClass]="{
-                  'pdf-page-canvas':!renderingDoc,
-                  'pdf-page-canvas-loading-doc':renderingDoc
-                }">
-                <button (tap)="openMenu(menuTrigger)" mat-icon-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu" style="right: 0;position: absolute;color:#F99830;">
-                  <mat-icon fontSet="fas" fontIcon="fa-ellipsis-v"></mat-icon>
-                </button>
-                <mat-menu #menu="matMenu">
-                  <button mat-menu-item (click)="$event.stopPropagation();deleteSignature(i);">
-                    <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
-                    <span>Supprimer la signature</span>
-                  </button>
-                  <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);">
-                    <mat-icon fontSet="fas" fontIcon="fa-clone"></mat-icon>
-                    <span>Cloner la signature</span>
-                  </button>
-                </mat-menu> 
-                <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
-                  [style.width.px]="this.signaturesService.signWidth">
-              </div>
-            </ng-container>
+            
+            <app-document-note-list (triggerEvent)="addAnnotation($event)"></app-document-note-list>
+            <app-document-sign-list [canvas]="canvasWrapper"></app-document-sign-list>
+            
+            <app-document-note-pad [pageNum]="pageNum" #appDocumentNotePad></app-document-note-pad>
 
-            <div *ngIf="signaturesService.lockNote" [style.width.px]="this.signaturesService.workingAreaWidth" [style.height.px]="this.signaturesService.workingAreaHeight" style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{
-              'pdf-page-canvas':!renderingDoc,
-              'pdf-page-canvas-loading-doc':renderingDoc
-            }">
-              <div class="tool-content tool-content-left">     
-                <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)"
-              class="range">
-              <i class="fas fa-pen-nib"></i>
-            </div>
-              <div class="tool-content tool-content-right">
-                <ng-container *ngFor="let color of penColors" let idx="index">
-                  <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)"
-                    class="radio" [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
-                </ng-container>
-                <hr>
-                <i class="fa fa-undo fa-2x undo" (click)="undo()"></i>    
-              </div>
-              <signature-pad id="notePad" [options]="annotationPadOptions"></signature-pad>
-              <div *ngIf="lockSignaturePad" style="background: #ffffffb3;position: absolute;top: 0;left: 0;width: 100%;height: 100%;"></div>
-            </div>
           </ng-container>
         </div>
               <div class="page-under">

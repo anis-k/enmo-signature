@@ -1,0 +1,8 @@
+<ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
+    <div style="top:0;left:0;position: absolute;" [ngClass]="{
+      'pdf-page-canvas':!renderingDoc,
+      'pdf-page-canvas-loading-doc':renderingDoc
+    }">
+      <img [style.width.px]="note.width*signaturesService.scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)" (click)="triggerAddnnotation($event)">
+    </div>
+  </ng-container>

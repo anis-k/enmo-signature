@@ -20,13 +20,16 @@ import { SignaturesComponent } from './signatures/signatures.component';
 import { SignaturePadPageComponent } from './pad/pad.component';
 import { SignaturePadModule } from 'angular2-signaturepad';
 import { DrawerComponent } from './drawer/drawer.component';
-import { DocumentComponent,
-  WarnModalComponent,
-  ConfirmModalComponent,
-  SuccessInfoValidBottomSheetComponent,
-  RejectInfoBottomSheetComponent } from './document/document.component';
+import { DocumentComponent } from './document/document.component';
+import { DocumentSignListComponent } from './documentSignList/document-sign-list.component';
+import { DocumentNoteListComponent } from './documentNoteList/document-note-list.component';
+import { DocumentNotePadComponent } from './documentNotePad/document-note-pad.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { ProfileComponent } from './profile/profile.component';
+import { ConfirmModalComponent } from './modal/confirm-modal.component';
+import { WarnModalComponent } from './modal/warn-modal.component';
+import { SuccessInfoValidBottomSheetComponent } from './modal/success-info-valid.component';
+import { RejectInfoBottomSheetComponent } from './modal/reject-info.component';
 
 // SERVICES
 import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
@@ -42,6 +45,9 @@ import { SignaturesContentService } from './service/signatures.service';
     SignaturePadPageComponent,
     DrawerComponent,
     DocumentComponent,
+    DocumentSignListComponent,
+    DocumentNoteListComponent,
+    DocumentNotePadComponent,
     SidebarComponent,
     WarnModalComponent,
     ConfirmModalComponent,
