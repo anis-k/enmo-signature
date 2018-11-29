@@ -164,11 +164,16 @@ export class ProfileComponent implements OnInit {
 
     submitProfile() {
         this.disableState = true;
+        var profileToSend = {
+            "firstname" : this.profileInfo.firstname,
+            "lastname"  : this.profileInfo.lastname,
+            "picture"   : this.profileInfo.picture
+        };
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
-            this.profileInfo.picture = '';
+            profileToSend.picture = '';
         } else {
-            const orientation = $('.avatarProfile').css('content');
-            this.profileInfo.pictureOrientation = orientation.replace(/\"/g, '');
+            let orientation = $('.avatarProfile').css('content');
+            profileToSend["pictureOrientation"] = orientation.replace(/\"/g, '');
         }
 
         this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.profileInfo)
@@ -179,9 +184,6 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.picture = data.user.picture;
                 this.profileInfo.picture = data.user.picture;
                 $('.avatarProfile').css({'transform': 'rotate(0deg)'});
-                // MAJ COOKIE
-                this.cookieService.delete('maarchParapheurAuth');
-                this.cookieService.set(btoa(JSON.stringify(this.signaturesService.userLogged)), 'maarchParapheurAuth');
 
                 if (this.showPassword) {
                     this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password)
