@@ -121,18 +121,12 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        if (!empty($data['picture']) && !empty($data['pictureOrientation'])) {
+        if (!empty($data['picture'])) {
             $infoContent = '';
             if (preg_match('/^data:image\/(\w+);base64,/', $data['picture'])) {
                 $infoContent = substr($data['picture'], 0, strpos($data['picture'], ',') + 1);
                 $data['picture'] = substr($data['picture'], strpos($data['picture'], ',') + 1);
             }
-            $imagick = new \Imagick();
-            $imagick->readImageBlob(base64_decode($data['picture']));
-            $imagick->rotateImage(new \ImagickPixel(), $data['pictureOrientation']);
-            $data['picture'] = $infoContent . base64_encode($imagick->getImageBlob());
-        }
-        /*if (!empty($data['picture'])) {
             $picture    = base64_decode($data['picture']);
             $finfo      = new \finfo(FILEINFO_MIME_TYPE);
             $mimeType   = $finfo->buffer($picture);
@@ -141,7 +135,15 @@ class UserController
             if ($type[0] != 'image') {
                 return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
             }
-        }*/
+
+            if (!empty($data['pictureOrientation'])) {
+                $imagick = new \Imagick();
+                $imagick->readImageBlob(base64_decode($data['picture']));
+                $imagick->rotateImage(new \ImagickPixel(), $data['pictureOrientation']);
+                $data['picture'] = base64_encode($imagick->getImageBlob());
+            }
+            $data['picture'] = $infoContent . $data['picture'];
+        }
 
         $data['id'] = $args['id'];
         UserModel::update($data);
