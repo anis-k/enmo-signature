@@ -48,7 +48,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('email is empty or format is not correct', $responseBody->errors);
+        $this->assertSame('L\'email est vide ou le format n\'est pas correct', $responseBody->errors);
 
         //Mail wrong format
         $aArgs = [
@@ -61,10 +61,10 @@ class UserControllerTest extends TestCase
         $response     = $userController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('email is empty or format is not correct', $responseBody->errors);
+        $this->assertSame('L\'email est vide ou le format n\'est pas correct', $responseBody->errors);
     }
 
-    public function testUpdatePassord()
+    public function testUpdatePassword()
     {
         $userController = new \User\controllers\UserController();
 
@@ -142,7 +142,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => -1]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('User out of perimeter', $responseBody->errors);
+        $this->assertEmpty($responseBody->users);
     }
 
     public function testUpdate()
@@ -161,7 +161,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->user);
+        $this->assertInternalType('object', $responseBody->user);
         $this->assertNotEmpty($responseBody->user);
 
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
@@ -179,7 +179,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->user);
+        $this->assertInternalType('object', $responseBody->user);
         $this->assertNotEmpty($responseBody->user);
 
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
@@ -237,8 +237,8 @@ class UserControllerTest extends TestCase
 
         \SrcCore\models\DatabaseModel::delete([
             'table' => 'users',
-            'where' => 'id = ?',
-            'data'  => self::$signatureId
+            'where' => ['id = ?'],
+            'data'  => [self::$userId]
         ]);
     }
 }

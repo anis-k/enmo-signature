@@ -195,7 +195,7 @@ class UserController
 
     public function getSignatures(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id']) {
+        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -242,7 +242,7 @@ class UserController
 
     public function createSignature(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id']) {
+        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -283,7 +283,7 @@ class UserController
 
     public function deleteSignature(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id']) {
+        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
