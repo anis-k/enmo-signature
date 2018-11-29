@@ -20,14 +20,12 @@
   padding-bottom: 10px;
 }
 
-.swipe-panel-area {
-  position: fixed;
-  width: 20px;
-  height: 100%;
-}
-
-body {
-  overflow-y: hidden;
+.mainView {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .header button {
@@ -44,15 +42,15 @@ body {
 .article {
   display: flex;
   justify-content: center;
-  width: 768px;
+  overflow: auto;
+  flex: 1;
+  transition: all 0.2s;
+  padding-top: 90px;
 }
 
 .canvas-wrapper {
-  overflow: hidden;
-  position: relative;
   width: 768px;
-  margin-bottom: 0;
-  padding: 0;
+  position: relative;
 }
 
 canvas {
@@ -60,6 +58,49 @@ canvas {
   margin: 0 auto;
   display: block;
 }
+
+.header {
+  position: absolute;
+  width: 100vw;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  /*&-left
+      position absolute
+      top 15px
+      left -60px*/
+    &-action {
+      color: $primary;
+    }
+  &-infos {
+    background: #F1F4F4;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    position: relative;
+  }
+  &-info {
+    border-right: 1px solid #979797;
+    width: 200px;
+    height: 60px;
+    font-size: 12px;
+    padding-left: 20px;
+    &:last-of-type {
+      border: none;
+    }
+    p {
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
 
 .page {
   &-info {
@@ -97,12 +138,6 @@ canvas {
       margin-left: -15px;
       height: 28px;
     }
-  }
-  &-viewer {
-    width: 100%;
-    overflow: auto;
-    justify-content: center;
-    display: flex;
   }
 }
 

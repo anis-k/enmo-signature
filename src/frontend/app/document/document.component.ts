@@ -102,7 +102,6 @@ export class DocumentComponent implements OnInit {
 
     @Input() mainDocument: any = {};
 
-    @ViewChild('pdfpage') elPdfContainer: ElementRef;
     @ViewChild('snav') snav: MatSidenav;
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('canvas') canvas: ElementRef;
