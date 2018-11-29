@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class WarnModalComponent {
     disableState = false;
+    msgButton = 'Refuser ce document';
 
     constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
@@ -48,6 +49,7 @@ export class WarnModalComponent {
                 }
             }
             this.disableState = true;
+            this.msgButton = 'Envoi ...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
@@ -55,10 +57,12 @@ export class WarnModalComponent {
                         this.signaturesService.documentsListCount--;
                     }
                     this.disableState = false;
+                    this.msgButton = 'Refuser ce document';
                     this.dialogRef.close('sucess');
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                     this.disableState = false;
+                    this.msgButton = 'Refuser ce document';
                 });
         } else {
             this.dialogRef.close('sucess');

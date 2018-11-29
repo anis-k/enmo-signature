@@ -97,6 +97,8 @@ export class DocumentComponent implements OnInit {
         private cookieService: CookieService,
         private sanitization: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
+        (<any>window).pdfWorkerSrc = './../node_modules/pdfjs-dist/build/pdf.worker.js';
+
         if (!this.cookieService.check('maarchParapheurAuth')) {
             this.router.navigate(['/login']);
         }
@@ -141,6 +143,7 @@ export class DocumentComponent implements OnInit {
             } else {
                 this.snav.open();
                 this.freezeSidenavClose = true;
+                this.loadingDoc = false;
             }
         });
     }

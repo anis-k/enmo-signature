@@ -54,7 +54,7 @@
                 </mat-expansion-panel>
             </mat-accordion>
             <span class="actions">
-                <button class="validate" mat-button color="primary" type="submit" [disabled]="allowValidate() || !profileForm.form.valid">Valider</button>
+                <button class="validate" mat-button color="primary" type="submit" [disabled]="allowValidate() || !profileForm.form.valid">{{ msgButton }}</button>
                 <button  class="cancel" mat-icon-button type="button" (click)="closeProfile();"><mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon></button>
             </span>
         </form>

@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ConfirmModalComponent {
     disableState = false;
+    msgButton = 'Valider';
 
     constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
@@ -47,9 +48,11 @@ export class ConfirmModalComponent {
                 }
             }
             this.disableState = true;
+            this.msgButton = 'Envoi ...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.disableState = false;
+                    this.msgButton = 'Valider';
                     this.dialogRef.close('sucess');
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                     if (this.signaturesService.documentsListCount > 0) {
@@ -58,6 +61,7 @@ export class ConfirmModalComponent {
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                     this.disableState = false;
+                    this.msgButton = 'Valider';
                 });
         } else {
             this.dialogRef.close('sucess');

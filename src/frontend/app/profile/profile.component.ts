@@ -47,6 +47,7 @@ export class ProfileComponent implements OnInit {
     showPassword = false;
 
     disableState = false;
+    msgButton = 'Valider';
 
     constructor(public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
@@ -164,16 +165,17 @@ export class ProfileComponent implements OnInit {
 
     submitProfile() {
         this.disableState = true;
-        var profileToSend = {
-            "firstname" : this.profileInfo.firstname,
-            "lastname"  : this.profileInfo.lastname,
-            "picture"   : this.profileInfo.picture
+        this.msgButton = 'Envoi ...';
+        const profileToSend = {
+            'firstname' : this.profileInfo.firstname,
+            'lastname'  : this.profileInfo.lastname,
+            'picture'   : this.profileInfo.picture
         };
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
             profileToSend.picture = '';
         } else {
-            let orientation = $('.avatarProfile').css('content');
-            profileToSend["pictureOrientation"] = orientation.replace(/\"/g, '');
+            const orientation = $('.avatarProfile').css('content');
+            profileToSend['pictureOrientation'] = orientation.replace(/\"/g, '');
         }
 
         this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.profileInfo)
@@ -193,6 +195,7 @@ export class ProfileComponent implements OnInit {
                         this.password.currentPassword = '';
                         this.notificationService.success('Profil modifié');
                         this.disableState = false;
+                        this.msgButton = 'Valider';
                         this.closeProfile();
                     }, (err) => {
                         if (err.status === 401) {
@@ -206,6 +209,7 @@ export class ProfileComponent implements OnInit {
                 if (!this.showPassword) {
                     this.notificationService.success('Profil modifié');
                     this.disableState = false;
+                    this.msgButton = 'Valider';
                     this.closeProfile();
                 }
             }, (err) => {

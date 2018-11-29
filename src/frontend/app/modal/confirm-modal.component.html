@@ -4,6 +4,6 @@
     <p *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0">Vous êtes sur le point de valider ce document sans signature ou annotation!</p>
 </div>
 <div mat-dialog-actions>
-  <button class="btn green" mat-button (click)="confirmDoc();" [disabled]="disableState"><i class="fas fa-check-circle fa-2x"></i> Valider</button>
+  <button class="btn green" mat-button (click)="confirmDoc();" [disabled]="disableState"><i class="fas fa-check-circle fa-2x"></i> {{ msgButton }}</button>
   <button class="btn red" mat-button cdkFocusInitial (click)="this.dialogRef.close();" [disabled]="disableState"><i class="fas fa-times-circle fa-2x"></i> Annuler</button>
 </div>
