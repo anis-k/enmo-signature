@@ -37,7 +37,6 @@ class UserControllerTest extends TestCase
         $this->assertSame('Prénom', $responseBody->user->firstname);
         $this->assertSame('Nom', $responseBody->user->lastname);
         self::$userId = $responseBody->user->id;
-        var_dump(self::$userId);
 
         //Mail missing
         $aArgs = [
@@ -63,6 +62,52 @@ class UserControllerTest extends TestCase
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('email is empty or format is not correct', $responseBody->errors);
+    }
+
+    public function testUpdatePassord()
+    {
+        $userController = new \User\controllers\UserController();
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $aArgs = [
+            'currentPassword'          => 'maarch',
+            'newPassword'              => 'maarch2',
+            'passwordConfirmation'     => 'maarch2'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $responseBody = json_decode((string)$response->getBody());
+        
+        $this->assertSame('success', $responseBody->success);
+
+        //Error
+        $aArgs = [
+            'currentPassword'          => 'maarch3',
+            'newPassword'              => 'maarch',
+            'passwordConfirmation'     => 'maarch'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $responseBody = json_decode((string)$response->getBody());
+        
+        $this->assertSame('Wrong Password', $responseBody->errors);
+
+        //Error
+        $aArgs = [
+            'currentPassword'          => 'maarch2',
+            'newPassword'              => 'maarch1',
+            'passwordConfirmation'     => 'maarch'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $responseBody = json_decode((string)$response->getBody());
+        
+        $this->assertSame('New password does not match password confirmation', $responseBody->errors);
     }
 
     public function testGet()
