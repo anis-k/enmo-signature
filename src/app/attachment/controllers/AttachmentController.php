@@ -23,6 +23,7 @@ use History\controllers\HistoryController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
+use User\controllers\UserController;
 
 class AttachmentController
 {
@@ -33,7 +34,7 @@ class AttachmentController
             return $response->withStatus(400)->withJson(['errors' => 'Attachment does not exist']);
         }
 
-        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']])) {
+        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 

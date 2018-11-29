@@ -25,7 +25,7 @@ class DocumentControllerTest extends TestCase
             'reference'             => '2018/CR/7',
             'subject'               => 'Mon Courrier',
             'mode'                  => 'SIGN',
-            'processing_user'       => 1,
+            'processing_user'       => 2,
             'sender'                => 'Oliver Queen',
             'sender_entity'         => 'QE',
             'recipient'             => 'Barry Allen',
@@ -86,7 +86,7 @@ class DocumentControllerTest extends TestCase
         $this->assertSame('Urgent', $responseBody->document->priority);
         $this->assertSame('Oliver Queen', $responseBody->document->sender);
         $this->assertSame('QE', $responseBody->document->sender_entity);
-        $this->assertSame(1, $responseBody->document->processing_user);
+        $this->assertSame(2, $responseBody->document->processing_user);
         $this->assertSame('Barry Allen', $responseBody->document->recipient);
         $this->assertInternalType('string', $responseBody->document->encodedDocument);
         $this->assertInternalType('array', $responseBody->document->attachments);

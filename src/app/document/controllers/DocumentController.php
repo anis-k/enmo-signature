@@ -28,6 +28,7 @@ use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
 use Status\models\StatusModel;
+use User\controllers\UserController;
 use User\models\UserModel;
 use History\controllers\HistoryController;
 use Action\models\ActionModel;
@@ -69,13 +70,13 @@ class DocumentController
 
     public function getById(Request $request, Response $response, array $args)
     {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
         $document = DocumentModel::getById(['select' => ['*'], 'id' => $args['id']]);
         if (empty($document)) {
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
-        }
-
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
         $adr = AdrModel::getDocumentsAdr([
@@ -120,6 +121,10 @@ class DocumentController
 
     public function create(Request $request, Response $response)
     {
+        if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
         $data = $request->getParams();
 
         $check = DocumentController::controlData([
@@ -318,13 +323,10 @@ class DocumentController
 
     public function getHandwrittenDocumentById(Request $request, Response $response, array $args)
     {
-        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
-        if ($user['mode'] != 'rest') {
-            if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
-                return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-            }
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
-        
+
         $adr = AdrModel::getDocumentsAdr([
             'select'    => ['path', 'filename', 'fingerprint'],
             'where'     => ['main_document_id = ?', 'type = ?'],
@@ -354,11 +356,8 @@ class DocumentController
 
     public function getStatusById(Request $request, Response $response, array $args)
     {
-        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
-        if ($user['mode'] != 'rest') {
-            if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
-                return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-            }
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
         $document = DocumentModel::getById(['select' => ['status', 'mode'], 'id' => $args['id']]);

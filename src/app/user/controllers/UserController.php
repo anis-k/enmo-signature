@@ -30,9 +30,8 @@ class UserController
 {
     public function get(Request $request, Response $response)
     {
-        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
-        if ($user['mode'] != 'rest') {
-            return $response->withStatus(403)->withJson(['errors' => 'Route forbidden']);
+        if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $users = UserModel::get([
@@ -46,8 +45,8 @@ class UserController
 
     public function getById(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id']) {
-            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $user = UserModel::getById(['select' => ['id', 'email', 'firstname', 'lastname', 'picture'], 'id' => $args['id']]);
@@ -64,9 +63,8 @@ class UserController
 
     public function create(Request $request, Response $response)
     {
-        $user = UserModel::getById(['select' => ['mode'], 'id' => $GLOBALS['id']]);
-        if ($user['mode'] != 'rest') {
-            return $response->withStatus(403)->withJson(['errors' => 'Route forbidden']);
+        if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $data = $request->getParams();
@@ -110,8 +108,8 @@ class UserController
 
     public function update(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id']) {
-            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $data = $request->getParams();
@@ -162,12 +160,8 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
-        $user = UserModel::getById(['select' => ['email', 'mode'], 'id' => $args['id']]);
-
-        if ($GLOBALS['id'] != $args['id']) {
-            if ($user['mode'] != 'rest' || !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
-                return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
-            }
+        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $data = $request->getParams();
@@ -178,6 +172,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
+        $user = UserModel::getById(['select' => ['email'], 'id' => $args['id']]);
         if ($data['newPassword'] != $data['passwordConfirmation']) {
             return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
         } elseif (!AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
@@ -201,7 +196,7 @@ class UserController
     public function getSignatures(Request $request, Response $response, array $args)
     {
         if ($GLOBALS['id'] != $args['id']) {
-            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $data = $request->getQueryParams();
@@ -248,7 +243,7 @@ class UserController
     public function createSignature(Request $request, Response $response, array $args)
     {
         if ($GLOBALS['id'] != $args['id']) {
-            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         $data = $request->getParams();
@@ -289,7 +284,7 @@ class UserController
     public function deleteSignature(Request $request, Response $response, array $args)
     {
         if ($GLOBALS['id'] != $args['id']) {
-            return $response->withStatus(403)->withJson(['errors' => 'User out of perimeter']);
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         UserModel::deleteSignature(['where' => ['user_id = ?', 'id = ?'], 'data' => [$args['id'], $args['signatureId']]]);
@@ -304,7 +299,7 @@ class UserController
         return $response->withJson(['success' => 'success']);
     }
 
-    public function hasPrivilege(array $args)
+    public static function hasPrivilege(array $args)
     {
         ValidatorModel::notEmpty($args, ['userId', 'privilege']);
         ValidatorModel::intVal($args, ['userId']);

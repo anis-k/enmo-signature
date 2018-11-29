@@ -10,16 +10,20 @@ INSERT INTO users (email, password, firstname, lastname, mode) VALUES ('ccornill
 --GROUPS
 ------------
 TRUNCATE TABLE groups;
-ALTER SEQUENCE groups_id_seq RESTART WITH 2;
-INSERT INTO groups (id, label) VALUES (1, 'Administrateur');
+ALTER SEQUENCE groups_id_seq RESTART WITH 1;
+INSERT INTO groups (label) VALUES ('Administrateur');
+INSERT INTO groups (label) VALUES ('Utilisateur Rest');
 
 TRUNCATE TABLE groups_privileges;
 ALTER SEQUENCE groups_privileges_id_seq RESTART WITH 1;
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_rest_users');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_users');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_documents');
 
 TRUNCATE TABLE users_groups;
 ALTER SEQUENCE users_groups_id_seq RESTART WITH 1;
 INSERT INTO users_groups (group_id, user_id) VALUES (1, 1);
+INSERT INTO users_groups (group_id, user_id) VALUES (2, 2);
 
 ------------
 --DOCSERVERS
