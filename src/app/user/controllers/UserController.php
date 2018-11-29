@@ -70,18 +70,18 @@ class UserController
         $data = $request->getParams();
 
         if (!Validator::stringType()->notEmpty()->validate($data['firstname'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'firstname is empty']);
+            return $response->withStatus(400)->withJson(['errors' => 'Le prénom est vide']);
         }
         if (!Validator::stringType()->notEmpty()->validate($data['lastname'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'lastname is empty']);
+            return $response->withStatus(400)->withJson(['errors' => 'Le nom est vide']);
         }
         if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            return $response->withStatus(400)->withJson(['errors' => 'email is empty or format is not correct']);
+            return $response->withStatus(400)->withJson(['errors' => 'L\'email est vide ou le format n\'est pas correct']);
         }
 
         $existingUser = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id']]);
         if (!empty($existingUser)) {
-            return $response->withStatus(400)->withJson(['errors' => 'User already exists']);
+            return $response->withStatus(400)->withJson(['errors' => 'L\'email existe déjà']);
         }
 
         $logingModes = ['standard', 'rest'];
