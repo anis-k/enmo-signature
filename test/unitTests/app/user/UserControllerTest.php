@@ -12,6 +12,58 @@ use PHPUnit\Framework\TestCase;
 class UserControllerTest extends TestCase
 {
     private static $signatureId = null;
+    private static $userId = null;
+
+    public function testCreateUser()
+    {
+        $userController = new \User\controllers\UserController();
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $aArgs = [
+            'firstname' => 'Prénom',
+            'lastname'  => 'Nom',
+            'email'     => 'email@test.fr'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->create($fullRequest, new \Slim\Http\Response());
+        $responseBody = json_decode((string)$response->getBody());
+        
+        $this->assertNotEmpty($responseBody->user);
+        $this->assertInternalType('int', $responseBody->user->id);
+        $this->assertSame('email@test.fr', $responseBody->user->email);
+        $this->assertSame('Prénom', $responseBody->user->firstname);
+        $this->assertSame('Nom', $responseBody->user->lastname);
+        self::$userId = $responseBody->user->id;
+        var_dump(self::$userId);
+
+        //Mail missing
+        $aArgs = [
+            'firstname' => 'Prénom',
+            'lastname'  => 'Nom'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->create($fullRequest, new \Slim\Http\Response());
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('email is empty or format is not correct', $responseBody->errors);
+
+        //Mail wrong format
+        $aArgs = [
+            'firstname' => 'Prénom',
+            'lastname'  => 'Nom',
+            'email'     => 'emailtest.fr'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->create($fullRequest, new \Slim\Http\Response());
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('email is empty or format is not correct', $responseBody->errors);
+    }
 
     public function testGet()
     {
@@ -34,13 +86,13 @@ class UserControllerTest extends TestCase
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame(1, $responseBody->user->id);
-        $this->assertSame('jjane@maarch.com', $responseBody->user->email);
-        $this->assertSame('Jenny', $responseBody->user->firstname);
-        $this->assertSame('JANE', $responseBody->user->lastname);
+        $this->assertSame(self::$userId, $responseBody->user->id);
+        $this->assertSame('email@test.fr', $responseBody->user->email);
+        $this->assertSame('Prénom', $responseBody->user->firstname);
+        $this->assertSame('Nom', $responseBody->user->lastname);
 
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => -1]);
         $responseBody = json_decode((string)$response->getBody());
@@ -61,13 +113,13 @@ class UserControllerTest extends TestCase
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertInternalType('array', $responseBody->user);
         $this->assertNotEmpty($responseBody->user);
 
-        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('Jolly', $responseBody->user->firstname);
@@ -79,13 +131,13 @@ class UserControllerTest extends TestCase
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertInternalType('array', $responseBody->user);
         $this->assertNotEmpty($responseBody->user);
 
-        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('Jenny', $responseBody->user->firstname);
@@ -105,7 +157,7 @@ class UserControllerTest extends TestCase
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $userController->createSignature($fullRequest, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->createSignature($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertInternalType('int', $responseBody->signatureId);
@@ -119,7 +171,7 @@ class UserControllerTest extends TestCase
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $userController->getSignatures($request, new \Slim\Http\Response(), ['id' => 1]);
+        $response     = $userController->getSignatures($request, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertInternalType('array', $responseBody->signatures);
@@ -133,9 +185,15 @@ class UserControllerTest extends TestCase
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $userController->deleteSignature($request, new \Slim\Http\Response(), ['id' => 1, 'signatureId' => self::$signatureId]);
+        $response     = $userController->deleteSignature($request, new \Slim\Http\Response(), ['id' => self::$userId, 'signatureId' => self::$signatureId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('success', $responseBody->success);
+
+        \SrcCore\models\DatabaseModel::delete([
+            'table' => 'users',
+            'where' => 'id = ?',
+            'data'  => self::$signatureId
+        ]);
     }
 }
