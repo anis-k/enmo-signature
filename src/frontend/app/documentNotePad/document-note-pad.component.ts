@@ -17,7 +17,8 @@ export class DocumentNotePadComponent implements OnInit {
     annotationPadOptions = {
         throttle: 0,
         minWidth: 1,
-        maxWidth: 2.5,
+        maxWidth: 1,
+        minDistance: 0,
         backgroundColor: 'rgba(255, 255, 255, 0)',
         canvasWidth: 768,
         canvasHeight: 270

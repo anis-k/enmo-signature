@@ -24,10 +24,10 @@
   'pdf-page-canvas':!signaturesService.renderingDoc,
   'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
 }">
-  <div class="tool-content tool-content-left">
+  <!-- <div class="tool-content tool-content-left">
     <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)" class="range">
     <i class="fas fa-pen-nib"></i>
-  </div>
+  </div> -->
   <div class="tool-content tool-content-right">
     <ng-container *ngFor="let color of penColors" let idx="index">
       <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)" class="radio"
