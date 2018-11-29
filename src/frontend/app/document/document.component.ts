@@ -179,7 +179,9 @@ export class DocumentComponent implements OnInit {
         this.canvasWrapper.nativeElement.style.width = this.signaturesService.workingAreaWidth + 'px';
         this.canvasWrapper.nativeElement.style.height = this.signaturesService.workingAreaHeight + 'px';
 
-        this.appDocumentNotePad.resizePad();
+        if (this.appDocumentNotePad) {
+            this.appDocumentNotePad.resizePad();
+        }
 
         this.signaturesService.signWidth = this.signaturesService.workingAreaWidth / 4.5;
 

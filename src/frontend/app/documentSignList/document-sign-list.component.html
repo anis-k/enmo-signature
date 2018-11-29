@@ -1,8 +1,8 @@
 <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
   <div [position]="{'x': signature.positionX*signaturesService.scale, 'y': signature.positionY*signaturesService.scale}" id="signaturesContent" style="top:0;left:0;position: absolute;border: dashed 1px grey;background: rgba(255, 255, 255, 0.6) none repeat scroll 0% 0%;"
     ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="moveSign($event,i)" [ngClass]="{
-              'pdf-page-canvas':!renderingDoc,
-              'pdf-page-canvas-loading-doc':renderingDoc
+              'pdf-page-canvas':!signaturesService.renderingDoc,
+              'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
             }">
     <button (tap)="openMenu(menuTrigger)" mat-icon-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"
       style="right: 0;position: absolute;color:#F99830;">

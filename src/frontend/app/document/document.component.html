@@ -55,8 +55,8 @@
       <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
         <div [style.width.px]="768*signaturesService.scale" class="canvas-wrapper" #canvasWrapper>
           <pdf-viewer [ngClass]="{
-            'pdf-page-canvas':!renderingDoc,
-            'pdf-page-canvas-loading-doc':renderingDoc
+            'pdf-page-canvas':!signaturesService.renderingDoc,
+            'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
           }" [src]="pdfDataArr" [render-text]="false" [zoom]="signaturesService.scale" [show-all]="false" [(page)]="pageNum" [original-size]="false" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)" (click)="addAnnotation($event)"></pdf-viewer>
           <ng-container *ngIf="currentDoc == 0">
             

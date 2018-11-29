@@ -21,8 +21,8 @@
 </div>
 <div *ngIf="signaturesService.lockNote" [style.width.px]="this.signaturesService.workingAreaWidth" [style.height.px]="this.signaturesService.workingAreaHeight"
   style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{
-  'pdf-page-canvas':!renderingDoc,
-  'pdf-page-canvas-loading-doc':renderingDoc
+  'pdf-page-canvas':!signaturesService.renderingDoc,
+  'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
 }">
   <div class="tool-content tool-content-left">
     <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)" class="range">
