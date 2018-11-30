@@ -46,12 +46,13 @@
   flex: 1;
   transition: all 0.2s;
   padding-top: 90px;
-  padding-bottom: 120px;
+  //padding-bottom: 120px;
 }
 
 .canvas-wrapper {
   width: 768px;
   position: relative;
+  padding-bottom: 120px;
 }
 
 canvas {
