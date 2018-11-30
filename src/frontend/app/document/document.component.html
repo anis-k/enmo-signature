@@ -44,11 +44,11 @@
       </article>
     </header>
     <article class="article" #article *ngIf="!freezeSidenavClose">
-      <button class="btn-previous" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
+      <button class="btn-previous" [disabled]="disableState" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-previous" (click)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-next" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
+      <button class="btn-next" [disabled]="disableState" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i></button>
       <button class="btn-next" (click)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>

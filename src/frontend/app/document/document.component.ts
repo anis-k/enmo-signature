@@ -78,6 +78,7 @@ export class DocumentComponent implements OnInit {
     actionsList: any = [];
     pdfDataArr: any;
     freezeSidenavClose = false;
+    disableState = true;
 
     @Input() mainDocument: any = {};
 
@@ -170,6 +171,7 @@ export class DocumentComponent implements OnInit {
     pdfRendered(pdf: PDFDocumentProxy) {
         this.totalPages = pdf.numPages;
         this.signaturesService.totalPage = this.totalPages;
+        this.disableState = false;
     }
 
     pageRendered(e: any) {
@@ -190,6 +192,7 @@ export class DocumentComponent implements OnInit {
     }
 
     prevPage() {
+        this.disableState = true;
         this.pageNum--;
         if (this.pageNum === 0) {
             this.pageNum = 1;
@@ -199,9 +202,15 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
+
+        // fix issue render pdf load is quick click
+        setTimeout(() => {
+            this.disableState = false;
+        }, 500);
     }
 
     nextPage() {
+        this.disableState = true;
         if (this.pageNum >= this.totalPages) {
             this.pageNum = this.totalPages;
         } else {
@@ -212,6 +221,11 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
+
+        // fix issue render pdf load is quick click
+        setTimeout(() => {
+            this.disableState = false;
+        }, 500);
     }
 
     nextDoc() {
