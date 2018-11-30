@@ -73,8 +73,6 @@ export class DocumentComponent implements OnInit {
     totalPages: number;
     draggable: boolean;
     loadingDoc = true;
-    signaturePadPosX = 0;
-    signaturePadPosY = 50;
     currentDoc = 0;
     docList: any = [];
     actionsList: any = [];

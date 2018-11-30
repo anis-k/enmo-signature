@@ -75,7 +75,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 this.loadingForm = true;
                 $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
                 setTimeout(() => {
-                    this.router.navigate(['/documents/']);
+                    this.router.navigate(['/documents']);
                 }, 700);
             }, (err: any) => {
                 if (err.status === 401) {
