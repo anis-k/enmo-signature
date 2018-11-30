@@ -27,4 +27,32 @@ export class SignaturesContentService {
     workingAreaHeight = 0;
     renderingDoc = true;
     scale = 1;
+
+    reset () {
+        this.userLogged = {};
+        this.mainDocumentId = 0;
+        this.signaturesContent = [];
+        this.notesContent = [];
+        this.signaturesList = [];
+        this.currentPage = 1;
+        this.totalPage = 1;
+        this.isTaggable = true;
+        this.signWidth = 200;
+        this.annotationMode = false;
+        this.lockNote = false;
+        this.showSign = false;
+        this.showPad = false;
+        this.showDrawer = false;
+        this.showProfile = false;
+        this.currentAction = 0;
+        this.loadingSign = true;
+        this.indexDocumentsList = 0;
+        this.documentsList = [];
+        this.documentsListCount = 0;
+        this.newSign = {};
+        this.workingAreaWidth = 0;
+        this.workingAreaHeight = 0;
+        this.renderingDoc = true;
+        this.scale = 1;
+    }
 }

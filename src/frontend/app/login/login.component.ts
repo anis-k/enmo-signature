@@ -53,7 +53,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.appVersion = environment.VERSION;
         this.appAuthor = environment.AUTHOR;
-        this.signaturesService.userLogged = {};
+        this.signaturesService.reset();
     }
 
     ngAfterViewInit(): void {
