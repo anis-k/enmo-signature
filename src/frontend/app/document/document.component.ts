@@ -330,4 +330,35 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.notesContent[this.pageNum].pop();
         }
     }
+
+    checkEmptyNote() {
+        if (!this.signaturesService.notesContent[this.pageNum]) {
+            return true;
+        } else if (this.signaturesService.notesContent[this.pageNum] === 'undefined') {
+            return true;
+        } else if (this.signaturesService.notesContent[this.pageNum].length === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    checkEmptiness() {
+        let state = true;
+        for (let pageNum = 1; pageNum <= this.signaturesService.totalPage; pageNum++) {
+            if (this.signaturesService.notesContent[pageNum]) {
+                if (this.signaturesService.notesContent[pageNum].length > 0) {
+                    state = false;
+                    break;
+                }
+            }
+            if (this.signaturesService.signaturesContent[pageNum]) {
+                if (this.signaturesService.signaturesContent[pageNum].length > 0) {
+                    state = false;
+                    break;
+                }
+            }
+        }
+        return state;
+    }
 }

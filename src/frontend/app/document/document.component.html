@@ -37,8 +37,8 @@
         <section class="header-action">
             <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon></button>
             <mat-menu #menu="matMenu">
-              <button [disabled]="this.signaturesService.signaturesContent.length == 0 && this.signaturesService.notesContent.length == 0" mat-menu-item (click)="removeTags();">Tout effacer</button>
-              <button mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
+              <button [disabled]="checkEmptiness()" mat-menu-item (click)="removeTags();">Tout effacer</button>
+              <button [disabled]="checkEmptyNote()" mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
             </mat-menu>
         </section>
       </article>
