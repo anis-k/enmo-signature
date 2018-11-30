@@ -72,8 +72,8 @@ export class SignaturesComponent implements OnInit {
     }
     this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
 
-    $('.mat-sidenav-content').animate({ scrollTop: $(document).height() }, 1000);
-    $('.mat-sidenav-content').animate({ scrollLeft: $(document).width() }, 1000);
+    $('article').animate({ scrollTop: $(document).height() }, 1000);
+    $('article').animate({ scrollLeft: $(document).width() }, 1000);
     this.bottomSheetRef.dismiss();
   }
 
