@@ -39,11 +39,14 @@ export class NotificationService {
         if (err.status === 401 && this.router.url !== '/login') {
             this.router.navigate(['/login']);
             this.error('Veuillez vous reconnecter');
-        } else if (err.status === 0 && err.statusText == 'Unknown Error') {
+        } else if (err.status === 0 && err.statusText === 'Unknown Error') {
             this.error('La connexion au serveur a échoué. Veuillez réessayer ultérieurement.');
         } else {
             if (err.error.errors !== undefined) {
                 this.error(err.error.errors);
+                if (err.status === 403) {
+                    this.router.navigate(['/documents']);
+                }
             } else if (err.error.exception !== undefined) {
                 this.error(err.error.exception[0].message);
             } else {
