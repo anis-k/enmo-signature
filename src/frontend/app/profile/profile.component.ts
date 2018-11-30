@@ -215,6 +215,8 @@ export class ProfileComponent implements OnInit {
                     this.closeProfile();
                 }
             }, (err) => {
+                this.disableState = false;
+                this.msgButton = 'Valider';
                 this.notificationService.handleErrors(err);
                 this.disableState = false;
             });
