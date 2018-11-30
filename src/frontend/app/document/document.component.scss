@@ -61,7 +61,8 @@ canvas {
 }
 
 .header {
-  position: absolute;
+  position: fixed;
+  z-index: 1;
   width: 100vw;
   height: 80px;
   display: flex;
