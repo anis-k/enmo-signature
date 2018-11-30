@@ -11,11 +11,11 @@
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="$event.stopPropagation();deleteSignature(i);">
         <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
-        <span>Supprimer la signature</span>
+        <span>Supprimer</span>
       </button>
-      <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);">
+      <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);" title="Répliquer la signature sur toutes les pages">
         <mat-icon fontSet="fas" fontIcon="fa-clone"></mat-icon>
-        <span>Cloner la signature</span>
+        <span>Répliquer</span>
       </button>
     </mat-menu>
     <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
