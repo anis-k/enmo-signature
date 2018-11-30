@@ -49,7 +49,7 @@ export class WarnModalComponent {
                 }
             }
             this.disableState = true;
-            this.msgButton = 'Envoi ...';
+            this.msgButton = 'Envoi...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);

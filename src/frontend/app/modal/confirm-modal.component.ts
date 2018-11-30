@@ -48,7 +48,7 @@ export class ConfirmModalComponent {
                 }
             }
             this.disableState = true;
-            this.msgButton = 'Envoi ...';
+            this.msgButton = 'Envoi...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     this.disableState = false;

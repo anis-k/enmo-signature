@@ -165,7 +165,7 @@ export class ProfileComponent implements OnInit {
 
     submitProfile() {
         this.disableState = true;
-        this.msgButton = 'Envoi ...';
+        this.msgButton = 'Envoi...';
         let profileToSend = {
             'firstname' : this.profileInfo.firstname,
             'lastname'  : this.profileInfo.lastname,
@@ -174,11 +174,11 @@ export class ProfileComponent implements OnInit {
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
             profileToSend.picture = '';
         } else {
-            let orientation = $('.avatarProfile').css('content');
+            const orientation = $('.avatarProfile').css('content');
             profileToSend['pictureOrientation'] = orientation.replace(/\"/g, '');
         }
 
-        this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.profileInfo)
+        this.http.put('../rest/users/' + this.signaturesService.userLogged.id, profileToSend)
             .subscribe((data: any) => {
                 this.signaturesService.userLogged.email = this.profileInfo.email;
                 this.signaturesService.userLogged.firstname = this.profileInfo.firstname;
@@ -198,6 +198,8 @@ export class ProfileComponent implements OnInit {
                         this.msgButton = 'Valider';
                         this.closeProfile();
                     }, (err) => {
+                        this.disableState = false;
+                        this.msgButton = 'Valider';
                         if (err.status === 401) {
                             this.notificationService.error('Mauvais mot de passe');
                         } else {
