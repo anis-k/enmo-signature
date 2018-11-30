@@ -9,7 +9,7 @@
     </div>
     <div [@listAnimation]="signaturesService.signaturesList.length" style="display: contents;">
       <div *ngFor="let signature of signaturesService.signaturesList;let i=index" class="list-item" style="position: relative;" (tap)="tapEvent(signature,i)">
-        <span class="remove_icon_{{i}}" style="display:none;position: absolute;top: 5px;left: 5px;"><i style="border-radius: 25px;background: white;left:0px;top:0px;color:red;font-size: 50px;" class="fa fa-times-circle fa-2x" (tap)="removeSignature(signature,i);"></i></span>
+        <span class="remove_icon_{{i}}" style="display:none;position: absolute;top: 5px;left: 5px;" (tap)="removeSignature(signature,i);"><i style="border-radius: 25px;background: white;left:0px;top:0px;color:red;font-size: 50px;" class="fa fa-times-circle fa-2x"></i></span>
         <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
           style="width: 190px;">
       </div>
