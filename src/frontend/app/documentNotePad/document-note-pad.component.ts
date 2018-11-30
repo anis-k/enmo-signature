@@ -41,12 +41,6 @@ export class DocumentNotePadComponent implements OnInit {
         this.signaturePad.set('penColor', entry.id);
     }
 
-    undoTag() {
-        if (this.signaturesService.notesContent[this.pageNum]) {
-            this.signaturesService.notesContent[this.pageNum].pop();
-        }
-    }
-
     resizePad() {
         this.annotationPadOptions.canvasWidth = this.signaturesService.workingAreaWidth;
         this.annotationPadOptions.canvasHeight = this.signaturesService.workingAreaHeight;

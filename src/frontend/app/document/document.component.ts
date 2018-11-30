@@ -324,4 +324,10 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.currentAction = action.id;
         this[action.event]();
     }
+
+    undoTag() {
+        if (this.signaturesService.notesContent[this.pageNum]) {
+            this.signaturesService.notesContent[this.pageNum].pop();
+        }
+    }
 }
