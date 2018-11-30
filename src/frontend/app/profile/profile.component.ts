@@ -166,7 +166,7 @@ export class ProfileComponent implements OnInit {
     submitProfile() {
         this.disableState = true;
         this.msgButton = 'Envoi ...';
-        const profileToSend = {
+        let profileToSend = {
             'firstname' : this.profileInfo.firstname,
             'lastname'  : this.profileInfo.lastname,
             'picture'   : this.profileInfo.picture
@@ -174,7 +174,7 @@ export class ProfileComponent implements OnInit {
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
             profileToSend.picture = '';
         } else {
-            const orientation = $('.avatarProfile').css('content');
+            let orientation = $('.avatarProfile').css('content');
             profileToSend['pictureOrientation'] = orientation.replace(/\"/g, '');
         }
 
