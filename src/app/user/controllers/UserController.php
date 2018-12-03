@@ -211,6 +211,7 @@ class UserController
             'select'    => ['id', 'path', 'filename', 'fingerprint'],
             'where'     => ['user_id = ?'],
             'data'      => [$args['id']],
+            'orderBy'   => ['id'],
             'offset'    => (int)$data['offset'],
             'limit'     => (int)$data['limit']
         ]);

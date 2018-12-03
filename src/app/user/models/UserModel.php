@@ -156,7 +156,7 @@ class UserModel
 
     public static function getSignatures(array $aArgs)
     {
-        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);
         ValidatorModel::intVal($aArgs, ['limit', 'offset']);
 
         $signatures = DatabaseModel::select([
@@ -164,6 +164,7 @@ class UserModel
             'table'     => ['signatures'],
             'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
             'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
+            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
             'offset'    => empty($aArgs['offset']) ? 0 : $aArgs['offset'],
             'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit']
         ]);
