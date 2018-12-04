@@ -2,11 +2,9 @@
   <span style="z-index:1;position: fixed;left:0;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
     <button class="btn blue" (tap)="cancelAnnotation(i);"><i class="fas fa-arrow-left fa-2x"></i>Quitter l'annotation</button>
   </span>
-  <span *ngIf="!lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-    <button class="btn red" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Verrouiller la zone de travail</button>
-  </span>
-  <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-    <button class="btn green" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Déverrouiller la zone de travail</button>
+  <span style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
+    <button class="btn green" (click)="$event.stopPropagation();validateAnnotation();"><i class="fas fa-check-circle fa-2x"></i>Valider
+      l'annotation</button>
   </span>
   <span *ngIf="signaturesService.scale==1" style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;">
     <button class="btn blue" (tap)="zoomPlus();"><i class="fas fa-plus fa-2x"></i>Zoomer</button>
@@ -15,8 +13,8 @@
     <button class="btn blue" (tap)="zoomMinus();"><i class="fas fa-plus fa-2x"></i>Dézoomer</button>
   </span>
   <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-    <button class="btn green" (click)="$event.stopPropagation();validateAnnotation();"><i class="fas fa-check-circle fa-2x"></i>Valider
-      l'annotation</button>
+    <button *ngIf="!lockSignaturePad" class="btn red" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Verrouiller la zone de travail</button>
+    <button *ngIf="lockSignaturePad" class="btn green" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Déverrouiller la zone de travail</button>
   </span>
 </div>
 <div *ngIf="signaturesService.lockNote" [style.width.px]="this.signaturesService.workingAreaWidth" [style.height.px]="this.signaturesService.workingAreaHeight"
