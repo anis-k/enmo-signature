@@ -1,9 +1,17 @@
-<h1 mat-dialog-title class="default" *ngIf="signaturesService.signaturesContent.length > 0 || signaturesService.notesContent.length > 0"><i class="fa fa-question-circle fa-2x"></i><br/>{{data.msg}}</h1>
-<h1 mat-dialog-title style="color: #f5a623;font-weight: bold;" *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0"><i class="fa fa-exclamation-triangle fa-2x"></i><br/>Attention !</h1>
-<div mat-dialog-content>
-    <p *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0">Vous êtes sur le point de valider ce document sans signature ou annotation!</p>
-</div>
-<div mat-dialog-actions>
-  <button class="btn green" mat-button (click)="confirmDoc();" [disabled]="disableState"><i class="fas fa-check-circle fa-2x"></i> {{ msgButton }}</button>
-  <button class="btn red" mat-button cdkFocusInitial (click)="this.dialogRef.close();" [disabled]="disableState"><i class="fas fa-times-circle fa-2x"></i> Annuler</button>
+<div class="modalContent">
+  <h1 mat-dialog-title class="default" *ngIf="signaturesService.signaturesContent.length > 0 || signaturesService.notesContent.length > 0"><i
+      class="fa fa-question-circle fa-2x"></i><br />{{data.msg}}</h1>
+  <h1 mat-dialog-title style="color: #f5a623;font-weight: bold;" *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0"><i
+      class="fa fa-exclamation-triangle fa-2x"></i><br />Attention !</h1>
+  <div mat-dialog-content>
+    <p *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0">Vous êtes
+      sur le point de valider ce document sans signature ou annotation!</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-icon-button class="close" (click)="this.dialogRef.close();">
+      <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
+    </button>
+    <button class="actions btn green" mat-button (click)="confirmDoc();" [disabled]="disableState"><i class="fas fa-check-circle fa-2x"></i>
+      {{ msgButton }}</button>
+  </div>
 </div>
