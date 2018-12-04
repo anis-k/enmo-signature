@@ -22,7 +22,7 @@
                 <input name="nom" matInput placeholder="Nom" [(ngModel)]="profileInfo.lastname" required>
             </mat-form-field>
             <mat-accordion>
-                <mat-expansion-panel (closed)="showPassword=false" (opened)="changePasswd()">
+                <mat-expansion-panel (closed)="showPassword=false" (opened)="changePasswd()" #passwordContent>
                     <mat-expansion-panel-header>
                         <mat-panel-title>
                             Modifier mon mot de passe

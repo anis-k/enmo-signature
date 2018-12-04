@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatSidenav } from '@angular/material';
+import { MatIconRegistry, MatSidenav, MatExpansionPanel } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
@@ -17,6 +17,8 @@ export class ProfileComponent implements OnInit {
 
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
+
+    @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
 
     profileInfo: any = {};
     hideCurrentPassword: Boolean = true;
@@ -70,6 +72,7 @@ export class ProfileComponent implements OnInit {
         $('.avatarProfile').css({'transform': 'rotate(0deg)'});
         $('.avatarProfile').css({'content': '' });
         this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
+        this.passwordContent.close();
         this.snavLeftComponent.open();
         this.snavRightComponent.close();
     }
@@ -223,6 +226,7 @@ export class ProfileComponent implements OnInit {
     }
 
     handleFileInput(files: FileList) {
+        this.passwordContent.close();
         const fileToUpload = files.item(0);
         $('.avatarProfile').css({'content': '' });
 
