@@ -3,10 +3,10 @@
     <button class="btn blue" (tap)="cancelAnnotation(i);"><i class="fas fa-arrow-left fa-2x"></i>Quitter l'annotation</button>
   </span>
   <span *ngIf="!lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-    <button class="btn red" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Vérouiller la zone de travail</button>
+    <button class="btn red" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Verrouiller la zone de travail</button>
   </span>
   <span *ngIf="lockSignaturePad" style="z-index:1;position: fixed;top: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-    <button class="btn green" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Dévérouiller la zone de travail</button>
+    <button class="btn green" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Déverrouiller la zone de travail</button>
   </span>
   <span *ngIf="signaturesService.scale==1" style="z-index:1;position: fixed;top: 10px;right: 0;font-size: 25px;">
     <button class="btn blue" (tap)="zoomPlus();"><i class="fas fa-plus fa-2x"></i>Zoomer</button>
