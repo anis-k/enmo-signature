@@ -11,16 +11,10 @@
       </div>
     </header>
     <header class="sidebar-header">
-      <section class="sidebar-header-icon notification">
-        <i class="fa fa-folder-open fa-2x"></i>
-      </section>
-      <section>
-        <div class="sidebar-header-title">{{signaturesService.documentsListCount}} documents à traiter</div>
-      </section>
     </header>
     <section class="sidebar-btn">
-      <button class="btn btn-xs blue filter" [ngClass]="[mode == 'NOTE' ? 'active' : '']" (click)="filter('NOTE')">Annotation</button>
-      <button class="btn btn-xs blue filter" [ngClass]="[mode == 'SIGN' ? 'active' : '']" (click)="filter('SIGN')">Paraphe</button>
+      <button class="btn btn-xs blue filter" [ngClass]="[mode == 'NOTE' ? 'active' : '']" (click)="filter('NOTE')">Annotation {{signaturesService.documentsListCount["NOTE"]}}</button>
+      <button class="btn btn-xs blue filter" [ngClass]="[mode == 'SIGN' ? 'active' : '']" (click)="filter('SIGN')">Paraphe {{signaturesService.documentsListCount["SIGN"]}}</button>
     </section>
   </div>
   <ul #listContent class="nav" detect-scroll (onScroll)="handleScroll($event)" [bottomOffset]="1" [topOffset]="1">

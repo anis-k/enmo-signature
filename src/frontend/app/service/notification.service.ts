@@ -2,7 +2,6 @@ import { MatSnackBar } from '@angular/material';
 import { Injectable, Component, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material';
 import { Router } from '@angular/router';
-import { empty } from 'rxjs';
 
 @Component({
     selector: 'app-custom-snackbar',
@@ -14,8 +13,10 @@ export class CustomSnackbarComponent {
 
 @Injectable()
 export class NotificationService {
+
     constructor(private router: Router, public snackBar: MatSnackBar) {
     }
+
     success(message: string) {
         this.snackBar.openFromComponent(CustomSnackbarComponent, {
             duration: 3000,

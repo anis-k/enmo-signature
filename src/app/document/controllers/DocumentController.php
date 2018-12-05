@@ -46,26 +46,34 @@ class DocumentController
 
         $where = ['processing_user = ?', 'status = ?'];
         $dataGet = [$GLOBALS['id'], $status['id']];
+        $count = [];
         if (!empty($data['mode'])) {
             $where[] = 'mode = ?';
             $dataGet[] = $data['mode'];
+            $secondMode = ($data['mode'] == 'SIGN' ? 'NOTE' : 'SIGN');
+            $documents = DocumentModel::get([
+                'select'    => ['count(1) OVER()'],
+                'where'     => $where,
+                'data'      => [$GLOBALS['id'], $status['id'], $secondMode]
+            ]);
+            $count[$secondMode] = $documents[0]['count'];
         }
         $documents = DocumentModel::get([
-            'select'    => ['id', 'reference', 'subject', 'status', 'count(1) OVER()'],
+            'select'    => ['id', 'reference', 'subject', 'status', 'mode', 'count(1) OVER()'],
             'where'     => $where,
             'data'      => $dataGet,
             'limit'     => $data['limit'],
             'offset'    => $data['offset'],
             'orderBy'   => ['creation_date desc']
         ]);
-        $fullCount = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+        $count[$data['mode']] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
             $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
             $documents[$key]['statusDisplay'] = $status['label'];
             unset($documents[$key]['count']);
         }
 
-        return $response->withJson(['documents' => $documents, 'fullCount' => $fullCount]);
+        return $response->withJson(['documents' => $documents, 'count' => $count]);
     }
 
     public function getById(Request $request, Response $response, array $args)

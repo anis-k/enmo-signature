@@ -122,6 +122,26 @@ class AuthenticationModel
         return true;
     }
 
+    public static function revokeCookie(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['userId']);
+        ValidatorModel::intVal($args, ['userId']);
+
+        DatabaseModel::update([
+            'table' => 'users',
+            'set'   => [
+                'cookie_key'    => null,
+                'cookie_date'   => null,
+            ],
+            'where' => ['id = ?'],
+            'data'  => [$args['userId']]
+        ]);
+
+        AuthenticationModel::setCookieAuth(['id' => $args['userId']]);
+
+        return true;
+    }
+
     public static function deleteCookieAuth()
     {
         $previousCookie = AuthenticationModel::getCookieAuth();

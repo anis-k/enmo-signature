@@ -31,14 +31,15 @@ export class SidebarComponent implements OnInit {
         this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
             .subscribe((data: any) => {
                 this.signaturesService.documentsList = data.documents;
-                this.signaturesService.documentsListCount = data["fullCount"];
+                this.signaturesService.documentsListCount["SIGN"] = data["count"]["SIGN"];
+                this.signaturesService.documentsListCount["NOTE"] = data["count"]["NOTE"];
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
             });
     }
 
     handleScroll(event: ScrollEvent) {
-        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount) {
+        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount[this.mode]) {
 
             this.loadingList = true;
             this.listContent.nativeElement.style.overflowY = 'hidden';
@@ -83,7 +84,8 @@ export class SidebarComponent implements OnInit {
         this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
             .subscribe((data: any) => {
                 this.signaturesService.documentsList = data.documents;
-                this.signaturesService.documentsListCount = data["fullCount"];
+                this.signaturesService.documentsListCount["SIGN"] = data["count"]["SIGN"];
+                this.signaturesService.documentsListCount["NOTE"] = data["count"]["NOTE"];
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
             });

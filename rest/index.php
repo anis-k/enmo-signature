@@ -35,6 +35,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
             $GLOBALS['id'] = $id;
             $response = $next($request, $response);
         } else {
+            \SrcCore\models\AuthenticationModel::deleteCookieAuth();
             $response = $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
     }

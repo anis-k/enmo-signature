@@ -51,13 +51,14 @@ export class ConfirmModalComponent {
             this.msgButton = 'Envoi...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
+                    var mode = this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]["mode"];
+                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                    if (this.signaturesService.documentsListCount[mode] > 0) {
+                        this.signaturesService.documentsListCount[mode]--;
+                    }
                     this.disableState = false;
                     this.msgButton = 'Valider';
                     this.dialogRef.close('sucess');
-                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                    if (this.signaturesService.documentsListCount > 0) {
-                        this.signaturesService.documentsListCount--;
-                    }
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                     this.disableState = false;

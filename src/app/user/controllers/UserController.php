@@ -183,6 +183,8 @@ class UserController
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $data['newPassword']]);
 
+        AuthenticationModel::revokeCookie(['userId' => $args['id']]);
+
         HistoryController::add([
             'tableName' => 'users',
             'recordId'  => $args['id'],
