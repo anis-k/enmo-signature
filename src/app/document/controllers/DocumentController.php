@@ -56,8 +56,9 @@ class DocumentController
                 'where'     => $where,
                 'data'      => [$GLOBALS['id'], $status['id'], $secondMode]
             ]);
-            $count[$secondMode] = $documents[0]['count'];
+            $count[$secondMode] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         }
+
         $documents = DocumentModel::get([
             'select'    => ['id', 'reference', 'subject', 'status', 'mode', 'count(1) OVER()'],
             'where'     => $where,
@@ -103,17 +104,16 @@ class DocumentController
             return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
         }
 
-        //TODO Commenté pour tests
-//        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
-//        if ($adr[0]['fingerprint'] != $fingerprint) {
-//            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
-//        }
+        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+        if ($adr[0]['fingerprint'] != $fingerprint) {
+            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
+        }
 
         $date = new \DateTime($document['limit_date']);
         $document['limit_date'] = $date->format('d-m-Y H:i');
         $document['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
         $document['statusDisplay'] = StatusModel::getById(['select' => ['label'], 'id' => $document['status']])['label'];
-        $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?'], 'data' => [$document['mode']], 'orderBy' => ['id']]);
+        $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?', 'status_id = ?'], 'data' => [$document['mode'], $document['status']], 'orderBy' => ['id']]);
         $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
         $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
 
@@ -212,10 +212,17 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $action = ActionModel::getById(['select' => ['next_status_id'], 'id' => $args['actionId']]);
-        if (empty($action)) {
+        $document = DocumentModel::getById(['select' => ['mode', 'status'], 'id' => $args['id']]);
+        $action = ActionModel::get([
+            'select'    => ['next_status_id'],
+            'where'     => ['mode = ?', 'status_id = ?', 'id = ?'],
+            'data'      => [$document['mode'], $document['status'], $args['actionId']]
+        ]);
+
+        if (empty($action[0])) {
             return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
+        $action = $action[0];
 
         $data = $request->getParams();
         if (!empty($data['signatures'])) {

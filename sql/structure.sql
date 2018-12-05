@@ -63,6 +63,7 @@ CREATE TABLE actions
   logo character varying(64),
   event character varying(128) NOT NULL,
   mode CHARACTER VARYING(16) NOT NULL,
+  status_id INTEGER NOT NULL,
   next_status_id INTEGER,
   CONSTRAINT actions_pkey PRIMARY KEY (id)
 )

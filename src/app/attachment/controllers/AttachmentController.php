@@ -54,11 +54,10 @@ class AttachmentController
             return $response->withStatus(404)->withJson(['errors' => 'Attachment not found on docserver']);
         }
 
-        // TODO Commenté pour tests
-//        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
-//        if ($adr[0]['fingerprint'] != $fingerprint) {
-//            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
-//        }
+        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+        if ($adr[0]['fingerprint'] != $fingerprint) {
+            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
+        }
 
         $attachment['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
 
