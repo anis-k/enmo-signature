@@ -1,4 +1,4 @@
-<div *ngIf="signaturesService.lockNote">
+<div *ngIf="signaturesService.annotationMode">
   <span style="z-index:1;position: fixed;left:0;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
     <button class="btn blue" (tap)="cancelAnnotation(i);"><i class="fas fa-arrow-left fa-2x"></i>Quitter l'annotation</button>
   </span>
@@ -17,7 +17,7 @@
     <button *ngIf="lockSignaturePad" class="btn green" (tap)="togglePad();"><i class="fas fa-lock fa-2x"></i>Déverrouiller la zone de travail</button>
   </span>
 </div>
-<div *ngIf="signaturesService.lockNote" [style.width.px]="this.signaturesService.workingAreaWidth" [style.height.px]="this.signaturesService.workingAreaHeight"
+<div *ngIf="signaturesService.annotationMode" [style.width.px]="this.signaturesService.workingAreaWidth" [style.height.px]="this.signaturesService.workingAreaHeight"
   style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{
   'pdf-page-canvas':!signaturesService.renderingDoc,
   'pdf-page-canvas-loading-doc':signaturesService.renderingDoc

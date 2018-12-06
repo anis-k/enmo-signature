@@ -60,7 +60,6 @@ export class DocumentNotePadComponent implements OnInit {
             this.signaturesService.annotationMode = false;
             this.signaturePad.clear();
             this.signaturesService.scale = 1;
-            this.signaturesService.lockNote = false;
         }, 200);
     }
 
@@ -106,7 +105,6 @@ export class DocumentNotePadComponent implements OnInit {
         }
         this.signaturesService.scale = 1;
         this.signaturesService.annotationMode = false;
-        this.signaturesService.lockNote = false;
         this.notificationService.success('Annotation ajoutée');
     }
 

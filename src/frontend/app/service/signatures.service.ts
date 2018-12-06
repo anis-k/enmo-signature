@@ -13,7 +13,6 @@ export class SignaturesContentService {
     isTaggable          : boolean   = true;
     signWidth           : number    = 200;
     annotationMode      : boolean   = false;
-    lockNote            : boolean   = false;
     showSign            : boolean   = false;
     showPad             : boolean   = false;
     showDrawer          : boolean   = false;
@@ -40,7 +39,6 @@ export class SignaturesContentService {
         this.isTaggable         = true;
         this.signWidth          = 200;
         this.annotationMode     = false;
-        this.lockNote           = false;
         this.showSign           = false;
         this.showPad            = false;
         this.showDrawer         = false;

@@ -249,9 +249,8 @@ export class DocumentComponent implements OnInit {
     }
 
     addAnnotation() {
-        if (!this.signaturesService.lockNote && this.currentDoc === 0) {
+        if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
             this.signaturesService.annotationMode = true;
-            this.signaturesService.lockNote = true;
         }
     }
 
@@ -270,7 +269,6 @@ export class DocumentComponent implements OnInit {
                 this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
             } else if (result === 'annotation') {
                 this.signaturesService.annotationMode = true;
-                this.signaturesService.lockNote = true;
             }
         });
     }
