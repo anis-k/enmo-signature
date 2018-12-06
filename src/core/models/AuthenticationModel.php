@@ -117,7 +117,7 @@ class AuthenticationModel
             'lang'      => empty($previousCookie['lang']) ? CoreConfigModel::getLanguage() : $previousCookie['lang'],
             'cookieKey' => $cookieKey
         ]);
-        setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, false);
+        @setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, false);
 
         return true;
     }
