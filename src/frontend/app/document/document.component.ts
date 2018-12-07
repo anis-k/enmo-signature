@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatDialog, MatBottomSheet, MatBottomSheetConfig, MatSidenav } from '@angular/material';
@@ -66,19 +66,20 @@ import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-vali
     ],
 })
 export class DocumentComponent implements OnInit {
-    enterApp = true;
-    loadingPage = true;
-    pageNum = 1;
-    signaturesContent: any = [];
-    totalPages: number;
-    draggable: boolean;
-    loadingDoc = true;
-    currentDoc = 0;
-    docList: any = [];
-    actionsList: any = [];
-    pdfDataArr: any;
-    freezeSidenavClose = false;
-    disableState = true;
+
+    enterApp            : boolean   = true;
+    loadingPage         : boolean   = true;
+    pageNum             : number    = 1;
+    signaturesContent   : any       = [];
+    totalPages          : number;
+    draggable           : boolean;
+    loadingDoc          : boolean   = true;
+    currentDoc          : number    = 0;
+    docList             : any       = [];
+    actionsList         : any       = [];
+    pdfDataArr          : any;
+    freezeSidenavClose  : boolean   = false;
+    disableState        : boolean   = true;
 
     @Input() mainDocument: any = {};
 
@@ -86,7 +87,6 @@ export class DocumentComponent implements OnInit {
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('canvas') canvas: ElementRef;
     @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
-
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
 
 
@@ -113,9 +113,9 @@ export class DocumentComponent implements OnInit {
                 this.loadingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
-                        this.initDoc();
                         this.mainDocument = data.document;
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
+                        this.initDoc();
                         this.actionsList = data.document.actionsAllowed;
                         if (this.signaturesService.signaturesList.length === 0) {
                             this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
@@ -151,6 +151,15 @@ export class DocumentComponent implements OnInit {
         this.docList = [];
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
+
+        let notesContent = localStorage.getItem(this.mainDocument.id.toString());
+        if (notesContent) {
+            let storageContent = JSON.parse(notesContent);
+            console.log(storageContent['note']);
+            this.signaturesService.notesContent = storageContent['note'];
+            this.signaturesService.signaturesContent = storageContent['sign'];
+        }
+
         this.signaturesService.currentAction = 0;
         this.signaturesService.currentPage = 1;
         this.pageNum = 1;
@@ -254,7 +263,7 @@ export class DocumentComponent implements OnInit {
         }
     }
 
-    openDialog(): void {
+    refuseDocument(): void {
         const dialogRef = this.dialog.open(WarnModalComponent, {
             width: '350px',
             data: {}
@@ -267,13 +276,14 @@ export class DocumentComponent implements OnInit {
                     direction: 'ltr'
                 };
                 this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
+                localStorage.removeItem(this.mainDocument.id.toString());
             } else if (result === 'annotation') {
                 this.signaturesService.annotationMode = true;
             }
         });
     }
 
-    confirmDialog(mode: any): void {
+    validateDocument(mode: any): void {
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
             data: { msg: 'Êtes-vous sûr  ?' }
@@ -286,6 +296,7 @@ export class DocumentComponent implements OnInit {
                     direction: 'ltr'
                 };
                 this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                localStorage.removeItem(this.mainDocument.id.toString());
             }
         });
     }
@@ -316,6 +327,7 @@ export class DocumentComponent implements OnInit {
             if (result) {
                 this.signaturesService.signaturesContent = [];
                 this.signaturesService.notesContent = [];
+                localStorage.removeItem(this.mainDocument.id.toString());
                 this.notificationService.success('Annotations / signatures supprimées du document');
             }
         });
@@ -340,6 +352,7 @@ export class DocumentComponent implements OnInit {
     undoTag() {
         if (this.signaturesService.notesContent[this.pageNum]) {
             this.signaturesService.notesContent[this.pageNum].pop();
+            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
         }
     }
 

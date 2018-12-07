@@ -71,6 +71,7 @@ export class SignaturesComponent implements OnInit {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
         }
         this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
 
         $('article').animate({ scrollTop: $(document).height() }, 1000);
         $('article').animate({ scrollLeft: $(document).width() }, 1000);

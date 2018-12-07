@@ -13,9 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class DocumentSignListComponent implements OnInit {
 
-
     @Input('canvas') canvas: ElementRef;
-
     @ViewChild('menuTrigger') menuSign: MatMenuTrigger;
 
     constructor(private sanitization: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
@@ -25,11 +23,11 @@ export class DocumentSignListComponent implements OnInit {
     moveSign(event: any, i: number) {
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = event.x;
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = event.y;
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
     }
 
     cloneSign(i: number) {
-
-        const r = confirm('Voulez-vous apposer la signature sur les autres pages ?');
+        let r = confirm('Voulez-vous apposer la signature sur les autres pages ?');
 
         if (r) {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
@@ -42,7 +40,8 @@ export class DocumentSignListComponent implements OnInit {
                 if (index !== this.signaturesService.currentPage) {
                     this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i])));
                 }
-              }
+            }
+            localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
         }
         this.menuSign.closeMenu();
     }
@@ -73,6 +72,7 @@ export class DocumentSignListComponent implements OnInit {
         } else {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
         }
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
     }
 
     // USE TO PREVENT ISSUE IN MOBILE

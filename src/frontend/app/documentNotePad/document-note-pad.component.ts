@@ -12,9 +12,9 @@ import { SignaturePad } from 'angular2-signaturepad/signature-pad';
 })
 export class DocumentNotePadComponent implements OnInit {
 
-    lockSignaturePad = false;
-    penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000' }];
-    annotationPadOptions = {
+    lockSignaturePad        : boolean   = false;
+    penColors               : any[]     = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000' }];
+    annotationPadOptions    : any       = {
         throttle: 0,
         minWidth: 1,
         maxWidth: 1,
@@ -90,15 +90,14 @@ export class DocumentNotePadComponent implements OnInit {
         if (!this.signaturesService.notesContent[this.signaturesService.currentPage]) {
             this.signaturesService.notesContent[this.signaturesService.currentPage] = [];
         }
-        this.signaturesService.notesContent[this.signaturesService.currentPage].push(
-            {
-                'fullPath': this.signaturePad.toDataURL('image/svg+xml'),
-                'positionX': 0,
-                'positionY': 0,
-                'height': this.annotationPadOptions.canvasHeight,
-                'width': 768,
-            }
-        );
+        this.signaturesService.notesContent[this.signaturesService.currentPage].push({
+            'fullPath': this.signaturePad.toDataURL('image/svg+xml'),
+            'positionX': 0,
+            'positionY': 0,
+            'height': this.annotationPadOptions.canvasHeight,
+            'width': 768,
+        });
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
         this.signaturePad.clear();
         if (this.signaturesService.scale > 1) {
             this.signaturesService.renderingDoc = true;
@@ -109,7 +108,8 @@ export class DocumentNotePadComponent implements OnInit {
     }
 
     undo() {
-        const data = this.signaturePad.toData();
+        let data = this.signaturePad.toData();
+
         if (data) {
             data.pop(); // remove the last dot or line
             this.signaturePad.fromData(data);
