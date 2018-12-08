@@ -78,7 +78,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
   enregistrerSignature() {
     this.disableState = true;
     this.haveSigned = true;
-    const newEncodedSign = this.signaturePad.toDataURL('image/npg').replace('data:image/png;base64,', '');
+    const newEncodedSign = this.signaturePad.toDataURL('image/png').replace('data:image/png;base64,', '');
     localStorage.setItem('signature', JSON.stringify(newEncodedSign));
 
     // Save signature in BDD

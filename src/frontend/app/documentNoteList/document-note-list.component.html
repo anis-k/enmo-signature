@@ -3,6 +3,6 @@
       'pdf-page-canvas':!signaturesService.renderingDoc,
       'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
     }">
-      <img [style.width.px]="note.width*signaturesService.scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)" (click)="triggerAddnnotation($event)">
+      <img [style.width.px]="signaturesService.workingAreaWidth*signaturesService.scale" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
     </div>
   </ng-container>

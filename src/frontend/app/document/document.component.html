@@ -43,27 +43,24 @@
         </section>
       </article>
     </header>
-    <article class="article" #article *ngIf="!freezeSidenavClose">
-      <button class="btn-previous" [disabled]="disableState" (click)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
+    <article class="article" style="position: fixed;" #article *ngIf="!freezeSidenavClose" [style.left.px]="this.signaturesService.x" [style.top.px]="this.signaturesService.y" (panstart)="onPanStart($event)" (panmove)="onPan($event)">
+      <button class="btn-previous" [disabled]="disableState" (tap)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-previous" (click)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
+      <button class="btn-previous" (tap)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-next" [disabled]="disableState" (click)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
+      <button class="btn-next" [disabled]="disableState" (tap)="nextPage()" *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i></button>
-      <button class="btn-next" (click)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
+      <button class="btn-next" (tap)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
-      <div [ngClass]="{'overlay': (annotation$ | async)}"></div>
-        <div [style.width.px]="768*signaturesService.scale" class="canvas-wrapper" #canvasWrapper>
-          <pdf-viewer [ngClass]="{
-            'pdf-page-canvas':!signaturesService.renderingDoc,
-            'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
-          }" [src]="pdfDataArr" [render-text]="false" [zoom]="signaturesService.scale" [show-all]="false" [(page)]="pageNum" [original-size]="false" style="display: block;" (after-load-complete)="pdfRendered($event)" (page-rendered)="pageRendered($event)" (click)="addAnnotation($event)"></pdf-viewer>
+        <div class="canvas-wrapper" #canvasWrapper>
+          <simple-pdf-viewer #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()" (onError)="pdfError($event)"></simple-pdf-viewer>
           <ng-container *ngIf="currentDoc == 0">
-            
-            <app-document-note-list (triggerEvent)="addAnnotation($event)"></app-document-note-list>
+
+            <app-document-note-list></app-document-note-list>
+            <div [style.width.px]="signaturesService.workingAreaWidth*signaturesService.scale" (tap)="addAnnotation($event)" [style.height.px]="signaturesService.workingAreaHeight*signaturesService.scale" style="position:absolute;left:0;top:0;"></div>
             <app-document-sign-list [canvas]="canvasWrapper"></app-document-sign-list>
             
-            <app-document-note-pad [pageNum]="pageNum" #appDocumentNotePad></app-document-note-pad>
+            <app-document-note-pad (triggerEvent)="zoomMinus()" #appDocumentNotePad></app-document-note-pad>
 
           </ng-container>
         </div>

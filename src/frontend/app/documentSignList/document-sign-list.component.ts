@@ -20,14 +20,18 @@ export class DocumentSignListComponent implements OnInit {
 
     ngOnInit(): void { }
 
+    onDragBegin(event: any) {
+        this.signaturesService.documentFreeze = true;
+    }
     moveSign(event: any, i: number) {
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = event.x;
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = event.y;
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+        this.signaturesService.documentFreeze = false;
     }
 
     cloneSign(i: number) {
-        let r = confirm('Voulez-vous apposer la signature sur les autres pages ?');
+        const r = confirm('Voulez-vous apposer la signature sur les autres pages ?');
 
         if (r) {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
@@ -41,7 +45,7 @@ export class DocumentSignListComponent implements OnInit {
                     this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i])));
                 }
             }
-            localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
+            localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         }
         this.menuSign.closeMenu();
     }
@@ -72,7 +76,7 @@ export class DocumentSignListComponent implements OnInit {
         } else {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
         }
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
     }
 
     // USE TO PREVENT ISSUE IN MOBILE

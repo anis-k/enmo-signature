@@ -42,15 +42,16 @@
 .article {
   display: flex;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
   flex: 1;
-  transition: all 0.2s;
-  padding-top: 90px;
+  //transition: all 0.2s;
+  top: 0;
+  left: 0;
+  //padding-top: 90px;
   //padding-bottom: 120px;
 }
 
 .canvas-wrapper {
-  width: 768px;
   position: relative;
   padding-bottom: 120px;
 }

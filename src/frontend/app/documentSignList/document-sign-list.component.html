@@ -1,6 +1,6 @@
 <ng-container *ngFor="let signature of this.signaturesService.signaturesContent[this.signaturesService.currentPage];let i = index;">
   <div [position]="{'x': signature.positionX*signaturesService.scale, 'y': signature.positionY*signaturesService.scale}" id="signaturesContent" style="top:0;left:0;position: absolute;border: dashed 1px grey;background: rgba(255, 255, 255, 0.6) none repeat scroll 0% 0%;"
-    ngDraggable preventDefaultEvent="true" [bounds]="canvas" inBounds="true" (endOffset)="moveSign($event,i)" [ngClass]="{
+    ngDraggable preventDefaultEvent="true" [bounds]="page" inBounds="true" (started)="onDragBegin($event)" (endOffset)="moveSign($event,i)" [ngClass]="{
               'pdf-page-canvas':!signaturesService.renderingDoc,
               'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
             }">
@@ -19,6 +19,6 @@
       </button>
     </mat-menu>
     <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
-      [style.width.px]="this.signaturesService.signWidth">
+      [style.width.px]="this.signaturesService.signWidth*signaturesService.scale">
   </div>
 </ng-container>

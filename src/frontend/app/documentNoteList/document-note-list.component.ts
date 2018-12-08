@@ -10,15 +10,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class DocumentNoteListComponent implements OnInit {
 
 
-    @Input() canvas: ElementRef;
-    @Input() scale: number;
-    @Output() triggerEvent = new EventEmitter<string>();
-
     constructor(private sanitization: DomSanitizer, public signaturesService: SignaturesContentService) { }
 
     ngOnInit(): void { }
 
-    triggerAddnnotation (event: any) {
-        this.triggerEvent.emit(event);
-    }
 }

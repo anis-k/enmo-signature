@@ -36,11 +36,11 @@ export class ConfirmModalComponent {
                     this.signaturesService.notesContent[index].forEach((note: any) => {
                         signatures.push(
                             {
-                                'encodedImage'  : note.fullPath,
+                                'encodedImage'  : note.fullPath.replace('data:image/png;base64,', ''),
                                 'width'         : note.width,
                                 'positionX'     : note.positionX,
                                 'positionY'     : note.positionY,
-                                'type'          : 'SVG',
+                                'type'          : 'PNG',
                                 'page'          : index,
                             }
                         );
@@ -51,7 +51,7 @@ export class ConfirmModalComponent {
             this.msgButton = 'Envoi...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
-                    var mode = this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]["mode"];
+                    const mode = this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]['mode'];
                     this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                     if (this.signaturesService.documentsListCount[mode] > 0) {
                         this.signaturesService.documentsListCount[mode]--;

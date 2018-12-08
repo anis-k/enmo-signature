@@ -5,10 +5,20 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
+
+
+export class CustomHammerConfig extends HammerGestureConfig  {
+  overrides = <any>{
+      'pinch': { enable: false },
+      'rotate': { enable: false }
+  };
+}
+
+/*import { PdfViewerModule } from 'ng2-pdf-viewer';*/
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { CookieService } from 'ngx-cookie-service';
+import { SimplePdfViewerModule } from 'simple-pdf-viewer';
 
 
 import { AppMaterialModule } from './app-material.module';
@@ -64,9 +74,10 @@ import { SignaturesContentService } from './service/signatures.service';
     HttpClientModule,
     RouterModule,
     SignaturePadModule,
-    PdfViewerModule,
+    /*PdfViewerModule,*/
     ScrollEventModule,
     AngularDraggableModule,
+    SimplePdfViewerModule,
     AppMaterialModule,
     RouterModule.forRoot([
       { path: 'documents/:id', component: DocumentComponent},
@@ -87,7 +98,7 @@ import { SignaturesContentService } from './service/signatures.service';
     NotificationService,
     {
     provide: HAMMER_GESTURE_CONFIG,
-    useClass: HammerGestureConfig
+    useClass: CustomHammerConfig
     },
     CookieService],
     exports: [
