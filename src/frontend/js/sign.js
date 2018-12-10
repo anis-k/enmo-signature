@@ -156,29 +156,50 @@ jQuery(document).ready(function (e) {
         }
 
         var undo = function () {
-            points.pop();
-            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-            var p1 = points[0];
-            var p2 = points[1];
-
-            context.beginPath();
-            context.moveTo(p1.x, p1.y);
-
-            for (var i = 1; i < points.length; i++) {
-                var midPoint = calculateMiddlePoint(p1, p2);
-                if (p1.break) {
-                    context.moveTo(p2.x, p2.y);
+            var new_points = [];
+            var grp_new_points = [];
+            for (var index = 0; index < points.length; index++) {
+                if(points[index].break === true) {
+                    new_points.push(points[index]);
+                    grp_new_points.push(new_points);
+                    new_points = [];
                 } else {
-                    context.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+                    new_points.push(points[index]);
                 }
-                p1 = points[i];
-                p2 = points[i + 1];
+            }
+            grp_new_points.pop();
+            points = [];
+            for (let index = 0; index < grp_new_points.length; index++) {
+                points = points.concat(grp_new_points[index])
+                
             }
 
-            context.lineWidth = lineWidth;
-            context.lineTo(p1.x, p1.y);
-            context.stroke();
-            points[points.length - 1].break = true;
+            if (points.length == 0) {
+                reset();
+            } else {
+                context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+                var p1 = points[0];
+                var p2 = points[1];
+    
+                context.beginPath();
+                context.moveTo(p1.x, p1.y);
+    
+                for (var i = 1; i < points.length; i++) {
+                    var midPoint = calculateMiddlePoint(p1, p2);
+                    if (p1.break) {
+                        context.moveTo(p2.x, p2.y);
+                    } else {
+                        context.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+                    }
+                    p1 = points[i];
+                    p2 = points[i + 1];
+                }
+    
+                context.lineWidth = lineWidth;
+                context.lineTo(p1.x, p1.y);
+                context.stroke();
+                points[points.length - 1].break = true;
+            } 
         }
 
         if (params.undo !== null) {
