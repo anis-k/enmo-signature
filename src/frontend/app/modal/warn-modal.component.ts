@@ -37,7 +37,7 @@ export class WarnModalComponent {
                     this.signaturesService.notesContent[index].forEach((note: any) => {
                         signatures.push(
                             {
-                                'encodedImage'  : note.fullPath,
+                                'encodedImage'  : note.fullPath.replace('data:image/png;base64,', ''),
                                 'width'         : note.width,
                                 'positionX'     : note.positionX,
                                 'positionY'     : note.positionY,
