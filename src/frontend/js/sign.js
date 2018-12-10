@@ -49,7 +49,7 @@ jQuery(document).ready(function (e) {
         var getMousePosition = function (canvas, evt) {
             var touch= {};
 			if(evt.touches === undefined){
-                touch = { clientX : 0, clientY : 0 };
+                touch = { clientX : evt.clientX, clientY : evt.clientY };
             } else {
                 touch = evt.touches[0];
             }
