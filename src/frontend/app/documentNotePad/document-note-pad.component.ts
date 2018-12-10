@@ -23,6 +23,7 @@ export class DocumentNotePadComponent implements OnInit {
     initPad() {
         setTimeout(() => {
             $('#myCanvas').sign({
+                mode: 'stylus',
                 lineWidth: 1,
                 changeColor: $('.radio'),
                 undo: $('.undo'),

@@ -16,6 +16,7 @@
 jQuery(document).ready(function (e) {
     jQuery.fn.sign = function (options) {
         var params = jQuery.fn.extend({
+            mode: options.mode ? options.mode : 'direct',
             reset: options.resetButton ? options.resetButton : null,
             changeColor: options.changeColor ? options.changeColor : null,
             exportPng: options.exportPng ? options.exportPng : null,
@@ -96,28 +97,48 @@ jQuery(document).ready(function (e) {
             }
         }
 
+        var detectMode = function (mode, e) {
+            if (mode === 'stylus') {
+                if (e.touches === undefined) {
+                    return false
+                } else if (e.touches[0].touchType === 'stylus') {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return true;
+            }
+        }
+
 
         // Mouse & touch events
         canvas.on('touchstart mousedown', function (e) {
-            holdClick = true;
-            var mousePosition = getMousePosition(canvas, e);
-            points.push({
-                x: mousePosition.x,
-                y: mousePosition.y,
-                break: false
-            });
+            if (detectMode(params.mode, e)) {
+                holdClick = true;
+                var mousePosition = getMousePosition(canvas, e);
+                points.push({
+                    x: mousePosition.x,
+                    y: mousePosition.y,
+                    break: false
+                });
+            }
+            
             return false;
         }).on('touchmove mousemove', function (e) {
-            if (holdClick) {
-                var mousePosition = getMousePosition(canvas, e);
-                draw(context, mousePosition.x, mousePosition.y);
+            if (detectMode(params.mode, e)) {
+                if (holdClick) {
+                    var mousePosition = getMousePosition(canvas, e);
+                    draw(context, mousePosition.x, mousePosition.y);
+                }
             }
             return false;
         }).on('touchend mouseup', function (e) {
             e.preventDefault();
             holdClick = false;
-            points[points.length - 1].break = true;
-
+            if (points.length > 0) {
+                points[points.length - 1].break = true;
+            }
             return false;
         });
 
