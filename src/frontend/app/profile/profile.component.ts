@@ -239,7 +239,7 @@ export class ProfileComponent implements OnInit {
 
                     image.src = myReader.result.toString();
                     image.onload = function() {
-                        EXIF.getData(image, () => {
+                        EXIF.getData((image as any), () => {
                             let deg = 0;
                             const orientation = EXIF.getTag(this, 'Orientation');
                             switch (orientation) {

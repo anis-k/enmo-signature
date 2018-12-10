@@ -3,7 +3,6 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
-
 @Component({
     selector: 'app-document-note-pad',
     templateUrl: 'document-note-pad.component.html',
@@ -22,8 +21,8 @@ export class DocumentNotePadComponent implements OnInit {
 
     initPad() {
         setTimeout(() => {
-            $('#myCanvas').sign({
-                mode: 'stylus',
+            ($('#myCanvas') as any).sign({
+                mode: 'stylus', //or direct
                 lineWidth: 1,
                 changeColor: $('.radio'),
                 undo: $('.undo'),
