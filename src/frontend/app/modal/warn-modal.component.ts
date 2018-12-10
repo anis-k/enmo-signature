@@ -41,7 +41,7 @@ export class WarnModalComponent {
                                 'width'         : note.width,
                                 'positionX'     : note.positionX,
                                 'positionY'     : note.positionY,
-                                'type'          : 'SVG',
+                                'type'          : 'PNG',
                                 'page'          : index
                             }
                         );
