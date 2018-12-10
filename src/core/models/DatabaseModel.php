@@ -16,27 +16,6 @@ namespace SrcCore\models;
 
 class DatabaseModel
 {
-    /**
-     * Database Unique Id Function
-     *
-     * @return string $uniqueId
-     */
-    public static function uniqueId()
-    {
-        $parts = explode('.', microtime(true));
-        $sec = $parts[0];
-        if (!isset($parts[1])) {
-            $msec = 0;
-        } else {
-            $msec = $parts[1];
-        }
-
-        $uniqueId = str_pad(base_convert($sec, 10, 36), 6, '0', STR_PAD_LEFT);
-        $uniqueId .= str_pad(base_convert($msec, 10, 16), 4, '0', STR_PAD_LEFT);
-        $uniqueId .= str_pad(base_convert(mt_rand(), 10, 36), 6, '0', STR_PAD_LEFT);
-
-        return $uniqueId;
-    }
 
     /**
      * Database Nextval Sequence Function

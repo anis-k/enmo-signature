@@ -149,9 +149,4 @@ class DatabasePDO
         self::$pdo = null;
         self::$preparedQueries = [];
     }
-
-    public function getType()
-    {
-        return self::$type;
-    }
 }

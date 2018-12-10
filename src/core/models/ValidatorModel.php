@@ -77,16 +77,4 @@ class ValidatorModel
             }
         }
     }
-
-    public static function boolType(array $aArgs, $aKeys)
-    {
-        foreach ($aKeys as $key) {
-            if (!isset($aArgs[$key])) {
-                continue;
-            }
-            if (!Validator::boolType()->validate($aArgs[$key])) {
-                throw new \Exception("Argument {$key} is not a boolean (type)");
-            }
-        }
-    }
 }

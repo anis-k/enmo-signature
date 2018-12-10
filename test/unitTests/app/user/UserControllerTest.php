@@ -99,6 +99,19 @@ class UserControllerTest extends TestCase
         //Error
         $aArgs = [
             'currentPassword'          => 'maarch2',
+            'newPassword'              => 'maa',
+            'passwordConfirmation'     => 'maa'
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $responseBody = json_decode((string)$response->getBody());
+        
+        $this->assertSame('Password does not match security criteria', $responseBody->errors);
+
+        //Error
+        $aArgs = [
+            'currentPassword'          => 'maarch2',
             'newPassword'              => 'maarch1',
             'passwordConfirmation'     => 'maarch'
         ];

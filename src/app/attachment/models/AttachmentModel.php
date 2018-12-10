@@ -19,21 +19,6 @@ use SrcCore\models\ValidatorModel;
 
 class AttachmentModel
 {
-    public static function get(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['select']);
-        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data']);
-
-        $attachments = DatabaseModel::select([
-            'select'    => $aArgs['select'],
-            'table'     => ['attachments'],
-            'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
-            'data'      => empty($aArgs['data']) ? [] : $aArgs['data']
-        ]);
-
-        return $attachments;
-    }
-
     public static function getById(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['select', 'id']);
