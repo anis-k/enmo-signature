@@ -81,6 +81,7 @@ export class DocumentComponent implements OnInit {
     disableState        : boolean   = true;
     startX              : number    = 0;
     startY              : number    = 0;
+    outOfBounds = false;
 
 
     @Input() mainDocument: any = {};
@@ -406,13 +407,17 @@ export class DocumentComponent implements OnInit {
     onPanStart(event: any): void {
         this.startX = this.signaturesService.x;
         this.startY = this.signaturesService.y;
+        this.outOfBounds = false;
     }
 
     onPan(event: any): void {
         event.preventDefault();
+
         if (!this.signaturesService.annotationMode && !this.signaturesService.documentFreeze) {
-            this.signaturesService.x = this.startX + event.deltaX;
+            /*this.signaturesService.x = this.startX + event.deltaX;*/
+
             this.signaturesService.y = this.startY + event.deltaY;
+
         }
     }
 }
