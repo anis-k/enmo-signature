@@ -18,7 +18,8 @@ jQuery(document).ready(function (e) {
         var params = jQuery.fn.extend({
             reset: options.resetButton ? options.resetButton : null,
             changeColor: options.changeColor ? options.changeColor : null,
-            exportSvg: options.exportSvg ? options.exportSvg : null,
+            exportPng: options.exportPng ? options.exportPng : null,
+            undo: options.undo ? options.undo : null,
             width: options.width ? options.width : 500,
             height: options.height ? options.height : 300,
             fixWidth: options.fixWidth ? options.fixWidth : 0,
@@ -143,14 +144,45 @@ jQuery(document).ready(function (e) {
         }
 
         // Change color canvas
-        var exportSvg = function () {
+        var exportPng = function () {
             var imgData = canvas[0].toDataURL('image/png');
-            console.log(imgData);
         }
 
-        if (params.exportSvg !== null) {
-            params.exportSvg.on('click touchend', function () {
-                exportSvg();
+        if (params.exportPng !== null) {
+            params.exportPng.on('click touchend', function () {
+                exportPng();
+            });
+        }
+
+        var undo = function () {
+            points.pop();
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            var p1 = points[0];
+            var p2 = points[1];
+
+            context.beginPath();
+            context.moveTo(p1.x, p1.y);
+
+            for (var i = 1; i < points.length; i++) {
+                var midPoint = calculateMiddlePoint(p1, p2);
+                if (p1.break) {
+                    context.moveTo(p2.x, p2.y);
+                } else {
+                    context.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+                }
+                p1 = points[i];
+                p2 = points[i + 1];
+            }
+
+            context.lineWidth = lineWidth;
+            context.lineTo(p1.x, p1.y);
+            context.stroke();
+            points[points.length - 1].break = true;
+        }
+
+        if (params.undo !== null) {
+            params.undo.on('click touchend', function () {
+                undo();
             });
         }
     };

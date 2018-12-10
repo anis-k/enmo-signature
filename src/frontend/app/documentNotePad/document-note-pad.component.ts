@@ -25,6 +25,7 @@ export class DocumentNotePadComponent implements OnInit {
             $('#myCanvas').sign({
                 lineWidth: 1,
                 changeColor: $('.radio'),
+                undo: $('.undo'),
                 height: this.signaturesService.workingAreaHeight * 2,
                 width: this.signaturesService.workingAreaWidth * 2,
                 fixHeight: this.signaturesService.y,
