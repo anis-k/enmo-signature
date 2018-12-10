@@ -68,7 +68,6 @@ import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
 export class DocumentComponent implements OnInit {
 
     enterApp            : boolean   = true;
-    loadingPage         : boolean   = true;
     pageNum             : number    = 1;
     signaturesContent   : any       = [];
     totalPages          : number;
@@ -118,7 +117,6 @@ export class DocumentComponent implements OnInit {
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
                 this.signaturesService.renderingDoc = true;
-                this.loadingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.mainDocument = data.document;
@@ -136,12 +134,10 @@ export class DocumentComponent implements OnInit {
                         this.mainDocument.attachments.forEach((attach: any, index: any) => {
                             this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
                         });
-                        this.loadingDoc = false;
 
                         this.pdfRender(this.docList[this.currentDoc]);
                         setTimeout(() => {
-                            this.loadingPage = false;
-                            this.signaturesService.renderingDoc = false;
+                            this.loadingDoc = false;
                         }, 500);
                         this.loadNextDoc();
                     }, (err: any) => {
@@ -194,6 +190,9 @@ export class DocumentComponent implements OnInit {
         this.totalPages = this.pdfViewer.getNumberOfPages();
         this.signaturesService.totalPage = this.totalPages;
         this.disableState = false;
+
+        this.signaturesService.renderingDoc = false;
+
     }
 
     pdfError(e: any) {
@@ -270,9 +269,10 @@ export class DocumentComponent implements OnInit {
 
     addAnnotation(e: any) {
         console.log(e.srcEvent.layerY);
-        this.signaturesService.x = -e.srcEvent.layerX;
-        this.signaturesService.y = -e.srcEvent.layerY;
+
         if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
+            this.signaturesService.x = -e.srcEvent.layerX;
+            this.signaturesService.y = -e.srcEvent.layerY;
             this.signaturesService.annotationMode = true;
             this.zoomPlus();
             this.appDocumentNotePad.initPad();

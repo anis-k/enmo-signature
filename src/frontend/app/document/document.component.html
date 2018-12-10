@@ -3,13 +3,14 @@
 </div>
 <mat-sidenav-container autosize>
   <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
-    <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight" ></app-sidebar>
+    <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="mainView">
     <div *ngIf="loadingDoc" style="position: fixed;z-index: 2;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
       <mat-spinner></mat-spinner>
     </div>
-    <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideDown]>
+    <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose"
+      [@slideDown]>
       <article class="header-infos">
         <section class="header-action">
           <button mat-icon-button (click)="this.snav.toggle();">
@@ -35,15 +36,18 @@
           <p class="ellipsis" *ngIf="mainDocument.processingUserDisplay">{{mainDocument.processingUserDisplay}}</p>
         </div>
         <section class="header-action">
-            <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon></button>
-            <mat-menu #menu="matMenu">
-              <button [disabled]="checkEmptiness()" mat-menu-item (click)="removeTags();">Tout effacer</button>
-              <button [disabled]="checkEmptyNote()" mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
-            </mat-menu>
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button [disabled]="checkEmptiness()" mat-menu-item (click)="removeTags();">Tout effacer</button>
+            <button [disabled]="checkEmptyNote()" mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
+          </mat-menu>
         </section>
       </article>
     </header>
-    <article class="article" style="position: fixed;" #article *ngIf="!freezeSidenavClose" [style.left.px]="this.signaturesService.x" [style.top.px]="this.signaturesService.y" (panstart)="onPanStart($event)" (panmove)="onPan($event)">
+    <article class="article" style="position: fixed;" #article *ngIf="!freezeSidenavClose" [style.left.px]="this.signaturesService.x"
+      [style.top.px]="this.signaturesService.y" (panstart)="onPanStart($event)" (panmove)="onPan($event)">
       <button class="btn-previous" [disabled]="disableState" (tap)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-previous" (tap)="prevDoc()" *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
@@ -52,19 +56,28 @@
           class="fas fa-chevron-right fa-3x"></i></button>
       <button class="btn-next" (tap)="nextDoc()" *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
-        <div class="canvas-wrapper" #canvasWrapper>
-          <simple-pdf-viewer #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()" (onError)="pdfError($event)"></simple-pdf-viewer>
-          <ng-container *ngIf="currentDoc == 0">
+      <div class="canvas-wrapper" #canvasWrapper>
+        <simple-pdf-viewer [ngClass]="{
+          'pdf-page-canvas':!signaturesService.renderingDoc,
+          'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
+        }" #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()"
+          (onError)="pdfError($event)"></simple-pdf-viewer>
 
-            <app-document-note-list></app-document-note-list>
-            <div [style.width.px]="signaturesService.workingAreaWidth*signaturesService.scale" (tap)="addAnnotation($event)" [style.height.px]="signaturesService.workingAreaHeight*signaturesService.scale" style="position:absolute;left:0;top:0;"></div>
-            <app-document-sign-list [canvas]="canvasWrapper"></app-document-sign-list>
-            
-            <app-document-note-pad (triggerEvent)="zoomMinus()" #appDocumentNotePad></app-document-note-pad>
+        <app-document-note-list [ngClass]="{
+          'pdf-page-canvas':!signaturesService.renderingDoc,
+          'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
+        }" *ngIf="currentDoc == 0"></app-document-note-list>
+        <div [style.width.px]="signaturesService.workingAreaWidth*signaturesService.scale" (tap)="addAnnotation($event)"
+          [style.height.px]="signaturesService.workingAreaHeight*signaturesService.scale" style="position:absolute;left:0;top:0;"></div>
+        <app-document-sign-list [ngClass]="{
+          'pdf-page-canvas':!signaturesService.renderingDoc,
+          'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
+        }" [canvas]="canvasWrapper" *ngIf="currentDoc == 0"></app-document-sign-list>
 
-          </ng-container>
-        </div>
-              <div class="page-under">
+        <app-document-note-pad (triggerEvent)="zoomMinus()" #appDocumentNotePad *ngIf="currentDoc == 0"></app-document-note-pad>
+
+      </div>
+      <div class="page-under">
         <div class="page-under-fold"></div>
       </div>
       <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
@@ -72,7 +85,8 @@
         <div class="page-info-page">page {{ pageNum }} / {{ totalPages }}</div>
       </section>
     </article>
-    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && !loadingPage" [@slideUp]>
+    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose"
+      [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button [style.color]="action.color" [style.borderColor]="action.color" class="btn" (click)="launchEvent(action)"><i
             class="{{action.logo}} fa-2x"></i>{{action.label}}</button>

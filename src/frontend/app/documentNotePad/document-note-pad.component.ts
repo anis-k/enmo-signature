@@ -32,7 +32,7 @@ export class DocumentNotePadComponent implements OnInit {
                 fixWidth: this.signaturesService.x
             });
             $('input[value=\'' + this.penColors[0].id + '\']').prop('checked', true);
-        }, 500);
+        }, 200);
     }
 
     cancelAnnotation() {
