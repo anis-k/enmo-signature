@@ -72,7 +72,8 @@ jQuery(document).ready(function (e) {
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
 
-            for (var i = 1; i < points.length; i++) {
+            for (var i = 0; i < points.length; i++) {
+                
                 var midPoint = calculateMiddlePoint(p1, p2);
                 if (p1.break) {
                     ctx.moveTo(p2.x, p2.y);
@@ -84,7 +85,7 @@ jQuery(document).ready(function (e) {
             }
 
             ctx.lineWidth = lineWidth;
-            ctx.lineTo(p1.x, p1.y);
+            //ctx.lineTo(p1.x, p1.y);
             ctx.stroke();
         }
 
