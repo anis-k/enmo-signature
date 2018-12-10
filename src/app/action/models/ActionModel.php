@@ -34,24 +34,4 @@ class ActionModel
 
         return $actions;
     }
-
-    public static function getById(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['select', 'id']);
-        ValidatorModel::arrayType($aArgs, ['select']);
-        ValidatorModel::intVal($aArgs, ['id']);
-
-        $action = DatabaseModel::select([
-            'select'    => $aArgs['select'],
-            'table'     => ['actions'],
-            'where'     => ['id = ?'],
-            'data'      => [$aArgs['id']]
-        ]);
-
-        if (empty($action[0])) {
-            return [];
-        }
-
-        return $action[0];
-    }
 }

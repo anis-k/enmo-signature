@@ -148,7 +148,7 @@ class AuthenticationModel
 
         if (!empty($previousCookie)) {
             $cookiePath = str_replace(['rest/index.php'], '', $_SERVER['SCRIPT_NAME']);
-            setcookie('maarchParapheurAuth', '', time() - 1, $cookiePath, '', false, true);
+            @setcookie('maarchParapheurAuth', '', time() - 1, $cookiePath, '', false, true);
         }
 
         return true;

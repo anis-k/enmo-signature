@@ -37,7 +37,8 @@ class UserController
         $users = UserModel::get([
             'select'    => ['id', 'firstname', 'lastname'],
             'where'     => ['mode = ?'],
-            'data'      => ['standard']
+            'data'      => ['standard'],
+            'orderBy'   => ['lastname', 'firstname']
         ]);
 
         return $response->withJson(['users' => $users]);

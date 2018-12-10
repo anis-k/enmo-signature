@@ -26,17 +26,6 @@ class CoreConfigModel
         return $loadedXml;
     }
 
-    public static function getName()
-    {
-        $loadedXml = CoreConfigModel::getConfig();
-
-        if ($loadedXml) {
-            return (string)$loadedXml->config->name;
-        }
-
-        return 'Maarch Parapheur';
-    }
-
     public static function getLanguage()
     {
         $availableLanguages = ['en', 'fr'];
