@@ -45,7 +45,7 @@ export class NotificationService {
         } else {
             if (err.error.errors !== undefined) {
                 this.error(err.error.errors);
-                if (err.status === 403) {
+                if (err.status === 403 || err.status === 404) {
                     this.router.navigate(['/documents']);
                 }
             } else if (err.error.exception !== undefined) {

@@ -66,21 +66,23 @@ import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
     ],
 })
 export class DocumentComponent implements OnInit {
-    enterApp = true;
-    loadingPage = true;
-    pageNum = 1;
-    signaturesContent: any = [];
-    totalPages: number;
-    draggable: boolean;
-    loadingDoc = true;
-    currentDoc = 0;
-    docList: any = [];
-    actionsList: any = [];
-    pdfDataArr: any;
-    freezeSidenavClose = false;
-    disableState = true;
-    startX = 0;
-    startY = 0;
+
+    enterApp            : boolean   = true;
+    loadingPage         : boolean   = true;
+    pageNum             : number    = 1;
+    signaturesContent   : any       = [];
+    totalPages          : number;
+    draggable           : boolean;
+    loadingDoc          : boolean   = true;
+    currentDoc          : number    = 0;
+    docList             : any       = [];
+    actionsList         : any       = [];
+    pdfDataArr          : any;
+    freezeSidenavClose  : boolean   = false;
+    disableState        : boolean   = true;
+    startX              : number    = 0;
+    startY              : number    = 0;
+
 
     @Input() mainDocument: any = {};
 
@@ -158,10 +160,9 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
 
-        const notesContent = localStorage.getItem(this.mainDocument.id.toString());
+        let notesContent = localStorage.getItem(this.mainDocument.id.toString());
         if (notesContent) {
-            const storageContent = JSON.parse(notesContent);
-            console.log(storageContent['note']);
+            let storageContent = JSON.parse(notesContent);
             this.signaturesService.notesContent = storageContent['note'];
             this.signaturesService.signaturesContent = storageContent['sign'];
         }
@@ -367,7 +368,7 @@ export class DocumentComponent implements OnInit {
     undoTag() {
         if (this.signaturesService.notesContent[this.pageNum]) {
             this.signaturesService.notesContent[this.pageNum].pop();
-            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
         }
     }
 
