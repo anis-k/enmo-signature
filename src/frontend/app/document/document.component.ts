@@ -80,8 +80,8 @@ export class DocumentComponent implements OnInit {
     pdfDataArr          : any;
     freezeSidenavClose  : boolean   = false;
     disableState        : boolean   = true;
-    startX = 0;
-    startY = 0;
+    startX              : number    = 0;
+    startY              : number    = 0;
 
 
     @Input() mainDocument: any = {};
