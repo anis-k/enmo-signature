@@ -273,7 +273,12 @@ export class DocumentComponent implements OnInit {
 
         if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
             this.signaturesService.x = -e.srcEvent.layerX;
-            this.signaturesService.y = -e.srcEvent.layerY;
+            if (e.srcEvent.layerY > 1000) {
+                this.signaturesService.y = -(e.srcEvent.layerY + 200);
+            } else {
+                this.signaturesService.y = -e.srcEvent.layerY;
+            }
+
             this.signaturesService.annotationMode = true;
             this.zoomPlus();
             this.appDocumentNotePad.initPad();
