@@ -169,7 +169,7 @@ class UserControllerTest extends TestCase
             'firstname'     => 'Jolly',
             'lastname'      => 'Jumper',
             'preferences'   => [
-                'stylus'        => true,
+                'writingMode'   => 'stylus',
                 'writingSize'   => 2,
                 'writingColor'  => '#F1F1F1',
             ]
@@ -187,7 +187,7 @@ class UserControllerTest extends TestCase
 
         $this->assertSame('Jolly', $responseBody->user->firstname);
         $this->assertSame('Jumper', $responseBody->user->lastname);
-        $this->assertSame(true, $responseBody->user->preferences->stylus);
+        $this->assertSame('stylus', $responseBody->user->preferences->writingMode);
         $this->assertSame(2, $responseBody->user->preferences->writingSize);
         $this->assertSame('#F1F1F1', $responseBody->user->preferences->writingColor);
 
@@ -195,7 +195,7 @@ class UserControllerTest extends TestCase
             'firstname'     => 'Jenny',
             'lastname'      => 'JANE',
             'preferences'   => [
-                'stylus'        => false,
+                'writingMode'   => 'direct',
                 'writingSize'   => 1,
                 'writingColor'  => '#FFFFFF',
             ]
@@ -213,6 +213,9 @@ class UserControllerTest extends TestCase
 
         $this->assertSame('Jenny', $responseBody->user->firstname);
         $this->assertSame('JANE', $responseBody->user->lastname);
+        $this->assertSame('direct', $responseBody->user->preferences->writingMode);
+        $this->assertSame(1, $responseBody->user->preferences->writingSize);
+        $this->assertSame('#FFFFFF', $responseBody->user->preferences->writingColor);
     }
 
     public function testCreateSignature()

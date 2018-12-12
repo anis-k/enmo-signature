@@ -80,7 +80,7 @@ CREATE TABLE users
   picture text,
   enabled boolean DEFAULT TRUE,
   mode character varying(50) NOT NULL,
-  preferences json NOT NULL DEFAULT '{"stylus" : false, "writingSize" : 1, "writingColor" : "#FFFFFF"}',
+  preferences json NOT NULL DEFAULT '{"writingMode" : "direct", "writingSize" : 1, "writingColor" : "#FFFFFF"}',
   cookie_key character varying(255) DEFAULT NULL::character varying,
   cookie_date timestamp without time zone,
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,

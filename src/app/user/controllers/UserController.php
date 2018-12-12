@@ -112,7 +112,7 @@ class UserController
         }
 
         $check = Validator::arrayType()->notEmpty()->validate($data['preferences']);
-        $check = $check && Validator::boolType()->validate($data['preferences']['stylus']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['preferences']['writingMode']);
         $check = $check && Validator::intType()->notEmpty()->validate($data['preferences']['writingSize']);
         $check = $check && Validator::stringType()->notEmpty()->validate($data['preferences']['writingColor']);
         if (!$check) {
