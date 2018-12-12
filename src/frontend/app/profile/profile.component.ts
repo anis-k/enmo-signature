@@ -43,6 +43,11 @@ export class ProfileComponent implements OnInit {
         error: false,
         errorMsg: ''
     };
+
+    usersRest: any = [];
+    currentUserRest: any = {};
+    currentUserRestPassword = '';
+
     ruleText = '';
     otherRuleText = '';
 
@@ -62,26 +67,30 @@ export class ProfileComponent implements OnInit {
                 .subscribe((data: any) => {
                     this.profileInfo = data.user;
                 },
-                (err: any) => {
-                    this.notificationService.handleErrors(err);
-                });
+                    (err: any) => {
+                        this.notificationService.handleErrors(err);
+                    });
         }
     }
 
     closeProfile() {
-        $('.avatarProfile').css({'transform': 'rotate(0deg)'});
-        $('.avatarProfile').css({'content': '' });
+        $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
+        $('.avatarProfile').css({ 'content': '' });
         this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
         this.passwordContent.close();
         this.snavLeftComponent.open();
         this.snavRightComponent.close();
     }
 
+
     changePasswd() {
         this.showPassword = true;
+        this.getPassRules();
+    }
+
+    getPassRules() {
         this.handlePassword.error = false;
         this.handlePassword.errorMsg = '';
-
 
         this.http.get('../rest/passwordRules')
             .subscribe((data: any) => {
@@ -139,7 +148,6 @@ export class ProfileComponent implements OnInit {
     }
 
     checkPasswordValidity(password: string) {
-
         this.handlePassword.error = true;
 
         if (!password.match(/[A-Z]/g) && this.passwordRules.complexityUpper.enabled) {
@@ -170,10 +178,10 @@ export class ProfileComponent implements OnInit {
         this.disableState = true;
         this.msgButton = 'Envoi...';
         let profileToSend = {
-            'firstname' : this.profileInfo.firstname,
-            'lastname'  : this.profileInfo.lastname,
-            'picture'   : this.profileInfo.picture,
-            'preferences' : this.profileInfo.preferences
+            'firstname': this.profileInfo.firstname,
+            'lastname': this.profileInfo.lastname,
+            'picture': this.profileInfo.picture,
+            'preferences': this.profileInfo.preferences
         };
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
             profileToSend.picture = '';
@@ -190,27 +198,27 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.picture = data.user.picture;
                 this.signaturesService.userLogged.preferences = data.user.preferences;
                 this.profileInfo.picture = data.user.picture;
-                $('.avatarProfile').css({'transform': 'rotate(0deg)'});
+                $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
 
                 if (this.showPassword) {
                     this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password)
-                    .subscribe(() => {
-                        this.password.newPassword = '';
-                        this.password.passwordConfirmation = '';
-                        this.password.currentPassword = '';
-                        this.notificationService.success('Profil modifié');
-                        this.disableState = false;
-                        this.msgButton = 'Valider';
-                        this.closeProfile();
-                    }, (err) => {
-                        this.disableState = false;
-                        this.msgButton = 'Valider';
-                        if (err.status === 401) {
-                            this.notificationService.error('Mauvais mot de passe');
-                        } else {
-                            this.notificationService.handleErrors(err);
-                        }
-                    });
+                        .subscribe(() => {
+                            this.password.newPassword = '';
+                            this.password.passwordConfirmation = '';
+                            this.password.currentPassword = '';
+                            this.notificationService.success('Profil modifié');
+                            this.disableState = false;
+                            this.msgButton = 'Valider';
+                            this.closeProfile();
+                        }, (err) => {
+                            this.disableState = false;
+                            this.msgButton = 'Valider';
+                            if (err.status === 401) {
+                                this.notificationService.error('Mauvais mot de passe');
+                            } else {
+                                this.notificationService.handleErrors(err);
+                            }
+                        });
                 }
 
                 if (!this.showPassword) {
@@ -230,9 +238,9 @@ export class ProfileComponent implements OnInit {
     handleFileInput(files: FileList) {
         this.passwordContent.close();
         const fileToUpload = files.item(0);
-        $('.avatarProfile').css({'content': '' });
+        $('.avatarProfile').css({ 'content': '' });
 
-        if (fileToUpload.size <=  5000000) {
+        if (fileToUpload.size <= 5000000) {
             if (['image/png', 'image/svg+xml', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
                 const myReader: FileReader = new FileReader();
                 myReader.onloadend = (e) => {
@@ -240,25 +248,25 @@ export class ProfileComponent implements OnInit {
                     const image = new Image();
 
                     image.src = myReader.result.toString();
-                    image.onload = function() {
+                    image.onload = function () {
                         EXIF.getData((image as any), () => {
                             let deg = 0;
                             const orientation = EXIF.getTag(this, 'Orientation');
                             switch (orientation) {
                                 case 3:
-                                deg = 180;
-                                break;
+                                    deg = 180;
+                                    break;
                                 case 6:
-                                deg = 90;
-                                break;
+                                    deg = 90;
+                                    break;
                                 case 8:
-                                deg = -90;
-                                break;
+                                    deg = -90;
+                                    break;
                             }
-                            $('.avatarProfile').css({'background-size': 'cover'});
-                            $('.avatarProfile').css({'background-position': 'center'});
-                            $('.avatarProfile').css({'transform': 'rotate(' + deg + 'deg)'});
-                            $('.avatarProfile').css({'content': '\'' + deg + '\'' });
+                            $('.avatarProfile').css({ 'background-size': 'cover' });
+                            $('.avatarProfile').css({ 'background-position': 'center' });
+                            $('.avatarProfile').css({ 'transform': 'rotate(' + deg + 'deg)' });
+                            $('.avatarProfile').css({ 'content': '\'' + deg + '\'' });
                         });
                     };
                 };
@@ -288,17 +296,54 @@ export class ProfileComponent implements OnInit {
         if (e.index === 1) {
             this.drawSample();
         }
+        if (e.index === 2) {
+            this.swithToAdmin();
+        }
     }
 
     counter(i: number) {
         return new Array(i);
     }
 
-    swithToPref(tab: MatTabGroup) {
-        tab.selectedIndex = 1;
+    siwtchToleft(tab: MatTabGroup) {
+        tab.selectedIndex++;
+
+        if (tab.selectedIndex === 2) {
+            this.swithToAdmin();
+        }
     }
 
-    swithToInfo(tab: MatTabGroup) {
-        tab.selectedIndex = 0;
+    siwtchToRight(tab: MatTabGroup) {
+        if (tab.selectedIndex > 0) {
+            tab.selectedIndex--;
+
+            if (tab.selectedIndex === 2) {
+                this.swithToAdmin();
+            }
+        }
+    }
+
+    swithToAdmin() {
+        if (this.usersRest.length === 0) {
+            this.getPassRules();
+            this.http.get('../rest/users?mode=rest')
+                .subscribe((data: any) => {
+                    this.usersRest = data.users;
+                    this.currentUserRest = data.users[0];
+
+                }, (err: any) => {
+                        this.notificationService.handleErrors(err);
+                    });
+        }
+    }
+
+    updateRestUser() {
+        this.http.put('../rest/users/' + this.currentUserRest.id + '/password', {'newPassword' : this.currentUserRestPassword})
+            .subscribe(() => {
+                this.currentUserRestPassword = '';
+                this.notificationService.success('Mot de passe de ' + this.currentUserRest.firstname + ' ' + this.currentUserRest.lastname + ' modifié');
+            }, (err) => {
+                this.notificationService.handleErrors(err);
+            });
     }
 }

@@ -12,7 +12,8 @@
     </div>
     <div class="nav">
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
-            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);" (swipeleft)="swithToPref(tabProfile)" (swiperight)="swithToInfo(tabProfile)" >
+            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);" (swipeleft)="siwtchToleft(tabProfile)"
+                (swiperight)="siwtchToRight(tabProfile)">
                 <mat-tab label="Informations">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
@@ -72,20 +73,22 @@
                             <fieldset style="display:flex;">
                                 <legend align="left">Mode de l'annotation</legend>
                                 <div style="flex:1;">
-                                        <mat-form-field>
-                                            <mat-select name="writingMode" [(ngModel)]="this.profileInfo.preferences.writingMode">
-                                                <mat-option value="direct">Direct</mat-option>
-                                                <mat-option value="stylus">Stylet Apple <i class="fab fa-apple"></i></mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'stylus'" style="flex:1;text-align: justify;font-size: 12px;">
-                                        Vous ne pourrez annoter les documents qu'avec le <b>stylet Apple</b>.<br/>
-                                        Cela a pour avantage de pouvoir poser la main sur la tablette sans perturber l'écriture.
-                                    </div>
-                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'direct'" style="flex:1;text-align: justify;font-size: 12px;">
-                                        Mode standard, permettant l'annotation avec tout format (souris, main, stylets de toutes marques).
-                                    </div>
+                                    <mat-form-field>
+                                        <mat-select name="writingMode" [(ngModel)]="this.profileInfo.preferences.writingMode">
+                                            <mat-option value="direct">Direct</mat-option>
+                                            <mat-option value="stylus">Stylet Apple <i class="fab fa-apple"></i></mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div *ngIf="this.profileInfo.preferences.writingMode == 'stylus'" style="flex:1;text-align: justify;font-size: 12px;">
+                                    Vous ne pourrez annoter les documents qu'avec le <b>stylet Apple</b>.<br />
+                                    Cela a pour avantage de pouvoir poser la main sur la tablette sans perturber
+                                    l'écriture.
+                                </div>
+                                <div *ngIf="this.profileInfo.preferences.writingMode == 'direct'" style="flex:1;text-align: justify;font-size: 12px;">
+                                    Mode standard, permettant l'annotation avec tout format (souris, main, stylets de
+                                    toutes marques).
+                                </div>
                             </fieldset>
                         </div>
                         <div class="input-row">
@@ -93,7 +96,8 @@
                                 <legend align="left">Épaisseur du trait</legend>
                                 <div style="flex:1">
                                     <mat-form-field>
-                                        <mat-select name="writingSize" [(ngModel)]="this.profileInfo.preferences.writingSize" (selectionChange)="drawSample();">
+                                        <mat-select name="writingSize" [(ngModel)]="this.profileInfo.preferences.writingSize"
+                                            (selectionChange)="drawSample();">
                                             <mat-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">{{i+1}}</mat-option>
                                         </mat-select>
                                     </mat-form-field>
@@ -124,11 +128,41 @@
                         </div>
                     </div>
                 </mat-tab>
+                <mat-tab label="Administrations" *ngIf="signaturesService.userLogged.canManageRestUsers">
+                    <div class="profile-content">
+                        <div class="input-row">
+                            <fieldset style="display:flex;">
+                                <legend align="left">Utilisateurs Webservice</legend>
+                                <div style="flex:2;">
+                                    <mat-form-field>
+                                        <mat-select name="usersRest" [(ngModel)]="currentUserRest">
+                                            <mat-option *ngFor="let userRest of usersRest" [value]="userRest">{{userRest.firstname}}
+                                                {{userRest.lastname}}</mat-option>
+                                        </mat-select>
+                                    </mat-form-field>
+                                </div>
+                                <div style="flex:2;">
+                                    <mat-form-field class="input-row">
+                                        <input name="newPasswordRest" matInput [(ngModel)]="currentUserRestPassword"
+                                            placeholder="Nouveau mot de passe" [type]="hideNewPassword ? 'password' : 'text'"
+                                            (keyup)="checkPasswordValidity(currentUserRestPassword)">
+                                        <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword" class="fa fa-2x"
+                                            [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                                        <mat-hint style="color:red;">{{handlePassword.errorMsg}}</mat-hint>
+                                    </mat-form-field>
+                                </div>
+                                <div style="flex:1;">
+                                    <button mat-raised-button type="button" color="primary" [disabled]="handlePassword.error || currentUserRestPassword.length === 0" (click)="updateRestUser()" >Modifier</button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                </mat-tab>
             </mat-tab-group>
             <span class="actions">
                 <button class="validate" mat-button color="primary" type="submit" [disabled]="allowValidate() || !profileForm.form.valid">{{
                     msgButton }}</button>
-                <button class="cancel" mat-icon-button type="button" (click)="closeProfile();">
+                <button class="cancel" mat-icon-button type="button" (tap)="closeProfile();">
                     <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
                 </button>
             </span>
