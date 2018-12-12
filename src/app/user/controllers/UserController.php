@@ -30,14 +30,24 @@ class UserController
 {
     public function get(Request $request, Response $response)
     {
-        if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        $data = $request->getQueryParams();
+
+        if (!empty($data['mode']) && $data['mode'] == 'rest') {
+            if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            $queryData = ['rest'];
+        } else {
+            if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            $queryData = ['standard'];
         }
 
         $users = UserModel::get([
             'select'    => ['id', 'firstname', 'lastname'],
             'where'     => ['mode = ?'],
-            'data'      => ['standard'],
+            'data'      => $queryData,
             'orderBy'   => ['lastname', 'firstname']
         ]);
 
@@ -163,10 +173,6 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
         $data = $request->getParams();
         $check = Validator::stringType()->notEmpty()->validate($data['currentPassword']);
         $check = $check && Validator::stringType()->notEmpty()->validate($data['newPassword']);
@@ -175,18 +181,31 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        $user = UserModel::getById(['select' => ['email'], 'id' => $args['id']]);
-        if ($data['newPassword'] != $data['passwordConfirmation']) {
-            return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
-        } elseif (!AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
-            return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
-        } elseif (!PasswordController::isPasswordValid(['password' => $data['newPassword']])) {
+        $user = UserModel::getById(['select' => ['email', 'mode'], 'id' => $args['id']]);
+        if ($GLOBALS['id'] != $args['id']) {
+            if ($user['mode'] == 'rest' && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            } elseif ($user['mode'] == 'standard' && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+        }
+
+        if ($user['mode'] == 'standard') {
+            if ($data['newPassword'] != $data['passwordConfirmation']) {
+                return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
+            } elseif (!AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
+                return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
+            }
+        }
+        if (!PasswordController::isPasswordValid(['password' => $data['newPassword']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
         }
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $data['newPassword']]);
 
-        AuthenticationModel::revokeCookie(['userId' => $args['id']]);
+        if ($user['mode'] == 'standard') {
+            AuthenticationModel::revokeCookie(['userId' => $args['id']]);
+        }
 
         HistoryController::add([
             'tableName' => 'users',
