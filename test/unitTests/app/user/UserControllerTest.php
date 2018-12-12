@@ -166,8 +166,13 @@ class UserControllerTest extends TestCase
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
-            'firstname' => 'Jolly',
-            'lastname'  => 'Jumper'
+            'firstname'     => 'Jolly',
+            'lastname'      => 'Jumper',
+            'preferences'   => [
+                'stylus'        => true,
+                'writingSize'   => 2,
+                'writingColor'  => '#F1F1F1',
+            ]
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
@@ -182,10 +187,18 @@ class UserControllerTest extends TestCase
 
         $this->assertSame('Jolly', $responseBody->user->firstname);
         $this->assertSame('Jumper', $responseBody->user->lastname);
+        $this->assertSame(true, $responseBody->user->preferences->stylus);
+        $this->assertSame(2, $responseBody->user->preferences->writingSize);
+        $this->assertSame('#F1F1F1', $responseBody->user->preferences->writingColor);
 
         $aArgs = [
-            'firstname' => 'Jenny',
-            'lastname'  => 'JANE'
+            'firstname'     => 'Jenny',
+            'lastname'      => 'JANE',
+            'preferences'   => [
+                'stylus'        => false,
+                'writingSize'   => 1,
+                'writingColor'  => '#FFFFFF',
+            ]
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);

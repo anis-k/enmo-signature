@@ -99,13 +99,14 @@ class UserModel
 
     public static function update(array $aArgs)
     {
-        ValidatorModel::notEmpty($aArgs, ['id', 'firstname', 'lastname']);
+        ValidatorModel::notEmpty($aArgs, ['id', 'firstname', 'lastname', 'preferences']);
         ValidatorModel::intVal($aArgs, ['id']);
-        ValidatorModel::stringType($aArgs, ['firstname', 'lastname', 'picture']);
+        ValidatorModel::stringType($aArgs, ['firstname', 'lastname', 'picture', 'preferences']);
 
         $set = [
-            'firstname' => $aArgs['firstname'],
-            'lastname'  => $aArgs['lastname']
+            'firstname'     => $aArgs['firstname'],
+            'lastname'      => $aArgs['lastname'],
+            'preferences'   => $aArgs['preferences']
         ];
         if (!empty($aArgs['picture'])) {
             $set['picture'] = $aArgs['picture'];

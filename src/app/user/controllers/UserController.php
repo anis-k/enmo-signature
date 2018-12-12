@@ -50,16 +50,7 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $user = UserModel::getById(['select' => ['id', 'email', 'firstname', 'lastname', 'picture'], 'id' => $args['id']]);
-
-        if (empty($user['picture'])) {
-            $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
-            $user['picture'] = 'data:image/png;base64,' . $user['picture'];
-        }
-
-        $user['canManageRestUsers'] = UserController::hasPrivilege(['userId' => $args['id'], 'privilege' => 'manage_rest_users']);
-
-        return $response->withJson(['user' => $user]);
+        return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
     }
 
     public function create(Request $request, Response $response)
@@ -120,6 +111,19 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
+        $check = Validator::arrayType()->notEmpty()->validate($data['preferences']);
+        $check = $check && Validator::boolType()->validate($data['preferences']['stylus']);
+        $check = $check && Validator::intType()->notEmpty()->validate($data['preferences']['writingSize']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($data['preferences']['writingColor']);
+        if (!$check) {
+            return $response->withStatus(400)->withJson(['errors' => 'Missing parameter in user preferences data']);
+        }
+
+        $data['preferences'] = json_encode($data['preferences']);
+        if (!is_string($data['preferences'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Wrong format for user preferences data']);
+        }
+
         if (!empty($data['picture'])) {
             $infoContent = '';
             if (preg_match('/^data:image\/(\w+);base64,/', $data['picture'])) {
@@ -154,9 +158,7 @@ class UserController
             'info'      => "userUpdated",
         ]);
 
-        $user = UserModel::getById(['select' => ['firstname', 'lastname', 'picture'], 'id' => $args['id']]);
-
-        return $response->withJson(['user' => $user]);
+        return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
     }
 
     public function updatePassword(Request $request, Response $response, array $args)
@@ -301,6 +303,24 @@ class UserController
         ]);
 
         return $response->withJson(['success' => 'success']);
+    }
+
+    public static function getUserInformationsById(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['id']);
+        ValidatorModel::intVal($args, ['id']);
+
+        $user = UserModel::getById(['select' => ['id', 'email', 'firstname', 'lastname', 'picture', 'preferences'], 'id' => $args['id']]);
+
+        if (empty($user['picture'])) {
+            $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
+            $user['picture'] = 'data:image/png;base64,' . $user['picture'];
+        }
+
+        $user['preferences'] = (array)json_decode($user['preferences']);
+        $user['canManageRestUsers'] = UserController::hasPrivilege(['userId' => $args['id'], 'privilege' => 'manage_rest_users']);
+
+        return $user;
     }
 
     public static function hasPrivilege(array $args)

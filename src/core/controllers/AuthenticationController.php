@@ -21,6 +21,7 @@ use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\LangModel;
+use User\controllers\UserController;
 use User\models\UserModel;
 
 class AuthenticationController
@@ -60,7 +61,7 @@ class AuthenticationController
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        $user = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id', 'firstname', 'lastname', 'email', 'picture', 'mode']]);
+        $user = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id', 'mode']]);
         if ($user['mode'] != 'standard') {
             return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
         }
@@ -75,12 +76,7 @@ class AuthenticationController
             'info'      => "userLogin"
         ]);
 
-        if (empty($user['picture'])) {
-            $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
-            $user['picture'] = 'data:image/png;base64,' . $user['picture'];
-        }
-
-        return $response->withJson(['user' => $user]);
+        return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
     }
 
     public static function logout(Request $request, Response $response)
