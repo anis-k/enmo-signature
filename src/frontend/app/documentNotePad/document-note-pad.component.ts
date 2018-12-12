@@ -22,8 +22,8 @@ export class DocumentNotePadComponent implements OnInit {
     initPad() {
         setTimeout(() => {
             ($('#myCanvas') as any).sign({
-                mode: 'direct', //or stylus
-                lineWidth: 1,
+                mode: this.signaturesService.userLogged.preferences.writingMode, // direct or stylus
+                lineWidth: this.signaturesService.userLogged.preferences.writingSize,
                 changeColor: $('.radio'),
                 undo: $('.undo'),
                 height: this.signaturesService.workingAreaHeight * 2,
@@ -31,7 +31,7 @@ export class DocumentNotePadComponent implements OnInit {
                 fixHeight: this.signaturesService.y,
                 fixWidth: this.signaturesService.x
             });
-            $('input[value=\'' + this.penColors[0].id + '\']').prop('checked', true);
+            $('input[value=\'' + this.signaturesService.userLogged.preferences.writingColor + '\']').click();
         }, 200);
     }
 

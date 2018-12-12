@@ -14,7 +14,6 @@ export class CustomHammerConfig extends HammerGestureConfig  {
   };
 }
 
-/*import { PdfViewerModule } from 'ng2-pdf-viewer';*/
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { CookieService } from 'ngx-cookie-service';
@@ -74,7 +73,6 @@ import { SignaturesContentService } from './service/signatures.service';
     HttpClientModule,
     RouterModule,
     SignaturePadModule,
-    /*PdfViewerModule,*/
     ScrollEventModule,
     AngularDraggableModule,
     SimplePdfViewerModule,
@@ -97,9 +95,9 @@ import { SignaturesContentService } from './service/signatures.service';
   providers: [SignaturesContentService,
     NotificationService,
     {
-    provide: HAMMER_GESTURE_CONFIG,
-    useClass: CustomHammerConfig
-    },
+      provide: HAMMER_GESTURE_CONFIG,
+      useClass: CustomHammerConfig
+      },
     CookieService],
     exports: [
         RouterModule

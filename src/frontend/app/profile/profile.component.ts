@@ -172,7 +172,8 @@ export class ProfileComponent implements OnInit {
         let profileToSend = {
             'firstname' : this.profileInfo.firstname,
             'lastname'  : this.profileInfo.lastname,
-            'picture'   : this.profileInfo.picture
+            'picture'   : this.profileInfo.picture,
+            'preferences' : this.profileInfo.preferences
         };
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
             profileToSend.picture = '';
@@ -187,6 +188,7 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.firstname = this.profileInfo.firstname;
                 this.signaturesService.userLogged.lastname = this.profileInfo.lastname;
                 this.signaturesService.userLogged.picture = data.user.picture;
+                this.signaturesService.userLogged.preferences = data.user.preferences;
                 this.profileInfo.picture = data.user.picture;
                 $('.avatarProfile').css({'transform': 'rotate(0deg)'});
 
@@ -267,5 +269,28 @@ export class ProfileComponent implements OnInit {
         } else {
             this.notificationService.error('Image trop volumineuse (5mo max.)');
         }
+    }
+
+    drawSample() {
+        const c = document.getElementById('sampleNote');
+        const ctx = (<HTMLCanvasElement>c).getContext('2d');
+        ctx.clearRect(0, 0, 150, 150);
+        ctx.beginPath();
+        ctx.lineWidth = this.profileInfo.preferences.writingSize;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(150, 150);
+        ctx.moveTo(150, 0);
+        ctx.lineTo(0, 150);
+        ctx.stroke();
+    }
+
+    initProfileTab(e: any) {
+        if (e.index === 1) {
+            this.drawSample();
+        }
+    }
+
+    counter(i: number) {
+        return new Array(i);
     }
 }
