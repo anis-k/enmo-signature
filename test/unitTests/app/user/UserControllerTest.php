@@ -197,7 +197,7 @@ class UserControllerTest extends TestCase
             'preferences'   => [
                 'writingMode'   => 'direct',
                 'writingSize'   => 1,
-                'writingColor'  => '#FFFFFF',
+                'writingColor'  => '#000000',
             ]
         ];
 
@@ -215,7 +215,7 @@ class UserControllerTest extends TestCase
         $this->assertSame('JANE', $responseBody->user->lastname);
         $this->assertSame('direct', $responseBody->user->preferences->writingMode);
         $this->assertSame(1, $responseBody->user->preferences->writingSize);
-        $this->assertSame('#FFFFFF', $responseBody->user->preferences->writingColor);
+        $this->assertSame('#000000', $responseBody->user->preferences->writingColor);
     }
 
     public function testCreateSignature()
