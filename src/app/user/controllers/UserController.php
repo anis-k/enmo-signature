@@ -174,10 +174,7 @@ class UserController
     public function updatePassword(Request $request, Response $response, array $args)
     {
         $data = $request->getParams();
-        $check = Validator::stringType()->notEmpty()->validate($data['currentPassword']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['newPassword']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['passwordConfirmation']);
-        if (!$check) {
+        if (Validator::stringType()->notEmpty()->validate($data['newPassword'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
@@ -193,7 +190,7 @@ class UserController
         if ($user['mode'] == 'standard') {
             if ($data['newPassword'] != $data['passwordConfirmation']) {
                 return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
-            } elseif (!AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
+            } elseif (empty($data['currentPassword']) || !AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
                 return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
             }
         }
