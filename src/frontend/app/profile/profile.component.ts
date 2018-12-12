@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatSidenav, MatExpansionPanel } from '@angular/material';
+import { MatIconRegistry, MatSidenav, MatExpansionPanel, MatTabGroup } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
@@ -292,5 +292,13 @@ export class ProfileComponent implements OnInit {
 
     counter(i: number) {
         return new Array(i);
+    }
+
+    swithToPref(tab: MatTabGroup) {
+        tab.selectedIndex = 1;
+    }
+
+    swithToInfo(tab: MatTabGroup) {
+        tab.selectedIndex = 0;
     }
 }

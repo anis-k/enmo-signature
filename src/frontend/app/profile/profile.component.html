@@ -12,7 +12,7 @@
     </div>
     <div class="nav">
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
-            <mat-tab-group (selectedTabChange)="initProfileTab($event);">
+            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);" (swipeleft)="swithToPref(tabProfile)" (swiperight)="swithToInfo(tabProfile)" >
                 <mat-tab label="Informations">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
