@@ -174,7 +174,7 @@ class UserController
     public function updatePassword(Request $request, Response $response, array $args)
     {
         $data = $request->getParams();
-        if (Validator::stringType()->notEmpty()->validate($data['newPassword'])) {
+        if (!Validator::stringType()->notEmpty()->validate($data['newPassword'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
