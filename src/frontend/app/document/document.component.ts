@@ -273,7 +273,7 @@ export class DocumentComponent implements OnInit {
 
         if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
             this.signaturesService.x = -e.srcEvent.layerX;
-            if (e.srcEvent.layerY > 1000) {
+            if (e.srcEvent.layerY > 850) {
                 this.signaturesService.y = -(e.srcEvent.layerY + 200);
             } else {
                 this.signaturesService.y = -e.srcEvent.layerY;
