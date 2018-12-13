@@ -136,3 +136,19 @@ fieldset {
 legend {
   color: #F99830;
 }
+
+.form-container {
+  display:table;
+  width:100%;
+}
+
+.form-2-col {
+  display:table-cell;
+  width:50%;
+  vertical-align:middle;
+}
+
+.form-col {
+  display:table-cell;
+  vertical-align:middle;
+}
