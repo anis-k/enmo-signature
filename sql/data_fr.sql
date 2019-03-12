@@ -82,11 +82,11 @@ DO $$
 BEGIN
 FOR r in 1..500 LOOP
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) VALUES (r, '2018/A/' || r, 'Mon Courrier ' || r, 'SIGN', 1, 'Urgent', 'Oliver Queen', 'QE', 1, 'Barry Allen', CURRENT_TIMESTAMP);
-INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) VALUES (r, 'DOC', 'tests/', 'test.pdf', '5842a595983924f745e38c13195914d20420e85f2598e4fb3e11a491f89f545641e4995ab2fc54df0fec79be7b4fdb84e38322cd624061d754874e2c8178dcac');
+INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) VALUES (r, 'DOC', 'tests/', '1.pdf', '67e1cde83cf6710cb4f3644db6bb0ce67bf5cc23178f641065921e92b5c654a1d7e6595ebd0bbc211750a9e16c2fbf7dac81707021700c79c6eee7e14ed488e9');
 
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) VALUES (r, r, '2018/PJ/' || r, 'PJ 1', CURRENT_TIMESTAMP);
 
-INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) VALUES (r, 'ATTACH', 'tests/', 'test_pj_1.pdf', '5842a595983924f745e38c13195914d20420e85f2598e4fb3e11a491f89f545641e4995ab2fc54df0fec79be7b4fdb84e38322cd624061d754874e2c8178dcac');
+INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) VALUES (r, 'ATTACH', 'tests/', '1.pdf', '9510c93637f6baafbb9082a802aa6c3d1167f4cf6a02c432131de3a6f98d39cd3cac5f26d7b472e8fc2a50930a4e1ca89e8d9e839c81ef201198678aac3df45a');
 END LOOP;
 END;
 $$;
