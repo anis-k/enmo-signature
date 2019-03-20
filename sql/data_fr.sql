@@ -105,56 +105,56 @@ TRUNCATE TABLE adr_attachments;
 -- DEMO WITH MAARCH COURRIER
 -- LIST OF TO SIGN DOCS
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) 
-VALUES (1, 'PJS/2019A/1234', 'Réponse à votre demande', 'SIGN', 1, 'Urgent', 'Barbara Bain', 'PE', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
+VALUES (1, 'MAARCH/2019D/1', 'Réponse à votre demande', 'SIGN', 1, 'Urgent', 'Barbara Bain', 'PE', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
 INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) 
 VALUES (1, 'DOC', 'tests/', 'ar_derogation.pdf', '9b0d6e8bf6e868d3a72c91660eab2c5d4b77c482672f6ae71b404d496e78d5856ba28f6f9a9ddb957ae16eece39ae7b3d04aa259fc58506d38edd18a6fbf578c');
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) 
-VALUES (1, 1, 'PJS/2019D/1234', 'Réponse dérogation carte scolaire', CURRENT_TIMESTAMP);
+VALUES (1, 1, 'MAARCH/2019A/1', 'Réponse dérogation carte scolaire', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (1, 'ATTACH', 'tests/', 'demande_derogation.pdf', '8a41c12d4b1885f6929a91f2f2e71fa11d5b76019337b705a9593576bf61dbc2ca4f6fe2b46596a22eeeb7244f2fb9b71594c4ef291b5092df8743747a0d738d');
 --
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) 
-VALUES (2, 'SVA/2019A/12122', 'Accusé de Réception de votre demande intervenant dans le cadre d’une décision implicite d’acceptation', 'SIGN', 1, 'Urgent', 'Charlotte Charles', 'PT', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
+VALUES (2, 'MAARCH/2019D/2', 'Accusé de Réception de votre demande intervenant dans le cadre d’une décision implicite d’acceptation', 'SIGN', 1, 'Urgent', 'Charlotte Charles', 'PT', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
 INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) 
 VALUES (2, 'DOC', 'tests/', 'ar_sva.pdf', 'e723ec86ec468a30d981f626193ee7d96e4bd45dbf97daa1e03a6720ad9af1299fc60bc30e9e81886652d3af1d42876d37c27e6158493c23bd240abbada0c40c');
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) 
-VALUES (2, 2, '2018/PJ/', 'PJ 1', CURRENT_TIMESTAMP);
+VALUES (2, 2, 'MAARCH/2019A/2', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (2, 'ATTACH', 'tests/', 'sva_route_66.pdf', '7ac968279579b547867964dd1d86b8cbc2bf9c9e6f68229cd42bbdbbcaded0062cb90759d31f08eef08bd8dc21d83912085adca87e27218dfceda5f7b56d6699');
 --
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) 
-VALUES (3, 'SVR/2019A/12122', 'Accusé de Réception de votre demande intervenant dans le cadre d’une décision implicite de rejet', 'SIGN', 1, 'Urgent', 'Robert Reneau', 'DGS', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
+VALUES (3, 'MAARCH/2019D/3', 'Accusé de Réception de votre demande intervenant dans le cadre d’une décision implicite de rejet', 'SIGN', 1, 'Urgent', 'Robert Reneau', 'DGS', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
 INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) 
 VALUES (3, 'DOC', 'tests/', 'ar_svr.pdf', '6e6bb35e903c8a62dcf8e3983071398103da5b068c57e2fafd7670e84bb0cd33057d0126394675657e0547c0c602a8233c115c24c1ddfedd4bf8ee3acb5bf47c');
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) 
-VALUES (3, 3, '2018/PJ/', 'PJ 1', CURRENT_TIMESTAMP);
+VALUES (3, 3, 'MAARCH/2019A/3', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (3, 'ATTACH', 'tests/', 'svr_route_chien_bruyant.pdf', '669b144a43f9b9c447e9a00794813ef95cd3b8392d5ec86f3aa8f2fbe65b6a3715fbddde8217165a3b1d7eb3b8e0eea040275a67dcab467bdc1c7783e146f18a');
 --
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) 
-VALUES (4, 'PJS/2019D/1234', 'Invitation pour échanges journée des sports', 'SIGN', 1, 'Urgent', 'Barbara Bain', 'PJS', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
+VALUES (4, 'MAARCH/2019D/4', 'Invitation pour échanges journée des sports', 'SIGN', 1, 'Urgent', 'Barbara Bain', 'PJS', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
 INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) 
 VALUES (4, 'DOC', 'tests/', 'invitation.pdf', 'd3d0f4d8cc3b4f9b5c2d0bd998737def4f769881a41d063f81d2e10166576e137ef294a81be563be04be44ce66c89897a51a4bca0755d0e3cae149501cf0d7aa');
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) 
-VALUES (4, 4, '2018/PJ/', 'PJ 1', CURRENT_TIMESTAMP);
+VALUES (4, 4, 'MAARCH/2019A/4', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (4, 'ATTACH', 'tests/', 'test.pdf', '9510c93637f6baafbb9082a802aa6c3d1167f4cf6a02c432131de3a6f98d39cd3cac5f26d7b472e8fc2a50930a4e1ca89e8d9e839c81ef201198678aac3df45a');
 --
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) 
-VALUES (5, 'PE/2019A/1234', 'Votre demande de place en crèche', 'SIGN', 1, 'Urgent', 'Sabrina Saporta', 'PE', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
+VALUES (5, 'MAARCH/2019D/5', 'Votre demande de place en crèche', 'SIGN', 1, 'Urgent', 'Sabrina Saporta', 'PE', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
 INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) 
 VALUES (5, 'DOC', 'tests/', 'rep_creche.pdf', '4961004985ceeb0fddde9c9e982512da251e5d82ea072b955570f3539e14f88d22f4d3d2ab0e6979443766ec70a72d8d24298ed4a1e1cb9d76e5a19113504d3f');
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) 
-VALUES (5, 5, '2018/PJ/', 'PJ 1', CURRENT_TIMESTAMP);
+VALUES (5, 5, 'MAARCH/2019A/5', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (5, 'ATTACH', 'tests/', 'demande_place_creche.pdf', 'ac4190f7b9a07204d15a3c0616b36be43de732a3c7a50d4c72f00eaa2e8bef19c5219b60e5e465ddf6d22a12dfb8157b97d47b96af0cd047296f3ddb7f79ad08');
 --
 INSERT INTO main_documents (id, reference, subject, mode, status, priority, sender, sender_entity, processing_user, recipient, creation_date) 
-VALUES (6, 'PE/2019A/1235', 'Mécontentement délais de réponses place crèche', 'SIGN', 1, 'Urgent', 'Sabrina Saporta', 'PE', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
+VALUES (6, 'MAARCH/2019D/6', 'Mécontentement délais de réponses place crèche', 'SIGN', 1, 'Urgent', 'Sabrina Saporta', 'PE', 1, 'Bernard PASCONTENT', CURRENT_TIMESTAMP);
 INSERT INTO adr_main_documents (main_document_id, type, path, filename, fingerprint) 
 VALUES (6, 'DOC', 'tests/', 'rep_standard.pdf', 'c64b6cc725d947168b2236951452d4e64c9a9bb5ba41b9749b5b9990d4facfef83404d160a8b5db14c046ccae8c3fa21359c4b7a628fc55b526376578f1752da');
 INSERT INTO attachments (id, main_document_id, reference, subject, creation_date) 
-VALUES (6, 6, '2018/PJ/', 'PJ 1', CURRENT_TIMESTAMP);
+VALUES (6, 6, 'MAARCH/2019A/6', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (6, 'ATTACH', 'tests/', 'relance_place_creche.pdf', 'a252b97a682f84ae27ec3a03097d9be94c817904ff90eecccbe75afdf90768c5b1cc75aa8b358a8f1573e0622e4e11c3ec5a6f4d3d2f2beffae939df7bc31e7d');
 
