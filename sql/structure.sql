@@ -14,16 +14,16 @@ DROP TABLE IF EXISTS main_documents;
 CREATE TABLE main_documents
 (
   id serial NOT NULL,
+  title text NOT NULL,
   reference CHARACTER VARYING(64),
-  subject text NOT NULL,
+  description text,
   mode CHARACTER VARYING(16) NOT NULL,
   status INTEGER NOT NULL,
   processing_user INTEGER NOT NULL,
   sender text NOT NULL,
-  sender_entity text,
-  recipient text,
-  priority CHARACTER VARYING(64),
-  limit_date timestamp without time zone,
+  deadline timestamp without time zone,
+  metadata jsonb NOT NULL DEFAULT '{}',
+  creator INTEGER NOT NULL,
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),
   CONSTRAINT main_documents_pkey PRIMARY KEY (id)
@@ -35,8 +35,8 @@ CREATE TABLE attachments
 (
   id serial NOT NULL,
   main_document_id INTEGER NOT NULL,
-  reference character varying(64),
-  subject text NOT NULL,
+  title text NOT NULL,
+  reference CHARACTER VARYING(64),
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),
   CONSTRAINT attachments_pkey PRIMARY KEY (id)
@@ -73,6 +73,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
   id serial NOT NULL,
+  login character varying(128) NOT NULL,
   email character varying(128) NOT NULL,
   "password" character varying(255) NOT NULL,
   firstname character varying(128) NOT NULL,
@@ -80,14 +81,14 @@ CREATE TABLE users
   picture text,
   enabled boolean DEFAULT TRUE,
   mode character varying(50) NOT NULL,
-  preferences json NOT NULL DEFAULT '{"writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000"}',
+  preferences jsonb NOT NULL DEFAULT '{"writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000"}',
   cookie_key character varying(255) DEFAULT NULL::character varying,
   cookie_date timestamp without time zone,
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   failed_authentication INTEGER DEFAULT 0,
   locked_until TIMESTAMP without time zone,
   CONSTRAINT users_pkey PRIMARY KEY (id),
-  CONSTRAINT users_login_key UNIQUE (email)
+  CONSTRAINT users_login_key UNIQUE (login)
 )
 WITH (OIDS=FALSE);
 

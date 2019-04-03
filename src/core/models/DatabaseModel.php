@@ -75,11 +75,11 @@ class DatabaseModel
             $where = ' WHERE ' . implode(' AND ', $args['where']);
         }
 
-        if (empty($args['group_by'])) {
+        if (empty($args['groupBy'])) {
             $groupBy = '';
         } else {
-            ValidatorModel::arrayType($args, ['group_by']);
-            $groupBy = ' GROUP BY ' . implode(', ', $args['group_by']);
+            ValidatorModel::arrayType($args, ['groupBy']);
+            $groupBy = ' GROUP BY ' . implode(', ', $args['groupBy']);
         }
 
         if (empty($args['orderBy'])) {
@@ -178,12 +178,14 @@ class DatabaseModel
 
         $querySet  = [];
         $dataSet = [];
-        foreach ($args['set'] as $key => $value) {
-            if ($value == 'SYSDATE' || $value == 'CURRENT_TIMESTAMP') {
-                $querySet[] = "{$key} = {$value}";
-            } else {
-                $querySet[] = "{$key} = ?";
-                $dataSet[] = $value;
+        if (!empty($args['set'])) {
+            foreach ($args['set'] as $key => $value) {
+                if ($value == 'SYSDATE' || strpos($value, 'CURRENT_TIMESTAMP') !== false) {
+                    $querySet[] = "{$key} = {$value}";
+                } else {
+                    $querySet[] = "{$key} = ?";
+                    $dataSet[] = $value;
+                }
             }
         }
         $args['data'] = array_merge($dataSet, $args['data']);
@@ -234,9 +236,8 @@ class DatabaseModel
     public static function beginTransaction()
     {
         $db = new DatabasePDO();
-        $db->query('BEGIN');
 
-        return true;
+        return $db->beginTransaction();
     }
 
     /**
@@ -248,9 +249,8 @@ class DatabaseModel
     public static function commitTransaction()
     {
         $db = new DatabasePDO();
-        $db->query('COMMIT');
 
-        return true;
+        return $db->commitTransaction();
     }
 
     /**
@@ -262,8 +262,7 @@ class DatabaseModel
     public static function rollbackTransaction()
     {
         $db = new DatabasePDO();
-        $db->query('ROLLBACK');
 
-        return true;
+        return $db->rollbackTransaction();
     }
 }

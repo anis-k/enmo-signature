@@ -57,11 +57,11 @@ class DocumentModel
         return $document[0];
     }
 
-    public static function create(array $aArgs)
+    public static function create(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['subject', 'status', 'mode', 'processing_user', 'sender']);
-        ValidatorModel::stringType($aArgs, ['reference', 'subject', 'mode', 'sender', 'sender_entity', 'recipient', 'priority']);
-        ValidatorModel::intVal($aArgs, ['status', 'processing_user']);
+        ValidatorModel::notEmpty($args, ['title', 'status', 'mode', 'processing_user', 'sender', 'creator', 'metadata']);
+        ValidatorModel::stringType($args, ['title', 'reference', 'description', 'mode', 'sender', 'deadline', 'metadata']);
+        ValidatorModel::intVal($args, ['status', 'processing_user', 'creator']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'main_documents_id_seq']);
 
@@ -69,16 +69,16 @@ class DocumentModel
             'table'         => 'main_documents',
             'columnsValues' => [
                 'id'                => $nextSequenceId,
-                'reference'         => empty($aArgs['reference']) ? null : $aArgs['reference'],
-                'subject'           => $aArgs['subject'],
-                'mode'              => $aArgs['mode'],
-                'status'            => $aArgs['status'],
-                'processing_user'   => $aArgs['processing_user'],
-                'sender'            => $aArgs['sender'],
-                'sender_entity'     => empty($aArgs['sender_entity']) ? null : $aArgs['sender_entity'],
-                'recipient'         => empty($aArgs['recipient']) ? null : $aArgs['recipient'],
-                'priority'          => empty($aArgs['priority']) ? null : $aArgs['priority'],
-                'limit_date'        => empty($aArgs['limit_date']) ? null : $aArgs['limit_date']
+                'title'             => $args['title'],
+                'reference'         => $args['reference'],
+                'description'       => $args['description'],
+                'mode'              => $args['mode'],
+                'status'            => $args['status'],
+                'processing_user'   => $args['processing_user'],
+                'sender'            => $args['sender'],
+                'deadline'          => $args['deadline'],
+                'metadata'          => $args['metadata'],
+                'creator'           => $args['creator']
             ]
         ]);
 

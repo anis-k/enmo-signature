@@ -133,29 +133,37 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $data = $request->getParams();
+        $body = $request->getParsedBody();
 
-        $check = DocumentController::controlData([
-            ['type' => 'string', 'value' => $data['encodedZipDocument']],
-            ['type' => 'string', 'value' => $data['subject']],
-            ['type' => 'string', 'value' => $data['mode']],
-            ['type' => 'int', 'value' => $data['processing_user']],
-            ['type' => 'string', 'value' => $data['sender']],
-        ]);
-        if (!empty($check['errors'])) {
-            return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
+        if (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::notEmpty()->validate($body['encodedDocument'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body encodedDocument is empty']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['title'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body title is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['mode'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body mode is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['processingUser'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body processingUser is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['sender'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body sender is empty or not a string']);
         }
 
-        $data['attachments'] = empty($data['attachments']) ? [] : $data['attachments'];
-        foreach ($data['attachments'] as $key => $attachment) {
-            $check = Validator::stringType()->notEmpty()->validate($attachment['encodedZipDocument']);
-            $check = $check && Validator::stringType()->notEmpty()->validate($attachment['subject']);
-            if (!$check) {
-                return $response->withStatus(400)->withJson(['errors' => "Missing data for attachment {$key}"]);
+        $body['attachments'] = empty($body['attachments']) ? [] : $body['attachments'];
+        foreach ($body['attachments'] as $key => $attachment) {
+            if (!Validator::notEmpty()->validate($attachment['encodedDocument'])) {
+                return $response->withStatus(400)->withJson(['errors' => "Body attachments[{$key}] encodedDocument is empty"]);
+            } elseif (!Validator::stringType()->notEmpty()->validate($attachment['title'])) {
+                return $response->withStatus(400)->withJson(['errors' => "Body attachments[{$key}] title is empty"]);
             }
         }
 
-        $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $data['encodedZipDocument']]);
+        $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $body['processingUser']]);
+        if (empty($processingUser)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Processing user does not exist']);
+        }
+
+        $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $body['encodedDocument']]);
         if (!empty($encodedDocument['errors'])) {
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
@@ -170,13 +178,20 @@ class DocumentController
         }
 
         $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => ['NEW']]);
-        $data['status'] = $status[0]['id'];
-        if ($data['mode'] != 'SIGN') {
-            $data['mode'] = 'NOTE';
-        }
 
         DatabaseModel::beginTransaction();
-        $id = DocumentModel::create($data);
+        $id = DocumentModel::create([
+            'title'             => $body['title'],
+            'reference'         => empty($body['reference']) ? null : $body['reference'],
+            'description'       => empty($body['description']) ? null : $body['description'],
+            'mode'              => $body['mode'] == 'SIGN' ? 'SIGN' : 'NOTE',
+            'status'            => $status[0]['id'],
+            'processing_user'   => $processingUser['id'],
+            'sender'            => $body['sender'],
+            'deadline'          => empty($body['deadline']) ? null : $body['deadline'],
+            'metadata'          => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
+            'creator'           => $GLOBALS['id']
+        ]);
 
         AdrModel::createDocumentAdr([
             'documentId'     => $id,
@@ -186,24 +201,25 @@ class DocumentController
             'fingerprint'    => $storeInfos['fingerprint']
         ]);
 
-        foreach ($data['attachments'] as $key => $value) {
-            $value['main_document_id'] = $id;
+        foreach ($body['attachments'] as $key => $value) {
+            $value['mainDocumentId'] = $id;
             $attachment = AttachmentController::create($value);
             if (!empty($attachment['errors'])) {
                 DatabaseModel::rollbackTransaction();
                 return $response->withStatus(500)->withJson(['errors' => "An error occured for attachment {$key} : {$attachment['errors']}"]);
             }
         }
+
         HistoryController::add([
             'tableName' => 'main_documents',
             'recordId'  => $id,
             'eventType' => 'CREATION',
-            'info'      => "documentAdded {$data['subject']}"
+            'info'      => "documentAdded {$body['subject']}"
         ]);
 
         DatabaseModel::commitTransaction();
 
-        return $response->withJson(['documentId' => $id]);
+        return $response->withJson(['id' => $id]);
     }
 
     public function setAction(Request $request, Response $response, array $args)

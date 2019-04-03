@@ -55,11 +55,11 @@ class AttachmentModel
         return $attachments;
     }
 
-    public static function create(array $aArgs)
+    public static function create(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['main_document_id', 'subject']);
-        ValidatorModel::stringType($aArgs, ['reference', 'subject']);
-        ValidatorModel::intVal($aArgs, ['main_document_id']);
+        ValidatorModel::notEmpty($args, ['main_document_id', 'title']);
+        ValidatorModel::stringType($args, ['title', 'reference']);
+        ValidatorModel::intVal($args, ['main_document_id']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'attachments_id_seq']);
 
@@ -67,9 +67,9 @@ class AttachmentModel
             'table'         => 'attachments',
             'columnsValues' => [
                 'id'                => $nextSequenceId,
-                'main_document_id'  => $aArgs['main_document_id'],
-                'reference'         => empty($aArgs['reference']) ? null : $aArgs['reference'],
-                'subject'           => $aArgs['subject']
+                'main_document_id'  => $args['main_document_id'],
+                'title'             => $args['title'],
+                'reference'         => $args['reference']
             ]
         ]);
 

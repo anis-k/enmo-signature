@@ -66,9 +66,9 @@ class AttachmentController
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['encodedZipDocument', 'subject', 'main_document_id']);
-        ValidatorModel::stringType($args, ['encodedZipDocument', 'subject']);
-        ValidatorModel::intVal($args, ['main_document_id']);
+        ValidatorModel::notEmpty($args, ['encodedZipDocument', 'title', 'mainDocumentId']);
+        ValidatorModel::stringType($args, ['encodedZipDocument', 'title', 'reference']);
+        ValidatorModel::intVal($args, ['mainDocumentId']);
 
         $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $args['encodedZipDocument']]);
         if (!empty($encodedDocument['errors'])) {
@@ -84,7 +84,11 @@ class AttachmentController
             return ['errors' => $storeInfos['errors']];
         }
 
-        $id = AttachmentModel::create($args);
+        $id = AttachmentModel::create([
+            'main_document_id'  => $args['mainDocumentId'],
+            'title'             => $args['title'],
+            'reference'         => empty($args['reference']) ? null : $args['reference'],
+        ]);
 
         AdrModel::createAttachmentAdr([
             'attachmentId'   => $id,
@@ -98,9 +102,9 @@ class AttachmentController
             'tableName' => 'attachments',
             'recordId'  => $id,
             'eventType' => 'CREATION',
-            'info'      => "attachmentAdded {$args['subject']}",
+            'info'      => "attachmentAdded {$args['title']}",
         ]);
 
-        return ['attachmentId' => $id];
+        return ['id' => $id];
     }
 }

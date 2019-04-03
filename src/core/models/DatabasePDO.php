@@ -107,10 +107,11 @@ class DatabasePDO
 
         if (!empty($data)) {
             $tmpData = [];
+            $position = 0;
             foreach ($data as $key => $value) {
                 if (is_array($value)) {
                     $placeholders = implode(',', array_fill(0, count($value), '?'));
-                    $position = strpos($queryString, '(?)');
+                    $position = strpos($queryString, '(?)', $position + 1);
                     $queryString = substr_replace($queryString, $placeholders, $position + 1, 1);
 
                     $tmpData = array_merge($tmpData, $value);
@@ -148,5 +149,20 @@ class DatabasePDO
     {
         self::$pdo = null;
         self::$preparedQueries = [];
+    }
+
+    public function beginTransaction()
+    {
+        return self::$pdo->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        return self::$pdo->commit();
+    }
+
+    public function rollbackTransaction()
+    {
+        return self::$pdo->rollBack();
     }
 }

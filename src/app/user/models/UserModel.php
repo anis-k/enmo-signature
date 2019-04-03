@@ -41,6 +41,7 @@ class UserModel
     {
         ValidatorModel::notEmpty($aArgs, ['id']);
         ValidatorModel::intVal($aArgs, ['id']);
+        ValidatorModel::arrayType($aArgs, ['select']);
 
         $aUser = DatabaseModel::select([
             'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
@@ -54,6 +55,26 @@ class UserModel
         }
 
         return $aUser[0];
+    }
+
+    public static function getByLogin(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['login']);
+        ValidatorModel::stringType($aArgs, ['login']);
+        ValidatorModel::arrayType($aArgs, ['select']);
+
+        $user = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['users'],
+            'where'     => ['login = ?'],
+            'data'      => [$aArgs['login']]
+        ]);
+
+        if (empty($user)) {
+            return [];
+        }
+
+        return $user[0];
     }
 
     public static function create(array $aArgs)
