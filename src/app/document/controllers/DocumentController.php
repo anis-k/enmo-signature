@@ -377,7 +377,7 @@ class DocumentController
         return $response->withJson(['success' => 'success']);
     }
 
-    public function getHandwrittenDocumentById(Request $request, Response $response, array $args)
+    public function getProcessedDocumentById(Request $request, Response $response, array $args)
     {
         if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
@@ -469,18 +469,5 @@ class DocumentController
         }
 
         return ['errors' => "getDocumentFromEncodedZip : No document was found in Zip"];
-    }
-
-    private static function controlData(array $args)
-    {
-        foreach ($args as $value) {
-            if ($value['type'] == 'string' && !Validator::stringType()->notEmpty()->validate($value['value'])) {
-                return ['errors' => "Data {$value['value']} is empty or not a {$value['type']}"];
-            } elseif ($value['type'] == 'int' && !Validator::intVal()->notEmpty()->validate($value['value'])) {
-                return ['errors' => "Data {$value['value']} is empty or not a {$value['type']}"];
-            }
-        }
-
-        return ['success' => 'success'];
     }
 }

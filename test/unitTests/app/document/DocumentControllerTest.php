@@ -22,19 +22,18 @@ class DocumentControllerTest extends TestCase
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
+            'title'                 => 'Mon Courrier',
             'reference'             => '2018/CR/7',
-            'subject'               => 'Mon Courrier',
+            'description'           => 'Mon premier courrier parapheur',
             'mode'                  => 'SIGN',
-            'processing_user'       => 2,
+            'processingUser'        => 'jjane@maarch.com',
             'sender'                => 'Oliver Queen',
-            'sender_entity'         => 'QE',
-            'recipient'             => 'Barry Allen',
-            'priority'              => 'Urgent',
-            'limit_date'            => '2018-12-25',
-            'encodedZipDocument'    => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
+            'deadline'              => '2018-12-25',
+            'metadata'              => ['Entité' => 'QE', 'Destinataire' => 'Barry Allen', 'priorité' => 'Urgent'],
+            'encodedDocument'       => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
             'attachments'           => [[
-                'encodedZipDocument'    => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
-                'subject'               => 'Ma pj de mon courrier',
+                'encodedDocument'       => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
+                'title'                 => 'Ma pj de mon courrier',
                 'reference'             => '2018/ZZ/10',
             ]]
         ];
@@ -43,8 +42,8 @@ class DocumentControllerTest extends TestCase
         $response     = $documentController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('int', $responseBody->documentId);
-        self::$id = $responseBody->documentId;
+        $this->assertInternalType('int', $responseBody->id);
+        self::$id = $responseBody->id;
     }
 
     public function testGet()
@@ -80,14 +79,11 @@ class DocumentControllerTest extends TestCase
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('2018/CR/7', $responseBody->document->reference);
-        $this->assertSame('Mon Courrier', $responseBody->document->subject);
+        $this->assertSame('Mon Courrier', $responseBody->document->title);
         $this->assertSame('SIGN', $responseBody->document->mode);
         $this->assertSame(1, $responseBody->document->status);
-        $this->assertSame('Urgent', $responseBody->document->priority);
         $this->assertSame('Oliver Queen', $responseBody->document->sender);
-        $this->assertSame('QE', $responseBody->document->sender_entity);
-        $this->assertSame(2, $responseBody->document->processing_user);
-        $this->assertSame('Barry Allen', $responseBody->document->recipient);
+        $this->assertSame('jjane@maarch.com', $responseBody->document->processingUser);
         $this->assertInternalType('string', $responseBody->document->encodedDocument);
         $this->assertInternalType('array', $responseBody->document->attachments);
         $this->assertNotEmpty($responseBody->document->attachments);
@@ -185,14 +181,14 @@ class DocumentControllerTest extends TestCase
         $this->assertSame('Action does not exist', $responseBody->errors);
     }
 
-    public function testGetHandwrittenDocumentById()
+    public function testGetProcessedDocumentById()
     {
         $documentController = new \Document\controllers\DocumentController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $documentController->getHandwrittenDocumentById($request, new \Slim\Http\Response(), ['id' => self::$id]);
+        $response     = $documentController->getProcessedDocumentById($request, new \Slim\Http\Response(), ['id' => self::$id]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertNotEmpty($responseBody->encodedDocument);
