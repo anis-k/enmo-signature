@@ -25,14 +25,14 @@ class AuthenticationModel
 
     public static function authentication(array $args)
     {
-        ValidatorModel::notEmpty($args, ['email', 'password']);
-        ValidatorModel::stringType($args, ['email', 'password']);
+        ValidatorModel::notEmpty($args, ['login', 'password']);
+        ValidatorModel::stringType($args, ['login', 'password']);
 
         $aReturn = DatabaseModel::select([
             'select'    => ['password'],
             'table'     => ['users'],
-            'where'     => ['email = ?', 'enabled = ?'],
-            'data'      => [$args['email'], 'true']
+            'where'     => ['login = ?', 'enabled = ?'],
+            'data'      => [$args['login'], 'true']
         ]);
 
         if (empty($aReturn[0])) {

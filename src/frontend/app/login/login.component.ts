@@ -36,8 +36,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     loadingForm         : boolean   = true;
     loadingConnexion    : boolean   = false;
     newLogin            : any       = {
-        mail: '',
-        password: ''
+        login       : '',
+        password    : ''
     };
     labelButton         : string    = 'Se connecter';
     appVersion          : string    = '';
@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.labelButton = 'Connexion ...';
         this.loadingConnexion = true;
 
-        this.http.post('../rest/log', { 'email': this.newLogin.mail, 'password': this.newLogin.password })
+        this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password })
             .subscribe((data: any) => {
                 this.signaturesService.userLogged = data.user;
                 this.loadingForm = true;
@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 }, 700);
             }, (err: any) => {
                 if (err.status === 401) {
-                    this.notificationService.error('Mauvais courriel ou mauvais mot de passe');
+                    this.notificationService.error('Mauvais identifiant ou mauvais mot de passe');
                 } else {
                     this.notificationService.handleErrors(err);
                 }

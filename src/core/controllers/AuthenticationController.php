@@ -30,8 +30,8 @@ class AuthenticationController
     {
         $id = null;
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
-            if (AuthenticationModel::authentication(['email' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
-                $user = UserModel::getByEmail(['select' => ['id'], 'email' => $_SERVER['PHP_AUTH_USER']]);
+            if (AuthenticationModel::authentication(['login' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
+                $user = UserModel::getByLogin(['select' => ['id'], 'login' => $_SERVER['PHP_AUTH_USER']]);
                 $id = $user['id'];
                 new LangModel(['language' => CoreConfigModel::getLanguage()]);
             }
@@ -49,19 +49,19 @@ class AuthenticationController
 
     public static function log(Request $request, Response $response)
     {
-        $data = $request->getParams();
+        $body = $request->getParsedBody();
 
-        $check = Validator::stringType()->notEmpty()->validate($data['email']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['password']);
+        $check = Validator::stringType()->notEmpty()->validate($body['login']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['password']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        if (!AuthenticationModel::authentication(['email' => $data['email'], 'password' => $data['password']])) {
+        if (!AuthenticationModel::authentication(['login' => $body['login'], 'password' => $body['password']])) {
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        $user = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id', 'mode']]);
+        $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', 'mode']]);
         if ($user['mode'] != 'standard') {
             return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
         }

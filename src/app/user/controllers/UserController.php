@@ -178,7 +178,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        $user = UserModel::getById(['select' => ['email', 'mode'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['login', 'mode'], 'id' => $args['id']]);
         if ($GLOBALS['id'] != $args['id']) {
             if ($user['mode'] == 'rest' && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
@@ -190,7 +190,7 @@ class UserController
         if ($user['mode'] == 'standard') {
             if ($data['newPassword'] != $data['passwordConfirmation']) {
                 return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
-            } elseif (empty($data['currentPassword']) || !AuthenticationModel::authentication(['email' => $user['email'], 'password' => $data['currentPassword']])) {
+            } elseif (empty($data['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $data['currentPassword']])) {
                 return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
             }
         }
