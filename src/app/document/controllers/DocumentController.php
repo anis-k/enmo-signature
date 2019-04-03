@@ -37,20 +37,20 @@ class DocumentController
 {
     public function get(Request $request, Response $response)
     {
-        $data = $request->getQueryParams();
+        $queryParams = $request->getQueryParams();
 
-        $data['offset'] = empty($data['offset']) ? 0 : (int)$data['offset'];
-        $data['limit'] = empty($data['limit']) ? 0 : (int)$data['limit'];
+        $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
+        $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
         $status = StatusModel::getByReference(['select' => ['id'], 'reference' => 'NEW']);
 
         $where = ['processing_user = ?', 'status = ?'];
         $dataGet = [$GLOBALS['id'], $status['id']];
         $count = [];
-        if (!empty($data['mode'])) {
+        if (!empty($queryParams['mode'])) {
             $where[] = 'mode = ?';
-            $dataGet[] = $data['mode'];
-            $secondMode = ($data['mode'] == 'SIGN' ? 'NOTE' : 'SIGN');
+            $dataGet[] = $queryParams['mode'];
+            $secondMode = ($queryParams['mode'] == 'SIGN' ? 'NOTE' : 'SIGN');
             $documents = DocumentModel::get([
                 'select'    => ['count(1) OVER()'],
                 'where'     => $where,
@@ -60,14 +60,14 @@ class DocumentController
         }
 
         $documents = DocumentModel::get([
-            'select'    => ['id', 'reference', 'subject', 'status', 'mode', 'count(1) OVER()'],
+            'select'    => ['id', 'title', 'reference', 'status', 'mode', 'count(1) OVER()'],
             'where'     => $where,
             'data'      => $dataGet,
-            'limit'     => $data['limit'],
-            'offset'    => $data['offset'],
+            'limit'     => $queryParams['limit'],
+            'offset'    => $queryParams['offset'],
             'orderBy'   => ['creation_date desc']
         ]);
-        $count[$data['mode']] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+        $count[$queryParams['mode']] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
             $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
             $documents[$key]['statusDisplay'] = $status['label'];
@@ -109,22 +109,47 @@ class DocumentController
             return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
         }
 
-        $date = new \DateTime($document['limit_date']);
-        $document['limit_date'] = $date->format('d-m-Y H:i');
-        $document['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
-        $document['statusDisplay'] = StatusModel::getById(['select' => ['label'], 'id' => $document['status']])['label'];
-        $document['actionsAllowed'] = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'where' => ['mode = ?', 'status_id = ?'], 'data' => [$document['mode'], $document['status']], 'orderBy' => ['id']]);
-        $document['processingUserDisplay'] = UserModel::getLabelledUserById(['id' => $document['processing_user']]);
-        $document['attachments'] = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
+        $formattedDocument = [
+            'id'                => $document['id'],
+            'title'             => $document['title'],
+            'reference'         => $document['reference'],
+            'description'       => $document['description'],
+            'mode'              => $document['mode'],
+            'sender'            => $document['sender'],
+            'metadata'          => json_decode($document['metadata']),
+            'creationDate'      => $document['creation_date'],
+            'modificationDate'  => $document['modification_date']
+        ];
+        if (!empty($document['deadline'])) {
+            $date = new \DateTime($document['deadline']);
+            $formattedDocument['deadline'] = $date->format('d-m-Y H:i');
+        }
+        $formattedDocument['status'] = StatusModel::getById(['select' => ['*'], 'id' => $document['status']]);
+        $processingUser = UserModel::getById(['select' => ['firstname', 'lastname', 'login'], 'id' => $document['processing_user']]);
+        $formattedDocument['processingUser'] = $processingUser['login'];
+        $formattedDocument['processingUserDisplay'] = "{$processingUser['firstname']} {$processingUser['lastname']}";
+        $creator = UserModel::getById(['select' => ['firstname', 'lastname', 'login'], 'id' => $document['creator']]);
+        $formattedDocument['creator'] = $creator['login'];
+        $formattedDocument['creatorDisplay'] = "{$creator['firstname']} {$creator['lastname']}";
+        $formattedDocument['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
+
+        $actions = ActionModel::get(['select' => ['id'], 'where' => ['mode = ?', 'status_id = ?'], 'data' => [$document['mode'], $document['status']], 'orderBy' => ['id']]);
+        foreach ($actions as $action) {
+            $formattedDocument['actionsAllowed'][] = $action['id'];
+        }
+        $attachments = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
+        foreach ($attachments as $attachment) {
+            $formattedDocument['attachments'][] = $attachment['id'];
+        }
 
         HistoryController::add([
             'tableName' => 'main_documents',
             'recordId'  => $args['id'],
             'eventType' => 'VIEW',
-            'info'      => "documentViewed {$document['subject']}"
+            'info'      => "documentViewed {$document['title']}"
         ]);
 
-        return $response->withJson(['document' => $document]);
+        return $response->withJson(['document' => $formattedDocument]);
     }
 
     public function create(Request $request, Response $response)

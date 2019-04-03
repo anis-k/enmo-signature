@@ -47,6 +47,9 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 $app->post('/log', \SrcCore\controllers\AuthenticationController::class . ':log');
 $app->get('/logout', \SrcCore\controllers\AuthenticationController::class . ':logout');
 
+//Actions
+$app->get('/actions', \Action\controllers\ActionController::class . ':get');
+
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
 
