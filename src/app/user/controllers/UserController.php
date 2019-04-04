@@ -30,9 +30,9 @@ class UserController
 {
     public function get(Request $request, Response $response)
     {
-        $data = $request->getQueryParams();
+        $queryParams = $request->getQueryParams();
 
-        if (!empty($data['mode']) && $data['mode'] == 'rest') {
+        if (!empty($queryParams['mode']) && $queryParams['mode'] == 'rest') {
             if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
@@ -45,7 +45,7 @@ class UserController
         }
 
         $users = UserModel::get([
-            'select'    => ['id', 'firstname', 'lastname'],
+            'select'    => ['id', 'login', 'firstname', 'lastname'],
             'where'     => ['mode = ?'],
             'data'      => $queryData,
             'orderBy'   => ['lastname', 'firstname']
