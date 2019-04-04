@@ -79,7 +79,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
-        } elseif (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+        } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
