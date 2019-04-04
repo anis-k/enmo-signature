@@ -71,13 +71,15 @@ canvas {
   justify-content: center;
   align-items: center;
   padding: 0;
+
   /*&-left
       position absolute
       top 15px
       left -60px*/
-    &-action {
-      color: $primary;
-    }
+  &-action {
+    color: $primary;
+  }
+
   &-infos {
     background: #F1F4F4;
     border-radius: 5px;
@@ -89,18 +91,61 @@ canvas {
     padding-bottom: 12px;
     position: relative;
   }
+
   &-info {
     border-right: 1px solid #979797;
     width: 200px;
     height: 60px;
     font-size: 12px;
     padding-left: 20px;
+
     &:last-of-type {
       border: none;
     }
+
     p {
       margin: 0;
       padding: 0;
+    }
+  }
+
+  &-expand {
+    width: 80%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 25px;
+    border: solid 1px #F1F4F4;
+
+    .mat-form-field {
+      padding-top: 10px;
+    }
+
+    ::ng-deep.mat-expansion-panel {
+      box-shadow: none;
+    }
+
+    ::ng-deep.mat-form-field-label {
+      color: $primary;
+    }
+
+    ::ng-deep .mat-form-field-underline {
+        display: none;
+    }
+
+    &-content {
+        width: 33%;
+        display: inline-block;
+    }
+
+    input:disabled {
+      opacity: 1;
+      color: #666;
+    }
+
+    div {
+      flex: 1;
+      font-size: 12px;
     }
   }
 }
@@ -122,6 +167,7 @@ canvas {
     opacity: 0.8;
     left: 50%;
     transform: translateX(-50%);
+
     &-doc {
       max-width: 80%;
       background-color: #F1F4F4;
@@ -132,6 +178,7 @@ canvas {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     &-page {
       max-width: 20%;
       text-align: center;
@@ -157,10 +204,12 @@ canvas {
   top: 50%;
   cursor: pointer;
   z-index: 1;
+
   &.disabled {
     cursor: not-allowed;
   }
 }
+
 .btn-previous {
   color: #666;
   background: #c6c6c680;
@@ -173,6 +222,7 @@ canvas {
   top: 50%;
   cursor: pointer;
   z-index: 1;
+
   &.disabled {
     cursor: not-allowed;
   }

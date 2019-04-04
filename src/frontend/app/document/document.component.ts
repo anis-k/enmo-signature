@@ -121,9 +121,23 @@ export class DocumentComponent implements OnInit {
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.mainDocument = data.document;
+
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.initDoc();
-                        this.actionsList = data.document.actionsAllowed;
+                        if (this.actionsList.length === 0) {
+                            this.http.get('../rest/actions')
+                            .subscribe((dataActionsList: any) => {
+                                this.actionsList = dataActionsList.actions;
+                                this.actionsList.forEach((element: any) => {
+                                    if (this.mainDocument.actionsAllowed.indexOf(element.id) > -1) {
+                                        element.allowed = true;
+                                    } else {
+                                        element.allowed = false;
+                                    }
+                                });
+                            });
+                        }
+
                         if (this.signaturesService.signaturesList.length === 0) {
                             this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
                             .subscribe((dataSign: any) => {
@@ -132,8 +146,8 @@ export class DocumentComponent implements OnInit {
                             });
                         }
                         this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'subject': this.mainDocument.subject });
-                        this.mainDocument.attachments.forEach((attach: any, index: any) => {
-                            this.docList.push({ 'id': attach.id, 'encodedDocument': '', 'title': '' });
+                        this.mainDocument.attachments.forEach((attach: any) => {
+                            this.docList.push({ 'id': attach, 'encodedDocument': '', 'title': '' });
                         });
 
                         this.pdfRender(this.docList[this.currentDoc]);
