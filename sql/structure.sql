@@ -182,13 +182,15 @@ DROP TABLE IF EXISTS history;
 CREATE TABLE history
 (
   id serial NOT NULL,
-  table_name character varying(64) NOT NULL,
-  record_id character varying(32) NOT NULL,
-  event_type character varying(32) NOT NULL,
+  code CHARACTER VARYING(2) NOT NULL,
+  object_type CHARACTER VARYING(128) NOT NULL,
+  object_id  CHARACTER VARYING(32) NOT NULL,
+  type CHARACTER VARYING(64) NOT NULL,
   user_id INTEGER NOT NULL,
-  event_date timestamp without time zone NOT NULL,
-  info text NOT NULL,
-  remote_ip character varying(32) DEFAULT NULL,
+  date TIMESTAMP without TIME ZONE NOT NULL,
+  message text NOT NULL,
+  data jsonb NOT NULL DEFAULT '{}',
+  ip CHARACTER VARYING(64) NOT NULL,
   CONSTRAINT history_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);

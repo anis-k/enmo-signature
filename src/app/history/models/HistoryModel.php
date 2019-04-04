@@ -14,7 +14,32 @@
 
 namespace History\models;
 
-class HistoryModel extends HistoryModelAbstract
+use SrcCore\models\DatabaseModel;
+use SrcCore\models\ValidatorModel;
+
+class HistoryModel
 {
-    // Do your stuff in this class
+    public static function create(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['code', 'object_type', 'object_id', 'type', 'user_id', 'message', 'data', 'ip']);
+        ValidatorModel::stringType($args, ['code', 'objectType', 'type', 'message', 'data', 'ip']);
+        ValidatorModel::intVal($args, ['user_id']);
+
+        DatabaseModel::insert([
+            'table'         => 'history',
+            'columnsValues' => [
+                'code'          => $args['code'],
+                'object_type'   => $args['object_type'],
+                'object_id'     => $args['object_id'],
+                'type'          => $args['type'],
+                'user_id'       => $args['user_id'],
+                'date'          => 'CURRENT_TIMESTAMP',
+                'message'       => $args['message'],
+                'data'          => $args['data'],
+                'ip'            => $args['ip']
+            ]
+        ]);
+
+        return true;
+    }
 }

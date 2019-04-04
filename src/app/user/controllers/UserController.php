@@ -97,10 +97,11 @@ class UserController
         $id = UserModel::create($body);
 
         HistoryController::add([
-            'tableName' => 'users',
-            'recordId'  => $id,
-            'eventType' => 'ADD',
-            'info'      => "userCreation",
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $id,
+            'type'          => 'CREATION',
+            'message'       => "User added : {$body['firstname']} {$body['lastname']}"
         ]);
 
         return $response->withJson(['id' => $id]);
@@ -112,33 +113,33 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $data = $request->getParams();
-        $check = Validator::stringType()->notEmpty()->validate($data['firstname']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['lastname']);
+        $body = $request->getParsedBody();
+        $check = Validator::stringType()->notEmpty()->validate($body['firstname']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['lastname']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        $check = Validator::arrayType()->notEmpty()->validate($data['preferences']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['preferences']['writingMode']);
-        $check = $check && Validator::intType()->notEmpty()->validate($data['preferences']['writingSize']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['preferences']['writingColor']);
+        $check = Validator::arrayType()->notEmpty()->validate($body['preferences']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingMode']);
+        $check = $check && Validator::intType()->notEmpty()->validate($body['preferences']['writingSize']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingColor']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Missing parameter in user preferences data']);
         }
 
-        $data['preferences'] = json_encode($data['preferences']);
-        if (!is_string($data['preferences'])) {
+        $body['preferences'] = json_encode($body['preferences']);
+        if (!is_string($body['preferences'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Wrong format for user preferences data']);
         }
 
-        if (!empty($data['picture'])) {
+        if (!empty($body['picture'])) {
             $infoContent = '';
-            if (preg_match('/^data:image\/(\w+);base64,/', $data['picture'])) {
-                $infoContent = substr($data['picture'], 0, strpos($data['picture'], ',') + 1);
-                $data['picture'] = substr($data['picture'], strpos($data['picture'], ',') + 1);
+            if (preg_match('/^data:image\/(\w+);base64,/', $body['picture'])) {
+                $infoContent = substr($body['picture'], 0, strpos($body['picture'], ',') + 1);
+                $body['picture'] = substr($body['picture'], strpos($body['picture'], ',') + 1);
             }
-            $picture    = base64_decode($data['picture']);
+            $picture    = base64_decode($body['picture']);
             $finfo      = new \finfo(FILEINFO_MIME_TYPE);
             $mimeType   = $finfo->buffer($picture);
             $type       = explode('/', $mimeType);
@@ -147,22 +148,22 @@ class UserController
                 return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
             }
 
-            if (!empty($data['pictureOrientation'])) {
+            if (!empty($body['pictureOrientation'])) {
                 $imagick = new \Imagick();
-                $imagick->readImageBlob(base64_decode($data['picture']));
-                $imagick->rotateImage(new \ImagickPixel(), $data['pictureOrientation']);
-                $data['picture'] = base64_encode($imagick->getImageBlob());
+                $imagick->readImageBlob(base64_decode($body['picture']));
+                $imagick->rotateImage(new \ImagickPixel(), $body['pictureOrientation']);
+                $body['picture'] = base64_encode($imagick->getImageBlob());
             }
-            $data['picture'] = $infoContent . $data['picture'];
+            $body['picture'] = $infoContent . $body['picture'];
         }
 
         $set = [
-            'firstname'     => $data['firstname'],
-            'lastname'      => $data['lastname'],
-            'preferences'   => $data['preferences']
+            'firstname'     => $body['firstname'],
+            'lastname'      => $body['lastname'],
+            'preferences'   => $body['preferences']
         ];
-        if (!empty($data['picture'])) {
-            $set['picture'] = $data['picture'];
+        if (!empty($body['picture'])) {
+            $set['picture'] = $body['picture'];
         }
 
         UserModel::update([
@@ -172,10 +173,11 @@ class UserController
         ]);
 
         HistoryController::add([
-            'tableName' => 'users',
-            'recordId'  => $args['id'],
-            'eventType' => 'MODIFICATION',
-            'info'      => "userUpdated",
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => "User updated : {$body['firstname']} {$body['lastname']}"
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
@@ -215,10 +217,11 @@ class UserController
         }
 
         HistoryController::add([
-            'tableName' => 'users',
-            'recordId'  => $args['id'],
-            'eventType' => 'MODIFICATION',
-            'info'      => "passwordUpdated",
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => "User password updated"
         ]);
 
         return $response->withJson(['success' => 'success']);
@@ -304,10 +307,12 @@ class UserController
         ]);
 
         HistoryController::add([
-            'tableName' => 'signatures',
-            'recordId'  => $id,
-            'eventType' => 'CREATION',
-            'info'      => "signatureAdded",
+            'code'          => 'OK',
+            'objectType'    => 'signatures',
+            'objectId'      => $id,
+            'type'          => 'CREATION',
+            'message'       => "Signature added",
+            'data'          => ['user' => $args['id']]
         ]);
 
         return $response->withJson(['signatureId' => $id]);
@@ -322,10 +327,12 @@ class UserController
         UserModel::deleteSignature(['where' => ['user_id = ?', 'id = ?'], 'data' => [$args['id'], $args['signatureId']]]);
 
         HistoryController::add([
-            'tableName' => 'signatures',
-            'recordId'  => $args['signatureId'],
-            'eventType' => 'SUPPRESSION',
-            'info'      => "signatureDeleted",
+            'code'          => 'OK',
+            'objectType'    => 'signatures',
+            'objectId'      => $args['signatureId'],
+            'type'          => 'SUPPRESSION',
+            'message'       => "Signature deleted",
+            'data'          => ['user' => $args['id']]
         ]);
 
         return $response->withJson(['success' => 'success']);

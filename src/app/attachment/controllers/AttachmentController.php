@@ -99,10 +99,12 @@ class AttachmentController
         ]);
 
         HistoryController::add([
-            'tableName' => 'attachments',
-            'recordId'  => $id,
-            'eventType' => 'CREATION',
-            'info'      => "attachmentAdded {$args['title']}",
+            'code'          => 'OK',
+            'objectType'    => 'attachments',
+            'objectId'      => $id,
+            'type'          => 'CREATION',
+            'message'       => "Attachment added : {$args['title']}",
+            'data'          => ['mainDocumentId' => $args['mainDocumentId']]
         ]);
 
         return ['id' => $id];

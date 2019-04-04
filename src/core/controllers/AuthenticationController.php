@@ -69,11 +69,13 @@ class AuthenticationController
         AuthenticationModel::setCookieAuth(['id' => $user['id']]);
 
         $GLOBALS['id'] = $user['id'];
+
         HistoryController::add([
-            'tableName' => 'users',
-            'recordId'  => $user['id'],
-            'eventType' => 'AUTHENTICATION',
-            'info'      => "userLogin"
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $user['id'],
+            'type'          => 'LOGIN',
+            'message'       => "User log in"
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
@@ -84,10 +86,11 @@ class AuthenticationController
         AuthenticationModel::deleteCookieAuth();
 
         HistoryController::add([
-            'tableName' => 'users',
-            'recordId'  => $GLOBALS['id'],
-            'eventType' => 'AUTHENTICATION',
-            'info'      => "userLogout"
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $GLOBALS['id'],
+            'type'          => 'LOGOUT',
+            'message'       => "User log out"
         ]);
 
         return $response->withJson(['success' => 'success']);

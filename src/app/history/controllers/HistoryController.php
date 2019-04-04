@@ -16,22 +16,26 @@ namespace History\controllers;
 
 use SrcCore\models\ValidatorModel;
 use History\models\HistoryModel;
-use User\models\UserModel;
 
 class HistoryController
 {
-    public static function add(array $aArgs)
+    public static function add(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['tableName', 'recordId', 'eventType', 'info']);
-        ValidatorModel::stringType($aArgs, ['tableName', 'eventType', 'info']);
+        ValidatorModel::notEmpty($args, ['code', 'objectType', 'objectId', 'type', 'message']);
+        ValidatorModel::stringType($args, ['code', 'objectType', 'type', 'message']);
+        ValidatorModel::arrayType($args, ['data']);
 
         HistoryModel::create([
-            'tableName' => $aArgs['tableName'],
-            'recordId'  => $aArgs['recordId'],
-            'eventType' => $aArgs['eventType'],
-            'userId'    => $GLOBALS['id'],
-            'info'      => $aArgs['info'],
+            'code'          => $args['code'],
+            'object_type'   => $args['objectType'],
+            'object_id'     => $args['objectId'],
+            'type'          => $args['type'],
+            'user_id'       => $GLOBALS['id'],
+            'message'       => $args['message'],
+            'data'          => empty($args['data']) ? '{}' : json_encode($args['data']),
+            'ip'            => $_SERVER['REMOTE_ADDR']
         ]);
 
+        return true;
     }
 }

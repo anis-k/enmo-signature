@@ -153,10 +153,11 @@ class DocumentController
         }
 
         HistoryController::add([
-            'tableName' => 'main_documents',
-            'recordId'  => $args['id'],
-            'eventType' => 'VIEW',
-            'info'      => "documentViewed {$document['title']}"
+            'code'          => 'OK',
+            'objectType'    => 'main_documents',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "Document viewed : {$document['title']}"
         ]);
 
         return $response->withJson(['document' => $formattedDocument]);
@@ -246,10 +247,11 @@ class DocumentController
         }
 
         HistoryController::add([
-            'tableName' => 'main_documents',
-            'recordId'  => $id,
-            'eventType' => 'CREATION',
-            'info'      => "documentAdded {$body['subject']}"
+            'code'          => 'OK',
+            'objectType'    => 'main_documents',
+            'objectId'      => $id,
+            'type'          => 'CREATION',
+            'message'       => "Document added : {$body['title']}"
         ]);
 
         DatabaseModel::commitTransaction();
@@ -378,10 +380,11 @@ class DocumentController
         ]);
 
         HistoryController::add([
-            'tableName' => 'main_documents',
-            'recordId'  => $args['id'],
-            'eventType' => 'UP',
-            'info'      => "actionDone : {$args['actionId']}"
+            'code'          => 'OK',
+            'objectType'    => 'main_documents',
+            'objectId'      => $args['id'],
+            'type'          => 'ACTION',
+            'message'       => "Action done : {$args['actionId']}"
         ]);
 
         return $response->withJson(['success' => 'success']);
@@ -467,7 +470,7 @@ class DocumentController
         }
 
         $dirOnTmp = $tmpPath . mt_rand() . '_parapheur';
-        if (!$zipArchive->extractTo($dirOnTmp)) {
+        if (!@$zipArchive->extractTo($dirOnTmp)) {
             return ['errors' => "getDocumentFromEncodedZip : Extract failed"];
         }
 
