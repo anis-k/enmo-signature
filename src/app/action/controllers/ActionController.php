@@ -22,7 +22,7 @@ class ActionController
 {
     public function get(Request $request, Response $response)
     {
-        $actions = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event'], 'orderBy' => ['id']]);
+        $actions = ActionModel::get(['select' => ['id', 'label', 'color', 'logo', 'event', 'mode'], 'orderBy' => ['id']]);
 
         return $response->withJson(['actions' => $actions]);
     }
