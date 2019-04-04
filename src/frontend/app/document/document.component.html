@@ -23,41 +23,40 @@
               <mat-panel-title>
                 <div>
                   <mat-form-field>
-                    <input matInput [value]="mainDocument.reference" title="{{mainDocument.reference}}"
-                      placeholder="Référence" disabled>
+                    <input matInput [value]="mainDocument.sender" title="{{mainDocument.sender}}" placeholder="Émis par"
+                      disabled>
                   </mat-form-field>
-
                 </div>
                 <div>
-                  <mat-form-field>
+                  <mat-form-field *ngIf="mainDocument.description == ''">
                     <input matInput [value]="mainDocument.description" title="{{mainDocument.description}}"
                       placeholder="Description" disabled>
                   </mat-form-field>
                 </div>
                 <div>
-                    <mat-form-field *ngIf="mainDocument.deadLine != null">
-                      <input matInput [value]="mainDocument.deadLine" title="{{mainDocument.deadLine}}"
-                        placeholder="Date limite de traitement" disabled>
-                    </mat-form-field>
-                  </div>
+                  <mat-form-field *ngIf="mainDocument.deadLine != null">
+                    <input matInput [value]="mainDocument.deadLine" title="{{mainDocument.deadLine}}"
+                      placeholder="Date limite de traitement" disabled>
+                  </mat-form-field>
+                </div>
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="header-expand-content">
               <mat-form-field>
-                <input matInput [value]="mainDocument.title" title="{{mainDocument.title}}" placeholder="Sujet"
-                  disabled>
+                <input matInput [value]="mainDocument.reference" title="{{mainDocument.reference}}"
+                  placeholder="Référence" disabled>
               </mat-form-field>
             </div>
-            <div class="header-expand-content">
-                <mat-form-field>
-                  <input matInput [value]="mainDocument.sender" title="{{mainDocument.sender}}" placeholder="Émis par"
-                    disabled>
-                </mat-form-field>
-              </div>
             <div class="header-expand-content">
               <mat-form-field>
                 <input matInput [value]="mainDocument.processingUserDisplay"
                   title="{{mainDocument.processingUserDisplay}}" placeholder="À signer par" disabled>
+              </mat-form-field>
+            </div>
+            <div class="header-expand-content">
+              <mat-form-field>
+                <input matInput [value]="mainDocument.title" title="{{mainDocument.title}}" placeholder="Sujet"
+                  disabled>
               </mat-form-field>
             </div>
             <div class="header-expand-content" *ngFor="let data of mainDocument.metadata;">
