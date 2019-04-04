@@ -1,22 +1,16 @@
--- res_letterbox
-CREATE INDEX type_label_idx ON res_letterbox (type_id);
-CREATE INDEX typist_idx ON res_letterbox (typist);
-CREATE INDEX doc_date_idx ON res_letterbox (doc_date);
-CREATE INDEX status_idx ON res_letterbox (status);
-CREATE INDEX destination_idx ON res_letterbox (destination);
-CREATE INDEX dest_user_idx ON res_letterbox (dest_user);
-CREATE INDEX res_letterbox_docserver_id_idx ON res_letterbox (docserver_id);
-CREATE INDEX res_letterbox_filename_idx ON res_letterbox (filename);
+-- main_documents
+CREATE INDEX main_documents_id_idx ON main_documents (id);
+CREATE INDEX main_documents_processing_user_idx ON main_documents (processing_user);
 
--- res_attachments
-CREATE INDEX res_id_idx ON res_attachments (res_id);
-CREATE INDEX res_id_master_idx ON res_attachments (res_id_master);
+-- attachments
+CREATE INDEX attachments_id_idx ON attachments (id);
+CREATE INDEX attachments_main_document_id_idx ON attachments (main_document_id);
 
 -- history
-CREATE INDEX table_name_idx ON history (table_name);
-CREATE INDEX record_id_idx ON history (record_id);
-CREATE INDEX event_type_idx ON history (event_type);
-CREATE INDEX user_id_idx ON history (user_id);
+CREATE INDEX history_object_type_idx ON history (object_type);
+CREATE INDEX history_object_id_idx ON history (object_id);
+CREATE INDEX history_user_id_idx ON history (user_id);
 
 -- users
-CREATE INDEX lastname_users_idx ON users (lastname);
+CREATE INDEX users_id_idx ON users (id);
+CREATE INDEX users_login_idx ON users (login);
