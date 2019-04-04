@@ -59,6 +59,7 @@ $app->get('/documents', \Document\controllers\DocumentController::class . ':get'
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
 $app->get('/documents/{id}/status', \Document\controllers\DocumentController::class . ':getStatusById');
 $app->get('/documents/{id}/processedDocument', \Document\controllers\DocumentController::class . ':getProcessedDocumentById');
+$app->get('/documents/{id}/history', \History\controllers\HistoryController::class . ':getByDocumentId');
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 
 //Password Rules

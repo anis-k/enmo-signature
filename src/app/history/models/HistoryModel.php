@@ -19,6 +19,25 @@ use SrcCore\models\ValidatorModel;
 
 class HistoryModel
 {
+    public static function get(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['select']);
+        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);
+        ValidatorModel::intType($aArgs, ['limit', 'offset']);
+
+        $history = DatabaseModel::select([
+            'select'    => $aArgs['select'],
+            'table'     => ['history'],
+            'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
+            'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
+            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
+            'offset'    => empty($aArgs['offset']) ? 0 : $aArgs['offset'],
+            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit'],
+        ]);
+
+        return $history;
+    }
+
     public static function create(array $args)
     {
         ValidatorModel::notEmpty($args, ['code', 'object_type', 'object_id', 'type', 'user_id', 'message', 'data', 'ip']);

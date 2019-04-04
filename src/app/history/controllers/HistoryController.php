@@ -14,8 +14,14 @@
 
 namespace History\controllers;
 
+use Document\controllers\DocumentController;
+use Document\models\DocumentModel;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
 use History\models\HistoryModel;
+use User\controllers\UserController;
+use User\models\UserModel;
 
 class HistoryController
 {
@@ -37,5 +43,50 @@ class HistoryController
         ]);
 
         return true;
+    }
+
+    public function getByDocumentId(Request $request, Response $response, array $args)
+    {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $document = DocumentModel::getById(['select' => [1], 'id' => $args['id']]);
+        if (empty($document)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        }
+
+        $history = HistoryModel::get([
+            'select'    => ['code', 'type', 'user_id', 'date', 'message', 'data'],
+            'where'     => ['object_type = ?', 'object_id = ?'],
+            'data'      => ['main_documents', $args['id']]
+        ]);
+
+        $formattedHistory = [];
+
+        foreach ($history as $value) {
+            $user = UserModel::getById(['select' => ['login'], 'id' => $value['user_id']]);
+            $date = new \DateTime($value['date']);
+
+            $formattedHistory[] = [
+                'code'          => $value['code'],
+                'type'          => $value['type'],
+                'userLogin'     => $user['login'],
+                'date'          => $date->format('d-m-Y H:i'),
+                'message'       => $value['message'],
+                'data'          => json_decode($value['data'], true)
+            ];
+        }
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'history',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "Document historic viewed",
+            'data'          => ['objectType' => 'main_documents']
+        ]);
+
+        return $response->withJson(['history' => $formattedHistory]);
     }
 }
