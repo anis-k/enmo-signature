@@ -116,7 +116,6 @@ class DocumentController
             'description'       => $document['description'],
             'mode'              => $document['mode'],
             'sender'            => $document['sender'],
-            'metadata'          => json_decode($document['metadata']),
             'creationDate'      => $document['creation_date'],
             'modificationDate'  => $document['modification_date']
         ];
@@ -133,10 +132,19 @@ class DocumentController
         $formattedDocument['creatorDisplay'] = "{$creator['firstname']} {$creator['lastname']}";
         $formattedDocument['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
 
+        $formattedDocument['metadata'] = [];
+        $metadata = json_decode($document['metadata'], true);
+        foreach ($metadata as $key => $value) {
+            $formattedDocument['metadata'][] = ['label' => $key, 'value' => $value];
+        }
+
+        $formattedDocument['actionsAllowed'] = [];
         $actions = ActionModel::get(['select' => ['id'], 'where' => ['mode = ?', 'status_id = ?'], 'data' => [$document['mode'], $document['status']], 'orderBy' => ['id']]);
         foreach ($actions as $action) {
             $formattedDocument['actionsAllowed'][] = $action['id'];
         }
+
+        $formattedDocument['attachments'] = [];
         $attachments = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
         foreach ($attachments as $attachment) {
             $formattedDocument['attachments'][] = $attachment['id'];
