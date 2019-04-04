@@ -91,7 +91,7 @@
         *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
     </ng-container>
-    <article class="article" style="position: fixed;" #article [style.left.px]="this.signaturesService.x"
+    <article class="article" [class.leftPosDesk]="!this.signaturesService.annotationMode && !this.signaturesService.mobileMode" style="position: fixed;" #article [style.left.px]="this.signaturesService.x"
       [style.top.px]="this.signaturesService.y" (panstart)="onPanStart($event)" (panmove)="onPan($event)">
       <div class="canvas-wrapper" #canvasWrapper>
         <simple-pdf-viewer [ngClass]="{

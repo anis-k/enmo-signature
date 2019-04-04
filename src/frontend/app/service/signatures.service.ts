@@ -27,6 +27,7 @@ export class SignaturesContentService {
     workingAreaWidth = 0;
     workingAreaHeight = 0;
     renderingDoc = true;
+    mobileMode = true;
     scale = 1;
     x = 0;
     y = 85;
@@ -55,6 +56,7 @@ export class SignaturesContentService {
         this.workingAreaWidth = 0;
         this.workingAreaHeight = 0;
         this.renderingDoc = true;
+        this.mobileMode = true;
         this.scale = 1;
         this.x = 0;
         this.y = 85;
