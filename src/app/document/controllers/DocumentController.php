@@ -134,8 +134,10 @@ class DocumentController
 
         $formattedDocument['metadata'] = [];
         $metadata = json_decode($document['metadata'], true);
-        foreach ($metadata as $key => $value) {
-            $formattedDocument['metadata'][] = ['label' => $key, 'value' => $value];
+        if (is_array($metadata)) {
+            foreach ($metadata as $key => $value) {
+                $formattedDocument['metadata'][] = ['label' => $key, 'value' => $value];
+            }
         }
 
         $formattedDocument['actionsAllowed'] = [];
