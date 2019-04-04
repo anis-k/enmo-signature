@@ -69,43 +69,41 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $data = $request->getParams();
+        $body = $request->getParsedBody();
 
-        if (!Validator::stringType()->notEmpty()->validate($data['firstname'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Le prénom est vide']);
-        }
-        if (!Validator::stringType()->notEmpty()->validate($data['lastname'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Le nom est vide']);
-        }
-        if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            return $response->withStatus(400)->withJson(['errors' => 'L\'email est vide ou le format n\'est pas correct']);
+        if (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['login'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body login is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
+        } elseif (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
-        $existingUser = UserModel::getByEmail(['email' => $data['email'], 'select' => ['id']]);
+        $existingUser = UserModel::getByLogin(['login' => $body['login'], 'select' => [1]]);
         if (!empty($existingUser)) {
-            return $response->withStatus(400)->withJson(['errors' => 'L\'email existe déjà']);
+            return $response->withStatus(400)->withJson(['errors' => 'Login already exists']);
         }
 
         $logingModes = ['standard', 'rest'];
-        if (!in_array($data['mode'], $logingModes)) {
-            $data['mode'] = 'standard';
+        if (empty($body['mode']) || !in_array($body['mode'], $logingModes)) {
+            $body['mode'] = 'standard';
         }
+        $body['picture'] = empty($body['picture']) ? null : $body['picture'];
 
-        UserModel::create(['user' => $data]);
-
-        $newUser = UserModel::getByEmail(['email' => $data['email']]);
-        if (!Validator::intType()->notEmpty()->validate($newUser['id'])) {
-            return $response->withStatus(500)->withJson(['errors' => 'User Creation Error']);
-        }
+        $id = UserModel::create($body);
 
         HistoryController::add([
             'tableName' => 'users',
-            'recordId'  => $newUser['id'],
+            'recordId'  => $id,
             'eventType' => 'ADD',
             'info'      => "userCreation",
         ]);
 
-        return $response->withJson(['user' => $newUser]);
+        return $response->withJson(['id' => $id]);
     }
 
     public function update(Request $request, Response $response, array $args)
@@ -158,8 +156,20 @@ class UserController
             $data['picture'] = $infoContent . $data['picture'];
         }
 
-        $data['id'] = $args['id'];
-        UserModel::update($data);
+        $set = [
+            'firstname'     => $data['firstname'],
+            'lastname'      => $data['lastname'],
+            'preferences'   => $data['preferences']
+        ];
+        if (!empty($data['picture'])) {
+            $set['picture'] = $data['picture'];
+        }
+
+        UserModel::update([
+            'set'   => $set,
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
 
         HistoryController::add([
             'tableName' => 'users',

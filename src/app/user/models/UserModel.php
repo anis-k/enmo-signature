@@ -77,66 +77,41 @@ class UserModel
         return $user[0];
     }
 
-    public static function create(array $aArgs)
+    public static function create(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['user']);
-        ValidatorModel::notEmpty($aArgs['user'], ['email', 'firstname', 'lastname']);
-        ValidatorModel::stringType($aArgs['user'], ['email', 'firstname', 'lastname', 'picture', 'mode']);
+        ValidatorModel::notEmpty($args, ['login', 'email', 'firstname', 'lastname', 'mode']);
+        ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode']);
+
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'users_id_seq']);
 
         DatabaseModel::insert([
             'table'         => 'users',
             'columnsValues' => [
-                'email'                               => $aArgs['user']['email'],
-                'password'                            => AuthenticationModel::getPasswordHash('maarch'),
-                'firstname'                           => $aArgs['user']['firstname'],
-                'lastname'                            => $aArgs['user']['lastname'],
-                'picture'                             => $aArgs['user']['picture'],
-                'mode'                                => $aArgs['user']['mode'],
-                'password_modification_date'          => 'CURRENT_TIMESTAMP'
+                'id'                            => $nextSequenceId,
+                'login'                         => $args['login'],
+                'email'                         => $args['email'],
+                'password'                      => AuthenticationModel::getPasswordHash('maarch'),
+                'firstname'                     => $args['firstname'],
+                'lastname'                      => $args['lastname'],
+                'mode'                          => $args['mode'],
+                'picture'                       => $args['picture'],
+                'password_modification_date'    => 'CURRENT_TIMESTAMP'
             ]
         ]);
 
-        return true;
+        return $nextSequenceId;
     }
 
-    public static function getByEmail(array $aArgs)
+    public static function update(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['email']);
-        ValidatorModel::stringType($aArgs, ['email']);
+        ValidatorModel::notEmpty($args, ['set', 'where', 'data']);
+        ValidatorModel::arrayType($args, ['set', 'where', 'data']);
 
-        $aUser = DatabaseModel::select([
-            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
-            'table'     => ['users'],
-            'where'     => ['email = ?'],
-            'data'      => [$aArgs['email']]
-        ]);
-
-        if (empty($aUser)) {
-            return [];
-        }
-
-        return $aUser[0];
-    }
-
-    public static function update(array $aArgs)
-    {
-        ValidatorModel::notEmpty($aArgs, ['id', 'firstname', 'lastname', 'preferences']);
-        ValidatorModel::intVal($aArgs, ['id']);
-        ValidatorModel::stringType($aArgs, ['firstname', 'lastname', 'picture', 'preferences']);
-
-        $set = [
-            'firstname'     => $aArgs['firstname'],
-            'lastname'      => $aArgs['lastname'],
-            'preferences'   => $aArgs['preferences']
-        ];
-        if (!empty($aArgs['picture'])) {
-            $set['picture'] = $aArgs['picture'];
-        }
         DatabaseModel::update([
-            'table'     => 'users',
-            'set'       => $set,
-            'where'     => ['id = ?'],
-            'data'      => [$aArgs['id']]
+            'table' => 'users',
+            'set'   => $args['set'],
+            'where' => $args['where'],
+            'data'  => $args['data']
         ]);
 
         return true;
