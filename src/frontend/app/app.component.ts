@@ -16,11 +16,6 @@ export class AppComponent {
 
   constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService) {
 
-    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-        this.signaturesService.mobileMode = true;
-      } else {
-        this.signaturesService.mobileMode = false;
-      }
     if (this.cookieService.check('maarchParapheurAuth')) {
       const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
 

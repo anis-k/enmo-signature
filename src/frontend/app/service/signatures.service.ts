@@ -32,6 +32,14 @@ export class SignaturesContentService {
     x = 0;
     y = 85;
 
+    constructor() {
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            this.mobileMode = true;
+        } else {
+            this.mobileMode = false;
+        }
+    }
+
     reset() {
         this.userLogged = {};
         this.mainDocumentId = 0;
@@ -57,6 +65,11 @@ export class SignaturesContentService {
         this.workingAreaHeight = 0;
         this.renderingDoc = true;
         this.mobileMode = true;
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            this.mobileMode = true;
+        } else {
+            this.mobileMode = false;
+        }
         this.scale = 1;
         this.x = 0;
         this.y = 85;

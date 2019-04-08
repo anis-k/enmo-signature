@@ -117,6 +117,7 @@ export class DocumentComponent implements OnInit {
         }, 500);
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
+                console.log(this.signaturesService.mobileMode);
                 this.signaturesService.renderingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
