@@ -45,7 +45,7 @@ class UserController
         }
 
         $users = UserModel::get([
-            'select'    => ['id', 'login', 'firstname', 'lastname'],
+            'select'    => ['id', 'login', 'firstname', 'lastname', 'email'],
             'where'     => ['mode = ?'],
             'data'      => $queryData,
             'orderBy'   => ['lastname', 'firstname']
@@ -312,7 +312,7 @@ class UserController
             'objectId'      => $id,
             'type'          => 'CREATION',
             'message'       => "Signature added",
-            'data'          => ['user' => $args['id']]
+            'data'          => ['userId' => $args['id']]
         ]);
 
         return $response->withJson(['signatureId' => $id]);
@@ -332,7 +332,7 @@ class UserController
             'objectId'      => $args['signatureId'],
             'type'          => 'SUPPRESSION',
             'message'       => "Signature deleted",
-            'data'          => ['user' => $args['id']]
+            'data'          => ['userId' => $args['id']]
         ]);
 
         return $response->withJson(['success' => 'success']);

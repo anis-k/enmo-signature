@@ -267,7 +267,7 @@ class DocumentController
 
         $document = DocumentModel::getById(['select' => ['mode', 'status'], 'id' => $args['id']]);
         $action = ActionModel::get([
-            'select'    => ['next_status_id'],
+            'select'    => ['next_status_id', 'label'],
             'where'     => ['mode = ?', 'status_id = ?', 'id = ?'],
             'data'      => [$document['mode'], $document['status'], $args['actionId']]
         ]);
@@ -384,7 +384,9 @@ class DocumentController
             'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'ACTION',
-            'message'       => "Action done : {$args['actionId']}"
+            'message'       => "Action done : {$action['label']}",
+            'data'          => ['actionId' => $args['actionId']]
+
         ]);
 
         return $response->withJson(['success' => 'success']);
