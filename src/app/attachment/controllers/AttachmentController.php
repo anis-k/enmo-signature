@@ -61,6 +61,15 @@ class AttachmentController
 
         $attachment['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
 
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'attachments',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "Attachment viewed : {$attachment['title']}",
+            'data'          => ['mainDocumentId' => $attachment['main_document_id']]
+        ]);
+
         return $response->withJson(['attachment' => $attachment]);
     }
 

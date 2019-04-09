@@ -60,7 +60,17 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
+        $user =  UserController::getUserInformationsById(['id' => $args['id']]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "User viewed : " . $user['firstname'] . ' ' . $user['lastname']
+        ]);
+
+        return $response->withJson(['user' => $user]);
     }
 
     public function create(Request $request, Response $response)

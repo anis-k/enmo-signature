@@ -422,6 +422,16 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Fingerprints do not match']);
         }
 
+        $document = DocumentModel::getById(['select' => ['title'], 'id' => $args['id']]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'main_documents',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "Processed document viewed : {$document['title']}"
+        ]);
+
         return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
     }
 
