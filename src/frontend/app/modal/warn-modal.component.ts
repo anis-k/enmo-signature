@@ -52,10 +52,13 @@ export class WarnModalComponent {
             this.msgButton = 'Envoi...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
-                    var mode = this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]["mode"];
-                    this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                    if (this.signaturesService.documentsListCount[mode] > 0) {
-                        this.signaturesService.documentsListCount[mode]--;
+                    if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
+                        var mode = this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]["mode"];
+                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                        
+                        if (this.signaturesService.documentsListCount[mode] > 0) {
+                            this.signaturesService.documentsListCount[mode]--;
+                        }
                     }
                     this.disableState = false;
                     this.msgButton = 'Refuser ce document';

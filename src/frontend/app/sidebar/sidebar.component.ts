@@ -15,7 +15,6 @@ import { NotificationService } from '../service/notification.service';
 export class SidebarComponent implements OnInit {
 
     loadingList : boolean   = false;
-    mode        : string    = 'SIGN';
     offset      : number    = 0;
     limit       : number    = 25;
 
@@ -28,7 +27,7 @@ export class SidebarComponent implements OnInit {
 
     ngOnInit() {
         $('.avatar').css({'background': 'url(data:image/png;base64,' + this.signaturesService.userLogged.picture + ') no-repeat #135F7F'}).css({'background-size': 'cover'}).css({'background-position': 'center'});
-        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
+        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
             .subscribe((data: any) => {
                 this.signaturesService.documentsList = data.documents;
                 this.signaturesService.documentsListCount["SIGN"] = data["count"]["SIGN"];
@@ -39,13 +38,13 @@ export class SidebarComponent implements OnInit {
     }
 
     handleScroll(event: ScrollEvent) {
-        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount[this.mode]) {
+        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount[this.signaturesService.mode]) {
 
             this.loadingList = true;
             this.listContent.nativeElement.style.overflowY = 'hidden';
             this.offset = this.offset + this.limit;
 
-            this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
+            this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
                 .subscribe((data: any) => {
                     this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
                     this.loadingList = false;
@@ -79,9 +78,9 @@ export class SidebarComponent implements OnInit {
     }
 
     filter(mode: string) {
-        this.mode = mode;
+        this.signaturesService.mode = mode;
         this.offset = 0;
-        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.mode)
+        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
             .subscribe((data: any) => {
                 this.signaturesService.documentsList = data.documents;
                 this.signaturesService.documentsListCount["SIGN"] = data["count"]["SIGN"];

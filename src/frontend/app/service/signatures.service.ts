@@ -28,6 +28,7 @@ export class SignaturesContentService {
     workingAreaHeight = 0;
     renderingDoc = true;
     mobileMode = true;
+    mode = 'SIGN';
     scale = 1;
     x = 0;
     y = 85;
@@ -70,6 +71,7 @@ export class SignaturesContentService {
         } else {
             this.mobileMode = false;
         }
+        this.mode = 'SIGN';
         this.scale = 1;
         this.x = 0;
         this.y = 85;
