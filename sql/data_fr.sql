@@ -25,6 +25,7 @@ ALTER SEQUENCE groups_privileges_id_seq RESTART WITH 1;
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_rest_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_documents');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_configuration');
 
 TRUNCATE TABLE users_groups;
 ALTER SEQUENCE users_groups_id_seq RESTART WITH 1;
@@ -79,3 +80,8 @@ INSERT INTO password_rules (label, "value") VALUES ('lockTime', 5);
 INSERT INTO password_rules (label, "value") VALUES ('historyLastUse', 2);
 INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 
+-----
+-- CONFIGURATIONS
+-----
+INSERT INTO configurations (identifier, value) VALUES ('emailServer', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
+ALTER SEQUENCE configurations_id_seq RESTART WITH 2;

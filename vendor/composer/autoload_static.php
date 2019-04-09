@@ -56,6 +56,7 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'C' => 
         array (
             'Convert\\' => 8,
+            'Configuration\\' => 14,
         ),
         'A' => 
         array (
@@ -124,6 +125,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'Convert\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/convert',
+        ),
+        'Configuration\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/app/configuration',
         ),
         'Attachment\\' => 
         array (

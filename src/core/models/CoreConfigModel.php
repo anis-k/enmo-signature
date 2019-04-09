@@ -94,4 +94,17 @@ class CoreConfigModel
 
         return $xmlfile;
     }
+
+    public static function getEncryptKey()
+    {
+        if (!empty($_SERVER['MAARCH_ENCRYPT_KEY'])) {
+            $encriptKey = $_SERVER['MAARCH_ENCRYPT_KEY'];
+        } elseif (!empty($_SERVER['REDIRECT_MAARCH_ENCRYPT_KEY'])) {
+            $encriptKey = $_SERVER['REDIRECT_MAARCH_ENCRYPT_KEY'];
+        } else {
+            $encriptKey = "Security Key Maarch Courrier #2008";
+        }
+
+        return $encriptKey;
+    }
 }

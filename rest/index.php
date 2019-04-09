@@ -53,6 +53,9 @@ $app->get('/actions', \Action\controllers\ActionController::class . ':get');
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
 
+//Configurations
+$app->put('/configurations/{identifier}', \Configuration\controllers\ConfigurationController::class . ':update');
+
 //Documents
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');

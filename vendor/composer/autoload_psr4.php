@@ -21,6 +21,7 @@ return array(
     'Document\\' => array($baseDir . '/src/app/document'),
     'Docserver\\' => array($baseDir . '/src/app/docserver'),
     'Convert\\' => array($baseDir . '/src/app/convert'),
+    'Configuration\\' => array($baseDir . '/src/app/configuration'),
     'Attachment\\' => array($baseDir . '/src/app/attachment'),
     'Action\\' => array($baseDir . '/src/app/action'),
 );

@@ -216,3 +216,14 @@ CREATE TABLE password_history
   CONSTRAINT password_history_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS configurations;
+CREATE TABLE configurations
+(
+id serial NOT NULL,
+identifier CHARACTER VARYING (64) NOT NULL,
+value json DEFAULT '{}' NOT NULL,
+CONSTRAINT configuration_pkey PRIMARY KEY (id),
+CONSTRAINT configuration_unique_key UNIQUE (identifier)
+)
+WITH (OIDS=FALSE);
