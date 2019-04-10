@@ -489,7 +489,9 @@ class DocumentController
         $filesOnTmp = scandir($dirOnTmp);
         foreach ($filesOnTmp as $fileOnTmp) {
             if ($fileOnTmp != '.' && $fileOnTmp != '..') {
-                return ['encodedDocument' => base64_encode(file_get_contents("{$dirOnTmp}/{$fileOnTmp}"))];
+                $base64Content = base64_encode(file_get_contents("{$dirOnTmp}/{$fileOnTmp}"));
+                unlink($zipDocumentOnTmp);
+                return ['encodedDocument' => $base64Content];
             }
         }
 
