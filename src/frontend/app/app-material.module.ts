@@ -15,7 +15,8 @@ import {
   MatExpansionModule,
   MatTabsModule,
   MatSliderModule,
-  MatSelectModule
+  MatSelectModule,
+  MatSlideToggleModule
 } from '@angular/material';
 
 import { MatMenuModule } from '@angular/material/menu';
@@ -40,7 +41,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
       MatMenuModule,
       MatTabsModule,
       MatSliderModule,
-      MatSelectModule
+      MatSelectModule,
+      MatSlideToggleModule
   ],
   exports: [
       MatSidenavModule,
@@ -59,7 +61,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
       MatMenuModule,
       MatTabsModule,
       MatSliderModule,
-      MatSelectModule
+      MatSelectModule,
+      MatSlideToggleModule
   ]
 })
 export class AppMaterialModule { }

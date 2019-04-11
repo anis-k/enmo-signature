@@ -70,6 +70,16 @@
                 <mat-tab label="Préférences">
                     <div class="profile-content">
                         <div class="input-row">
+                                <fieldset>
+                                    <legend align="left">Notifications</legend>
+                                    <div class="form-container">
+                                        <div class="form-col notification">
+                                            <mat-slide-toggle [checked]="this.profileInfo.preferences.notifications" (change)="this.profileInfo.preferences.notifications=!this.profileInfo.preferences.notifications" color="primary">Recevoir les notifications</mat-slide-toggle>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        <div class="input-row">
                             <fieldset>
                                 <legend align="left">Mode de l'annotation</legend>
                                 <div class="form-container">
