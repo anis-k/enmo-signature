@@ -42,7 +42,7 @@ class EmailController
             'recipients'            => json_encode($args['data']['recipients']),
             'cc'                    => empty($args['data']['cc']) ? '[]' : json_encode($args['data']['cc']),
             'cci'                   => empty($args['data']['cci']) ? '[]' : json_encode($args['data']['cci']),
-            'object'                => empty($args['data']['object']) ? null : $args['data']['object'],
+            'subject'               => empty($args['data']['subject']) ? null : $args['data']['subject'],
             'body'                  => empty($args['data']['body']) ? null : $args['data']['body'],
             'document'              => null,
             'isHtml'                => $args['data']['isHtml'] ? 'true' : 'false',
@@ -63,12 +63,13 @@ class EmailController
             $isSent = ['success' => 'success'];
         }
 
+        $subject = empty($args['data']['subject']) ? '{emailNoSubject}' : $args['data']['subject'];
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'emails',
             'objectId'      => $id,
             'type'          => 'CREATION',
-            'message'       => "Email added"
+            'message'       => "{emailAdded} : {$subject}"
         ]);
 
         return $isSent;
@@ -143,7 +144,7 @@ class EmailController
             }
         }
 
-        $phpmailer->Subject = $email['object'];
+        $phpmailer->Subject = $email['subject'];
         $phpmailer->Body = $email['body'];
         if (empty($email['body'])) {
             $phpmailer->AllowEmpty = true;

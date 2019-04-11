@@ -48,7 +48,7 @@ class EmailScript
                 'objectType'    => 'emails',
                 'objectId'      => $args['emailId'],
                 'type'          => 'EMAIL',
-                'message'       => "Send email failed",
+                'message'       => '{emailFailed}',
                 'data'          => ['errors' => $isSent['errors']]
             ]);
         }

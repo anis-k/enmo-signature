@@ -66,7 +66,7 @@ class AttachmentController
             'objectType'    => 'attachments',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
-            'message'       => "Attachment viewed : {$attachment['title']}",
+            'message'       => "{attachmentViewed} : {$attachment['title']}",
             'data'          => ['mainDocumentId' => $attachment['main_document_id']]
         ]);
 
@@ -112,7 +112,7 @@ class AttachmentController
             'objectType'    => 'attachments',
             'objectId'      => $id,
             'type'          => 'CREATION',
-            'message'       => "Attachment added : {$args['title']}",
+            'message'       => "{attachmentAdded} : {$args['title']}",
             'data'          => ['mainDocumentId' => $args['mainDocumentId']]
         ]);
 

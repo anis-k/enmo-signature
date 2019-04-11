@@ -43,7 +43,7 @@ class EmailModel
     {
         ValidatorModel::notEmpty($aArgs, ['user_id', 'sender', 'recipients', 'cc', 'cci', 'isHtml', 'status']);
         ValidatorModel::intVal($aArgs, ['user_id']);
-        ValidatorModel::stringType($aArgs, ['sender', 'recipients', 'cc', 'cci', 'object', 'body', 'document', 'isHtml', 'status']);
+        ValidatorModel::stringType($aArgs, ['sender', 'recipients', 'cc', 'cci', 'subject', 'body', 'document', 'isHtml', 'status']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'emails_id_seq']);
 
@@ -56,7 +56,7 @@ class EmailModel
                 'recipients'                => $aArgs['recipients'],
                 'cc'                        => $aArgs['cc'],
                 'cci'                       => $aArgs['cci'],
-                'object'                    => $aArgs['object'],
+                'subject'                   => $aArgs['subject'],
                 'body'                      => $aArgs['body'],
                 'document'                  => $aArgs['document'],
                 'is_html'                   => $aArgs['isHtml'],

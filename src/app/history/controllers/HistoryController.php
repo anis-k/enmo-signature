@@ -18,6 +18,7 @@ use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\LangController;
 use SrcCore\models\ValidatorModel;
 use History\models\HistoryModel;
 use User\controllers\UserController;
@@ -58,11 +59,20 @@ class HistoryController
 
         $history = HistoryModel::get([
             'select'    => ['code', 'type', 'user_id', 'date', 'message', 'data'],
-            'where'     => ['object_type = ?', 'object_id = ?'],
-            'data'      => ['main_documents', $args['id']]
+            'where'     => ["(object_type = ? AND object_id = ?) OR (data->>'mainDocumentId' = ?)"],
+            'data'      => ['main_documents', $args['id'], $args['id']],
+            'orderBy'   => ['date']
         ]);
 
         $formattedHistory = [];
+
+        $lang = LangController::get();
+        $langKeys = [];
+        $langValues = [];
+        foreach ($lang as $key => $value) {
+            $langKeys[] = "/{{$key}}/";
+            $langValues[] = $value;
+        }
 
         foreach ($history as $value) {
             $user = UserModel::getById(['select' => ['login'], 'id' => $value['user_id']]);
@@ -73,7 +83,7 @@ class HistoryController
                 'type'          => $value['type'],
                 'userLogin'     => $user['login'],
                 'date'          => $date->format('d-m-Y H:i'),
-                'message'       => $value['message'],
+                'message'       => preg_replace($langKeys, $langValues, $value['message']),
                 'data'          => json_decode($value['data'], true)
             ];
         }
@@ -83,7 +93,7 @@ class HistoryController
             'objectType'    => 'history',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
-            'message'       => "Document historic viewed",
+            'message'       => '{documentHistoryViewed}',
             'data'          => ['objectType' => 'main_documents']
         ]);
 

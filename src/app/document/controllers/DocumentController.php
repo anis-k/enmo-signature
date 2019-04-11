@@ -19,6 +19,7 @@ use Docserver\models\AdrModel;
 use Email\controllers\EmailController;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
+use SrcCore\controllers\LangController;
 use SrcCore\controllers\UrlController;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
@@ -159,7 +160,7 @@ class DocumentController
             'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
-            'message'       => "Document viewed : {$document['title']}"
+            'message'       => "{documentViewed} : {$document['title']}"
         ]);
 
         return $response->withJson(['document' => $formattedDocument]);
@@ -253,23 +254,23 @@ class DocumentController
             'objectType'    => 'main_documents',
             'objectId'      => $id,
             'type'          => 'CREATION',
-            'message'       => "Document added : {$body['title']}"
+            'message'       => "{documentAdded} : {$body['title']}"
         ]);
 
         DatabaseModel::commitTransaction();
 
         $processingUser['preferences'] = json_decode($processingUser['preferences'], true);
         if ($processingUser['preferences']['notifications']) {
-            $body = "Un document vient de vous être transmis sur Maarch Parapheur.<br/>Cliquer sur le lien ci-dessous pour le consulter :<br/>";
+
+            $lang = LangController::get(['lang' => $processingUser['preferences']['lang']]);
             $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $id;
-            $footer = "<br/><br/>Ce courriel vous est envoyé automatiquement par Maarch Parapheur.<br/>Si vous souhaitez ne plus recevoir ces notifications, indiquez-le sur votre profil.";
             EmailController::createEmail([
                 'userId'    => $GLOBALS['id'],
                 'data'      => [
                     'sender'        => 'Notification',
                     'recipients'    => [$processingUser['email']],
-                    'object'        => 'Notification Maarch Parapheur',
-                    'body'          => $body . $url . $footer,
+                    'subject'       => $lang['notificationDocumentAddedSubject'],
+                    'body'          => $lang['notificationDocumentAddedBody'] . $url . $lang['notificationFooter'],
                     'isHtml'        => true
                 ]
             ]);
@@ -422,9 +423,8 @@ class DocumentController
             'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'ACTION',
-            'message'       => "Action done : {$action['label']}",
+            'message'       => "{actionDone} : {$action['label']}",
             'data'          => ['actionId' => $args['actionId']]
-
         ]);
 
         return $response->withJson(['success' => 'success']);
@@ -467,7 +467,7 @@ class DocumentController
             'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
-            'message'       => "Processed document viewed : {$document['title']}"
+            'message'       => "{processedDocumentViewed} : {$document['title']}"
         ]);
 
         return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);

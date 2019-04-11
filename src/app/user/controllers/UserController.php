@@ -67,7 +67,7 @@ class UserController
             'objectType'    => 'users',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
-            'message'       => "User viewed : " . $user['firstname'] . ' ' . $user['lastname']
+            'message'       => "{userViewed} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         return $response->withJson(['user' => $user]);
@@ -111,7 +111,7 @@ class UserController
             'objectType'    => 'users',
             'objectId'      => $id,
             'type'          => 'CREATION',
-            'message'       => "User added : {$body['firstname']} {$body['lastname']}"
+            'message'       => "{userAdded} : {$body['firstname']} {$body['lastname']}"
         ]);
 
         return $response->withJson(['id' => $id]);
@@ -129,6 +129,8 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
+        } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
         $check = Validator::arrayType()->notEmpty()->validate($body['preferences']);
@@ -173,6 +175,7 @@ class UserController
         $set = [
             'firstname'     => $body['firstname'],
             'lastname'      => $body['lastname'],
+            'email'         => $body['email'],
             'preferences'   => $body['preferences']
         ];
         if (!empty($body['picture'])) {
@@ -190,7 +193,7 @@ class UserController
             'objectType'    => 'users',
             'objectId'      => $args['id'],
             'type'          => 'MODIFICATION',
-            'message'       => "User updated : {$body['firstname']} {$body['lastname']}"
+            'message'       => "{userUpdated} : {$body['firstname']} {$body['lastname']}"
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
@@ -234,7 +237,7 @@ class UserController
             'objectType'    => 'users',
             'objectId'      => $args['id'],
             'type'          => 'MODIFICATION',
-            'message'       => "User password updated"
+            'message'       => '{userPasswordUpdated}'
         ]);
 
         return $response->withJson(['success' => 'success']);
@@ -294,17 +297,17 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $data = $request->getParams();
+        $body = $request->getParsedBody();
 
-        $check = Validator::notEmpty()->validate($data['encodedSignature']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($data['format']);
+        $check = Validator::notEmpty()->validate($body['encodedSignature']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['format']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
         $storeInfos = DocserverController::storeResourceOnDocServer([
-            'encodedFile'       => $data['encodedSignature'],
-            'format'            => $data['format'],
+            'encodedFile'       => $body['encodedSignature'],
+            'format'            => $body['format'],
             'docserverType'     => 'SIGNATURE'
         ]);
 
@@ -324,7 +327,7 @@ class UserController
             'objectType'    => 'signatures',
             'objectId'      => $id,
             'type'          => 'CREATION',
-            'message'       => "Signature added",
+            'message'       => '{userSignatureAdded}',
             'data'          => ['userId' => $args['id']]
         ]);
 
@@ -344,7 +347,7 @@ class UserController
             'objectType'    => 'signatures',
             'objectId'      => $args['signatureId'],
             'type'          => 'SUPPRESSION',
-            'message'       => "Signature deleted",
+            'message'       => '{userSignatureDeleted}',
             'data'          => ['userId' => $args['id']]
         ]);
 

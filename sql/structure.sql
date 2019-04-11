@@ -101,7 +101,7 @@ CREATE TABLE emails
   recipients json DEFAULT '[]' NOT NULL,
   cc json DEFAULT '[]' NOT NULL,
   cci json DEFAULT '[]' NOT NULL,
-  object CHARACTER VARYING(256),
+  subject CHARACTER VARYING(256),
   body text,
   document json,
   is_html boolean NOT NULL DEFAULT TRUE,

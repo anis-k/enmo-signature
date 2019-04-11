@@ -111,10 +111,8 @@ class AuthenticationModel
             'data'  => [$args['id']]
         ]);
 
-        $previousCookie = AuthenticationModel::getCookieAuth();
         $cookieData = json_encode([
             'id'        => $args['id'],
-            'lang'      => empty($previousCookie['lang']) ? CoreConfigModel::getLanguage() : $previousCookie['lang'],
             'cookieKey' => $cookieKey
         ]);
         @setcookie('maarchParapheurAuth', base64_encode($cookieData), $cookieTime, $cookiePath, '', false, false);

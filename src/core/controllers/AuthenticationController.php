@@ -33,14 +33,12 @@ class AuthenticationController
             if (AuthenticationModel::authentication(['login' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
                 $user = UserModel::getByLogin(['select' => ['id'], 'login' => $_SERVER['PHP_AUTH_USER']]);
                 $id = $user['id'];
-                new LangModel(['language' => CoreConfigModel::getLanguage()]);
             }
         } else {
             $cookie = AuthenticationModel::getCookieAuth();
             if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
                 AuthenticationModel::setCookieAuth(['id' => $cookie['id']]);
                 $id = $cookie['id'];
-                new LangModel(['language' => $cookie['lang']]);
             }
         }
 
@@ -75,7 +73,7 @@ class AuthenticationController
             'objectType'    => 'users',
             'objectId'      => $user['id'],
             'type'          => 'LOGIN',
-            'message'       => "User log in"
+            'message'       => '{UserLogIn}'
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
@@ -90,7 +88,7 @@ class AuthenticationController
             'objectType'    => 'users',
             'objectId'      => $GLOBALS['id'],
             'type'          => 'LOGOUT',
-            'message'       => "User log out"
+            'message'       => '{UserLogOut}'
         ]);
 
         return $response->withJson(['success' => 'success']);

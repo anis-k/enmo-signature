@@ -26,22 +26,6 @@ class CoreConfigModel
         return $loadedXml;
     }
 
-    public static function getLanguage()
-    {
-        $availableLanguages = ['en', 'fr'];
-
-        $loadedXml = CoreConfigModel::getConfig();
-
-        if ($loadedXml) {
-            $lang = (string)$loadedXml->config->lang;
-            if (in_array($lang, $availableLanguages)) {
-                return $lang;
-            }
-        }
-
-        return 'fr';
-    }
-
     /**
      * Get the timezone
      *
