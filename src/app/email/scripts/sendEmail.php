@@ -18,6 +18,7 @@ require 'vendor/autoload.php';
 
 use Email\controllers\EmailController;
 use Email\models\EmailModel;
+use History\controllers\HistoryController;
 use SrcCore\models\DatabasePDO;
 
 //configPath = $argv[1];
@@ -42,6 +43,14 @@ class EmailScript
             EmailModel::update(['set' => ['status' => 'SENT', 'send_date' => 'CURRENT_TIMESTAMP'], 'where' => ['id = ?'], 'data' => [$args['emailId']]]);
         } else {
             EmailModel::update(['set' => ['status' => 'ERROR'], 'where' => ['id = ?'], 'data' => [$args['emailId']]]);
+            HistoryController::add([
+                'code'          => 'KO',
+                'objectType'    => 'emails',
+                'objectId'      => $args['emailId'],
+                'type'          => 'EMAIL',
+                'message'       => "Send email failed",
+                'data'          => ['errors' => $isSent['errors']]
+            ]);
         }
 
         return $isSent;

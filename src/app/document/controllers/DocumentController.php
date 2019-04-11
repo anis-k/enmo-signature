@@ -270,8 +270,7 @@ class DocumentController
                     'recipients'    => [$processingUser['email']],
                     'object'        => 'Notification Maarch Parapheur',
                     'body'          => $body . $url . $footer,
-                    'isHtml'        => true,
-                    'status'        => 'WAITING'
+                    'isHtml'        => true
                 ]
             ]);
         }
