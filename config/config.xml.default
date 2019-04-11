@@ -13,4 +13,15 @@
         <user>maarch</user>
         <password>maarch</password>
     </database>
+    <electronicSignature>
+        <enable>false</enable>
+        <certPath>/home/maarch/Bureau/tcpdf.crt</certPath>
+        <password>password</password>
+        <certInfo>
+            <name>Maarch</name>
+            <location>Paris</location>
+            <reason>Signature Maarch Parapheur</reason>
+            <contactInfo>Maarch SAS, société du groupe Archiveco</contactInfo>
+        </certInfo>
+    </electronicSignature>
 </ROOT>

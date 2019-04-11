@@ -375,6 +375,25 @@ class DocumentController
                     }
                 }
             }
+
+            $loadedXml = CoreConfigModel::getConfig();
+
+            if ($loadedXml->electronicSignature->enable == 'true') {
+                $certPath = realpath((string)$loadedXml->electronicSignature->certPath);
+                if (is_file($certPath)) {
+                    $certificate = 'file://' . $certPath;
+                    $info = [
+                        'Name'        => (string)$loadedXml->electronicSignature->certInfo->name,
+                        'Location'    => (string)$loadedXml->electronicSignature->certInfo->location,
+                        'Reason'      => (string)$loadedXml->electronicSignature->certInfo->reason,
+                        'ContactInfo' => (string)$loadedXml->electronicSignature->certInfo->contactInfo
+                    ];
+                    $pdf->setSignature($certificate, $certificate, (string)$loadedXml->electronicSignature->password, '', 2, $info);
+                } else {
+                    return $response->withStatus(400)->withJson(['errors' => 'check certPath']);
+                }
+            }
+
             $fileContent = $pdf->Output('', 'S');
 
             $storeInfos = DocserverController::storeResourceOnDocServer([
