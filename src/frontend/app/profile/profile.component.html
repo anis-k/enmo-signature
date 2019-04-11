@@ -2,7 +2,7 @@
     <div class="main-header">
         <header class="profile-header">
             <div class="user" style="color: #F99830">
-                Mon Profil
+                {{'lang.myProfil' | translate}}
             </div>
             <div class="avatarProfile"
                 [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}"
@@ -15,26 +15,26 @@
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
             <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);"
                 (swipeleft)="siwtchToleft(tabProfile)" (swiperight)="siwtchToRight(tabProfile)">
-                <mat-tab label="Informations">
+                <mat-tab label="{{'lang.informations' | translate}}">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
-                            <input name="login" matInput placeholder="Courriel" type="mail"
+                            <input name="login" matInput placeholder="{{'lang.email' | translate}}" type="mail"
                                 [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()"
                                 disabled required>
                         </mat-form-field>
                         <mat-form-field class="input-row">
-                            <input name="firstname" matInput placeholder="Prénom" [(ngModel)]="profileInfo.firstname"
+                            <input name="firstname" matInput placeholder="{{'lang.firstname' | translate}}" [(ngModel)]="profileInfo.firstname"
                                 required>
                         </mat-form-field>
                         <mat-form-field class="input-row">
-                            <input name="nom" matInput placeholder="Nom" [(ngModel)]="profileInfo.lastname" required>
+                            <input name="nom" matInput placeholder="{{'lang.lastname' | translate}}" [(ngModel)]="profileInfo.lastname" required>
                         </mat-form-field>
                         <mat-accordion>
                             <mat-expansion-panel (closed)="showPassword=false" (opened)="changePasswd()"
                                 #passwordContent>
                                 <mat-expansion-panel-header>
                                     <mat-panel-title>
-                                        Modifier mon mot de passe
+                                        {{'lang.updatePassword' | translate}}
                                     </mat-panel-title>
                                     <mat-panel-description>
                                     </mat-panel-description>
@@ -42,7 +42,7 @@
                                 <ng-container *ngIf="showPassword">
                                     <mat-form-field class="input-row">
                                         <input name="currentPassword" matInput [(ngModel)]="password.currentPassword"
-                                            placeholder="Mot de passe actuel"
+                                            placeholder="{{'lang.currentPassword' | translate}}"
                                             [type]="hideCurrentPassword ? 'password' : 'text'">
                                         <mat-icon matSuffix (click)="hideCurrentPassword = !hideCurrentPassword"
                                             class="fa fa-2x"
@@ -50,7 +50,7 @@
                                     </mat-form-field>
                                     <mat-form-field class="input-row">
                                         <input name="newPassword" matInput [(ngModel)]="password.newPassword"
-                                            placeholder="Nouveau mot de passe"
+                                            placeholder="{{'lang.newPassword' | translate}}"
                                             [type]="hideNewPassword ? 'password' : 'text'"
                                             (keyup)="checkPasswordValidity(password.newPassword)">
                                         <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
@@ -61,34 +61,32 @@
                                     <mat-form-field class="input-row">
                                         <input name="passwordConfirmation" matInput
                                             [(ngModel)]="password.passwordConfirmation"
-                                            placeholder="Confirmer le nouveau mot de passe"
+                                            placeholder="{{'lang.passwordConfirmation' | translate}}"
                                             [type]="hideNewPasswordConfirm ? 'password' : 'text'">
                                         <mat-icon matSuffix (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm"
                                             class="fa fa-2x"
                                             [ngClass]="[hideNewPasswordConfirm ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
                                         <mat-hint style="color:red;"
-                                            *ngIf="password.passwordConfirmation !== password.newPassword">Les
-                                            mots de passe ne correspondent pas !</mat-hint>
+                                            *ngIf="password.passwordConfirmation !== password.newPassword">{{'lang.passwordNotMatch' | translate}}</mat-hint>
                                         <mat-hint style="color:green;"
                                             *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">
-                                            Les
-                                            mots de passe sont identiques</mat-hint>
+                                            {{'lang.samePassword' | translate}}</mat-hint>
                                     </mat-form-field>
                                 </ng-container>
                             </mat-expansion-panel>
                         </mat-accordion>
                     </div>
                 </mat-tab>
-                <mat-tab label="Préférences">
+                <mat-tab label="{{'lang.preferences' | translate}}">
                     <div class="profile-content">
                         <div class="input-row">
                             <fieldset>
-                                <legend align="left">Notifications</legend>
+                                <legend align="left">{{'lang.notifications' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-slide-toggle [checked]="this.profileInfo.preferences.notifications"
                                             (change)="this.profileInfo.preferences.notifications=!this.profileInfo.preferences.notifications"
-                                            color="primary">Recevoir les notifications</mat-slide-toggle>
+                                            color="primary">{{'lang.receiveNotif' | translate}}</mat-slide-toggle>
                                     </div>
                                     <div class="form-2-col" style="text-align: justify;font-size: 12px;">
 
@@ -98,13 +96,13 @@
                         </div>
                         <div class="input-row">
                             <fieldset>
-                                <legend align="left">Langue</legend>
+                                <legend align="left">{{'lang.language' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
-                                            <mat-select name="langUser" [(ngModel)]="this.profileInfo.preferences.lang">
+                                            <mat-select #langSelect name="langUser" [(ngModel)]="this.profileInfo.preferences.lang">
                                                 <mat-option value="fr">Français</mat-option>
-                                                <mat-option value="en">Anglais</mat-option>
+                                                <mat-option value="en">English</mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
@@ -112,34 +110,27 @@
 
                                     </div>
                                 </div>
-
                             </fieldset>
                         </div>
                         <div class="input-row">
                             <fieldset>
-                                <legend align="left">Mode de l'annotation</legend>
+                                <legend align="left">{{'lang.annotationMode' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select name="writingMode"
                                                 [(ngModel)]="this.profileInfo.preferences.writingMode">
-                                                <mat-option value="direct">Libre</mat-option>
-                                                <mat-option value="stylus">Stylet Apple <i class="fab fa-apple"></i>
+                                                <mat-option value="direct">{{'lang.free' | translate}}</mat-option>
+                                                <mat-option value="stylus">{{'lang.appleStylus' | translate}} <i class="fab fa-apple"></i>
                                                 </mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
                                     <div *ngIf="this.profileInfo.preferences.writingMode == 'stylus'" class="form-2-col"
-                                        style="text-align: justify;font-size: 12px;">
-                                        Vous ne pourrez annoter les documents qu'avec le <b>stylet Apple</b>.<br />
-                                        Cela a pour avantage de pouvoir poser la main sur la tablette sans perturber
-                                        l'écriture.
+                                        style="text-align: justify;font-size: 12px;" [innerHTML]="'lang.freeModeInfo' | translate">
                                     </div>
                                     <div *ngIf="this.profileInfo.preferences.writingMode == 'direct'" class="form-2-col"
-                                        style="text-align: justify;font-size: 12px;">
-                                        Mode standard, permettant l'annotation avec tout format (souris, main, stylets
-                                        de
-                                        toutes marques).
+                                        style="text-align: justify;font-size: 12px;" [innerHTML]="'lang.standardModeInfo' | translate">
                                     </div>
                                 </div>
 
@@ -147,7 +138,7 @@
                         </div>
                         <div class="input-row">
                             <fieldset>
-                                <legend align="left">Épaisseur du trait</legend>
+                                <legend align="left">{{'lang.stylusWidh' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
@@ -167,15 +158,15 @@
                         </div>
                         <div class="input-row">
                             <fieldset style="display:table;">
-                                <legend align="left">Couleur par défaut</legend>
+                                <legend align="left">{{'lang.defaultColor' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select name="writingColor"
                                                 [(ngModel)]="this.profileInfo.preferences.writingColor">
-                                                <mat-option style="color:#000000" value="#000000">Noir</mat-option>
-                                                <mat-option style="color:#1a75ff" value="#1a75ff">Bleu</mat-option>
-                                                <mat-option style="color:#FF0000" value="#FF0000">Rouge</mat-option>
+                                                <mat-option style="color:#000000" value="#000000">{{'lang.black' | translate}}</mat-option>
+                                                <mat-option style="color:#1a75ff" value="#1a75ff">{{'lang.blue' | translate}}</mat-option>
+                                                <mat-option style="color:#FF0000" value="#FF0000">{{'lang.red' | translate}}</mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
@@ -189,11 +180,11 @@
                         </div>
                     </div>
                 </mat-tab>
-                <mat-tab label="Administrations" *ngIf="signaturesService.userLogged.canManageRestUsers">
+                <mat-tab label="{{'lang.administrations' | translate}}" *ngIf="signaturesService.userLogged.canManageRestUsers">
                     <div class="profile-content">
                         <div class="input-row">
                             <fieldset>
-                                <legend align="left">Utilisateurs Webservice</legend>
+                                <legend align="left">{{'lang.wsUser' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-col" style="width:35%;">
                                         <mat-form-field>
@@ -207,7 +198,7 @@
                                     <div class="form-col" style="width:35%;">
                                         <mat-form-field class="input-row">
                                             <input name="newPasswordRest" matInput [(ngModel)]="currentUserRestPassword"
-                                                placeholder="Nouveau mot de passe"
+                                                placeholder="{{'lang.newPassword' | translate}}"
                                                 [type]="hideNewPassword ? 'password' : 'text'"
                                                 (keyup)="checkPasswordValidity(currentUserRestPassword)">
                                             <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
@@ -219,7 +210,7 @@
                                     <div class="form-col" style="width:29%;">
                                         <button mat-raised-button type="button" color="primary"
                                             [disabled]="handlePassword.error || currentUserRestPassword.length === 0"
-                                            (click)="updateRestUser()">Modifier</button>
+                                            (click)="updateRestUser()">{{'lang.update' | translate}}</button>
                                     </div>
                                 </div>
                             </fieldset>
@@ -230,7 +221,7 @@
             <span class="actions">
                 <button class="validate" mat-button color="primary" type="submit"
                     [disabled]="allowValidate() || !profileForm.form.valid">{{
-                    msgButton }}</button>
+                    msgButton | translate}}</button>
                 <button class="cancel" mat-icon-button type="button" (tap)="closeProfile();">
                     <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
                 </button>

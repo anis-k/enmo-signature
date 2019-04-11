@@ -1,16 +1,19 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
+// import ngx-translate and the http loader
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
-export class CustomHammerConfig extends HammerGestureConfig  {
+export class CustomHammerConfig extends HammerGestureConfig {
   overrides = <any>{
-      'pinch': { enable: false },
-      'rotate': { enable: false }
+    'pinch': { enable: false },
+    'rotate': { enable: false }
   };
 }
 
@@ -72,16 +75,24 @@ import { SignaturesContentService } from './service/signatures.service';
     BrowserAnimationsModule,
     HttpClientModule,
     RouterModule,
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     SignaturePadModule,
     ScrollEventModule,
     AngularDraggableModule,
     SimplePdfViewerModule,
     AppMaterialModule,
     RouterModule.forRoot([
-      { path: 'documents/:id', component: DocumentComponent},
-      { path: 'documents', component: DocumentComponent},
-      { path: 'login', component: LoginComponent},
-      { path: '**',   redirectTo: 'login', pathMatch: 'full' },
+      { path: 'documents/:id', component: DocumentComponent },
+      { path: 'documents', component: DocumentComponent },
+      { path: 'login', component: LoginComponent },
+      { path: '**', redirectTo: 'login', pathMatch: 'full' },
     ], { useHash: true }),
   ],
   entryComponents: [
@@ -97,11 +108,16 @@ import { SignaturesContentService } from './service/signatures.service';
     {
       provide: HAMMER_GESTURE_CONFIG,
       useClass: CustomHammerConfig
-      },
+    },
     CookieService],
-    exports: [
-        RouterModule
-    ],
+  exports: [
+    RouterModule
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+// For traductions
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './frontend/assets/i18n/', '.json');
+}

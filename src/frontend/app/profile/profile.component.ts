@@ -6,6 +6,8 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import * as EXIF from 'exif-js';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     selector: 'app-my-profile',
@@ -54,9 +56,9 @@ export class ProfileComponent implements OnInit {
     showPassword = false;
 
     disableState = false;
-    msgButton = 'Valider';
+    msgButton = 'lang.validate';
 
-    constructor(public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
+    constructor(private translate: TranslateService, public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
 
@@ -176,7 +178,7 @@ export class ProfileComponent implements OnInit {
 
     submitProfile() {
         this.disableState = true;
-        this.msgButton = 'Envoi...';
+        this.msgButton = 'lang.sending';
         let profileToSend = {
             'firstname': this.profileInfo.firstname,
             'lastname': this.profileInfo.lastname,
@@ -198,6 +200,8 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.picture = data.user.picture;
                 this.signaturesService.userLogged.preferences = data.user.preferences;
                 this.profileInfo.picture = data.user.picture;
+                this.setLang(this.signaturesService.userLogged.preferences.lang);
+
                 $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
 
                 if (this.showPassword) {
@@ -206,15 +210,15 @@ export class ProfileComponent implements OnInit {
                             this.password.newPassword = '';
                             this.password.passwordConfirmation = '';
                             this.password.currentPassword = '';
-                            this.notificationService.success('Profil modifié');
+                            this.notificationService.success('lang.profileUpdated');
                             this.disableState = false;
-                            this.msgButton = 'Valider';
+                            this.msgButton = 'lang.validate';
                             this.closeProfile();
                         }, (err) => {
                             this.disableState = false;
-                            this.msgButton = 'Valider';
+                            this.msgButton = 'lang.validate';
                             if (err.status === 401) {
-                                this.notificationService.error('Mauvais mot de passe');
+                                this.notificationService.error('lang.badPassword');
                             } else {
                                 this.notificationService.handleErrors(err);
                             }
@@ -222,14 +226,14 @@ export class ProfileComponent implements OnInit {
                 }
 
                 if (!this.showPassword) {
-                    this.notificationService.success('Profil modifié');
+                    this.notificationService.success('lang.profileUpdated');
                     this.disableState = false;
-                    this.msgButton = 'Valider';
+                    this.msgButton = 'lang.validate';
                     this.closeProfile();
                 }
             }, (err) => {
                 this.disableState = false;
-                this.msgButton = 'Valider';
+                this.msgButton = 'lang.validate';
                 this.notificationService.handleErrors(err);
                 this.disableState = false;
             });
@@ -272,10 +276,10 @@ export class ProfileComponent implements OnInit {
                 };
                 myReader.readAsDataURL(fileToUpload);
             } else {
-                this.notificationService.error('Ceci n\'est pas une image');
+                this.notificationService.error('lang.notAnImage');
             }
         } else {
-            this.notificationService.error('Image trop volumineuse (5mo max.)');
+            this.notificationService.error('lang.imageTooBig');
         }
     }
 
@@ -332,18 +336,25 @@ export class ProfileComponent implements OnInit {
                     this.currentUserRest = data.users[0];
 
                 }, (err: any) => {
-                        this.notificationService.handleErrors(err);
-                    });
+                    this.notificationService.handleErrors(err);
+                });
         }
     }
 
     updateRestUser() {
-        this.http.put('../rest/users/' + this.currentUserRest.id + '/password', {'newPassword' : this.currentUserRestPassword})
+        this.http.put('../rest/users/' + this.currentUserRest.id + '/password', { 'newPassword': this.currentUserRestPassword })
             .subscribe(() => {
                 this.currentUserRestPassword = '';
-                this.notificationService.success('Mot de passe de ' + this.currentUserRest.firstname + ' ' + this.currentUserRest.lastname + ' modifié');
+                this.translate.get('lang.passwordOfUserUpdated', {user: this.currentUserRest.firstname + ' ' + this.currentUserRest.lastname}).subscribe((res: string) => {
+                    this.notificationService.success(res);
+                });
             }, (err) => {
                 this.notificationService.handleErrors(err);
             });
+    }
+
+
+    setLang(lang: any) {
+        this.translate.use(lang);
     }
 }

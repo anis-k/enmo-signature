@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-custom-snackbar',
-    template: '{{data.message}}' // You may also use a HTML file
+    template: '{{data.message | translate}}' // You may also use a HTML file
 })
 export class CustomSnackbarComponent {
     constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) { }
