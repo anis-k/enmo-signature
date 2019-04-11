@@ -22,6 +22,10 @@ $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRo
 
 //Authentication
 $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, callable $next) {
+    $configPath = \SrcCore\models\CoreConfigModel::getConfigPath();
+    if (!is_file($configPath . '/config.xml')) {
+        return $response->withStatus(400)->withJson(['errors' => 'Configuration file is missing']);
+    }
     $routesWithoutAuthentication = ['POST/log'];
     $route = $request->getAttribute('route');
     $currentMethod = empty($route) ? '' : $route->getMethods()[0];

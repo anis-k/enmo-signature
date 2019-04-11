@@ -124,16 +124,18 @@ class UserController
         }
 
         $body = $request->getParsedBody();
-        $check = Validator::stringType()->notEmpty()->validate($body['firstname']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($body['lastname']);
-        if (!$check) {
-            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+
+        if (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
         }
 
         $check = Validator::arrayType()->notEmpty()->validate($body['preferences']);
         $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingMode']);
         $check = $check && Validator::intType()->notEmpty()->validate($body['preferences']['writingSize']);
         $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingColor']);
+        $check = $check && Validator::boolType()->validate($body['preferences']['notifications']);
         if (!$check) {
             return $response->withStatus(400)->withJson(['errors' => 'Missing parameter in user preferences data']);
         }

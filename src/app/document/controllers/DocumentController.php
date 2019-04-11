@@ -16,8 +16,10 @@ namespace Document\controllers;
 
 use Attachment\controllers\AttachmentController;
 use Docserver\models\AdrModel;
+use Email\controllers\EmailController;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
+use SrcCore\controllers\UrlController;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
 use Docserver\controllers\DocserverController;
@@ -194,7 +196,7 @@ class DocumentController
             }
         }
 
-        $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $body['processingUser']]);
+        $processingUser = UserModel::getByLogin(['select' => ['id', 'email', 'preferences'], 'login' => $body['processingUser']]);
         if (empty($processingUser)) {
             return $response->withStatus(400)->withJson(['errors' => 'Processing user does not exist']);
         }
@@ -255,6 +257,24 @@ class DocumentController
         ]);
 
         DatabaseModel::commitTransaction();
+
+        $processingUser['preferences'] = json_decode($processingUser['preferences'], true);
+        if ($processingUser['preferences']['notifications']) {
+            $body = "Un document vient de vous être transmis sur Maarch Parapheur.<br/>Cliquer sur le lien ci-dessous pour le consulter :<br/>";
+            $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $id;
+            $footer = "<br/><br/>Ce courriel vous est envoyé automatiquement par Maarch Parapheur.<br/>Si vous souhaitez ne plus recevoir ces notifications, indiquez-le sur votre profil.";
+            EmailController::createEmail([
+                'userId'    => $GLOBALS['id'],
+                'data'      => [
+                    'sender'        => 'Notification',
+                    'recipients'    => [$processingUser['email']],
+                    'object'        => 'Notification Maarch Parapheur',
+                    'body'          => $body . $url . $footer,
+                    'isHtml'        => true,
+                    'status'        => 'WAITING'
+                ]
+            ]);
+        }
 
         return $response->withJson(['id' => $id]);
     }

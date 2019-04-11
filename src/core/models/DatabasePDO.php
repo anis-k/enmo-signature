@@ -42,7 +42,11 @@ class DatabasePDO
             $password   = $args['password'];
             self::$type = $args['type'];
         } else {
-            $loadedXml = CoreConfigModel::getConfig();
+            if (!empty($args['configPath'])) {
+                $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $args['configPath'] . '/config.xml']);
+            } else {
+                $loadedXml = CoreConfigModel::getConfig();
+            }
             if ($loadedXml) {
                 $server     = (string)$loadedXml->database->server;
                 $port       = (string)$loadedXml->database->port;

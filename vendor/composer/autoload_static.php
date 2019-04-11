@@ -35,6 +35,7 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         array (
             'Psr\\Http\\Message\\' => 17,
             'Psr\\Container\\' => 14,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'I' => 
         array (
@@ -47,6 +48,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'F' => 
         array (
             'FastRoute\\' => 10,
+        ),
+        'E' => 
+        array (
+            'Email\\' => 6,
         ),
         'D' => 
         array (
@@ -102,6 +107,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
         'Interop\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/container-interop/container-interop/src/Interop/Container',
@@ -113,6 +122,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
+        ),
+        'Email\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/app/email',
         ),
         'Document\\' => 
         array (

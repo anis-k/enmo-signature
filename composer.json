@@ -8,6 +8,7 @@
             "Convert\\"           : "src/app/convert/",
             "Docserver\\"         : "src/app/docserver/",
             "Document\\"          : "src/app/document/",
+            "Email\\"             : "src/app/email/",
             "History\\"           : "src/app/history/",
             "Status\\"            : "src/app/status/",
             "User\\"              : "src/app/user/"
@@ -16,6 +17,7 @@
     "require": {
         "slim/slim": "^3.10",
         "respect/validation": "^1.1",
-        "setasign/fpdi-tcpdf": "^2.0.0"
+        "setasign/fpdi-tcpdf": "^2.0.0",
+        "phpmailer/phpmailer": "^6.0"
     }
 }

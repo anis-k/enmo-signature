@@ -39,7 +39,7 @@ class HistoryController
             'user_id'       => $GLOBALS['id'],
             'message'       => $args['message'],
             'data'          => empty($args['data']) ? '{}' : json_encode($args['data']),
-            'ip'            => $_SERVER['REMOTE_ADDR']
+            'ip'            => empty($_SERVER['REMOTE_ADDR']) ? 'script' : $_SERVER['REMOTE_ADDR']
         ]);
 
         return true;

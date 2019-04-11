@@ -1,56 +1,5 @@
 [
     {
-        "name": "psr/container",
-        "version": "1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/php-fig/container.git",
-            "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
-            "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2017-02-14T16:28:37+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Psr\\Container\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "PHP-FIG",
-                "homepage": "http://www.php-fig.org/"
-            }
-        ],
-        "description": "Common Container Interface (PHP FIG PSR-11)",
-        "homepage": "https://github.com/php-fig/container",
-        "keywords": [
-            "PSR-11",
-            "container",
-            "container-interface",
-            "container-interop",
-            "psr"
-        ]
-    },
-    {
         "name": "container-interop/container-interop",
         "version": "1.2.0",
         "version_normalized": "1.2.0.0",
@@ -132,6 +81,177 @@
         ]
     },
     {
+        "name": "phpmailer/phpmailer",
+        "version": "v6.0.7",
+        "version_normalized": "6.0.7.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHPMailer/PHPMailer.git",
+            "reference": "0c41a36d4508d470e376498c1c0c527aa36a2d59"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/0c41a36d4508d470e376498c1c0c527aa36a2d59",
+            "reference": "0c41a36d4508d470e376498c1c0c527aa36a2d59",
+            "shasum": ""
+        },
+        "require": {
+            "ext-ctype": "*",
+            "ext-filter": "*",
+            "php": ">=5.5.0"
+        },
+        "require-dev": {
+            "doctrine/annotations": "1.2.*",
+            "friendsofphp/php-cs-fixer": "^2.2",
+            "phpdocumentor/phpdocumentor": "2.*",
+            "phpunit/phpunit": "^4.8 || ^5.7",
+            "zendframework/zend-eventmanager": "3.0.*",
+            "zendframework/zend-i18n": "2.7.3",
+            "zendframework/zend-serializer": "2.7.*"
+        },
+        "suggest": {
+            "ext-mbstring": "Needed to send email in multibyte encoding charset",
+            "hayageek/oauth2-yahoo": "Needed for Yahoo XOAUTH2 authentication",
+            "league/oauth2-google": "Needed for Google XOAUTH2 authentication",
+            "psr/log": "For optional PSR-3 debug logging",
+            "stevenmaguire/oauth2-microsoft": "Needed for Microsoft XOAUTH2 authentication",
+            "symfony/polyfill-mbstring": "To support UTF-8 if the Mbstring PHP extension is not enabled (^1.2)"
+        },
+        "time": "2019-02-01T15:04:28+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "PHPMailer\\PHPMailer\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL-2.1"
+        ],
+        "authors": [
+            {
+                "name": "Jim Jagielski",
+                "email": "jimjag@gmail.com"
+            },
+            {
+                "name": "Marcus Bointon",
+                "email": "phpmailer@synchromedia.co.uk"
+            },
+            {
+                "name": "Andy Prevost",
+                "email": "codeworxtech@users.sourceforge.net"
+            },
+            {
+                "name": "Brent R. Matzelle"
+            }
+        ],
+        "description": "PHPMailer is a full-featured email creation and transfer class for PHP"
+    },
+    {
+        "name": "pimple/pimple",
+        "version": "v3.2.3",
+        "version_normalized": "3.2.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/silexphp/Pimple.git",
+            "reference": "9e403941ef9d65d20cba7d54e29fe906db42cf32"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/silexphp/Pimple/zipball/9e403941ef9d65d20cba7d54e29fe906db42cf32",
+            "reference": "9e403941ef9d65d20cba7d54e29fe906db42cf32",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0",
+            "psr/container": "^1.0"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "^3.2"
+        },
+        "time": "2018-01-21T07:42:36+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.2.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Pimple": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Pimple, a simple Dependency Injection Container",
+        "homepage": "http://pimple.sensiolabs.org",
+        "keywords": [
+            "container",
+            "dependency injection"
+        ]
+    },
+    {
+        "name": "psr/container",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/php-fig/container.git",
+            "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/php-fig/container/zipball/b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+            "reference": "b7ce3b176482dbbc1245ebf52b181af44c2cf55f",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2017-02-14T16:28:37+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Psr\\Container\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "PHP-FIG",
+                "homepage": "http://www.php-fig.org/"
+            }
+        ],
+        "description": "Common Container Interface (PHP FIG PSR-11)",
+        "homepage": "https://github.com/php-fig/container",
+        "keywords": [
+            "PSR-11",
+            "container",
+            "container-interface",
+            "container-interop",
+            "psr"
+        ]
+    },
+    {
         "name": "psr/http-message",
         "version": "1.0.1",
         "version_normalized": "1.0.1.0",
@@ -184,38 +304,107 @@
         ]
     },
     {
-        "name": "pimple/pimple",
-        "version": "v3.2.3",
-        "version_normalized": "3.2.3.0",
+        "name": "respect/validation",
+        "version": "1.1.29",
+        "version_normalized": "1.1.29.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/silexphp/Pimple.git",
-            "reference": "9e403941ef9d65d20cba7d54e29fe906db42cf32"
+            "url": "https://github.com/Respect/Validation.git",
+            "reference": "f8c90fa36859ca41c766efcf0c476d58913a7767"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/silexphp/Pimple/zipball/9e403941ef9d65d20cba7d54e29fe906db42cf32",
-            "reference": "9e403941ef9d65d20cba7d54e29fe906db42cf32",
+            "url": "https://api.github.com/repos/Respect/Validation/zipball/f8c90fa36859ca41c766efcf0c476d58913a7767",
+            "reference": "f8c90fa36859ca41c766efcf0c476d58913a7767",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.3.0",
-            "psr/container": "^1.0"
+            "php": ">=5.4",
+            "symfony/polyfill-mbstring": "^1.2"
         },
         "require-dev": {
-            "symfony/phpunit-bridge": "^3.2"
+            "egulias/email-validator": "~1.2 || ~2.1",
+            "mikey179/vfsstream": "^1.5",
+            "phpunit/phpunit": "~4.0",
+            "symfony/validator": "~2.6.9",
+            "zendframework/zend-validator": "~2.3"
         },
-        "time": "2018-01-21T07:42:36+00:00",
+        "suggest": {
+            "egulias/email-validator": "Strict (RFC compliant) email validation",
+            "ext-bcmath": "Arbitrary Precision Mathematics",
+            "ext-mbstring": "Multibyte String Functions",
+            "friendsofphp/php-cs-fixer": "Fix PSR2 and other coding style issues",
+            "symfony/validator": "Use Symfony validator through Respect\\Validation",
+            "zendframework/zend-validator": "Use Zend Framework validator through Respect\\Validation"
+        },
+        "time": "2018-11-04T21:58:45+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "3.2.x-dev"
+                "dev-master": "1.1-dev"
             }
         },
         "installation-source": "dist",
         "autoload": {
-            "psr-0": {
-                "Pimple": "src/"
+            "psr-4": {
+                "Respect\\Validation\\": "library/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Respect/Validation Contributors",
+                "homepage": "https://github.com/Respect/Validation/graphs/contributors"
+            }
+        ],
+        "description": "The most awesome validation engine ever created for PHP",
+        "homepage": "http://respect.github.io/Validation/",
+        "keywords": [
+            "respect",
+            "validation",
+            "validator"
+        ]
+    },
+    {
+        "name": "setasign/fpdi",
+        "version": "v2.1.1",
+        "version_normalized": "2.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Setasign/FPDI.git",
+            "reference": "356de9cb6b6a826ac952c86aee6599463ea87362"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Setasign/FPDI/zipball/356de9cb6b6a826ac952c86aee6599463ea87362",
+            "reference": "356de9cb6b6a826ac952c86aee6599463ea87362",
+            "shasum": ""
+        },
+        "require": {
+            "ext-zlib": "*",
+            "php": "^5.6 || ^7.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~5.7",
+            "setasign/fpdf": "~1.8",
+            "setasign/tfpdf": "1.25",
+            "tecnickcom/tcpdf": "~6.2"
+        },
+        "suggest": {
+            "setasign/fpdf": "FPDI will extend this class but as it is also possible to use TCPDF or tFPDF as an alternative. There's no fixed dependency configured.",
+            "setasign/fpdi-fpdf": "Use this package to automatically evaluate dependencies to FPDF.",
+            "setasign/fpdi-tcpdf": "Use this package to automatically evaluate dependencies to TCPDF.",
+            "setasign/fpdi-tfpdf": "Use this package to automatically evaluate dependencies to tFPDF."
+        },
+        "time": "2018-11-06T10:02:00+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "setasign\\Fpdi\\": "src/"
             }
         },
         "notification-url": "https://packagist.org/downloads/",
@@ -224,15 +413,63 @@
         ],
         "authors": [
             {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
+                "name": "Jan Slabon",
+                "email": "jan.slabon@setasign.com",
+                "homepage": "https://www.setasign.com"
+            },
+            {
+                "name": "Maximilian Kresse",
+                "email": "maximilian.kresse@setasign.com",
+                "homepage": "https://www.setasign.com"
             }
         ],
-        "description": "Pimple, a simple Dependency Injection Container",
-        "homepage": "http://pimple.sensiolabs.org",
+        "description": "FPDI is a collection of PHP classes facilitating developers to read pages from existing PDF documents and use them as templates in FPDF. Because it is also possible to use FPDI with TCPDF, there are no fixed dependencies defined. Please see suggestions for packages which evaluates the dependencies automatically.",
+        "homepage": "https://www.setasign.com/fpdi",
         "keywords": [
-            "container",
-            "dependency injection"
+            "fpdf",
+            "fpdi",
+            "pdf"
+        ]
+    },
+    {
+        "name": "setasign/fpdi-tcpdf",
+        "version": "v2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Setasign/FPDI-TCPDF.git",
+            "reference": "9ebaf04475c0171d4b43b6eb579120ca02da22e8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Setasign/FPDI-TCPDF/zipball/9ebaf04475c0171d4b43b6eb579120ca02da22e8",
+            "reference": "9ebaf04475c0171d4b43b6eb579120ca02da22e8",
+            "shasum": ""
+        },
+        "require": {
+            "setasign/fpdi": "^2.1",
+            "tecnickcom/tcpdf": "^6.2"
+        },
+        "time": "2018-11-06T10:38:50+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jan Slabon",
+                "email": "jan.slabon@setasign.com",
+                "homepage": "https://www.setasign.com"
+            }
+        ],
+        "description": "Kind of metadata package for dependencies of the latest versions of FPDI and TCPDF.",
+        "homepage": "https://www.setasign.com/fpdi",
+        "keywords": [
+            "TCPDF",
+            "fpdi",
+            "pdf"
         ]
     },
     {
@@ -370,134 +607,6 @@
         ]
     },
     {
-        "name": "respect/validation",
-        "version": "1.1.29",
-        "version_normalized": "1.1.29.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Respect/Validation.git",
-            "reference": "f8c90fa36859ca41c766efcf0c476d58913a7767"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Respect/Validation/zipball/f8c90fa36859ca41c766efcf0c476d58913a7767",
-            "reference": "f8c90fa36859ca41c766efcf0c476d58913a7767",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4",
-            "symfony/polyfill-mbstring": "^1.2"
-        },
-        "require-dev": {
-            "egulias/email-validator": "~1.2 || ~2.1",
-            "mikey179/vfsstream": "^1.5",
-            "phpunit/phpunit": "~4.0",
-            "symfony/validator": "~2.6.9",
-            "zendframework/zend-validator": "~2.3"
-        },
-        "suggest": {
-            "egulias/email-validator": "Strict (RFC compliant) email validation",
-            "ext-bcmath": "Arbitrary Precision Mathematics",
-            "ext-mbstring": "Multibyte String Functions",
-            "friendsofphp/php-cs-fixer": "Fix PSR2 and other coding style issues",
-            "symfony/validator": "Use Symfony validator through Respect\\Validation",
-            "zendframework/zend-validator": "Use Zend Framework validator through Respect\\Validation"
-        },
-        "time": "2018-11-04T21:58:45+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.1-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Respect\\Validation\\": "library/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Respect/Validation Contributors",
-                "homepage": "https://github.com/Respect/Validation/graphs/contributors"
-            }
-        ],
-        "description": "The most awesome validation engine ever created for PHP",
-        "homepage": "http://respect.github.io/Validation/",
-        "keywords": [
-            "respect",
-            "validation",
-            "validator"
-        ]
-    },
-    {
-        "name": "setasign/fpdi",
-        "version": "v2.1.1",
-        "version_normalized": "2.1.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Setasign/FPDI.git",
-            "reference": "356de9cb6b6a826ac952c86aee6599463ea87362"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Setasign/FPDI/zipball/356de9cb6b6a826ac952c86aee6599463ea87362",
-            "reference": "356de9cb6b6a826ac952c86aee6599463ea87362",
-            "shasum": ""
-        },
-        "require": {
-            "ext-zlib": "*",
-            "php": "^5.6 || ^7.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~5.7",
-            "setasign/fpdf": "~1.8",
-            "setasign/tfpdf": "1.25",
-            "tecnickcom/tcpdf": "~6.2"
-        },
-        "suggest": {
-            "setasign/fpdf": "FPDI will extend this class but as it is also possible to use TCPDF or tFPDF as an alternative. There's no fixed dependency configured.",
-            "setasign/fpdi-fpdf": "Use this package to automatically evaluate dependencies to FPDF.",
-            "setasign/fpdi-tcpdf": "Use this package to automatically evaluate dependencies to TCPDF.",
-            "setasign/fpdi-tfpdf": "Use this package to automatically evaluate dependencies to tFPDF."
-        },
-        "time": "2018-11-06T10:02:00+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "setasign\\Fpdi\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Jan Slabon",
-                "email": "jan.slabon@setasign.com",
-                "homepage": "https://www.setasign.com"
-            },
-            {
-                "name": "Maximilian Kresse",
-                "email": "maximilian.kresse@setasign.com",
-                "homepage": "https://www.setasign.com"
-            }
-        ],
-        "description": "FPDI is a collection of PHP classes facilitating developers to read pages from existing PDF documents and use them as templates in FPDF. Because it is also possible to use FPDI with TCPDF, there are no fixed dependencies defined. Please see suggestions for packages which evaluates the dependencies automatically.",
-        "homepage": "https://www.setasign.com/fpdi",
-        "keywords": [
-            "fpdf",
-            "fpdi",
-            "pdf"
-        ]
-    },
-    {
         "name": "tecnickcom/tcpdf",
         "version": "6.2.26",
         "version_normalized": "6.2.26.0",
@@ -559,47 +668,6 @@
             "pdf",
             "pdf417",
             "qrcode"
-        ]
-    },
-    {
-        "name": "setasign/fpdi-tcpdf",
-        "version": "v2.1.0",
-        "version_normalized": "2.1.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Setasign/FPDI-TCPDF.git",
-            "reference": "9ebaf04475c0171d4b43b6eb579120ca02da22e8"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Setasign/FPDI-TCPDF/zipball/9ebaf04475c0171d4b43b6eb579120ca02da22e8",
-            "reference": "9ebaf04475c0171d4b43b6eb579120ca02da22e8",
-            "shasum": ""
-        },
-        "require": {
-            "setasign/fpdi": "^2.1",
-            "tecnickcom/tcpdf": "^6.2"
-        },
-        "time": "2018-11-06T10:38:50+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Jan Slabon",
-                "email": "jan.slabon@setasign.com",
-                "homepage": "https://www.setasign.com"
-            }
-        ],
-        "description": "Kind of metadata package for dependencies of the latest versions of FPDI and TCPDF.",
-        "homepage": "https://www.setasign.com/fpdi",
-        "keywords": [
-            "TCPDF",
-            "fpdi",
-            "pdf"
         ]
     }
 ]
