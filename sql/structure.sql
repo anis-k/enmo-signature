@@ -226,7 +226,7 @@ CREATE TABLE users
   picture text,
   enabled boolean DEFAULT TRUE,
   mode character varying(50) NOT NULL,
-  preferences jsonb NOT NULL DEFAULT '{"writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
+  preferences jsonb NOT NULL DEFAULT '{"lang" : "fr", "writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
   cookie_key character varying(255) DEFAULT NULL::character varying,
   cookie_date timestamp without time zone,
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
