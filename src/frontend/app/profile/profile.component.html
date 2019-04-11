@@ -4,7 +4,8 @@
             <div class="user" style="color: #F99830">
                 Mon Profil
             </div>
-            <div class="avatarProfile" [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}"
+            <div class="avatarProfile"
+                [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}"
                 (tap)="uploadFile.click();">
             </div>
             <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
@@ -12,13 +13,14 @@
     </div>
     <div class="nav">
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
-            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);" (swipeleft)="siwtchToleft(tabProfile)"
-                (swiperight)="siwtchToRight(tabProfile)">
+            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);"
+                (swipeleft)="siwtchToleft(tabProfile)" (swiperight)="siwtchToRight(tabProfile)">
                 <mat-tab label="Informations">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
-                            <input name="login" matInput placeholder="Courriel" type="mail" [(ngModel)]="profileInfo.email"
-                                (keyup)="newLogin.mail=newLogin.mail.toLowerCase()" disabled required>
+                            <input name="login" matInput placeholder="Courriel" type="mail"
+                                [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()"
+                                disabled required>
                         </mat-form-field>
                         <mat-form-field class="input-row">
                             <input name="firstname" matInput placeholder="Prénom" [(ngModel)]="profileInfo.firstname"
@@ -40,26 +42,36 @@
                                 <ng-container *ngIf="showPassword">
                                     <mat-form-field class="input-row">
                                         <input name="currentPassword" matInput [(ngModel)]="password.currentPassword"
-                                            placeholder="Mot de passe actuel" [type]="hideCurrentPassword ? 'password' : 'text'">
-                                        <mat-icon matSuffix (click)="hideCurrentPassword = !hideCurrentPassword" class="fa fa-2x"
+                                            placeholder="Mot de passe actuel"
+                                            [type]="hideCurrentPassword ? 'password' : 'text'">
+                                        <mat-icon matSuffix (click)="hideCurrentPassword = !hideCurrentPassword"
+                                            class="fa fa-2x"
                                             [ngClass]="[hideCurrentPassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
                                     </mat-form-field>
                                     <mat-form-field class="input-row">
                                         <input name="newPassword" matInput [(ngModel)]="password.newPassword"
-                                            placeholder="Nouveau mot de passe" [type]="hideNewPassword ? 'password' : 'text'"
+                                            placeholder="Nouveau mot de passe"
+                                            [type]="hideNewPassword ? 'password' : 'text'"
                                             (keyup)="checkPasswordValidity(password.newPassword)">
-                                        <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword" class="fa fa-2x"
-                                            [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                                        <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
+                                            class="fa fa-2x" [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']">
+                                        </mat-icon>
                                         <mat-hint style="color:red;">{{handlePassword.errorMsg}}</mat-hint>
                                     </mat-form-field>
                                     <mat-form-field class="input-row">
-                                        <input name="passwordConfirmation" matInput [(ngModel)]="password.passwordConfirmation"
-                                            placeholder="Confirmer le nouveau mot de passe" [type]="hideNewPasswordConfirm ? 'password' : 'text'">
+                                        <input name="passwordConfirmation" matInput
+                                            [(ngModel)]="password.passwordConfirmation"
+                                            placeholder="Confirmer le nouveau mot de passe"
+                                            [type]="hideNewPasswordConfirm ? 'password' : 'text'">
                                         <mat-icon matSuffix (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm"
-                                            class="fa fa-2x" [ngClass]="[hideNewPasswordConfirm ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
-                                        <mat-hint style="color:red;" *ngIf="password.passwordConfirmation !== password.newPassword">Les
+                                            class="fa fa-2x"
+                                            [ngClass]="[hideNewPasswordConfirm ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                                        <mat-hint style="color:red;"
+                                            *ngIf="password.passwordConfirmation !== password.newPassword">Les
                                             mots de passe ne correspondent pas !</mat-hint>
-                                        <mat-hint style="color:green;" *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">Les
+                                        <mat-hint style="color:green;"
+                                            *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">
+                                            Les
                                             mots de passe sont identiques</mat-hint>
                                     </mat-form-field>
                                 </ng-container>
@@ -70,38 +82,67 @@
                 <mat-tab label="Préférences">
                     <div class="profile-content">
                         <div class="input-row">
-                                <fieldset>
-                                    <legend align="left">Notifications</legend>
-                                    <div class="form-container">
-                                        <div class="form-col notification">
-                                            <mat-slide-toggle [checked]="this.profileInfo.preferences.notifications" (change)="this.profileInfo.preferences.notifications=!this.profileInfo.preferences.notifications" color="primary">Recevoir les notifications</mat-slide-toggle>
-                                        </div>
+                            <fieldset>
+                                <legend align="left">Notifications</legend>
+                                <div class="form-container">
+                                    <div class="form-2-col">
+                                        <mat-slide-toggle [checked]="this.profileInfo.preferences.notifications"
+                                            (change)="this.profileInfo.preferences.notifications=!this.profileInfo.preferences.notifications"
+                                            color="primary">Recevoir les notifications</mat-slide-toggle>
                                     </div>
-                                </fieldset>
-                            </div>
+                                    <div class="form-2-col" style="text-align: justify;font-size: 12px;">
+
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="input-row">
+                            <fieldset>
+                                <legend align="left">Langue</legend>
+                                <div class="form-container">
+                                    <div class="form-2-col">
+                                        <mat-form-field>
+                                            <mat-select name="langUser" [(ngModel)]="this.profileInfo.preferences.lang">
+                                                <mat-option value="fr">Français</mat-option>
+                                                <mat-option value="en">Anglais</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="form-2-col" style="text-align: justify;font-size: 12px;">
+
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </div>
                         <div class="input-row">
                             <fieldset>
                                 <legend align="left">Mode de l'annotation</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
-                                            <mat-select name="writingMode" [(ngModel)]="this.profileInfo.preferences.writingMode">
+                                            <mat-select name="writingMode"
+                                                [(ngModel)]="this.profileInfo.preferences.writingMode">
                                                 <mat-option value="direct">Libre</mat-option>
-                                                <mat-option value="stylus">Stylet Apple <i class="fab fa-apple"></i></mat-option>
+                                                <mat-option value="stylus">Stylet Apple <i class="fab fa-apple"></i>
+                                                </mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
-                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'stylus'" class="form-2-col" style="text-align: justify;font-size: 12px;">
+                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'stylus'" class="form-2-col"
+                                        style="text-align: justify;font-size: 12px;">
                                         Vous ne pourrez annoter les documents qu'avec le <b>stylet Apple</b>.<br />
                                         Cela a pour avantage de pouvoir poser la main sur la tablette sans perturber
                                         l'écriture.
                                     </div>
-                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'direct'" class="form-2-col" style="text-align: justify;font-size: 12px;">
-                                        Mode standard, permettant l'annotation avec tout format (souris, main, stylets de
+                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'direct'" class="form-2-col"
+                                        style="text-align: justify;font-size: 12px;">
+                                        Mode standard, permettant l'annotation avec tout format (souris, main, stylets
+                                        de
                                         toutes marques).
                                     </div>
                                 </div>
-                                
+
                             </fieldset>
                         </div>
                         <div class="input-row">
@@ -110,9 +151,11 @@
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
-                                            <mat-select name="writingSize" [(ngModel)]="this.profileInfo.preferences.writingSize"
+                                            <mat-select name="writingSize"
+                                                [(ngModel)]="this.profileInfo.preferences.writingSize"
                                                 (selectionChange)="drawSample();">
-                                                <mat-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">{{i+1}}</mat-option>
+                                                <mat-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">
+                                                    {{i+1}}</mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
@@ -128,7 +171,8 @@
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
-                                            <mat-select name="writingColor" [(ngModel)]="this.profileInfo.preferences.writingColor">
+                                            <mat-select name="writingColor"
+                                                [(ngModel)]="this.profileInfo.preferences.writingColor">
                                                 <mat-option style="color:#000000" value="#000000">Noir</mat-option>
                                                 <mat-option style="color:#1a75ff" value="#1a75ff">Bleu</mat-option>
                                                 <mat-option style="color:#FF0000" value="#FF0000">Rouge</mat-option>
@@ -136,7 +180,8 @@
                                         </mat-form-field>
                                     </div>
                                     <div class="form-2-col">
-                                        <div style="height:50px;width:100px;margin:auto;" [style.backgroundColor]="this.profileInfo.preferences.writingColor">
+                                        <div style="height:50px;width:100px;margin:auto;"
+                                            [style.backgroundColor]="this.profileInfo.preferences.writingColor">
                                         </div>
                                     </div>
                                 </div>
@@ -153,7 +198,8 @@
                                     <div class="form-col" style="width:35%;">
                                         <mat-form-field>
                                             <mat-select name="usersRest" [(ngModel)]="currentUserRest">
-                                                <mat-option *ngFor="let userRest of usersRest" [value]="userRest">{{userRest.firstname}}
+                                                <mat-option *ngFor="let userRest of usersRest" [value]="userRest">
+                                                    {{userRest.firstname}}
                                                     {{userRest.lastname}}</mat-option>
                                             </mat-select>
                                         </mat-form-field>
@@ -161,15 +207,19 @@
                                     <div class="form-col" style="width:35%;">
                                         <mat-form-field class="input-row">
                                             <input name="newPasswordRest" matInput [(ngModel)]="currentUserRestPassword"
-                                                placeholder="Nouveau mot de passe" [type]="hideNewPassword ? 'password' : 'text'"
+                                                placeholder="Nouveau mot de passe"
+                                                [type]="hideNewPassword ? 'password' : 'text'"
                                                 (keyup)="checkPasswordValidity(currentUserRestPassword)">
-                                            <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword" class="fa fa-2x"
+                                            <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
+                                                class="fa fa-2x"
                                                 [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
                                             <mat-hint style="color:red;">{{handlePassword.errorMsg}}</mat-hint>
                                         </mat-form-field>
                                     </div>
                                     <div class="form-col" style="width:29%;">
-                                        <button mat-raised-button type="button" color="primary" [disabled]="handlePassword.error || currentUserRestPassword.length === 0" (click)="updateRestUser()" >Modifier</button>
+                                        <button mat-raised-button type="button" color="primary"
+                                            [disabled]="handlePassword.error || currentUserRestPassword.length === 0"
+                                            (click)="updateRestUser()">Modifier</button>
                                     </div>
                                 </div>
                             </fieldset>
@@ -178,7 +228,8 @@
                 </mat-tab>
             </mat-tab-group>
             <span class="actions">
-                <button class="validate" mat-button color="primary" type="submit" [disabled]="allowValidate() || !profileForm.form.valid">{{
+                <button class="validate" mat-button color="primary" type="submit"
+                    [disabled]="allowValidate() || !profileForm.form.valid">{{
                     msgButton }}</button>
                 <button class="cancel" mat-icon-button type="button" (tap)="closeProfile();">
                     <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
