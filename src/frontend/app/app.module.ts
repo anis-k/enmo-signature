@@ -47,6 +47,7 @@ import { RejectInfoBottomSheetComponent } from './modal/reject-info.component';
 // SERVICES
 import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
 import { SignaturesContentService } from './service/signatures.service';
+import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 
 
 
@@ -55,6 +56,7 @@ import { SignaturesContentService } from './service/signatures.service';
     AppComponent,
     LoginComponent,
     ForgotPasswordComponent,
+    UpdatePasswordComponent,
     SignaturesComponent,
     SignaturePadPageComponent,
     DrawerComponent,
@@ -95,6 +97,7 @@ import { SignaturesContentService } from './service/signatures.service';
       { path: 'documents', component: DocumentComponent },
       { path: 'login', component: LoginComponent },
       { path: 'forgotPassword', component: ForgotPasswordComponent },
+      { path: 'updatePassword', component: UpdatePasswordComponent },
       { path: '**', redirectTo: 'login', pathMatch: 'full' },
     ], { useHash: true }),
   ],
