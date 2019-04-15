@@ -28,6 +28,7 @@ import { AppMaterialModule } from './app-material.module';
 // COMPONENTS
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
+import { ForgotPasswordComponent } from './login/forgotPassword/forgotPassword.component';
 import { SignaturesComponent } from './signatures/signatures.component';
 import { SignaturePadPageComponent } from './pad/pad.component';
 import { SignaturePadModule } from 'angular2-signaturepad';
@@ -53,6 +54,7 @@ import { SignaturesContentService } from './service/signatures.service';
   declarations: [
     AppComponent,
     LoginComponent,
+    ForgotPasswordComponent,
     SignaturesComponent,
     SignaturePadPageComponent,
     DrawerComponent,
@@ -92,6 +94,7 @@ import { SignaturesContentService } from './service/signatures.service';
       { path: 'documents/:id', component: DocumentComponent },
       { path: 'documents', component: DocumentComponent },
       { path: 'login', component: LoginComponent },
+      { path: 'forgotPassword', component: ForgotPasswordComponent },
       { path: '**', redirectTo: 'login', pathMatch: 'full' },
     ], { useHash: true }),
   ],

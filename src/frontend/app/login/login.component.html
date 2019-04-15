@@ -7,6 +7,7 @@
             </mat-form-field>
             <mat-form-field class="input-row">
                 <input name="password" matInput placeholder="Mot de passe" type="password" [(ngModel)]="newLogin.password">
+                <mat-hint align="end"><a routerLink="/forgotPassword" class="forgotPwdLink">Mot de passe oublié ?</a></mat-hint>
             </mat-form-field>
             <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton}}</button>
         </form>
