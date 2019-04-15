@@ -23,20 +23,20 @@
               <mat-panel-title>
                 <div>
                   <mat-form-field>
-                    <input matInput [value]="mainDocument.sender" title="{{mainDocument.sender}}" placeholder="Émis par"
+                    <input matInput [value]="mainDocument.sender" title="{{mainDocument.sender}}" placeholder="{{'lang.emittedBy' | translate}}"
                       disabled>
                   </mat-form-field>
                 </div>
                 <div>
                   <mat-form-field *ngIf="mainDocument.description != null">
                     <input matInput [value]="mainDocument.description" title="{{mainDocument.description}}"
-                      placeholder="Description" disabled>
+                      placeholder="{{'lang.description' | translate}}" disabled>
                   </mat-form-field>
                 </div>
                 <div>
                   <mat-form-field *ngIf="mainDocument.deadline != null">
                     <input matInput [value]="mainDocument.deadline" title="{{mainDocument.deadline}}"
-                      placeholder="Date limite de traitement" disabled>
+                      placeholder="{{'lang.processingDeadline' | translate}}" disabled>
                   </mat-form-field>
                 </div>
               </mat-panel-title>
@@ -44,18 +44,18 @@
             <div class="header-expand-content">
               <mat-form-field>
                 <input matInput [value]="mainDocument.reference" title="{{mainDocument.reference}}"
-                  placeholder="Référence" disabled>
+                  placeholder="{{'lang.reference' | translate}}" disabled>
               </mat-form-field>
             </div>
             <div class="header-expand-content">
               <mat-form-field>
                 <input matInput [value]="mainDocument.processingUserDisplay"
-                  title="{{mainDocument.processingUserDisplay}}" placeholder="À signer par" disabled>
+                  title="{{mainDocument.processingUserDisplay}}" placeholder="{{'lang.toBeSignedBy' | translate}}" disabled>
               </mat-form-field>
             </div>
             <div class="header-expand-content">
               <mat-form-field>
-                <input matInput [value]="mainDocument.title" title="{{mainDocument.title}}" placeholder="Objet"
+                <input matInput [value]="mainDocument.title" title="{{mainDocument.title}}" placeholder="{{'lang.subject' | translate}}"
                   disabled>
               </mat-form-field>
             </div>
@@ -72,8 +72,8 @@
             <mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button [disabled]="checkEmptiness()" mat-menu-item (click)="removeTags();">Tout effacer</button>
-            <button [disabled]="checkEmptyNote()" mat-menu-item (click)="undoTag();">Annuler la précedente note</button>
+            <button [disabled]="checkEmptiness()" mat-menu-item (click)="removeTags();">{{'lang.deleteAll' | translate}}</button>
+            <button [disabled]="checkEmptyNote()" mat-menu-item (click)="undoTag();">{{'lang.cancelPreviousNote' | translate}}</button>
           </mat-menu>
         </section>
       </article>
@@ -120,8 +120,8 @@
         <div class="page-under-fold"></div>
       </div>
       <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-        <div class="page-info-doc">Doc {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
-        <div class="page-info-page">page {{ pageNum }} / {{ totalPages }}</div>
+        <div class="page-info-doc">{{'lang.doc' | translate}} {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
+        <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
       </section>
     </article>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>

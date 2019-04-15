@@ -14,6 +14,8 @@ import { RejectInfoBottomSheetComponent } from '../modal/reject-info.component';
 import { ConfirmModalComponent } from '../modal/confirm-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 
 @Component({
@@ -83,7 +85,6 @@ export class DocumentComponent implements OnInit {
     startY              : number    = 0;
     outOfBounds = false;
 
-
     @Input() mainDocument: any = {};
 
     @ViewChild('snav') snav: MatSidenav;
@@ -97,8 +98,7 @@ export class DocumentComponent implements OnInit {
         event.preventDefault();
     }
 
-
-    constructor(private router: Router, private route: ActivatedRoute, public http: HttpClient,
+    constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute, public http: HttpClient,
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         private cookieService: CookieService,
@@ -126,24 +126,24 @@ export class DocumentComponent implements OnInit {
                         this.initDoc();
                         if (this.actionsList.length === 0) {
                             this.http.get('../rest/actions')
-                            .subscribe((dataActionsList: any) => {
-                                this.actionsList = dataActionsList.actions;
-                                this.actionsList.forEach((element: any) => {
-                                    if (this.mainDocument.actionsAllowed.indexOf(element.id) > -1) {
-                                        element.allowed = true;
-                                    } else {
-                                        element.allowed = false;
-                                    }
+                                .subscribe((dataActionsList: any) => {
+                                    this.actionsList = dataActionsList.actions;
+                                    this.actionsList.forEach((element: any) => {
+                                        if (this.mainDocument.actionsAllowed.indexOf(element.id) > -1) {
+                                            element.allowed = true;
+                                        } else {
+                                            element.allowed = false;
+                                        }
+                                    });
                                 });
-                            });
                         }
 
                         if (this.signaturesService.signaturesList.length === 0) {
                             this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
-                            .subscribe((dataSign: any) => {
-                                this.signaturesService.signaturesList = dataSign.signatures;
-                                this.signaturesService.loadingSign = false;
-                            });
+                                .subscribe((dataSign: any) => {
+                                    this.signaturesService.signaturesList = dataSign.signatures;
+                                    this.signaturesService.loadingSign = false;
+                                });
                         }
                         this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'subject': this.mainDocument.subject });
                         this.mainDocument.attachments.forEach((attach: any) => {
@@ -322,7 +322,7 @@ export class DocumentComponent implements OnInit {
     validateDocument(mode: any): void {
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
-            data: { msg: 'Êtes-vous sûr  ?' }
+            data: { msg: 'lang.areYouSure' }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -356,7 +356,7 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.currentAction = 0;
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
-            data: { msg: 'Effacer toutes les annotations et signatures ?' }
+            data: { msg: 'lang.deleteNoteAndSignatory' }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -364,12 +364,12 @@ export class DocumentComponent implements OnInit {
                 this.signaturesService.signaturesContent = [];
                 this.signaturesService.notesContent = [];
                 localStorage.removeItem(this.mainDocument.id.toString());
-                this.notificationService.success('Annotations / signatures supprimées du document');
+                this.notificationService.success('lang.noteAndSignatoryDeleted');
             }
         });
     }
 
-    loadNextDoc () {
+    loadNextDoc() {
         if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].encodedDocument === '') {
             this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
                 .subscribe((dataPj: any) => {
@@ -388,7 +388,7 @@ export class DocumentComponent implements OnInit {
     undoTag() {
         if (this.signaturesService.notesContent[this.pageNum]) {
             this.signaturesService.notesContent[this.pageNum].pop();
-            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
+            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({ "sign": this.signaturesService.signaturesContent, "note": this.signaturesService.notesContent }));
         }
     }
 
