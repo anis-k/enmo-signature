@@ -104,40 +104,46 @@ export class ProfileComponent implements OnInit {
                         this.passwordRules.minLength.enabled = rule.enabled;
                         this.passwordRules.minLength.value = rule.value;
                         if (rule.enabled) {
-                            ruleTextArr.push(rule.value + ' Longueur minimale');
+                            this.translate.get('lang.minLengthChar', {charLength: rule.value}).subscribe((res: string) => {
+                                ruleTextArr.push(res);
+                            });
                         }
 
                     } else if (rule.label === 'complexityUpper') {
                         this.passwordRules.complexityUpper.enabled = rule.enabled;
                         this.passwordRules.complexityUpper.value = rule.value;
                         if (rule.enabled) {
-                            ruleTextArr.push('Majuscule requise');
+                            ruleTextArr.push('lang.upperRequired');
                         }
 
                     } else if (rule.label === 'complexityNumber') {
                         this.passwordRules.complexityNumber.enabled = rule.enabled;
                         this.passwordRules.complexityNumber.value = rule.value;
                         if (rule.enabled) {
-                            ruleTextArr.push('Chiffre requis');
+                            ruleTextArr.push('lang.numberRequired');
                         }
 
                     } else if (rule.label === 'complexitySpecial') {
                         this.passwordRules.complexitySpecial.enabled = rule.enabled;
                         this.passwordRules.complexitySpecial.value = rule.value;
                         if (rule.enabled) {
-                            ruleTextArr.push('Caractère spécial requis');
+                            ruleTextArr.push('lang.specialCharRequired');
                         }
                     } else if (rule.label === 'renewal') {
                         this.passwordRules.renewal.enabled = rule.enabled;
                         this.passwordRules.renewal.value = rule.value;
                         if (rule.enabled) {
-                            otherRuleTextArr.push('Veuillez noter que ce nouveau mot de passe ne sera valide que' + ' <b>' + rule.value + ' jour(s)</b>. ' + 'Passé ce délai, vous devrez en choisir un nouveau.');
+                            this.translate.get('lang.renewalInfo', {time: rule.value}).subscribe((res: string) => {
+                                otherRuleTextArr.push(res);
+                            });
                         }
                     } else if (rule.label === 'historyLastUse') {
                         this.passwordRules.historyLastUse.enabled = rule.enabled;
                         this.passwordRules.historyLastUse.value = rule.value;
                         if (rule.enabled) {
-                            otherRuleTextArr.push('Vous ne pouvez pas utiliser les <b>' + rule.value + '</b> dernier(s) mot(s) de passe.');
+                            this.translate.get('lang.historyUseInfo', {countPwd: rule.value}).subscribe((res: string) => {
+                                otherRuleTextArr.push(res);
+                            });
                         }
                     }
 
@@ -153,13 +159,15 @@ export class ProfileComponent implements OnInit {
         this.handlePassword.error = true;
 
         if (!password.match(/[A-Z]/g) && this.passwordRules.complexityUpper.enabled) {
-            this.handlePassword.errorMsg = '1 majuscule au minimum !';
+            this.handlePassword.errorMsg = 'lang.upperRequired';
         } else if (!password.match(/[0-9]/g) && this.passwordRules.complexityNumber.enabled) {
-            this.handlePassword.errorMsg = '1 chiffre au minimum !';
+            this.handlePassword.errorMsg = 'lang.numberRequired';
         } else if (!password.match(/[^A-Za-z0-9]/g) && this.passwordRules.complexitySpecial.enabled) {
-            this.handlePassword.errorMsg = 'Caractère spécial requis !';
+            this.handlePassword.errorMsg = 'lang.specialCharRequired';
         } else if (password.length < this.passwordRules.minLength.value && this.passwordRules.minLength.enabled) {
-            this.handlePassword.errorMsg = this.passwordRules.minLength.value + ' caractère(s) au minimum !';
+            this.translate.get('lang.minLengthChar', {charLength: this.passwordRules.minLength.value}).subscribe((res: string) => {
+                this.handlePassword.errorMsg = res;
+            });
         } else {
             this.handlePassword.error = false;
             this.handlePassword.errorMsg = '';

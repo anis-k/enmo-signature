@@ -61,7 +61,7 @@
                                         <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
                                             class="fa fa-2x" [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']">
                                         </mat-icon>
-                                        <mat-hint style="color:red;">{{handlePassword.errorMsg}}</mat-hint>
+                                        <mat-hint style="color:red;">{{handlePassword.errorMsg | translate}}</mat-hint>
                                     </mat-form-field>
                                     <mat-form-field class="input-row">
                                         <input name="passwordConfirmation" matInput
