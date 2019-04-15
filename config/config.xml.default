@@ -15,7 +15,8 @@
     </database>
     <electronicSignature>
         <enable>false</enable>
-        <certPath>/home/maarch/Bureau/tcpdf.crt</certPath>
+        <certPath>/home/maarch/Bureau/tcpdf.crt</certPath><!-- .crt or .p12 or .pem -->
+        <privateKeyPath>/home/maarch/Bureau/tcpdf.crt</privateKeyPath><!-- if private key and certificate are in the same file, put the same path -->
         <password>password</password>
         <certInfo>
             <name>Maarch</name>

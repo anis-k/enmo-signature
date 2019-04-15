@@ -261,7 +261,6 @@ class DocumentController
 
         $processingUser['preferences'] = json_decode($processingUser['preferences'], true);
         if ($processingUser['preferences']['notifications']) {
-
             $lang = LangController::get(['lang' => $processingUser['preferences']['lang']]);
             $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $id;
             EmailController::createEmail([
@@ -377,21 +376,25 @@ class DocumentController
                 }
             }
 
-            $loadedXml = CoreConfigModel::getConfig();
-
-            if ($loadedXml->electronicSignature->enable == 'true') {
-                $certPath = realpath((string)$loadedXml->electronicSignature->certPath);
-                if (is_file($certPath)) {
-                    $certificate = 'file://' . $certPath;
-                    $info = [
-                        'Name'        => (string)$loadedXml->electronicSignature->certInfo->name,
-                        'Location'    => (string)$loadedXml->electronicSignature->certInfo->location,
-                        'Reason'      => (string)$loadedXml->electronicSignature->certInfo->reason,
-                        'ContactInfo' => (string)$loadedXml->electronicSignature->certInfo->contactInfo
-                    ];
-                    $pdf->setSignature($certificate, $certificate, (string)$loadedXml->electronicSignature->password, '', 2, $info);
-                } else {
-                    return $response->withStatus(400)->withJson(['errors' => 'check certPath']);
+            $status = StatusModel::getById(['select' => ['reference'], 'id' => $action['next_status_id']]);
+            if ($status['reference'] == 'VAL' && $document['mode'] == 'SIGN') {
+                $loadedXml = CoreConfigModel::getConfig();
+                if ($loadedXml->electronicSignature->enable == 'true') {
+                    $certPath       = realpath((string)$loadedXml->electronicSignature->certPath);
+                    $privateKeyPath = realpath((string)$loadedXml->electronicSignature->privateKeyPath);
+                    if (is_file($certPath) && is_file($privateKeyPath)) {
+                        $certificate = 'file://' . $certPath;
+                        $privateKey = 'file://' . $privateKeyPath;
+                        $info = [
+                            'Name'        => (string)$loadedXml->electronicSignature->certInfo->name,
+                            'Location'    => (string)$loadedXml->electronicSignature->certInfo->location,
+                            'Reason'      => (string)$loadedXml->electronicSignature->certInfo->reason,
+                            'ContactInfo' => (string)$loadedXml->electronicSignature->certInfo->contactInfo
+                        ];
+                        $pdf->setSignature($certificate, $privateKey, (string)$loadedXml->electronicSignature->password, '', 2, $info);
+                    } else {
+                        return $response->withStatus(400)->withJson(['errors' => 'certPath or privateKeyPath is not valid']);
+                    }
                 }
             }
 
