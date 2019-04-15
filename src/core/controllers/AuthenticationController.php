@@ -19,8 +19,6 @@ use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
-use SrcCore\models\CoreConfigModel;
-use SrcCore\models\LangModel;
 use User\controllers\UserController;
 use User\models\UserModel;
 
@@ -67,6 +65,7 @@ class AuthenticationController
         AuthenticationModel::setCookieAuth(['id' => $user['id']]);
 
         $GLOBALS['id'] = $user['id'];
+        UserModel::update(['set' => ['reset_token' => json_encode(['token' => null, 'until' => null])], 'where' => ['id = ?'], 'data' => [$user['id']]]);
 
         HistoryController::add([
             'code'          => 'OK',

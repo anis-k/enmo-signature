@@ -129,7 +129,7 @@ class AuthenticationModel
             'table' => 'users',
             'set'   => [
                 'cookie_key'    => null,
-                'cookie_date'   => null,
+                'cookie_date'   => null
             ],
             'where' => ['id = ?'],
             'data'  => [$args['userId']]

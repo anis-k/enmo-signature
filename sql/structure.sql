@@ -229,6 +229,7 @@ CREATE TABLE users
   preferences jsonb NOT NULL DEFAULT '{"lang" : "fr", "writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
   cookie_key character varying(255) DEFAULT NULL::character varying,
   cookie_date timestamp without time zone,
+  reset_token jsonb NOT NULL DEFAULT '{"token" : "", "until" : ""}',
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   failed_authentication INTEGER DEFAULT 0,
   locked_until TIMESTAMP without time zone,

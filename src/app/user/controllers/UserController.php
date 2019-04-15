@@ -16,12 +16,16 @@ namespace User\controllers;
 
 use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
+use Email\controllers\EmailController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\LangController;
 use SrcCore\controllers\PasswordController;
+use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
+use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
 use User\models\UserModel;
@@ -241,6 +245,114 @@ class UserController
         ]);
 
         return $response->withJson(['success' => 'success']);
+    }
+
+    public function forgotPassword(Request $request, Response $response)
+    {
+        $body = $request->getParsedBody();
+
+        if (!Validator::stringType()->notEmpty()->validate($body['login'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Bad request']);
+        }
+
+        $user = UserModel::getByLogin(['select' => ['id', 'email', 'preferences'], 'login' => $body['login']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        $GLOBALS['id'] = $user['id'];
+
+        $token = CoreConfigModel::getUniqueId();
+        $token = hash('sha256', $token);
+        $tokenTime = time() + 3600;
+        $resetToken = ['token' => $token, 'until' => date('Y-m-d H:i:s', $tokenTime)];
+
+        UserModel::update(['set' => ['reset_token' => json_encode($resetToken)], 'where' => ['id = ?'], 'data' => [$user['id']]]);
+
+        $user['preferences'] = json_decode($user['preferences'], true);
+
+        $lang = LangController::get(['lang' => $user['preferences']['lang']]);
+        $emailToken = json_encode(['login' => $body['login'], 'token' => $token]);
+        $emailToken = base64_encode($emailToken);
+
+        $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $emailToken;
+        EmailController::createEmail([
+            'userId'    => $user['id'],
+            'data'      => [
+                'sender'        => 'Notification',
+                'recipients'    => [$user['email']],
+                'subject'       => $lang['notificationDocumentAddedSubject'],
+                'body'          => $lang['notificationDocumentAddedBody'] . $url . $lang['notificationFooter'],
+                'isHtml'        => true
+            ]
+        ]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $user['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => '{userPasswordForgotten}'
+        ]);
+
+        return $response->withStatus(204);
+    }
+
+    public static function updateForgottenPassword(Request $request, Response $response)
+    {
+        $body = $request->getParsedBody();
+
+        $check = Validator::stringType()->notEmpty()->validate($body['token']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['password']);
+        if (!$check) {
+            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        }
+
+        $token = base64_decode($body['token']);
+        $token = json_decode($token, true);
+
+        $user = UserModel::getByLogin(['login' => $token['login'], 'select' => ['id', 'reset_token']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        $resetToken = json_decode($user['reset_token'], true);
+        if (empty($resetToken['token']) || empty($resetToken['until'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Invalid token']);
+        }
+
+        $tokenValidDate = new \DateTime($resetToken['until']);
+        $nowDate = new \DateTime();
+        if ($token['token'] != $resetToken['token'] || $tokenValidDate < $nowDate) {
+            return $response->withStatus(403)->withJson(['errors' => 'Invalid token']);
+        }
+
+        if (!PasswordController::isPasswordValid(['password' => $body['password']])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
+        }
+
+        UserModel::update([
+            'set' => [
+                'password'                      => AuthenticationModel::getPasswordHash($body['password']),
+                'password_modification_date'    => 'CURRENT_TIMESTAMP',
+                'reset_token'                   => json_encode(['token' => null, 'until' => null]),
+                'cookie_key'                    => null,
+                'cookie_date'                   => null
+            ],
+            'where' => ['id = ?'],
+            'data' => [$user['id']]
+        ]);
+
+        $GLOBALS['id'] = $user['id'];
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $user['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => '{userForgottenPasswordUpdated}'
+        ]);
+
+        return $response->withStatus(204);
     }
 
     public function getSignatures(Request $request, Response $response, array $args)
