@@ -16,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class AppComponent {
 
   constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService) {
-    translate.setDefaultLang('en');
+    translate.setDefaultLang('fr');
 
     if (this.cookieService.check('maarchParapheurAuth')) {
       const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
