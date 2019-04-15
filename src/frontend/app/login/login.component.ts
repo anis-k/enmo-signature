@@ -8,6 +8,8 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { CookieService } from 'ngx-cookie-service';
 import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -39,11 +41,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
         login       : '',
         password    : ''
     };
-    labelButton         : string    = 'Se connecter';
+    labelButton         : string    = 'lang.connect';
     appVersion          : string    = '';
     appAuthor           : string    = '';
 
-    constructor(public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
+    constructor(private translate: TranslateService, public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
         if (this.cookieService.check('maarchParapheurAuth')) {
             this.router.navigate(['/documents']);
@@ -66,7 +68,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
 
     login() {
-        this.labelButton = 'Connexion ...';
+        this.labelButton = 'lang.connexion';
         this.loadingConnexion = true;
 
         this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password })
@@ -79,11 +81,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 }, 700);
             }, (err: any) => {
                 if (err.status === 401) {
-                    this.notificationService.error('Mauvais identifiant ou mauvais mot de passe');
+                    this.notificationService.error('lang.wrongLoginPassword');
                 } else {
                     this.notificationService.handleErrors(err);
                 }
-                this.labelButton = 'Se connecter';
+                this.labelButton = 'lang.connect';
                 this.loadingConnexion = false;
             });
     }

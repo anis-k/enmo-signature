@@ -3,13 +3,15 @@
 		"administrations": "Administrations",
 		"annotationMode": "Mode de l'annotation",
 		"appleStylus": "Stylet Apple",
-		"badPassword": "Mauvais mot de passe",
 		"black": "Noir",
 		"blue": "Bleu",
+		"connect": "Se connecter",
+		"connexion": "Connexion...",
 		"currentPassword": "Mot de passe actuel",
 		"defaultColor": "Couleur par défaut",
 		"email": "Courriel",
 		"firstname": "Prénom",
+		"forgotPassword": "Mot de passe oublié",
 		"free": "Libre",
 		"freeModeInfo": "Vous ne pourrez annoter les documents qu'avec le <b>stylet Apple</b>.<br />Cela a pour avantage de pouvoir poser la main sur la tablette sans perturber l'écriture.",
 		"historyUseInfo": "Vous ne pouvez pas utiliser les <b>{{countPwd}}</b> dernier(s) mot(s) de passe.",
@@ -43,6 +45,8 @@
 		"updatePassword": "Modifier le mot de passe",
 		"upperRequired": "1 majuscule requise",
 		"validate": "Valider",
+		"wrongLoginPassword": "Mauvais identifiant ou mauvais mot de passe",
+		"wrongPassword": "Mauvais mot de passe",
 		"wsUser": "Utilisateur web service"
 	}
 }

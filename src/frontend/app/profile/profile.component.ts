@@ -227,7 +227,7 @@ export class ProfileComponent implements OnInit {
                             this.disableState = false;
                             this.msgButton = 'lang.validate';
                             if (err.status === 401) {
-                                this.notificationService.error('lang.badPassword');
+                                this.notificationService.error('lang.wrongPassword');
                             } else {
                                 this.notificationService.handleErrors(err);
                             }

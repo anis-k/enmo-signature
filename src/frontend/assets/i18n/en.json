@@ -3,13 +3,15 @@
 		"administrations": "Administrations",
 		"annotationMode": "Annotation mode",
 		"appleStylus": "Apple stylus",
-		"badPassword": "Bad password",
 		"black": "Black",
 		"blue": "Blue",
+		"connect": "To long on",
+		"connexion": "Connection...",
 		"currentPassword": "Actual password",
 		"defaultColor": "Default color",
 		"email": "Email",
 		"firstname": "Firstname",
+		"forgotPassword": "Forgot password",
 		"free": "Free",
 		"freeModeInfo": "",
 		"historyUseInfo": "You can't use the last <b>{{countPwd}}</b> passwords.",
@@ -43,6 +45,8 @@
 		"updatePassword": "Update password",
 		"upperRequired": "One upper character required",
 		"validate": "Validate",
+		"wrongLoginPassword": "Wrong login or password",
+		"wrongPassword": "Wrong password",
 		"wsUser": "Web service user"
 	}
 }

@@ -3,13 +3,13 @@
     <mat-card class="login-form" *ngIf="!loadingForm" [@myAnimation]>
         <form (ngSubmit)="login()">
             <mat-form-field class="input-row">
-                <input name="login" matInput placeholder="Identifiant" [(ngModel)]="newLogin.login" type="text" oninput="this.value = this.value.toLowerCase()">
+                <input name="login" matInput placeholder="{{'lang.login' | translate}}" [(ngModel)]="newLogin.login" type="text" oninput="this.value = this.value.toLowerCase()">
             </mat-form-field>
             <mat-form-field class="input-row">
-                <input name="password" matInput placeholder="Mot de passe" type="password" [(ngModel)]="newLogin.password">
-                <mat-hint align="end"><a routerLink="/forgotPassword" class="forgotPwdLink">Mot de passe oublié ?</a></mat-hint>
+                <input name="password" matInput placeholder="{{'lang.password' | translate}}" type="password" [(ngModel)]="newLogin.password">
+                <mat-hint align="end"><a routerLink="/forgotPassword" class="forgotPwdLink">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
             </mat-form-field>
-            <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton}}</button>
+            <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton | translate}}</button>
         </form>
     </mat-card>
     <footer>
