@@ -26,7 +26,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
     if (!is_file($configPath . '/config.xml')) {
         return $response->withStatus(400)->withJson(['errors' => 'Configuration file is missing']);
     }
-    $routesWithoutAuthentication = ['POST/log', 'POST/password', 'PUT/log/password', 'GET/passwordRules'];
+    $routesWithoutAuthentication = ['POST/log', 'POST/password', 'PUT/password', 'GET/passwordRules'];
     $route = $request->getAttribute('route');
     $currentMethod = empty($route) ? '' : $route->getMethods()[0];
     $currentRoute = empty($route) ? '' : $route->getPattern();
@@ -81,6 +81,7 @@ $app->put('/users/{id}/password', \User\controllers\UserController::class . ':up
 $app->get('/users/{id}/signatures', \User\controllers\UserController::class . ':getSignatures');
 $app->post('/users/{id}/signatures', \User\controllers\UserController::class . ':createSignature');
 $app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\UserController::class . ':deleteSignature');
+$app->put('/users/{id}/externalSignatures', \User\controllers\UserController::class . ':updateExternalSignatures');
 $app->post('/password', \User\controllers\UserController::class . ':forgotPassword');
 $app->put('/password', \User\controllers\UserController::class . ':updateForgottenPassword');
 
