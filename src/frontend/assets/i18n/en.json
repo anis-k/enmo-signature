@@ -40,7 +40,7 @@
 		"passwordNotMatch": "Passwords does not match",
 		"passwordOfUserUpdated": "Password of {{user}} updated",
 		"preferences": "Preferences",
-		"processignDeadline": "Processing deadline",
+		"processingDeadline": "Processing deadline",
 		"profileUpdated": "Profile updated",
 		"receiveNotif": "Receive notifications",
 		"red": "Red",

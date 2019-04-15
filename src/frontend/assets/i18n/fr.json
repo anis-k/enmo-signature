@@ -40,7 +40,7 @@
 		"passwordNotMatch": "Les mots de passe ne correspondent pas",
 		"passwordOfUserUpdated": "Mot de passe de {{user}} modifié",
 		"preferences": "Préférences",
-		"processignDeadline": "Date limite de traitement",
+		"processingDeadline": "Date limite de traitement",
 		"profileUpdated": "Profil modifié",
 		"receiveNotif": "Recevoir les notifications",
 		"red": "Rouge",
