@@ -18,9 +18,14 @@
                 <mat-tab label="{{'lang.informations' | translate}}">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
-                            <input name="login" matInput placeholder="{{'lang.email' | translate}}" type="mail"
-                                [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()"
+                            <input name="login" matInput placeholder="{{'lang.login' | translate}}" type="text"
+                                [(ngModel)]="profileInfo.login" (keyup)="newLogin.login=newLogin.login.toLowerCase()"
                                 disabled required>
+                        </mat-form-field>
+                        <mat-form-field class="input-row">
+                            <input name="email" matInput placeholder="{{'lang.email' | translate}}" type="mail"
+                                [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()"
+                                required>
                         </mat-form-field>
                         <mat-form-field class="input-row">
                             <input name="firstname" matInput placeholder="{{'lang.firstname' | translate}}" [(ngModel)]="profileInfo.firstname"

@@ -182,6 +182,7 @@ export class ProfileComponent implements OnInit {
         let profileToSend = {
             'firstname': this.profileInfo.firstname,
             'lastname': this.profileInfo.lastname,
+            'email': this.profileInfo.email,
             'picture': this.profileInfo.picture,
             'preferences': this.profileInfo.preferences
         };
