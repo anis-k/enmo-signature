@@ -4,6 +4,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     templateUrl: 'warn-modal.component.html',
@@ -11,9 +13,9 @@ import { HttpClient } from '@angular/common/http';
 })
 export class WarnModalComponent {
     disableState = false;
-    msgButton = 'Refuser ce document';
+    msgButton = 'lang.rejectDocument';
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     confirmDoc () {
         const signatures: any[] = [];
@@ -49,7 +51,7 @@ export class WarnModalComponent {
                 }
             }
             this.disableState = true;
-            this.msgButton = 'Envoi...';
+            this.msgButton = 'lang.sending';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
@@ -61,12 +63,12 @@ export class WarnModalComponent {
                         }
                     }
                     this.disableState = false;
-                    this.msgButton = 'Refuser ce document';
+                    this.msgButton = 'lang.rejectDocument';
                     this.dialogRef.close('sucess');
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                     this.disableState = false;
-                    this.msgButton = 'Refuser ce document';
+                    this.msgButton = 'lang.rejectDocument';
                 });
         } else {
             this.dialogRef.close('sucess');

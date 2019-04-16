@@ -3,6 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { HttpClient } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     templateUrl: 'confirm-modal.component.html',
@@ -10,9 +12,9 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ConfirmModalComponent {
     disableState = false;
-    msgButton = 'Valider';
+    msgButton = 'lang.validate';
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<ConfirmModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     confirmDoc () {
         const signatures: any[] = [];
@@ -59,12 +61,12 @@ export class ConfirmModalComponent {
                         }
                     }
                     this.disableState = false;
-                    this.msgButton = 'Valider';
+                    this.msgButton = 'lang.validate';
                     this.dialogRef.close('sucess');
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                     this.disableState = false;
-                    this.msgButton = 'Valider';
+                    this.msgButton = 'lang.validate';
                 });
         } else {
             this.dialogRef.close('sucess');

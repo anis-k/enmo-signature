@@ -1,17 +1,16 @@
 <div class="modalContent">
   <h1 mat-dialog-title class="default" *ngIf="signaturesService.signaturesContent.length > 0 || signaturesService.notesContent.length > 0"><i
-      class="fa fa-question-circle fa-2x"></i><br />{{data.msg}}</h1>
+      class="fa fa-question-circle fa-2x"></i><br />{{data.msg | translate}}</h1>
   <h1 mat-dialog-title style="color: #f5a623;font-weight: bold;" *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0"><i
-      class="fa fa-exclamation-triangle fa-2x"></i><br />Attention !</h1>
+      class="fa fa-exclamation-triangle fa-2x"></i><br />{{'lang.attention' | translate}} !</h1>
   <div mat-dialog-content>
-    <p *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0">Vous êtes
-      sur le point de valider ce document sans signature ou annotation!</p>
+    <p *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0">{{'lang.validateDocumentWithoutSignOrNote' | translate}}</p>
   </div>
   <div mat-dialog-actions>
     <button mat-icon-button class="close" (click)="this.dialogRef.close();">
       <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
     </button>
     <button class="actions btn green" mat-button (click)="confirmDoc();" [disabled]="disableState"><i class="fas fa-check-circle fa-2x"></i>
-      {{ msgButton }}</button>
+      {{ msgButton | translate}}</button>
   </div>
 </div>
