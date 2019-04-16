@@ -21,6 +21,7 @@ use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use User\models\SignatureModel;
+use User\models\UserModel;
 
 class SignatureController
 {
@@ -142,9 +143,12 @@ class SignatureController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $body = $request->getParsedBody();
+        $user = UserModel::getById(['select' => [1], 'id' => $args['id']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
 
-        $img = file_get_contents('/home/damien/Documents/Test_Files/signature2.png'); //TODO remove
+        $body = $request->getParsedBody();
 
         if (!Validator::arrayType()->notEmpty()->validate($body['signatures'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body signature is empty or not an array']);
@@ -153,7 +157,6 @@ class SignatureController
         }
 
         foreach ($body['signatures'] as $key => $signature) {
-            $signature['encodedSignature'] = $body['signatures'][$key]['encodedSignature'] = base64_encode($img); //TODO remove
             if (!Validator::notEmpty()->validate($signature['encodedSignature'])) {
                 return $response->withStatus(400)->withJson(['errors' => "Body signatures[{$key}] encodedSignature is empty"]);
             } elseif (!Validator::stringType()->notEmpty()->validate($signature['format'])) {
