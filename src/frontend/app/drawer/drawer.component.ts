@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
   selector: 'app-drawer',

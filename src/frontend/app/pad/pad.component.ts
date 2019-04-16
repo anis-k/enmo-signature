@@ -6,7 +6,6 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 interface AfterViewInit {
   ngAfterViewInit(): void;

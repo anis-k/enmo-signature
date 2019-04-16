@@ -2,7 +2,6 @@ import { Component, OnInit, Input, ElementRef, EventEmitter, Output } from '@ang
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 
 @Component({

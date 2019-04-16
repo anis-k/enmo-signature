@@ -15,7 +15,6 @@ import { ConfirmModalComponent } from '../modal/confirm-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 
 @Component({

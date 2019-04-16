@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
 import { MatBottomSheetRef } from '@angular/material';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     templateUrl: '../modal/reject-info.html',

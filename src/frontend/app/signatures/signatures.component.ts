@@ -9,7 +9,6 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     selector: 'app-signatures',
@@ -81,7 +80,7 @@ export class SignaturesComponent implements OnInit {
     }
 
     removeSignature(signature: any, i: any) {
-        const r = confirm('lang.wantDeleteSignature');
+        const r = confirm(this.translate.instant('lang.wantDeleteSignature'));
 
         if (r) {
             const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
