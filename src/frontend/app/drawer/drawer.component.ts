@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
   selector: 'app-drawer',
@@ -8,7 +10,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 })
 export class DrawerComponent {
 
-  constructor(public signaturesService: SignaturesContentService) { }
+  constructor(private translate: TranslateService, public signaturesService: SignaturesContentService) { }
 
   openDrawer() {
     this.signaturesService.showSign = true;
