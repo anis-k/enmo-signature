@@ -33,7 +33,7 @@ export class DocumentSignListComponent implements OnInit {
     }
 
     cloneSign(i: number) {
-        const r = confirm('lang.wantSignOtherPage');
+        const r = confirm(this.translate.instant('lang.wantSignOtherPage'));
 
         if (r) {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
@@ -56,7 +56,7 @@ export class DocumentSignListComponent implements OnInit {
 
         if (this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage === true) {
             const token = this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].token;
-            const r = confirm('lang.wantDeleteSignatureOtherPage');
+            const r = confirm(this.translate.instant('lang.wantDeleteSignatureOtherPage'));
 
             if (r) {
 
