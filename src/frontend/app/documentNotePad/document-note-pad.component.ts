@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, Input, ElementRef, EventEmitter, Output }
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     selector: 'app-document-note-pad',
@@ -15,7 +17,7 @@ export class DocumentNotePadComponent implements OnInit {
     @Output() triggerEvent = new EventEmitter<string>();
     @ViewChild('canvas') canvas: ElementRef;
 
-    constructor(private sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService, private sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     ngOnInit(): void { }
 
@@ -65,7 +67,7 @@ export class DocumentNotePadComponent implements OnInit {
             this.signaturesService.renderingDoc = true;
         }
         this.signaturesService.annotationMode = false;
-        this.notificationService.success('Annotation ajoutée');
+        this.notificationService.success('lang.annotationAdded');
     }
 
     undo() {

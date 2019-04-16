@@ -1,10 +1,9 @@
 <div *ngIf="signaturesService.annotationMode">
   <span style="z-index:1;position: fixed;left:0;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
-    <button class="btn blue" (tap)="cancelAnnotation(i);"><i class="fas fa-arrow-left fa-2x"></i>Quitter l'annotation</button>
+    <button class="btn blue" (tap)="cancelAnnotation(i);"><i class="fas fa-arrow-left fa-2x"></i>{{'lang.exitAnnotation' | translate}}</button>
   </span>
   <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-      <button class="btn green" (tap)="validateAnnotation();"><i class="fas fa-check-circle fa-2x"></i>Valider
-        l'annotation</button>
+      <button class="btn green" (tap)="validateAnnotation();"><i class="fas fa-check-circle fa-2x"></i>{{'lang.validateAnnotation' | translate}}</button>
   </span>
 </div>
 <div *ngIf="signaturesService.annotationMode" [style.width.px]="this.signaturesService.workingAreaWidth*this.signaturesService.scale" [style.height.px]="this.signaturesService.workingAreaHeight*this.signaturesService.scale"

@@ -1,6 +1,7 @@
 {
 	"lang": {
 		"administrations": "Administrations",
+		"annotationAdded": "Annotation ajoutée",
 		"annotationMode": "Mode de l'annotation",
 		"appleStylus": "Stylet Apple",
 		"areYouSure": "Êtes-vous sûr ?",
@@ -17,6 +18,7 @@
 		"doc": "Doc",
 		"email": "Courriel",
 		"emittedBy": "Émis par",
+		"exitAnnotation": "Quitter l'annotation",
 		"firstname": "Prénom",
 		"forgotPassword": "Mot de passe oublié",
 		"free": "Libre",
@@ -58,6 +60,7 @@
 		"updatePassword": "Modifier le mot de passe",
 		"upperRequired": "1 majuscule requise",
 		"validate": "Valider",
+		"validateAnnotation": "Valider l'annotation",
 		"wrongLoginPassword": "Mauvais identifiant ou mauvais mot de passe",
 		"wrongPassword": "Mauvais mot de passe",
 		"wsUser": "Utilisateur web service"
