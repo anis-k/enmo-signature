@@ -7,7 +7,6 @@ import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
-import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     selector: 'app-my-profile',
