@@ -72,7 +72,7 @@ class AuthenticationController
             'objectType'    => 'users',
             'objectId'      => $user['id'],
             'type'          => 'LOGIN',
-            'message'       => '{UserLogIn}'
+            'message'       => '{userLogIn}'
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
@@ -87,7 +87,7 @@ class AuthenticationController
             'objectType'    => 'users',
             'objectId'      => $GLOBALS['id'],
             'type'          => 'LOGOUT',
-            'message'       => '{UserLogOut}'
+            'message'       => '{userLogOut}'
         ]);
 
         return $response->withJson(['success' => 'success']);
