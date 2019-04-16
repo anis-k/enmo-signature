@@ -2,19 +2,21 @@ import { MatSnackBar } from '@angular/material';
 import { Injectable, Component, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     selector: 'app-custom-snackbar',
     template: '{{data.message | translate}}' // You may also use a HTML file
 })
 export class CustomSnackbarComponent {
-    constructor(@Inject(MAT_SNACK_BAR_DATA) public data: any) { }
+    constructor(private translate: TranslateService, @Inject(MAT_SNACK_BAR_DATA) public data: any) { }
 }
 
 @Injectable()
 export class NotificationService {
 
-    constructor(private router: Router, public snackBar: MatSnackBar) {
+    constructor(private translate: TranslateService, private router: Router, public snackBar: MatSnackBar) {
     }
 
     success(message: string) {
@@ -39,9 +41,9 @@ export class NotificationService {
         console.log(err);
         if (err.status === 401 && this.router.url !== '/login') {
             this.router.navigate(['/login']);
-            this.error('Veuillez vous reconnecter');
+            this.error('lang.logAgain');
         } else if (err.status === 0 && err.statusText === 'Unknown Error') {
-            this.error('La connexion au serveur a échoué. Veuillez réessayer ultérieurement.');
+            this.error('lang.connectionServerFailed');
         } else {
             if (err.error.errors !== undefined) {
                 this.error(err.error.errors);
