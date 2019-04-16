@@ -136,6 +136,14 @@ canvas {
     &-content {
         width: 33%;
         display: inline-block;
+
+        input {
+          text-overflow: ellipsis;
+        }
+        
+        .mat-form-field {
+          width: 100%;
+        }
     }
 
     input:disabled {
