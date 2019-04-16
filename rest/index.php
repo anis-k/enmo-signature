@@ -78,11 +78,13 @@ $app->get('/users', \User\controllers\UserController::class . ':get');
 $app->get('/users/{id}', \User\controllers\UserController::class . ':getById');
 $app->put('/users/{id}', \User\controllers\UserController::class . ':update');
 $app->put('/users/{id}/password', \User\controllers\UserController::class . ':updatePassword');
-$app->get('/users/{id}/signatures', \User\controllers\UserController::class . ':getSignatures');
-$app->post('/users/{id}/signatures', \User\controllers\UserController::class . ':createSignature');
-$app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\UserController::class . ':deleteSignature');
-$app->put('/users/{id}/externalSignatures', \User\controllers\UserController::class . ':updateExternalSignatures');
 $app->post('/password', \User\controllers\UserController::class . ':forgotPassword');
 $app->put('/password', \User\controllers\UserController::class . ':updateForgottenPassword');
+
+//Signatures
+$app->get('/users/{id}/signatures', \User\controllers\SignatureController::class . ':get');
+$app->post('/users/{id}/signatures', \User\controllers\SignatureController::class . ':create');
+$app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\SignatureController::class . ':delete');
+$app->put('/users/{id}/externalSignatures', \User\controllers\SignatureController::class . ':updateExternalSignatures');
 
 $app->run();
