@@ -5,6 +5,8 @@ import { ScrollEvent } from 'ngx-scroll-event';
 import { MatSidenav } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 
 @Component({
@@ -22,7 +24,7 @@ export class SidebarComponent implements OnInit {
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
+    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
     }
 
     ngOnInit() {
@@ -49,7 +51,7 @@ export class SidebarComponent implements OnInit {
                     this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
                     this.loadingList = false;
                     this.listContent.nativeElement.style.overflowY = 'auto';
-                    this.notificationService.success('Liste des documents actualisée');
+                    this.notificationService.success('lang.updatedListDocument');
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                 });
