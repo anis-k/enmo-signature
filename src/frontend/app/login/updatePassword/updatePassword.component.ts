@@ -21,7 +21,7 @@ export class UpdatePasswordComponent implements OnInit {
         newPassword: '',
         passwordConfirmation: ''
     };
-    labelButton: string = 'Modifier';
+    labelButton: string = 'lang.update';
 
     hideNewPassword: Boolean = true;
     hideNewPasswordConfirm: Boolean = true;
@@ -56,18 +56,18 @@ export class UpdatePasswordComponent implements OnInit {
     ngOnInit(): void { }
 
     updatePassword() {
-        this.labelButton = 'Envoi ...';
+        this.labelButton = 'lang.sending';
         this.loading = true;
 
         this.http.put('../rest/password', { 'token': this.token, 'password': this.password.newPassword })
             .subscribe((data: any) => {
                 this.loadingForm = true;
-                this.notificationService.success('Votre mot de passe a été modifié.');
+                this.notificationService.success('lang.passwordChanged');
                 this.router.navigate(['/login']);
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
 
-                this.labelButton = 'Modifier';
+                this.labelButton = 'lang.update';
                 this.loading = false;
             });
     }

@@ -4,6 +4,7 @@ import { MatIconRegistry } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../service/notification.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     templateUrl: 'forgotPassword.component.html',
@@ -17,29 +18,29 @@ export class ForgotPasswordComponent implements OnInit {
         login: '',
         password: ''
     };
-    labelButton: string = 'Envoyer';
+    labelButton: string = 'lang.send';
     appVersion: string = '';
     appAuthor: string = '';
 
-    constructor(private router: Router, public http: HttpClient, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public notificationService: NotificationService) {
+    constructor(private translate: TranslateService, private router: Router, public http: HttpClient, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
 
     ngOnInit(): void { }
 
     generateLink() {
-        this.labelButton = 'Génération ...';
+        this.labelButton = 'lang.generation';
         this.loading = true;
 
         this.http.post('../rest/password', { 'login': this.newLogin.login })
             .subscribe((data: any) => {
                 this.loadingForm = true;
-                this.notificationService.success('La demande vous a été envoyé par mail.');
+                this.notificationService.success('lang.requestSentByEmail');
                 this.router.navigate(['/login']);
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
 
-                this.labelButton = 'Envoyer';
+                this.labelButton = 'lang.send';
                 this.loading = false;
             });
     }
