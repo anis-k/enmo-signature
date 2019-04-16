@@ -125,5 +125,20 @@ export class AppModule { }
 
 // For traductions
 export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, './frontend/assets/i18n/', '.json');
+  return new TranslateBackendHttpLoader(http);
+}
+
+export class TranslateBackendHttpLoader implements TranslateLoader {
+
+  constructor(private http: HttpClient) { }
+
+  /**
+   * Gets the translations from the server
+   * @param lang
+   * @returns {any}
+   */
+  public getTranslation(lang: string): any {
+
+    return this.http.get(`../rest/langPath/` + lang);
+  }
 }

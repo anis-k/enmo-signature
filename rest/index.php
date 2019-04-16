@@ -26,7 +26,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
     if (!is_file($configPath . '/config.xml')) {
         return $response->withStatus(400)->withJson(['errors' => 'Configuration file is missing']);
     }
-    $routesWithoutAuthentication = ['POST/log', 'POST/password', 'PUT/password', 'GET/passwordRules'];
+    $routesWithoutAuthentication = ['POST/log', 'POST/password', 'PUT/password', 'GET/passwordRules', 'GET/langPath/{lang}'];
     $route = $request->getAttribute('route');
     $currentMethod = empty($route) ? '' : $route->getMethods()[0];
     $currentRoute = empty($route) ? '' : $route->getPattern();
@@ -59,6 +59,7 @@ $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::cla
 
 //Configurations
 $app->put('/configurations/{identifier}', \Configuration\controllers\ConfigurationController::class . ':update');
+$app->get('/langPath/{lang}', \Configuration\controllers\ConfigurationController::class . ':getLangPath');
 
 //Documents
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');

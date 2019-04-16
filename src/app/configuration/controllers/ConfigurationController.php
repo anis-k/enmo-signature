@@ -20,6 +20,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
 use User\controllers\UserController;
+use SrcCore\models\CoreConfigModel;
 
 class ConfigurationController
 {
@@ -97,5 +98,42 @@ class ConfigurationController
         }
 
         return ['success' => 'success'];
+    }
+
+    public function getLangPath(Request $request, Response $response, array $args)
+    {
+        if (!Validator::stringType()->notEmpty()->validate($args['lang'])) {
+            return $response->withStatus(404)->withJson(['errors' => 'Lang missing']);
+        }
+
+        // Get Default lang file
+        $defaultLangFilepath = realpath('src/frontend/assets/i18n/'.$args['lang'].'.json');
+
+        $defaultLangFileContent = file_get_contents($defaultLangFilepath);
+
+        $defaultLangFile = json_decode($defaultLangFileContent);
+
+        
+        
+        $loadedXml = CoreConfigModel::getConfig();
+        
+        // Get custom lang file
+        if (!empty((string)$loadedXml->config->customLangPathDirectory)) {
+            $customLangPathDirectory = rtrim((string)$loadedXml->config->customLangPathDirectory, '/');
+            $customLangFilepath = realpath($customLangPathDirectory.'/'.$args['lang'].'.json');
+
+            if (file_exists($customLangFilepath)) {
+                $customLangFileContent = file_get_contents($customLangFilepath);
+                $customLangFile = json_decode($customLangFileContent);
+        
+                foreach ($customLangFile->lang as $key => $value) {
+                    if ($defaultLangFile->lang->$key !== null) {
+                        $defaultLangFile->lang->$key = $customLangFile->lang->$key;
+                    }
+                }
+            }
+        }
+        
+        return $response->withJson($defaultLangFile);
     }
 }
