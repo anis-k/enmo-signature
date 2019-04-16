@@ -8,6 +8,8 @@ import { HttpClient } from '@angular/common/http';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 @Component({
     selector: 'app-signatures',
@@ -31,7 +33,7 @@ export class SignaturesComponent implements OnInit {
     inAllPage = false;
     count = 0;
 
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
+    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
         private sanitization: DomSanitizer, public notificationService: NotificationService, private cookieService: CookieService) {
     }
 
@@ -79,14 +81,14 @@ export class SignaturesComponent implements OnInit {
     }
 
     removeSignature(signature: any, i: any) {
-        const r = confirm('Voulez-vous supprimer cette signature ?');
+        const r = confirm('lang.wantDeleteSignature');
 
         if (r) {
             const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
             this.http.delete('../rest/users/ ' + cookieInfo.id + '/signatures/' + signature.id)
                 .subscribe(() => {
                     this.signaturesService.signaturesList.splice(i, 1);
-                    this.notificationService.success('Signature supprimée');
+                    this.notificationService.success('lang.signatureDeleted');
                     this.bottomSheetRef.dismiss();
                     const config: MatBottomSheetConfig = {
                         disableClose: false,

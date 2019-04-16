@@ -1,11 +1,11 @@
 <article class="signatures" *ngIf="signaturesService.showSign">
   <div style="font-size: 20px;font-weight: bold;opacity: 0.3;">
-    Double-tapez sur une signature pour l'ajouter à votre document
+    {{'lang.doubletapSignatureToAddDocument' | translate}}
   </div>
   <section class="list">
     <div class="list-item create" (click)="openPad()">
       <i class="fas fa-pen-nib fa-2x"></i>
-      Créer une nouvelle signature
+      {{'lang.createNewSignature' | translate}}
     </div>
     <div [@listAnimation]="signaturesService.signaturesList.length" style="display: contents;">
       <div *ngFor="let signature of signaturesService.signaturesList;let i=index" class="list-item" style="position: relative;overflow: hidden" (tap)="tapEvent(signature,i)">
