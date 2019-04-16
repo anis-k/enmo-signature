@@ -356,7 +356,7 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.currentAction = 0;
         const dialogRef = this.dialog.open(ConfirmModalComponent, {
             width: '350px',
-            data: { msg: 'lang.deleteNoteAndSignatory' }
+            data: { msg: 'lang.deleteNoteAndSignature' }
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -364,7 +364,7 @@ export class DocumentComponent implements OnInit {
                 this.signaturesService.signaturesContent = [];
                 this.signaturesService.notesContent = [];
                 localStorage.removeItem(this.mainDocument.id.toString());
-                this.notificationService.success('lang.noteAndSignatoryDeleted');
+                this.notificationService.success('lang.noteAndSignatureDeleted');
             }
         });
     }

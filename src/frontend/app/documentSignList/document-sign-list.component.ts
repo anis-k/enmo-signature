@@ -5,6 +5,8 @@ import {
 } from '@angular/material';
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 
 @Component({
@@ -16,7 +18,7 @@ export class DocumentSignListComponent implements OnInit {
     @Input('canvas') canvas: ElementRef;
     @ViewChild('menuTrigger') menuSign: MatMenuTrigger;
 
-    constructor(private sanitization: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService, private sanitization: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     ngOnInit(): void { }
 
@@ -31,7 +33,7 @@ export class DocumentSignListComponent implements OnInit {
     }
 
     cloneSign(i: number) {
-        const r = confirm('Voulez-vous apposer la signature sur les autres pages ?');
+        const r = confirm('lang.wantSignOtherPage');
 
         if (r) {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
@@ -54,7 +56,7 @@ export class DocumentSignListComponent implements OnInit {
 
         if (this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage === true) {
             const token = this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].token;
-            const r = confirm('Voulez-vous supprimer la signature sur les autres pages ?');
+            const r = confirm('lang.wantDeleteSignatureOtherPage');
 
             if (r) {
 
