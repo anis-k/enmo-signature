@@ -1,19 +1,18 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../service/notification.service';
-import { environment } from '../../../core/environments/environment';
 
 @Component({
     templateUrl: 'forgotPassword.component.html',
     styleUrls: ['forgotPassword.component.scss'],
 })
-export class ForgotPasswordComponent implements OnInit, AfterViewInit {
+export class ForgotPasswordComponent implements OnInit {
 
     loadingForm: boolean = false;
-    loadingConnexion: boolean = false;
+    loading: boolean = false;
     newLogin: any = {
         login: '',
         password: ''
@@ -28,11 +27,9 @@ export class ForgotPasswordComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void { }
 
-    ngAfterViewInit(): void { }
-
     generateLink() {
         this.labelButton = 'Génération ...';
-        this.loadingConnexion = true;
+        this.loading = true;
 
         this.http.post('../rest/password', { 'login': this.newLogin.login })
             .subscribe((data: any) => {
@@ -43,7 +40,7 @@ export class ForgotPasswordComponent implements OnInit, AfterViewInit {
                 this.notificationService.handleErrors(err);
 
                 this.labelButton = 'Envoyer';
-                this.loadingConnexion = false;
+                this.loading = false;
             });
     }
 }

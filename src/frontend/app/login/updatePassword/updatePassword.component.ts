@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
@@ -10,10 +10,10 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: 'updatePassword.component.html',
     styleUrls: ['updatePassword.component.scss'],
 })
-export class UpdatePasswordComponent implements OnInit, AfterViewInit {
+export class UpdatePasswordComponent implements OnInit {
 
     loadingForm: boolean = false;
-    loadingConnexion: boolean = false;
+    loading: boolean = false;
 
     token: string = '';
 
@@ -55,11 +55,9 @@ export class UpdatePasswordComponent implements OnInit, AfterViewInit {
 
     ngOnInit(): void { }
 
-    ngAfterViewInit(): void { }
-
     updatePassword() {
         this.labelButton = 'Envoi ...';
-        this.loadingConnexion = true;
+        this.loading = true;
 
         this.http.put('../rest/password', { 'token': this.token, 'password': this.password.newPassword })
             .subscribe((data: any) => {
@@ -70,7 +68,7 @@ export class UpdatePasswordComponent implements OnInit, AfterViewInit {
                 this.notificationService.handleErrors(err);
 
                 this.labelButton = 'Modifier';
-                this.loadingConnexion = false;
+                this.loading = false;
             });
     }
 
