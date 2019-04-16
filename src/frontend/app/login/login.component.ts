@@ -74,6 +74,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password })
             .subscribe((data: any) => {
                 this.signaturesService.userLogged = data.user;
+
+                this.translate.use(this.signaturesService.userLogged.preferences.lang);
+
                 this.loadingForm = true;
                 $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
                 setTimeout(() => {
