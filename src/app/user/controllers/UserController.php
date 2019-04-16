@@ -14,8 +14,6 @@
 
 namespace User\controllers;
 
-use Docserver\controllers\DocserverController;
-use Docserver\models\DocserverModel;
 use Email\controllers\EmailController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
@@ -275,7 +273,7 @@ class UserController
         $emailToken = json_encode(['login' => $body['login'], 'token' => $token]);
         $emailToken = base64_encode($emailToken);
 
-        $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $emailToken;
+        $url = UrlController::getCoreUrl() . 'dist/index.html#/update-password?token=' . $emailToken;
         EmailController::createEmail([
             'userId'    => $user['id'],
             'data'      => [
@@ -310,6 +308,9 @@ class UserController
 
         $token = base64_decode($body['token']);
         $token = json_decode($token, true);
+        if (empty($token['login']) || empty($token['token'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Invalid token']);
+        }
 
         $user = UserModel::getByLogin(['login' => $token['login'], 'select' => ['id', 'reset_token']]);
         if (empty($user)) {
@@ -353,117 +354,6 @@ class UserController
         ]);
 
         return $response->withStatus(204);
-    }
-
-    public function getSignatures(Request $request, Response $response, array $args)
-    {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
-        $data = $request->getQueryParams();
-        if (empty($data['offset']) || !is_numeric($data['offset'])) {
-            $data['offset'] = 0;
-        }
-        if (empty($data['limit']) || !is_numeric($data['limit'])) {
-            $data['limit'] = 0;
-        }
-
-        $rawSignatures = UserModel::getSignatures([
-            'select'    => ['id', 'path', 'filename', 'fingerprint'],
-            'where'     => ['user_id = ?'],
-            'data'      => [$args['id']],
-            'orderBy'   => ['id DESC'],
-            'offset'    => (int)$data['offset'],
-            'limit'     => (int)$data['limit']
-        ]);
-        $docserver = DocserverModel::getByType(['type' => 'SIGNATURE', 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
-
-        $signatures = [];
-        foreach ($rawSignatures as $signature) {
-            $pathToSignature = $docserver['path'] . $signature['path'] . $signature['filename'];
-            if (file_exists($pathToSignature)) {
-                $fingerprint = DocserverController::getFingerPrint(['path' => $pathToSignature]);
-                if ($signature['fingerprint'] == $fingerprint) {
-                    $signatures[] = [
-                        'id'                => $signature['id'],
-                        'encodedSignature'  => base64_encode(file_get_contents($pathToSignature))
-                    ];
-                } else {
-                    //TODO LOG
-                }
-            } else {
-                //TODO LOG
-            }
-        }
-
-        return $response->withJson(['signatures' => $signatures]);
-    }
-
-    public function createSignature(Request $request, Response $response, array $args)
-    {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
-        $body = $request->getParsedBody();
-
-        $check = Validator::notEmpty()->validate($body['encodedSignature']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($body['format']);
-        if (!$check) {
-            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
-        }
-
-        $storeInfos = DocserverController::storeResourceOnDocServer([
-            'encodedFile'       => $body['encodedSignature'],
-            'format'            => $body['format'],
-            'docserverType'     => 'SIGNATURE'
-        ]);
-
-        if (!empty($storeInfos['errors'])) {
-            return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
-        }
-
-        $id = UserModel::createSignature([
-            'userId'        => $args['id'],
-            'path'          => $storeInfos['path'],
-            'filename'      => $storeInfos['filename'],
-            'fingerprint'   => $storeInfos['fingerprint'],
-        ]);
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'signatures',
-            'objectId'      => $id,
-            'type'          => 'CREATION',
-            'message'       => '{userSignatureAdded}',
-            'data'          => ['userId' => $args['id']]
-        ]);
-
-        return $response->withJson(['signatureId' => $id]);
-    }
-
-    public function deleteSignature(Request $request, Response $response, array $args)
-    {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
-        UserModel::deleteSignature(['where' => ['user_id = ?', 'id = ?'], 'data' => [$args['id'], $args['signatureId']]]);
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'signatures',
-            'objectId'      => $args['signatureId'],
-            'type'          => 'SUPPRESSION',
-            'message'       => '{userSignatureDeleted}',
-            'data'          => ['userId' => $args['id']]
-        ]);
-
-        return $response->withJson(['success' => 'success']);
     }
 
     public static function getUserInformationsById(array $args)

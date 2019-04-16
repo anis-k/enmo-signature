@@ -220,7 +220,7 @@ class UserControllerTest extends TestCase
 
     public function testCreateSignature()
     {
-        $userController = new \User\controllers\UserController();
+        $signatureController = new \User\controllers\SignatureController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
@@ -231,7 +231,7 @@ class UserControllerTest extends TestCase
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $userController->createSignature($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $response     = $signatureController->create($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertInternalType('int', $responseBody->signatureId);
@@ -240,12 +240,12 @@ class UserControllerTest extends TestCase
 
     public function testGetSignatures()
     {
-        $userController = new \User\controllers\UserController();
+        $signatureController = new \User\controllers\SignatureController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $userController->getSignatures($request, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $response     = $signatureController->get($request, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertInternalType('array', $responseBody->signatures);
@@ -254,12 +254,12 @@ class UserControllerTest extends TestCase
 
     public function testDeleteSignature()
     {
-        $userController = new \User\controllers\UserController();
+        $signatureController = new \User\controllers\SignatureController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $userController->deleteSignature($request, new \Slim\Http\Response(), ['id' => self::$userId, 'signatureId' => self::$signatureId]);
+        $response     = $signatureController->delete($request, new \Slim\Http\Response(), ['id' => self::$userId, 'signatureId' => self::$signatureId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('success', $responseBody->success);

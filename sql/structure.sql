@@ -121,6 +121,17 @@ CREATE TABLE groups
 )
 WITH (OIDS=FALSE);
 
+DROP TABLE IF EXISTS groups_privileges;
+CREATE TABLE groups_privileges
+(
+  id serial NOT NULL,
+  group_id INTEGER NOT NULL,
+  privilege character varying(128) NOT NULL,
+  CONSTRAINT groups_privileges_pkey PRIMARY KEY (id),
+  CONSTRAINT groups_privileges_unique_key UNIQUE (group_id, privilege)
+)
+WITH (OIDS=FALSE);
+
 DROP TABLE IF EXISTS history;
 CREATE TABLE history
 (
@@ -135,17 +146,6 @@ CREATE TABLE history
   data jsonb NOT NULL DEFAULT '{}',
   ip CHARACTER VARYING(64) NOT NULL,
   CONSTRAINT history_pkey PRIMARY KEY (id)
-)
-WITH (OIDS=FALSE);
-
-DROP TABLE IF EXISTS groups_privileges;
-CREATE TABLE groups_privileges
-(
-  id serial NOT NULL,
-  group_id INTEGER NOT NULL,
-  privilege character varying(128) NOT NULL,
-  CONSTRAINT groups_privileges_pkey PRIMARY KEY (id),
-  CONSTRAINT groups_privileges_unique_key UNIQUE (group_id, privilege)
 )
 WITH (OIDS=FALSE);
 
@@ -199,6 +199,7 @@ CREATE TABLE signatures
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
   fingerprint character varying(255) NOT NULL,
+  external_application CHARACTER VARYING(255),
   CONSTRAINT signatures_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
