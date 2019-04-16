@@ -1,5 +1,6 @@
 {
 	"lang": {
+		"SignatureRegistered": "Signature registered",
 		"administrations": "Administrations",
 		"annotateDocument": "Annotate this document",
 		"annotationAdded": "Annotation added",
@@ -10,6 +11,7 @@
 		"attention": "Attention",
 		"black": "Black",
 		"blue": "Blue",
+		"cancel": "Cancel",
 		"cancelPreviousNote": "Cancel the previous note",
 		"connect": "To long on",
 		"connexion": "Connection...",
@@ -24,6 +26,7 @@
 		"documentValidateAs": "Document validated as:",
 		"email": "Email",
 		"emittedBy": "Emitted by",
+		"erase": "Erase",
 		"exitAnnotation": "Exit the annotation",
 		"firstname": "Firstname",
 		"forgotPassword": "Forgot password",
@@ -62,6 +65,7 @@
 		"reply": "Reply",
 		"replySignatureAllPage": "Replicate the signature on all pages",
 		"samePassword": "Passwords match",
+		"save": "Save",
 		"sending": "Sending...",
 		"specialCharRequired": "Special character required",
 		"standardModeInfo": "",

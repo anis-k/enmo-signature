@@ -5,6 +5,8 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
+import { TranslateService } from '@ngx-translate/core';
+import {_} from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 
 interface AfterViewInit {
   ngAfterViewInit(): void;
@@ -38,7 +40,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
     canvasHeight: 315
   };
 
-  constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService, private cookieService: CookieService) { }
+  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService, private cookieService: CookieService) { }
 
   ngAfterViewInit() {
     // this.signaturePad.clear();
@@ -97,7 +99,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
         this.reloaded.emit('reload');
         // this.store.dispatch({ type: HIDE_DRAWER });
         this.signaturePad.clear();
-        this.notificationService.success('Signature enregistrée');
+        this.notificationService.success('lang.signatureRegistered');
         this.disableState = false;
       }, (err: any) => {
         this.disableState = false;

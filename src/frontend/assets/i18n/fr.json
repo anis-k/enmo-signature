@@ -1,5 +1,6 @@
 {
 	"lang": {
+		"SignatureRegistered": "Signature enregistrée",
 		"administrations": "Administrations",
 		"annotateDocument": "Annoter ce document",
 		"annotationAdded": "Annotation ajoutée",
@@ -10,6 +11,7 @@
 		"attention": "Attention",
 		"black": "Noir",
 		"blue": "Bleu",
+		"cancel": "Annuler",
 		"cancelPreviousNote": "Annuler la précédente note",
 		"connect": "Se connecter",
 		"connexion": "Connexion...",
@@ -24,6 +26,7 @@
 		"documentValidateAs": "Document validé en tant que :",
 		"email": "Courriel",
 		"emittedBy": "Émis par",
+		"erase": "Effacer",
 		"exitAnnotation": "Quitter l'annotation",
 		"firstname": "Prénom",
 		"forgotPassword": "Mot de passe oublié",
@@ -62,6 +65,7 @@
 		"reply": "Répliquer",
 		"replySignatureAllPage": "Répliquer la signature sur toutes les pages",
 		"samePassword": "Les mots de passe sont identiques",
+		"save": "Enregistrer",
 		"sending": "Envoi...",
 		"specialCharRequired": "Caractère spécial requis",
 		"standardModeInfo": "Mode standard, permettant l'annotation avec tout format (souris, main, stylets de toutes marques).",
