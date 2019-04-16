@@ -2,7 +2,7 @@
   <h1 mat-dialog-title class="default" *ngIf="signaturesService.signaturesContent.length > 0 || signaturesService.notesContent.length > 0"><i
       class="fa fa-question-circle fa-2x"></i><br />{{data.msg | translate}}</h1>
   <h1 mat-dialog-title style="color: #f5a623;font-weight: bold;" *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0"><i
-      class="fa fa-exclamation-triangle fa-2x"></i><br />{{'lang.attention' | translate}} !</h1>
+      class="fa fa-exclamation-triangle fa-2x"></i><br />{{'lang.warning' | translate}} !</h1>
   <div mat-dialog-content>
     <p *ngIf="signaturesService.signaturesContent.length == 0 && signaturesService.notesContent.length == 0">{{'lang.validateDocumentWithoutSignOrNote' | translate}}</p>
   </div>

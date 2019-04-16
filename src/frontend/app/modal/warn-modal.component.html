@@ -1,5 +1,5 @@
 <div class="modalContent">
-    <h1 mat-dialog-title><i class="fa fa-exclamation-triangle fa-2x"></i><br/>{{'lang.attention' | translate}} !</h1>
+    <h1 mat-dialog-title><i class="fa fa-exclamation-triangle fa-2x"></i><br/>{{'lang.warning' | translate}} !</h1>
     <div mat-dialog-content>
       <p *ngIf="signaturesService.notesContent.length == 0 && signaturesService.signaturesContent.length == 0">{{'lang.refuseDocumentWithoutSignature' | translate}}</p>
       <p *ngIf="signaturesService.notesContent.length > 0 || signaturesService.signaturesContent.length > 0">{{'lang.wouldLikeConfirm' | translate}} ?</p>

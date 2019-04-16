@@ -61,7 +61,7 @@
             </div>
             <div class="header-expand-content" *ngFor="let data of mainDocument.metadata;">
               <mat-form-field>
-                <input matInput [value]="data.value" title="{{data.value}}" placeholder="{{data.label}}" disabled>
+                <input matInput [value]="data.value" title="{{data.value | translate}}" placeholder="{{data.label | translate}}" disabled>
               </mat-form-field>
             </div>
           </mat-expansion-panel>
@@ -127,7 +127,7 @@
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button *ngIf="action.allowed" [style.color]="action.color" [style.borderColor]="action.color" class="btn"
-          (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label}}</button>
+          (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}</button>
       </ng-container>
     </footer>
     <app-drawer></app-drawer>
