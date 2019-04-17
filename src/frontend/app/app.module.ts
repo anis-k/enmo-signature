@@ -139,6 +139,6 @@ export class TranslateBackendHttpLoader implements TranslateLoader {
    */
   public getTranslation(lang: string): any {
 
-    return this.http.get(`../rest/langPath/` + lang);
+    return this.http.get(`../rest/languages/` + lang);
   }
 }

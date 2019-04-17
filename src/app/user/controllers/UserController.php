@@ -138,7 +138,7 @@ class UserController
         }
 
         $check = Validator::arrayType()->notEmpty()->validate($body['preferences']);
-        //$check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['lang']) && in_array($body['preferences']['lang'], ['fr', 'en']);
+        $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['lang']);
         $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingMode']);
         $check = $check && Validator::intType()->notEmpty()->validate($body['preferences']['writingSize']);
         $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingColor']);
@@ -365,16 +365,15 @@ class UserController
 
         $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences'], 'id' => $args['id']]);
 
-        $langs = ConfigurationController::getAvailableLang();
-        $user['availableLang'] = $langs['lang'];
 
         if (empty($user['picture'])) {
             $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
             $user['picture'] = 'data:image/png;base64,' . $user['picture'];
         }
 
-        $user['preferences'] = json_decode($user['preferences'], true);
+        $user['preferences']        = json_decode($user['preferences'], true);
         $user['canManageRestUsers'] = UserController::hasPrivilege(['userId' => $args['id'], 'privilege' => 'manage_rest_users']);
+        $user['availableLanguages'] = LangController::getAvailableLanguages();
 
         return $user;
     }

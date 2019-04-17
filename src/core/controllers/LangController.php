@@ -13,6 +13,8 @@
 
 namespace SrcCore\controllers;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 
@@ -29,12 +31,38 @@ class LangController
         }
 
         $lang = [];
-        if ($args['lang'] == 'fr') {
-            require_once "src/core/lang/lang-fr.php";
-        } elseif ($args['lang'] == 'en') {
-            require_once "src/core/lang/lang-en.php";
+        if (is_file("lang/{$args['lang']}.json")) {
+            $file = file_get_contents("lang/{$args['lang']}.json");
+            $langFile = json_decode($file, true);
+            if (!empty($langFile['lang'])) {
+                $lang = $langFile['lang'];
+            }
         }
 
         return $lang;
+    }
+
+    public function getByLang(Request $request, Response $response, array $args)
+    {
+        if (!is_file("lang/{$args['lang']}.json")) {
+            return $response->withStatus(400)->withJson(['errors' => 'Lang does not exist']);
+        }
+
+        $file = file_get_contents("lang/{$args['lang']}.json");
+        $lang = json_decode($file, true);
+
+        return $response->withJson($lang);
+    }
+
+    public static function getAvailableLanguages()
+    {
+        $files = array_diff(scandir('lang/'), ['..', '.']);
+
+        $languages = [];
+        foreach ($files as $value) {
+            $languages[] = str_replace('.json', '', $value);
+        }
+
+        return $languages;
     }
 }
