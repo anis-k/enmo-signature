@@ -121,12 +121,15 @@ class ConfigurationController
         // Get Default lang file
         $defaultLangFilepath = realpath('src/frontend/assets/i18n/'.$args['lang'].'.json');
 
-        $defaultLangFileContent = file_get_contents($defaultLangFilepath);
+        if (file_exists($defaultLangFilepath)) {
+            $defaultLangFileContent = file_get_contents($defaultLangFilepath);
 
-        $defaultLangFile = json_decode($defaultLangFileContent);
+            $defaultLangFile = json_decode($defaultLangFileContent);
+        } else {
+            $defaultLangFile = json_decode('{"lang":{}}');
+        }
+        
 
-        
-        
         $loadedXml = CoreConfigModel::getConfig();
         
         // Get custom lang file
@@ -139,13 +142,38 @@ class ConfigurationController
                 $customLangFile = json_decode($customLangFileContent);
         
                 foreach ($customLangFile->lang as $key => $value) {
-                    if ($defaultLangFile->lang->$key !== null) {
-                        $defaultLangFile->lang->$key = $customLangFile->lang->$key;
-                    }
+                    $defaultLangFile->lang->$key = $customLangFile->lang->$key;
                 }
             }
         }
         
         return $response->withJson($defaultLangFile);
+    }
+
+    public function getAvailableLang()
+    {
+
+        // Get Default lang list
+        $langFilenameList = array_diff(scandir(realpath('src/frontend/assets/i18n/')), array('..', '.'));
+        
+        $loadedXml = CoreConfigModel::getConfig();
+        
+        // Get custom lang list
+        if (!empty((string)$loadedXml->config->customLangPathDirectory)) {
+            $customLangPathDirectory = rtrim((string)$loadedXml->config->customLangPathDirectory, '/');
+
+            $customLangFilenameList = array_diff(scandir(realpath($customLangPathDirectory)), array('..', '.'));
+            
+            $mergedLangFilenameList = array_unique(array_merge($langFilenameList, $customLangFilenameList), SORT_REGULAR);
+        } else {
+            $mergedLangFilenameList =  $langFilenameList;
+        }
+        
+        $langFilenameList = [];
+        foreach ($mergedLangFilenameList as $key => $value) {
+            $langFilenameList[] = str_replace('.json', '', $value);
+        }
+
+        return ['lang' => $langFilenameList];
     }
 }

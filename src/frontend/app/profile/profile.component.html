@@ -106,8 +106,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select #langSelect name="langUser" [(ngModel)]="this.profileInfo.preferences.lang">
-                                                <mat-option value="fr">Français</mat-option>
-                                                <mat-option value="en">English</mat-option>
+                                                <mat-option *ngFor="let lang of this.profileInfo.availableLang" [value]="lang">{{'lang.'+lang | translate }}</mat-option>
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
