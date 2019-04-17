@@ -15,6 +15,7 @@
 namespace Configuration\controllers;
 
 use Configuration\models\ConfigurationModel;
+use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -47,6 +48,9 @@ class ConfigurationController
                 }
             } elseif ($body['auth'] && !empty($body['password'])) {
                 $body['password'] = AuthenticationModel::encrypt(['password' => $body['password']]);
+            } elseif (!$body['auth']) {
+                $body['user'] = null;
+                $body['password'] = null;
             }
             $data = json_encode([
                 'type'      => $body['type'],
@@ -68,6 +72,14 @@ class ConfigurationController
                 ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['identifier = ?'], 'data' => [$args['identifier']]]);
             }
         }
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'configurations',
+            'objectId'      => $args['identifier'],
+            'type'          => 'MODIFICATION',
+            'message'       => '{configurationUpdated}'
+        ]);
 
         return $response->withStatus(204);
     }

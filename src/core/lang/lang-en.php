@@ -16,6 +16,7 @@ $lang = [
     'actionDone'                                => 'Action done',
     'attachmentAdded'                           => 'Attachment added',
     'attachmentViewed'                          => 'Attachment viewed',
+    'configurationUpdated'                      => 'Configuration modifié',
     'documentAdded'                             => 'Document added',
     'documentViewed'                            => 'Document viewed',
     'documentHistoryViewed'                     => 'Document history viewed',
