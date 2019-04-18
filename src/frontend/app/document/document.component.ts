@@ -16,6 +16,7 @@ import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-vali
 import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
 import { TranslateService } from '@ngx-translate/core';
 
+declare var PDFJS : any;
 
 @Component({
     selector: 'app-document',
@@ -128,11 +129,7 @@ export class DocumentComponent implements OnInit {
                                 .subscribe((dataActionsList: any) => {
                                     this.actionsList = dataActionsList.actions;
                                     this.actionsList.forEach((element: any) => {
-                                        if (this.mainDocument.actionsAllowed.indexOf(element.id) > -1) {
-                                            element.allowed = true;
-                                        } else {
-                                            element.allowed = false;
-                                        }
+                                        element.allowed = (this.mainDocument.actionsAllowed.indexOf(element.id) > -1);
                                     });
                                 });
                         }
@@ -196,7 +193,6 @@ export class DocumentComponent implements OnInit {
     }
 
     pdfRendered() {
-        console.log('pdf rendered');
         this.pdfViewer.setZoom(this.signaturesService.scale);
         this.signaturesService.workingAreaHeight = $('.page').height();
         this.signaturesService.workingAreaWidth = $('.page').width();
