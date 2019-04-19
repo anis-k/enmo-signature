@@ -24,8 +24,7 @@
                         </mat-form-field>
                         <mat-form-field class="input-row">
                             <input name="email" matInput placeholder="{{'lang.email' | translate}}" type="mail"
-                                [(ngModel)]="profileInfo.email" (keyup)="newLogin.mail=newLogin.mail.toLowerCase()"
-                                required>
+                                [(ngModel)]="profileInfo.email" required>
                         </mat-form-field>
                         <mat-form-field class="input-row">
                             <input name="firstname" matInput placeholder="{{'lang.firstname' | translate}}" [(ngModel)]="profileInfo.firstname"
