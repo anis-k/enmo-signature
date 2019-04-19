@@ -19,7 +19,7 @@ use Docserver\models\AdrModel;
 use Email\controllers\EmailController;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
-use SrcCore\controllers\LangController;
+use SrcCore\controllers\LanguageController;
 use SrcCore\controllers\UrlController;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
@@ -261,7 +261,7 @@ class DocumentController
 
         $processingUser['preferences'] = json_decode($processingUser['preferences'], true);
         if ($processingUser['preferences']['notifications']) {
-            $lang = LangController::get(['lang' => $processingUser['preferences']['lang']]);
+            $lang = LanguageController::get(['lang' => $processingUser['preferences']['lang']]);
             $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $id;
             EmailController::createEmail([
                 'userId'    => $GLOBALS['id'],

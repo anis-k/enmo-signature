@@ -70,7 +70,7 @@ $app->get('/documents/{id}/history', \History\controllers\HistoryController::cla
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 
 //Languages
-$app->get('/languages/{lang}', \SrcCore\controllers\LangController::class . ':getByLang');
+$app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
 
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');

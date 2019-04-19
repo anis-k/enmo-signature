@@ -18,7 +18,7 @@ use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SrcCore\controllers\LangController;
+use SrcCore\controllers\LanguageController;
 use SrcCore\models\ValidatorModel;
 use History\models\HistoryModel;
 use User\controllers\UserController;
@@ -66,7 +66,7 @@ class HistoryController
 
         $formattedHistory = [];
 
-        $lang = LangController::get();
+        $lang = LanguageController::get();
         $langKeys = [];
         $langValues = [];
         foreach ($lang as $key => $value) {

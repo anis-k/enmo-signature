@@ -15,13 +15,12 @@
 namespace User\controllers;
 
 
-use Configuration\controllers\ConfigurationController;
 use Email\controllers\EmailController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SrcCore\controllers\LangController;
+use SrcCore\controllers\LanguageController;
 use SrcCore\controllers\PasswordController;
 use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
@@ -271,7 +270,7 @@ class UserController
 
         $user['preferences'] = json_decode($user['preferences'], true);
 
-        $lang = LangController::get(['lang' => $user['preferences']['lang']]);
+        $lang = LanguageController::get(['lang' => $user['preferences']['lang']]);
         $emailToken = json_encode(['login' => $body['login'], 'token' => $token]);
         $emailToken = base64_encode($emailToken);
 
@@ -373,7 +372,7 @@ class UserController
 
         $user['preferences']        = json_decode($user['preferences'], true);
         $user['canManageRestUsers'] = UserController::hasPrivilege(['userId' => $args['id'], 'privilege' => 'manage_rest_users']);
-        $user['availableLanguages'] = LangController::getAvailableLanguages();
+        $user['availableLanguages'] = LanguageController::getAvailableLanguages();
 
         return $user;
     }
