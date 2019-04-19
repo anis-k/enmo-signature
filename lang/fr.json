@@ -131,7 +131,7 @@
 		"userPasswordForgotten"                     : "Demande de mot de passe utilisateur oublié",
 		"userForgottenPasswordUpdated"              : "Mot de passe utilisateur modifié après demande d'oubli",
 		"userViewed"                                : "Utilisateur consulté",
-		"userSignatureAdded"                        : "Signature utilisateur ajouté",
-		"userSignatureDeleted"                      : "Signature utilisateur supprimé"
+		"userSignatureAdded"                        : "Signature utilisateur ajoutée",
+		"userSignatureDeleted"                      : "Signature utilisateur supprimée"
 	}
 }
