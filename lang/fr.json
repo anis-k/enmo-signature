@@ -1,7 +1,7 @@
 {
 	"lang": {
 		"administrations": "Administrations",
-		"afterClickingSendLinkChangePassword": "Après avoir cliqué sur <b>Envoyer</b>, vous recevrez un mail contenant un lien pour modifier votre mot de passe. Ce lien sera actif <b>1 heure</b>.",
+		"afterClickingSendLinkChangePassword": "Après avoir cliqué sur <b>Envoyer</b>, vous recevrez un courriel contenant un lien pour modifier votre mot de passe. Ce lien sera actif <b>1 heure</b>.",
 		"annotateDocument": "Annoter ce document",
 		"annotation": "Annotation",
 		"annotationAdded": "Annotation ajoutée",
@@ -76,7 +76,7 @@
 		"renewalInfo": "Veuillez noter que ce nouveau mot de passe ne sera valide que <b>{{time}} jour(s)</b>. Passé ce délai, vous devrez en choisir un nouveau.",
 		"reply": "Répliquer",
 		"replySignatureAllPage": "Répliquer la signature sur toutes les pages",
-		"requestSentByEmail": "La demande vous a été envoyé par mail.",
+		"requestSentByEmail": "La demande vous a été envoyée par courriel.",
 		"samePassword": "Les mots de passe sont identiques",
 		"save": "Enregistrer",
 		"send": "Envoyer",
