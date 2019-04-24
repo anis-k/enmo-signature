@@ -106,6 +106,7 @@
 		"wrongLoginPassword": "Mauvais identifiant ou mauvais mot de passe",
 		"wrongPassword": "Mauvais mot de passe",
 		"wsUser": "Utilisateur web service",
+		"invalidToken"								: "Jeton invalide",
 		"actionDone"                                : "Action effectuée",
 		"attachmentAdded"                           : "Pièce jointe ajoutée",
 		"attachmentViewed"                          : "Pièce jointe consulté",

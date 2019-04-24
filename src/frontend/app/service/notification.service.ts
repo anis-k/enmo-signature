@@ -45,7 +45,11 @@ export class NotificationService {
             this.error('lang.connectionServerFailed');
         } else {
             if (err.error.errors !== undefined) {
-                this.error(err.error.errors);
+                if (typeof err.error.lang !== "undefined") {
+                    this.error('lang.' + err.error.lang);
+                } else {
+                    this.error(err.error.errors);
+                }
                 if (err.status === 403 || err.status === 404) {
                     this.router.navigate(['/documents']);
                 }

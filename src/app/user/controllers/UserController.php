@@ -256,7 +256,7 @@ class UserController
 
         $user = UserModel::getByLogin(['select' => ['id', 'email', 'preferences'], 'login' => $body['login']]);
         if (empty($user)) {
-            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+            return $response->withStatus(204);
         }
 
         $GLOBALS['id'] = $user['id'];
@@ -310,7 +310,7 @@ class UserController
         $token = base64_decode($body['token']);
         $token = json_decode($token, true);
         if (empty($token['login']) || empty($token['token'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Invalid token']);
+            return $response->withStatus(403)->withJson(['errors' => 'Invalid token', 'lang' => 'invalidToken']);
         }
 
         $user = UserModel::getByLogin(['login' => $token['login'], 'select' => ['id', 'reset_token']]);
@@ -320,13 +320,13 @@ class UserController
 
         $resetToken = json_decode($user['reset_token'], true);
         if (empty($resetToken['token']) || empty($resetToken['until'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Invalid token']);
+            return $response->withStatus(403)->withJson(['errors' => 'Invalid token', 'lang' => 'invalidToken']);
         }
 
         $tokenValidDate = new \DateTime($resetToken['until']);
         $nowDate = new \DateTime();
         if ($token['token'] != $resetToken['token'] || $tokenValidDate < $nowDate) {
-            return $response->withStatus(403)->withJson(['errors' => 'Invalid token']);
+            return $response->withStatus(403)->withJson(['errors' => 'Invalid token', 'lang' => 'invalidToken']);
         }
 
         if (!PasswordController::isPasswordValid(['password' => $body['password']])) {

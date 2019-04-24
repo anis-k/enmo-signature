@@ -106,6 +106,7 @@
 		"wrongLoginPassword": "Wrong login or password",
 		"wrongPassword": "Wrong password",
 		"wsUser": "Web service user",
+		"invalidToken"								: "Invalid token",
 		"actionDone"                                : "Action done",
 		"attachmentAdded"                           : "Attachment added",
 		"attachmentViewed"                          : "Attachment viewed",
