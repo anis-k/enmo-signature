@@ -83,5 +83,6 @@ INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 -----
 -- CONFIGURATIONS
 -----
+TRUNCATE TABLE configurations;
 INSERT INTO configurations (identifier, value) VALUES ('emailServer', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
 ALTER SEQUENCE configurations_id_seq RESTART WITH 2;
