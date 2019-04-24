@@ -24,7 +24,7 @@
                         </mat-form-field>
                         <mat-form-field class="input-row">
                             <input name="email" matInput placeholder="{{'lang.email' | translate}}" type="mail"
-                                [(ngModel)]="profileInfo.email" required>
+                                [(ngModel)]="profileInfo.email" pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required>
                         </mat-form-field>
                         <mat-form-field class="input-row">
                             <input name="firstname" matInput placeholder="{{'lang.firstname' | translate}}" [(ngModel)]="profileInfo.firstname"
