@@ -13,9 +13,9 @@
         <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
         <span>{{'lang.delete' | translate}}</span>
       </button>
-      <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);" title="{{'lang.replySignatureAllPage' | translate}}">
+      <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);" title="{{'lang.replicateSignatureAllPage' | translate}}">
         <mat-icon fontSet="fas" fontIcon="fa-clone"></mat-icon>
-        <span>{{'lang.reply' | translate}}</span>
+        <span>{{'lang.replicate' | translate}}</span>
       </button>
     </mat-menu>
     <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
