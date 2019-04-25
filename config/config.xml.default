@@ -15,9 +15,9 @@
     </database>
     <electronicSignature>
         <enable>false</enable>
-        <certPath>/home/maarch/Bureau/tcpdf.crt</certPath><!-- .crt or .p12 or .pem -->
-        <privateKeyPath>/home/maarch/Bureau/tcpdf.crt</privateKeyPath><!-- if private key and certificate are in the same file, put the same path -->
-        <password>password</password>
+        <certPath>/var/www/html/MaarchParapheur/samples/certs/MP_final_certificate.crt</certPath><!-- .crt or .p12 or .pem -->
+        <privateKeyPath>/var/www/html/MaarchParapheur/samples/certs/MP_private.key</privateKeyPath><!-- if private key and certificate are in the same file, put the same path -->
+        <password>maarch</password>
         <certInfo>
             <name>Maarch</name>
             <location>Paris</location>
