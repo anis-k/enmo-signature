@@ -14,7 +14,7 @@
     </header>
     <section class="sidebar-btn">
       <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'NOTE' ? 'active' : '']" (click)="filter('NOTE')">{{'lang.annotation' | translate}} <span *ngIf="signaturesService.documentsListCount['NOTE']" class="badgeNbDocument">{{signaturesService.documentsListCount["NOTE"]}}</span></button>
-      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'SIGN' ? 'active' : '']" (click)="filter('SIGN')">{{'lang.initials' | translate}} <span *ngIf="signaturesService.documentsListCount['SIGN']" class="badgeNbDocument">{{signaturesService.documentsListCount["SIGN"]}}</span></button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'SIGN' ? 'active' : '']" (click)="filter('SIGN')">{{'lang.signature' | translate}} <span *ngIf="signaturesService.documentsListCount['SIGN']" class="badgeNbDocument">{{signaturesService.documentsListCount["SIGN"]}}</span></button>
     </section>
   </div>
   <ul #listContent class="nav" detect-scroll (onScroll)="handleScroll($event)" [bottomOffset]="1" [topOffset]="1">
