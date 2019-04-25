@@ -132,6 +132,10 @@ export class DocumentComponent implements OnInit {
                                         element.allowed = (this.mainDocument.actionsAllowed.indexOf(element.id) > -1);
                                     });
                                 });
+                        } else {
+                            this.actionsList.forEach((element: any) => {
+                                element.allowed = (this.mainDocument.actionsAllowed.indexOf(element.id) > -1);
+                            });
                         }
 
                         if (this.signaturesService.signaturesList.length === 0) {
