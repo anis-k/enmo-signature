@@ -9,6 +9,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
 import { TranslateService } from '@ngx-translate/core';
+import { Validators, FormControl } from '@angular/forms';
+import { last } from '@angular/router/src/utils/collection';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -34,15 +36,18 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
-    loadingForm         : boolean   = true;
-    loadingConnexion    : boolean   = false;
-    newLogin            : any       = {
-        login       : '',
-        password    : ''
+    loadingForm: boolean = true;
+    loadingConnexion: boolean = false;
+    newLogin: any = {
+        login: '',
+        password: ''
     };
-    labelButton         : string    = 'lang.connect';
-    appVersion          : string    = '';
-    appAuthor           : string    = '';
+    labelButton: string = 'lang.connect';
+    appVersion: string = '';
+    appAuthor: string = '';
+
+    idMail = new FormControl('', [Validators.required]);
+    password = new FormControl('', [Validators.required]);
 
     constructor(private translate: TranslateService, public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
@@ -63,6 +68,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         }, 200);
         setTimeout(() => {
             this.loadingForm = false;
+            this.fixAutoFill();
         }, 500);
     }
 
@@ -90,5 +96,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 this.labelButton = 'lang.connect';
                 this.loadingConnexion = false;
             });
+    }
+
+    fixAutoFill() {
+        setTimeout(() => {
+            this.newLogin.login = $('#login').val();
+            this.newLogin.password = $('#password').val();
+        }, 100);
     }
 }
