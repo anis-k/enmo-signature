@@ -314,6 +314,8 @@ export class DocumentComponent implements OnInit {
                 localStorage.removeItem(this.mainDocument.id.toString());
             } else if (result === 'annotation') {
                 this.signaturesService.annotationMode = true;
+                this.zoomPlus();
+                this.appDocumentNotePad.initPad();
             }
         });
     }
