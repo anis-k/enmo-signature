@@ -209,6 +209,7 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.preferences = data.user.preferences;
                 this.profileInfo.picture = data.user.picture;
                 this.setLang(this.signaturesService.userLogged.preferences.lang);
+                this.cookieService.set( 'maarchParapheurLang', this.signaturesService.userLogged.preferences.lang );
 
                 $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
 

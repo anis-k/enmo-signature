@@ -10,7 +10,6 @@ import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { Validators, FormControl } from '@angular/forms';
-import { last } from '@angular/router/src/utils/collection';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -81,6 +80,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 this.signaturesService.userLogged = data.user;
 
                 this.translate.use(this.signaturesService.userLogged.preferences.lang);
+                this.cookieService.set( 'maarchParapheurLang', this.signaturesService.userLogged.preferences.lang );
 
                 this.loadingForm = true;
                 $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
