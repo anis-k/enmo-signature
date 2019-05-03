@@ -1,10 +1,11 @@
 {
   "name": "Maarch_Parapheur",
-  "version": "1.0.0",
+  "version": "19.04.1",
   "description": "Annoter ou Signer vos documents sur votre tablette",
   "homepage": "https://labs.maarch.org/maarch/MaarchParapheur",
   "scripts": {
     "ng": "ng",
+    "dep-list": "npm list --depth=0",
     "check-update": "ncu",
     "upgrade": "ncu -u",
     "build": "ng build",
@@ -66,6 +67,7 @@
     "ngx-cookie-service": "2.1.0",
     "ngx-scroll-event": "1.0.8",
     "node-sass": "4.11.0",
+    "npm-check-updates": "^3.1.8",
     "pdfjs-dist": "2.0.943",
     "protractor": "5.4.2",
     "rxjs": "6.5.1",

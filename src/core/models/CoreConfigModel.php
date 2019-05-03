@@ -93,7 +93,7 @@ class CoreConfigModel
         } elseif (!empty($_SERVER['REDIRECT_MAARCH_ENCRYPT_KEY'])) {
             $encriptKey = $_SERVER['REDIRECT_MAARCH_ENCRYPT_KEY'];
         } else {
-            $encriptKey = "Security Key Maarch Courrier #2008";
+            $encriptKey = "Security Key Maarch Parapheur #2008";
         }
 
         return $encriptKey;
