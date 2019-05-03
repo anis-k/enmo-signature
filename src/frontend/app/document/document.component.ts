@@ -84,7 +84,7 @@ export class DocumentComponent implements OnInit {
     startX: number = 0;
     startY: number = 0;
     outOfBounds = false;
-    snapshot: any;
+    snapshot: any = '';
     widthDoc: string = '100%';
     resetDragPos: boolean = false;
 
