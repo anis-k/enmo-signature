@@ -6,3 +6,7 @@ config/config.xml
 *.log
 xdelete.sh
 test/unitTests/build/
+dist/
+node_modules/
+package-lock.json
+
