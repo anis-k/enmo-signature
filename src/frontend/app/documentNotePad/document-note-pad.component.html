@@ -1,27 +1,7 @@
-<div *ngIf="signaturesService.annotationMode">
-  <span style="z-index:1;position: fixed;left:0;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
-    <button class="btn blue" (tap)="cancelAnnotation(i);"><i class="fas fa-arrow-left fa-2x"></i>{{'lang.exitAnnotation' | translate}}</button>
-  </span>
-  <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
-      <button class="btn green" (tap)="validateAnnotation();"><i class="fas fa-check-circle fa-2x"></i>{{'lang.validateAnnotation' | translate}}</button>
-  </span>
-</div>
 <div *ngIf="signaturesService.annotationMode" [style.width.px]="this.signaturesService.workingAreaWidth*this.signaturesService.scale" [style.height.px]="this.signaturesService.workingAreaHeight*this.signaturesService.scale"
   style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{
   'pdf-page-canvas':!signaturesService.renderingDoc,
   'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
 }">
-  <!-- <div class="tool-content tool-content-left">
-    <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)" class="range">
-    <i class="fas fa-pen-nib"></i>
-  </div> -->
-  <div class="tool-content tool-content-right">
-    <ng-container *ngFor="let color of penColors" let idx="index">
-      <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" class="radio"
-        [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
-    </ng-container>
-    <hr>
-    <i class="fa fa-undo fa-2x undo" (click)="undo()"></i>
-  </div>
   <canvas id="myCanvas" #canvas></canvas>
 </div>

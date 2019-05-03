@@ -31,7 +31,7 @@ export class SignaturesContentService {
     mode = 'SIGN';
     scale = 1;
     x = 0;
-    y = 85;
+    y = 0;
 
     constructor() {
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {

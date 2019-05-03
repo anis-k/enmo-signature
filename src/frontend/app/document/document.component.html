@@ -27,14 +27,14 @@
                       disabled>
                   </mat-form-field>
                 </div>
-                <div>
-                  <mat-form-field *ngIf="mainDocument.description != null">
+                <div *ngIf="mainDocument.description != null">
+                  <mat-form-field>
                     <input matInput [value]="mainDocument.description" title="{{mainDocument.description}}"
                       placeholder="{{'lang.description' | translate}}" disabled>
                   </mat-form-field>
                 </div>
-                <div>
-                  <mat-form-field *ngIf="mainDocument.deadline != null">
+                <div *ngIf="mainDocument.deadline != null">
+                  <mat-form-field>
                     <input matInput [value]="mainDocument.deadline" title="{{mainDocument.deadline}}"
                       placeholder="{{'lang.processingDeadline' | translate}}" disabled>
                   </mat-form-field>
@@ -78,52 +78,37 @@
         </section>
       </article>
     </header>
+    <app-overlay *ngIf="this.signaturesService.annotationMode" [appDocumentNotePad]="appDocumentNotePad"></app-overlay>
     <ng-container *ngIf="!freezeSidenavClose">
-      <button class="btn-previous" [disabled]="disableState" (tap)="prevPage()"
+      <button class="btn-previous" [disabled]="snapshot == null" (tap)="prevPage()"
         *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-previous" (tap)="prevDoc()"
         *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-next" [disabled]="disableState" (tap)="nextPage()"
+      <button class="btn-next" [disabled]="snapshot == null" (tap)="nextPage()"
         *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i></button>
       <button class="btn-next" (tap)="nextDoc()"
         *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
     </ng-container>
-    <article class="article" [class.leftPosDesk]="!this.signaturesService.annotationMode && !this.signaturesService.mobileMode" style="position: fixed;" #article [style.left.px]="this.signaturesService.x"
-      [style.top.px]="this.signaturesService.y" (panstart)="onPanStart($event)" (panmove)="onPan($event)">
-      <div class="canvas-wrapper" #canvasWrapper>
-        <simple-pdf-viewer [ngClass]="{
-          'pdf-page-canvas':!signaturesService.renderingDoc,
-          'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
-        }" #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()"
-          (onError)="pdfError($event)"></simple-pdf-viewer>
-
-        <app-document-note-list [ngClass]="{
-          'pdf-page-canvas':!signaturesService.renderingDoc,
-          'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
-        }" *ngIf="currentDoc == 0"></app-document-note-list>
-        <div [style.width.px]="signaturesService.workingAreaWidth*signaturesService.scale" (tap)="addAnnotation($event)"
-          [style.height.px]="signaturesService.workingAreaHeight*signaturesService.scale"
-          style="position:absolute;left:0;top:0;"></div>
-        <app-document-sign-list [ngClass]="{
-          'pdf-page-canvas':!signaturesService.renderingDoc,
-          'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
-        }" [canvas]="canvasWrapper" *ngIf="currentDoc == 0"></app-document-sign-list>
-
-        <app-document-note-pad (triggerEvent)="zoomMinus()" #appDocumentNotePad *ngIf="currentDoc == 0">
-        </app-document-note-pad>
-
+    
+    <div #canvasWrapper [style.width]="widthDoc" style="height:100%;overflow:hidden;background:grey;">
+      <div *ngIf="!resetDragPos" #dragElem class="example-box" cdkDragLockAxis="y" cdkDrag [cdkDragDisabled]="this.signaturesService.annotationMode" style="width: 100%;transform: translate3d(0px, 80px, 0px)" (cdkDragEnded)="testDrag($event)">
+        <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0 && snapshot != null"></app-document-note-list>
+        <app-document-sign-list [canvas]="canvasWrapper" *ngIf="currentDoc == 0 && snapshot != null"></app-document-sign-list>
+        <img (tap)="addAnnotation($event)" *ngIf="snapshot != null" id="test" [src]="snapshot" style="width:100%"/>
+        <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0"></app-document-note-pad>
       </div>
-      <div class="page-under">
-        <div class="page-under-fold"></div>
       </div>
-      <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-        <div class="page-info-doc">{{'lang.doc' | translate}} {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
-        <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
-      </section>
-    </article>
+      
+      <simple-pdf-viewer #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()"
+            (onError)="pdfError($event)" style="display:none;"></simple-pdf-viewer>
+    
+    <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
+      <div class="page-info-doc">{{'lang.doc' | translate}} {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
+      <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
+    </section>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button *ngIf="action.allowed" [style.color]="action.color" [style.borderColor]="action.color" class="btn"
@@ -132,7 +117,7 @@
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width.%]="80" position='end' disableClose='true'>
+  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width.%]="99" position='end' disableClose='true'>
     <app-my-profile [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
   </mat-sidenav>
 </mat-sidenav-container>

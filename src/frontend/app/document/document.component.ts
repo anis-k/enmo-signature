@@ -15,8 +15,9 @@ import { ConfirmModalComponent } from '../modal/confirm-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
 import { TranslateService } from '@ngx-translate/core';
+import { CdkDragEnd, DragRef, CdkDrag } from '@angular/cdk/drag-drop';
 
-declare var PDFJS : any;
+declare var PDFJS: any;
 
 @Component({
     selector: 'app-document',
@@ -69,28 +70,29 @@ declare var PDFJS : any;
 })
 export class DocumentComponent implements OnInit {
 
-    enterApp            : boolean   = true;
-    pageNum             : number    = 1;
-    signaturesContent   : any       = [];
-    totalPages          : number;
-    draggable           : boolean;
-    loadingDoc          : boolean   = true;
-    currentDoc          : number    = 0;
-    docList             : any       = [];
-    actionsList         : any       = [];
-    pdfDataArr          : any;
-    freezeSidenavClose  : boolean   = false;
-    disableState        : boolean   = true;
-    startX              : number    = 0;
-    startY              : number    = 0;
+    enterApp: boolean = true;
+    pageNum: number = 1;
+    signaturesContent: any = [];
+    totalPages: number;
+    draggable: boolean;
+    loadingDoc: boolean = true;
+    currentDoc: number = 0;
+    docList: any = [];
+    actionsList: any = [];
+    pdfDataArr: any;
+    freezeSidenavClose: boolean = false;
+    startX: number = 0;
+    startY: number = 0;
     outOfBounds = false;
+    snapshot: any;
+    widthDoc: string = '100%';
+    resetDragPos: boolean = false;
 
     @Input() mainDocument: any = {};
 
     @ViewChild('snav') snav: MatSidenav;
     @ViewChild('snavRight') snavRight: MatSidenav;
-    @ViewChild('canvas') canvas: ElementRef;
-    @ViewChild('canvasWrapper') canvasWrapper: ElementRef;
+    @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild(SimplePdfViewerComponent) private pdfViewer: SimplePdfViewerComponent;
 
@@ -117,6 +119,7 @@ export class DocumentComponent implements OnInit {
         }, 500);
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
+                this.snapshot = null;
                 this.signaturesService.renderingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
@@ -198,35 +201,87 @@ export class DocumentComponent implements OnInit {
 
     pdfRendered() {
         this.pdfViewer.setZoom(this.signaturesService.scale);
-        this.signaturesService.workingAreaHeight = $('.page').height();
-        this.signaturesService.workingAreaWidth = $('.page').width();
 
         this.totalPages = this.pdfViewer.getNumberOfPages();
         this.signaturesService.totalPage = this.totalPages;
-        this.disableState = false;
+
+        this.getPdfImage();
 
         this.signaturesService.renderingDoc = false;
+    }
 
+    getPdfImage() {
+        this.resetDragPosition();
+        this.snapshot = null;
+        this.pdfViewer.getPageSnapshot(2).then(snapshot => {
+            if (snapshot) {
+                this.snapshot = URL.createObjectURL(snapshot);
+                this.snapshot = this.sanitizer.bypassSecurityTrustResourceUrl(this.snapshot);
+                setTimeout(() => {
+                    this.signaturesService.workingAreaHeight = $('#test').height();
+                    this.signaturesService.workingAreaWidth = $('#test').width();
+                }, 1000);
+
+            }
+        });
+    }
+
+    testDrag(event: any) {
+        const element = event.source.getRootElement();
+        const boundingClientRect = element.getBoundingClientRect();
+        const parentPosition = this.getPosition(element);
+
+        this.signaturesService.y = (boundingClientRect.y - parentPosition.top);
+        this.signaturesService.x = (boundingClientRect.x - parentPosition.left);
+    }
+
+    getPosition(el: any) {
+        let x = 0;
+        let y = 0;
+        while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+            x += el.offsetLeft - el.scrollLeft;
+            y += el.offsetTop - el.scrollTop;
+            el = el.offsetParent;
+        }
+        return { top: y, left: x };
     }
 
     pdfError(e: any) {
         console.log(e);
     }
 
-    zoomPlus() {
-        this.pdfViewer.setZoom(2);
-        this.signaturesService.scale = this.pdfViewer.getZoom();
+    zoomForNotes() {
+        this.widthDoc = '200%';
+        this.signaturesService.scale = 2;
+        $('.example-box').css({ 'transform': 'translate3d(' + this.signaturesService.x * this.signaturesService.scale + 'px, ' + this.signaturesService.y * this.signaturesService.scale + 'px, 0px)' });
+
+        this.signaturesService.workingAreaHeight *= this.signaturesService.scale;
+        this.signaturesService.workingAreaWidth *= this.signaturesService.scale;
+
     }
 
-    zoomMinus() {
-        this.pdfViewer.setZoom(1);
-        this.signaturesService.scale = this.pdfViewer.getZoom();
+    zoomForView() {
+        this.resetDragPosition();
+        this.widthDoc = '100%';
+        this.signaturesService.workingAreaHeight /= this.signaturesService.scale;
+        this.signaturesService.workingAreaWidth /= this.signaturesService.scale;
+        this.signaturesService.scale = 1;
+
+    }
+
+    resetDragPosition() {
+        this.signaturesService.y = 0;
+        this.signaturesService.x = 0;
+        this.resetDragPos = true;
+        setTimeout(() => {
+            this.resetDragPos = false;
+        }, 200);
     }
 
     prevPage() {
-        this.disableState = true;
         this.pageNum--;
         this.pdfViewer.prevPage();
+        this.getPdfImage();
         if (this.pageNum === 0) {
             this.pageNum = 1;
         } else {
@@ -235,30 +290,20 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
-
-        // fix issue render pdf load is quick click
-        setTimeout(() => {
-            this.disableState = false;
-        }, 500);
     }
 
     nextPage() {
-        this.disableState = true;
         if (this.pageNum >= this.totalPages) {
             this.pageNum = this.totalPages;
         } else {
             this.pageNum++;
         }
         this.pdfViewer.nextPage();
+        this.getPdfImage();
         // only for main document
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
-
-        // fix issue render pdf load is quick click
-        setTimeout(() => {
-            this.disableState = false;
-        }, 500);
     }
 
     nextDoc() {
@@ -282,18 +327,18 @@ export class DocumentComponent implements OnInit {
     }
 
     addAnnotation(e: any) {
-        console.log(e.srcEvent.layerY);
 
         if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
-            this.signaturesService.x = -e.srcEvent.layerX;
-            if (e.srcEvent.layerY > 850) {
-                this.signaturesService.y = -(e.srcEvent.layerY + 200);
-            } else {
-                this.signaturesService.y = -e.srcEvent.layerY;
-            }
+
+            const posX = e.srcEvent.layerX - this.signaturesService.x;
+            const posY = e.srcEvent.layerY - this.signaturesService.y;
+
+            this.signaturesService.x = -posX;
+            this.signaturesService.y = -posY;
+            this.zoomForNotes();
+            $('.example-box').css({ 'transform': 'translate3d(' + -(posX) + 'px, ' + -(posY) + 'px, 0px)' });
 
             this.signaturesService.annotationMode = true;
-            this.zoomPlus();
             this.appDocumentNotePad.initPad();
         }
     }
@@ -314,7 +359,6 @@ export class DocumentComponent implements OnInit {
                 localStorage.removeItem(this.mainDocument.id.toString());
             } else if (result === 'annotation') {
                 this.signaturesService.annotationMode = true;
-                this.zoomPlus();
                 this.appDocumentNotePad.initPad();
             }
         });

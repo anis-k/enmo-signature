@@ -173,3 +173,21 @@ button.disabled {
   background: white;
   border: solid 1px $primary;
 }
+
+// bug expand opened if animation, solved it temporarily until a fix arrives
+mat-accordion mat-expansion-panel {
+  mat-expansion-panel-header {
+    height: 40px; // height may be different for you
+  }
+  .mat-expansion-panel-content {
+    height: 0;
+  }
+  &.mat-expanded {
+    mat-expansion-panel-header {
+      height: 64px; // height may be different for you
+    }
+    .mat-expansion-panel-content {
+      height: auto;
+    }
+  }
+}

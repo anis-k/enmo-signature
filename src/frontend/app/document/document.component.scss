@@ -110,7 +110,7 @@ canvas {
   }
 
   &-expand {
-    width: 80%;
+    width: 70%;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
@@ -164,7 +164,8 @@ canvas {
     position: fixed;
     bottom: 100px;
     height: 30px;
-    width: 70%;
+    width: auto;
+    max-width: 70%;
     color: #9B9B9B;
     font-size: 12px;
     font-weight: 300;
@@ -188,7 +189,6 @@ canvas {
     }
 
     &-page {
-      max-width: 20%;
       text-align: center;
       border-radius: 0 14px 14px 0;
       padding: 0 20px;
@@ -196,6 +196,7 @@ canvas {
       border: 1px solid #ECF0F1;
       margin-left: -15px;
       height: 28px;
+      white-space: pre;
     }
   }
 }

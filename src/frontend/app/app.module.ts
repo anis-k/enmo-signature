@@ -43,6 +43,8 @@ import { ConfirmModalComponent } from './modal/confirm-modal.component';
 import { WarnModalComponent } from './modal/warn-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from './modal/success-info-valid.component';
 import { RejectInfoBottomSheetComponent } from './modal/reject-info.component';
+import { OverlayComponent } from './overlay/overlay.component';
+
 
 // SERVICES
 import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
@@ -70,7 +72,8 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
     SuccessInfoValidBottomSheetComponent,
     RejectInfoBottomSheetComponent,
     ProfileComponent,
-    CustomSnackbarComponent
+    CustomSnackbarComponent,
+    OverlayComponent
   ],
   imports: [
     FormsModule,
