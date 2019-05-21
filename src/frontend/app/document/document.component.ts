@@ -83,7 +83,6 @@ export class DocumentComponent implements OnInit {
     freezeSidenavClose: boolean = false;
     startX: number = 0;
     startY: number = 0;
-    outOfBounds = false;
     snapshot: any = '';
     widthDoc: string = '100%';
     resetDragPos: boolean = false;
@@ -98,6 +97,12 @@ export class DocumentComponent implements OnInit {
 
     @HostListener('mousedown', ['$event']) protected onPMouseDown(event: any) {
         event.preventDefault();
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onResize(event: any) {
+        this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
+        this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
     }
 
     constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute, public http: HttpClient,
@@ -218,8 +223,8 @@ export class DocumentComponent implements OnInit {
                 this.snapshot = URL.createObjectURL(snapshot);
                 this.snapshot = this.sanitizer.bypassSecurityTrustResourceUrl(this.snapshot);
                 setTimeout(() => {
-                    this.signaturesService.workingAreaHeight = $('#test').height();
-                    this.signaturesService.workingAreaWidth = $('#test').width();
+                    this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
+                    this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
                 }, 1000);
 
             }
@@ -433,7 +438,7 @@ export class DocumentComponent implements OnInit {
     undoTag() {
         if (this.signaturesService.notesContent[this.pageNum]) {
             this.signaturesService.notesContent[this.pageNum].pop();
-            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({ "sign": this.signaturesService.signaturesContent, "note": this.signaturesService.notesContent }));
+            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
         }
     }
 
@@ -466,22 +471,5 @@ export class DocumentComponent implements OnInit {
             }
         }
         return state;
-    }
-
-    onPanStart(event: any): void {
-        this.startX = this.signaturesService.x;
-        this.startY = this.signaturesService.y;
-        this.outOfBounds = false;
-    }
-
-    onPan(event: any): void {
-        event.preventDefault();
-
-        if (!this.signaturesService.annotationMode && !this.signaturesService.documentFreeze) {
-            /*this.signaturesService.x = this.startX + event.deltaX;*/
-
-            this.signaturesService.y = this.startY + event.deltaY;
-
-        }
     }
 }

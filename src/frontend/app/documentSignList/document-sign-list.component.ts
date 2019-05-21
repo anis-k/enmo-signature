@@ -14,7 +14,6 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class DocumentSignListComponent implements OnInit {
 
-    @Input('canvas') canvas: ElementRef;
     @ViewChild('menuTrigger') menuSign: MatMenuTrigger;
 
     constructor(private translate: TranslateService, private sanitization: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
@@ -25,8 +24,11 @@ export class DocumentSignListComponent implements OnInit {
         this.signaturesService.documentFreeze = true;
     }
     moveSign(event: any, i: number) {
-        this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = event.x;
-        this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = event.y;
+        const percentx = (event.x * 100) / this.signaturesService.workingAreaWidth;
+        const percenty = (event.y * 100) / this.signaturesService.workingAreaHeight;
+
+        this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = percentx;
+        this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = percenty;
         localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         this.signaturesService.documentFreeze = false;
     }

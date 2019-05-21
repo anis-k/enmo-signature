@@ -63,19 +63,16 @@ export class SignaturesComponent implements OnInit {
     }
 
     selectSignature(signature: any) {
-        signature.positionX = (this.signaturesService.workingAreaWidth * 70) / 100;
-        signature.positionY = (this.signaturesService.workingAreaHeight * 90) / 100;
-        signature.pdfAreaX = this.signaturesService.workingAreaWidth;
-        signature.pdfAreaY = this.signaturesService.workingAreaHeight;
+        signature.positionX = 70;
+        signature.positionY = 70;
+        signature.width = 25;
 
         if (!this.signaturesService.signaturesContent[this.signaturesService.currentPage]) {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
         }
         this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({"sign" : this.signaturesService.signaturesContent, "note" : this.signaturesService.notesContent}));
+        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
 
-        $('article').animate({ scrollTop: $(document).height() }, 1000);
-        $('article').animate({ scrollLeft: $(document).width() }, 1000);
         this.bottomSheetRef.dismiss();
     }
 

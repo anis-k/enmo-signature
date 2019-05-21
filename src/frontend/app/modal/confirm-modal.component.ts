@@ -24,9 +24,9 @@ export class ConfirmModalComponent {
                         signatures.push(
                             {
                                 'encodedImage'  : signature.encodedSignature,
-                                'width'         : (this.signaturesService.signWidth * 100) / signature.pdfAreaX,
-                                'positionX'     : (signature.positionX * 100) / signature.pdfAreaX,
-                                'positionY'     : (signature.positionY * 100) / signature.pdfAreaY,
+                                'width'         : signature.width,
+                                'positionX'     : signature.positionX,
+                                'positionY'     : signature.positionY,
                                 'type'          : 'PNG',
                                 'page'          : index,
                             }

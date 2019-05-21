@@ -93,11 +93,11 @@
           class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
     </ng-container>
     
-    <div #canvasWrapper [style.width]="widthDoc" style="height:100%;overflow:hidden;background:grey;">
+    <div [style.width]="widthDoc" style="height:100%;overflow:hidden;background:grey;">
       <div *ngIf="!resetDragPos" #dragElem class="example-box" cdkDragLockAxis="y" cdkDrag [cdkDragDisabled]="this.signaturesService.annotationMode" style="width: 100%;transform: translate3d(0px, 80px, 0px)" (cdkDragEnded)="testDrag($event)">
         <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0 && snapshot != null"></app-document-note-list>
-        <app-document-sign-list [canvas]="canvasWrapper" *ngIf="currentDoc == 0 && snapshot != null"></app-document-sign-list>
-        <img (tap)="addAnnotation($event)" *ngIf="snapshot != null" id="test" [src]="snapshot" style="width:100%"/>
+        <app-document-sign-list *ngIf="currentDoc == 0 && snapshot != null"></app-document-sign-list>
+        <img (tap)="addAnnotation($event)" *ngIf="snapshot != null" id="snapshotPdf" [src]="snapshot" style="width:100%"/>
         <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0"></app-document-note-pad>
       </div>
       </div>

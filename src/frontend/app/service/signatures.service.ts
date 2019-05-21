@@ -12,7 +12,6 @@ export class SignaturesContentService {
     totalPage = 1;
     isTaggable = true;
     documentFreeze = false;
-    signWidth = 200;
     annotationMode = false;
     showSign = false;
     showPad = false;
@@ -50,7 +49,6 @@ export class SignaturesContentService {
         this.currentPage = 1;
         this.totalPage = 1;
         this.isTaggable = true;
-        this.signWidth = 200;
         this.annotationMode = false;
         this.showSign = false;
         this.showPad = false;
