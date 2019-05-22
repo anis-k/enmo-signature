@@ -270,3 +270,9 @@ button.disabled {
 .leftPosDesk {
   left:25% !important;
 }
+
+.mat-badge-content {
+  top: 10px !important;
+  right: 0 !important;
+  background: $warn;
+}

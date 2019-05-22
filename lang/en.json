@@ -133,6 +133,10 @@
 		"wouldLikeConfirm"                   : "Would you like to confirm?",
 		"wrongLoginPassword"                 : "Wrong login or password",
 		"wrongPassword"                      : "Wrong password",
-		"wsUser"                             : "Web service user"
+		"wsUser"                             : "Web service user",
+		"visaUser"                             : "Visa user",
+		"signUser"                             : "Sign user",
+		"visaProcessInfo"                             : "Visa to",
+		"signProcessInfo"                             : "Sign to"
 	}
 }

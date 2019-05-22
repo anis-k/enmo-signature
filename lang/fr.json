@@ -133,6 +133,10 @@
 		"wouldLikeConfirm"                   : "Souhaitez-vous confirmer ?",
 		"wrongLoginPassword"                 : "Mauvais identifiant ou mauvais mot de passe",
 		"wrongPassword"                      : "Mauvais mot de passe",
-		"wsUser"                             : "Utilisateur web service"
+		"wsUser"                             : "Utilisateur web service",
+		"visaUser"                             : "Viseur",
+		"signUser"                             : "Signataire",
+		"visaProcessInfo"                             : "Visé le",
+		"signProcessInfo"                             : "Signé le"
 	}
 }

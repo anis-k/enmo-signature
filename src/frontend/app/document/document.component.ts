@@ -129,6 +129,8 @@ export class DocumentComponent implements OnInit {
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.mainDocument = data.document;
+                        // FOR TEST
+                        this.mainDocument.workflow = [];
 
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.initDoc();
@@ -471,5 +473,34 @@ export class DocumentComponent implements OnInit {
             }
         }
         return state;
+    }
+
+    openVisaWorkflow() {
+        // FOR TEST
+        this.mainDocument.workflow.push(
+            {
+                'mode': 'visa',
+                'userId': 10,
+                'userDisplayName': 'Barbara BAIN',
+                'processDate': '2019-01-26',
+                'current' : false
+            });
+
+        this.mainDocument.workflow.push(
+            {
+                'mode': 'sign',
+                'userId': 10,
+                'userDisplayName': 'Jenny JANE',
+                'processDate': null,
+                'current' : true
+            });
+
+        this.signaturesService.sideNavRigtDatas = {
+            mode : 'visaWorkflow',
+            width : '50',
+            locked : false,
+        };
+
+        this.snavRight.open();
     }
 }

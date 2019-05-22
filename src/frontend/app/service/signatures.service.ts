@@ -16,7 +16,11 @@ export class SignaturesContentService {
     showSign = false;
     showPad = false;
     showDrawer = false;
-    showProfile = false;
+    sideNavRigtDatas = {
+        mode : '',
+        width : '99',
+        locked : true,
+    };
     currentAction = 0;
     loadingSign = true;
     indexDocumentsList = 0;
@@ -53,7 +57,11 @@ export class SignaturesContentService {
         this.showSign = false;
         this.showPad = false;
         this.showDrawer = false;
-        this.showProfile = false;
+        this.sideNavRigtDatas = {
+            mode : '',
+            width : '99',
+            locked : true,
+        };
         this.currentAction = 0;
         this.loadingSign = true;
         this.indexDocumentsList = 0;

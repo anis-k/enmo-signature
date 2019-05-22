@@ -68,6 +68,9 @@
         </mat-accordion>
 
         <section class="header-action">
+          <button mat-icon-button [matBadge]="mainDocument.workflow.length" (click)="openVisaWorkflow();">
+            <mat-icon fontSet="fas" fontIcon="fa-list-ol"></mat-icon>
+          </button>
           <button mat-icon-button [matMenuTriggerFor]="menu">
             <mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon>
           </button>
@@ -117,7 +120,8 @@
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width.%]="99" position='end' disableClose='true'>
-    <app-my-profile [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
+  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width.%]="signaturesService.sideNavRigtDatas.width" position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
+    <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
+    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
   </mat-sidenav>
 </mat-sidenav-container>
