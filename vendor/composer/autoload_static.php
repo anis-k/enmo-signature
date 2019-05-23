@@ -16,6 +16,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         array (
             'setasign\\Fpdi\\' => 14,
         ),
+        'W' => 
+        array (
+            'Workflow\\' => 9,
+        ),
         'U' => 
         array (
             'User\\' => 5,
@@ -74,6 +78,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'Workflow\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/app/workflow',
         ),
         'User\\' => 
         array (

@@ -3,15 +3,14 @@
     	"psr-4": {
             "SrcCore\\"           : "src/core/",
             "Attachment\\"        : "src/app/attachment/",
-            "Action\\"            : "src/app/action/",
             "Configuration\\"     : "src/app/configuration/",
             "Convert\\"           : "src/app/convert/",
             "Docserver\\"         : "src/app/docserver/",
             "Document\\"          : "src/app/document/",
             "Email\\"             : "src/app/email/",
             "History\\"           : "src/app/history/",
-            "Status\\"            : "src/app/status/",
-            "User\\"              : "src/app/user/"
+            "User\\"              : "src/app/user/",
+            "Workflow\\"          : "src/app/workflow/"
     	}
     },
     "require": {

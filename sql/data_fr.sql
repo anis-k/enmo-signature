@@ -46,26 +46,6 @@ VALUES ('HANDWRITTEN', 'Documents annotés ou signés', 'N', 50000000000, 0, '/o
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
 VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/');
 
-------------
---STATUS
-------------
-TRUNCATE TABLE status;
-ALTER SEQUENCE status_id_seq RESTART WITH 4;
-INSERT INTO status (id, reference, label) VALUES (1, 'NEW', 'En cours');
-INSERT INTO status (id, reference, label) VALUES (2 ,'VAL', 'Validé');
-INSERT INTO status (id, reference, label) VALUES (3, 'REF', 'Refusé');
-
-------------
---ACTIONS
-------------
-TRUNCATE TABLE actions;
-ALTER SEQUENCE actions_id_seq RESTART WITH 1;
-INSERT INTO actions (id, label, color, logo, event, mode, status_id, next_status_id) VALUES (1, 'Refuser', '#e74c3c', 'fas fa-backspace', 'refuseDocument', 'SIGN', 1, 3);
-INSERT INTO actions (id, label, color, logo, event, mode, status_id, next_status_id) VALUES (2, 'Refuser', '#e74c3c', 'fas fa-backspace', 'refuseDocument', 'NOTE', 1, 3);
-INSERT INTO actions (id, label, color, logo, event, mode, status_id, next_status_id) VALUES (3, 'Signatures', '#135F7F', '', 'openDrawer', 'SIGN', 1, null);
-INSERT INTO actions (id, label, color, logo, event, mode, status_id, next_status_id) VALUES (4, 'Signatures', '#135F7F', '', 'openDrawer', 'NOTE', 1, null);
-INSERT INTO actions (id, label, color, logo, event, mode, status_id, next_status_id) VALUES (5, 'Valider', '#2ecc71', 'fas fa-check-circle', 'validateDocument', 'SIGN', 1, 2);
-INSERT INTO actions (id, label, color, logo, event, mode, status_id, next_status_id) VALUES (6, 'Valider', '#2ecc71', 'fas fa-check-circle', 'validateDocument', 'NOTE', 1, 2);
 
 -----
 -- Password management
@@ -86,3 +66,6 @@ INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 TRUNCATE TABLE configurations;
 INSERT INTO configurations (identifier, value) VALUES ('emailServer', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
 ALTER SEQUENCE configurations_id_seq RESTART WITH 2;
+
+/* TESTS */
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 1, 'SIGN', 1);

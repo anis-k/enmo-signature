@@ -30,14 +30,18 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
-use Status\models\StatusModel;
 use User\controllers\UserController;
 use User\models\UserModel;
 use History\controllers\HistoryController;
-use Action\models\ActionModel;
+use Workflow\models\WorkflowModel;
 
 class DocumentController
 {
+    const ACTIONS = [
+        1   => 'VAL',
+        2   => 'REF'
+    ];
+
     public function get(Request $request, Response $response)
     {
         $queryParams = $request->getQueryParams();
@@ -45,39 +49,46 @@ class DocumentController
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
         $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
-        $status = StatusModel::getByReference(['select' => ['id'], 'reference' => 'NEW']);
-
-        $where = ['processing_user = ?', 'status = ?'];
-        $dataGet = [$GLOBALS['id'], $status['id']];
-        $count = [];
-        if (!empty($queryParams['mode'])) {
-            $where[] = 'mode = ?';
-            $dataGet[] = $queryParams['mode'];
-            $secondMode = ($queryParams['mode'] == 'SIGN' ? 'NOTE' : 'SIGN');
-            $documents = DocumentModel::get([
-                'select'    => ['count(1) OVER()'],
-                'where'     => $where,
-                'data'      => [$GLOBALS['id'], $status['id'], $secondMode]
-            ]);
-            $count[$secondMode] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
-        }
-
+        $workflowSelect = 'SELECT main_document_id, user_id FROM workflows WHERE process_date is null ORDER BY "order" LIMIT 1';
         $documents = DocumentModel::get([
-            'select'    => ['id', 'title', 'reference', 'status', 'mode', 'count(1) OVER()'],
-            'where'     => $where,
-            'data'      => $dataGet,
+            'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
+            'where'     => ["(id, ?) in ({$workflowSelect})"],
+            'data'      => [$GLOBALS['id']],
             'limit'     => $queryParams['limit'],
             'offset'    => $queryParams['offset'],
             'orderBy'   => ['creation_date desc']
         ]);
-        $count[$queryParams['mode']] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
-        foreach ($documents as $key => $document) {
-            $status = StatusModel::getById(['select' => ['label'], 'id' => $document['status']]);
-            $documents[$key]['statusDisplay'] = $status['label'];
-            unset($documents[$key]['count']);
-        }
 
-        return $response->withJson(['documents' => $documents, 'count' => $count]);
+
+//        $where = ['processing_user = ?', 'status = ?'];
+//        $dataGet = [$GLOBALS['id'], $status['id']];
+//        $count = [];
+//        if (!empty($queryParams['mode'])) {
+//            $where[] = 'mode = ?';
+//            $dataGet[] = $queryParams['mode'];
+//            $secondMode = ($queryParams['mode'] == 'SIGN' ? 'NOTE' : 'SIGN');
+//            $documents = DocumentModel::get([
+//                'select'    => ['count(1) OVER()'],
+//                'where'     => $where,
+//                'data'      => [$GLOBALS['id'], $status['id'], $secondMode]
+//            ]);
+//            $count[$secondMode] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+//        }
+
+//        $documents = DocumentModel::get([
+//            'select'    => ['id', 'title', 'reference', 'status', 'mode', 'count(1) OVER()'],
+//            'where'     => $where,
+//            'data'      => $dataGet,
+//            'limit'     => $queryParams['limit'],
+//            'offset'    => $queryParams['offset'],
+//            'orderBy'   => ['creation_date desc']
+//        ]);
+//        $count[$queryParams['mode']] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+//        foreach ($documents as $key => $document) {
+//            unset($documents[$key]['count']);
+//        }
+
+        return $response->withJson(['documents' => $documents, 'count' => 1]);
     }
 
     public function getById(Request $request, Response $response, array $args)
@@ -117,7 +128,6 @@ class DocumentController
             'title'             => $document['title'],
             'reference'         => $document['reference'],
             'description'       => $document['description'],
-            'mode'              => $document['mode'],
             'sender'            => $document['sender'],
             'creationDate'      => $document['creation_date'],
             'modificationDate'  => $document['modification_date']
@@ -126,10 +136,6 @@ class DocumentController
             $date = new \DateTime($document['deadline']);
             $formattedDocument['deadline'] = $date->format('d-m-Y H:i');
         }
-        $formattedDocument['status'] = StatusModel::getById(['select' => ['*'], 'id' => $document['status']]);
-        $processingUser = UserModel::getById(['select' => ['firstname', 'lastname', 'login'], 'id' => $document['processing_user']]);
-        $formattedDocument['processingUser'] = $processingUser['login'];
-        $formattedDocument['processingUserDisplay'] = "{$processingUser['firstname']} {$processingUser['lastname']}";
         $creator = UserModel::getById(['select' => ['firstname', 'lastname', 'login'], 'id' => $document['creator']]);
         $formattedDocument['creator'] = $creator['login'];
         $formattedDocument['creatorDisplay'] = "{$creator['firstname']} {$creator['lastname']}";
@@ -143,11 +149,8 @@ class DocumentController
             }
         }
 
-        $formattedDocument['actionsAllowed'] = [];
-        $actions = ActionModel::get(['select' => ['id'], 'where' => ['mode = ?', 'status_id = ?'], 'data' => [$document['mode'], $document['status']], 'orderBy' => ['id']]);
-        foreach ($actions as $action) {
-            $formattedDocument['actionsAllowed'][] = $action['id'];
-        }
+        //TODO current + display user + tout en camelcase
+        $formattedDocument['workflow'] = WorkflowModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
 
         $formattedDocument['attachments'] = [];
         $attachments = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
@@ -216,8 +219,6 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
         }
 
-        $status = StatusModel::get(['select' => ['id'], 'where' => ['reference = ?'], 'data' => ['NEW']]);
-
         DatabaseModel::beginTransaction();
         $id = DocumentModel::create([
             'title'             => $body['title'],
@@ -280,21 +281,16 @@ class DocumentController
 
     public function setAction(Request $request, Response $response, array $args)
     {
+        //TODO change control lui est celui qui doit faire l'action
         if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $document = DocumentModel::getById(['select' => ['mode', 'status'], 'id' => $args['id']]);
-        $action = ActionModel::get([
-            'select'    => ['next_status_id', 'label'],
-            'where'     => ['mode = ?', 'status_id = ?', 'id = ?'],
-            'data'      => [$document['mode'], $document['status'], $args['actionId']]
-        ]);
-
-        if (empty($action[0])) {
+        if (empty(DocumentController::ACTIONS[$args['actionId']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
-        $action = $action[0];
+
+        $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode'], 'documentId' => $args['id']]);
 
         $data = $request->getParams();
         if (!empty($data['signatures'])) {
@@ -376,8 +372,7 @@ class DocumentController
                 }
             }
 
-            $status = StatusModel::getById(['select' => ['reference'], 'id' => $action['next_status_id']]);
-            if ($status['reference'] == 'VAL' && $document['mode'] == 'SIGN') {
+            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'SIGN') {
                 $loadedXml = CoreConfigModel::getConfig();
                 if ($loadedXml->electronicSignature->enable == 'true') {
                     $certPath       = realpath((string)$loadedXml->electronicSignature->certPath);
@@ -403,22 +398,26 @@ class DocumentController
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'     => base64_encode($fileContent),
                 'format'          => 'pdf',
-                'docserverType'   => 'HANDWRITTEN'
+                'docserverType'   => 'DOC'
             ]);
 
+            AdrModel::deleteDocumentAdr([
+                'where' => ['main_document_id = ?', 'type = ?'],
+                'data'  => [$args['id'], 'DOC']
+            ]);
             AdrModel::createDocumentAdr([
-                'documentId'     => $args['id'],
-                'type'           => 'HANDWRITTEN',
-                'path'           => $storeInfos['path'],
-                'filename'       => $storeInfos['filename'],
-                'fingerprint'    => $storeInfos['fingerprint']
+                'documentId'    => $args['id'],
+                'type'          => 'DOC',
+                'path'          => $storeInfos['path'],
+                'filename'      => $storeInfos['filename'],
+                'fingerprint'   => $storeInfos['fingerprint']
             ]);
         }
 
-        DocumentModel::update([
-            'set'   => ['status' => $action['next_status_id']],
+        WorkflowModel::update([
+            'set'   => ['process_date' => 'CURRENT_TIMESTAMP', 'status' => DocumentController::ACTIONS[$args['actionId']]],
             'where' => ['id = ?'],
-            'data'  => [$args['id']]
+            'data'  => [$workflow['id']]
         ]);
 
         HistoryController::add([
@@ -426,7 +425,7 @@ class DocumentController
             'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'ACTION',
-            'message'       => "{actionDone} : {$action['label']}",
+            'message'       => "{actionDone} : " . DocumentController::ACTIONS[$args['actionId']],
             'data'          => ['actionId' => $args['actionId']]
         ]);
 
@@ -476,30 +475,13 @@ class DocumentController
         return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
     }
 
-    public function getStatusById(Request $request, Response $response, array $args)
-    {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-        }
-
-        $document = DocumentModel::getById(['select' => ['status', 'mode'], 'id' => $args['id']]);
-        if (empty($document)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
-        }
-
-        $status = StatusModel::getById(['select' => ['id', 'reference', 'label'], 'id' => $document['status']]);
-        $status['mode'] = $document['mode'];
-
-        return $response->withJson(['status' => $status]);
-    }
-
     public static function hasRightById(array $args)
     {
         ValidatorModel::notEmpty($args, ['id', 'userId']);
         ValidatorModel::intVal($args, ['id', 'userId']);
 
-        $document = DocumentModel::get(['select' => [1], 'where' => ['processing_user = ?', 'id = ?'], 'data' => [$args['userId'], $args['id']]]);
-        if (empty($document)) {
+        $workflow = WorkflowModel::getCurrentStep(['select' => ['user_id'], 'documentId' => $args['id']]);
+        if (empty($workflow) || $workflow['user_id'] != $args['userId']) {
             return false;
         }
 

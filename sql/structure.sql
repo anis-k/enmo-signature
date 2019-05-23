@@ -10,21 +10,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 
-DROP TABLE IF EXISTS actions;
-CREATE TABLE actions
-(
-  id serial NOT NULL,
-  label character varying(64) NOT NULL,
-  color character varying(8) NOT NULL,
-  logo character varying(64),
-  event character varying(128) NOT NULL,
-  mode CHARACTER VARYING(16) NOT NULL,
-  status_id INTEGER NOT NULL,
-  next_status_id INTEGER,
-  CONSTRAINT actions_pkey PRIMARY KEY (id)
-)
-WITH (OIDS=FALSE);
-
 DROP TABLE IF EXISTS adr_attachments;
 CREATE TABLE adr_attachments
 (
@@ -156,9 +141,6 @@ CREATE TABLE main_documents
   title text NOT NULL,
   reference CHARACTER VARYING(64),
   description text,
-  mode CHARACTER VARYING(16) NOT NULL,
-  status INTEGER NOT NULL,
-  processing_user INTEGER NOT NULL,
   sender text NOT NULL,
   deadline timestamp without time zone,
   metadata jsonb NOT NULL DEFAULT '{}',
@@ -204,17 +186,6 @@ CREATE TABLE signatures
 )
 WITH (OIDS=FALSE);
 
-DROP TABLE IF EXISTS status;
-CREATE TABLE status
-(
-  id serial NOT NULL,
-  reference character varying(10) NOT NULL,
-  label character varying(64) NOT NULL,
-  CONSTRAINT status_pkey PRIMARY KEY (id),
-  CONSTRAINT status_reference_key UNIQUE (reference)
-)
-WITH (OIDS=FALSE);
-
 DROP TABLE IF EXISTS users;
 CREATE TABLE users
 (
@@ -228,7 +199,7 @@ CREATE TABLE users
   enabled boolean DEFAULT TRUE,
   mode character varying(50) NOT NULL,
   preferences jsonb NOT NULL DEFAULT '{"lang" : "fr", "writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
-  cookie_key character varying(255) DEFAULT NULL::character varying,
+  cookie_key character varying(255) DEFAULT NULL,
   cookie_date timestamp without time zone,
   reset_token jsonb NOT NULL DEFAULT '{"token" : "", "until" : ""}',
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -247,5 +218,20 @@ CREATE TABLE users_groups
     user_id INTEGER NOT NULL,
     CONSTRAINT users_groups_pkey PRIMARY KEY (id),
     CONSTRAINT users_groups_unique_key UNIQUE (group_id, user_id)
+)
+WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS workflows;
+CREATE TABLE workflows
+(
+    id serial NOT NULL,
+    user_id INTEGER NOT NULL,
+    main_document_id INTEGER NOT NULL,
+    mode CHARACTER VARYING(16) NOT NULL,
+    "order" INTEGER NOT NULL,
+    status CHARACTER VARYING(16) DEFAULT NULL,
+    note text DEFAULT NULL,
+    process_date timestamp without time zone DEFAULT NULL,
+    CONSTRAINT workflow_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);

@@ -51,9 +51,6 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 $app->post('/log', \SrcCore\controllers\AuthenticationController::class . ':log');
 $app->get('/logout', \SrcCore\controllers\AuthenticationController::class . ':logout');
 
-//Actions
-$app->get('/actions', \Action\controllers\ActionController::class . ':get');
-
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
 
@@ -64,7 +61,6 @@ $app->put('/configurations/{identifier}', \Configuration\controllers\Configurati
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
-$app->get('/documents/{id}/status', \Document\controllers\DocumentController::class . ':getStatusById');
 $app->get('/documents/{id}/processedDocument', \Document\controllers\DocumentController::class . ':getProcessedDocumentById');
 $app->get('/documents/{id}/history', \History\controllers\HistoryController::class . ':getByDocumentId');
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');

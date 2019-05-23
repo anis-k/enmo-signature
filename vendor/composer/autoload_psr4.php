@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'setasign\\Fpdi\\' => array($vendorDir . '/setasign/fpdi/src'),
+    'Workflow\\' => array($baseDir . '/src/app/workflow'),
     'User\\' => array($baseDir . '/src/app/user'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Status\\' => array($baseDir . '/src/app/status'),
