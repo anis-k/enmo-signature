@@ -68,6 +68,9 @@
         </mat-accordion>
 
         <section class="header-action">
+          <button mat-icon-button [matBadge]="mainDocument.attachments.length + 1" (click)="openDocumentList();">
+              <mat-icon fontSet="fas" fontIcon="fa-file"></mat-icon>
+            </button>
           <button mat-icon-button [matBadge]="mainDocument.workflow.length" (click)="openVisaWorkflow();">
             <mat-icon fontSet="fas" fontIcon="fa-list-ol"></mat-icon>
           </button>
@@ -114,7 +117,7 @@
     </section>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
-        <button *ngIf="action.allowed" [style.color]="action.color" [style.borderColor]="action.color" class="btn"
+        <button [style.color]="action.color" [style.borderColor]="action.color" class="btn"
           (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}</button>
       </ng-container>
     </footer>
@@ -123,5 +126,6 @@
   <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width.%]="signaturesService.sideNavRigtDatas.width" position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
     <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
     <app-visa-workflow [visaWorkflow]="mainDocument.workflow" *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
+    <app-document-list #appDocumentList *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"></app-document-list>
   </mat-sidenav>
 </mat-sidenav-container>

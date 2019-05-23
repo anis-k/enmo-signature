@@ -137,6 +137,7 @@
 		"visaUser"                             : "Viseur",
 		"signUser"                             : "Signataire",
 		"visaProcessInfo"                             : "Visé le",
-		"signProcessInfo"                             : "Signé le"
+		"signProcessInfo"                             : "Signé le",
+		"inProgress"                             : "En cours"
 	}
 }

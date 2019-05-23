@@ -45,6 +45,7 @@ import { SuccessInfoValidBottomSheetComponent } from './modal/success-info-valid
 import { RejectInfoBottomSheetComponent } from './modal/reject-info.component';
 import { OverlayComponent } from './overlay/overlay.component';
 import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.component';
+import { DocumentListComponent } from './document/document-list/document-list.component';
 
 
 // SERVICES
@@ -75,7 +76,8 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
     ProfileComponent,
     CustomSnackbarComponent,
     OverlayComponent,
-    VisaWorkflowComponent
+    VisaWorkflowComponent,
+    DocumentListComponent
   ],
   imports: [
     FormsModule,

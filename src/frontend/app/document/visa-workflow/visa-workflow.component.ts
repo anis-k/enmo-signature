@@ -9,9 +9,6 @@ import { NotificationService } from '../../service/notification.service';
 })
 export class VisaWorkflowComponent implements OnInit {
 
-    visaWorkflow: any = {
-        items: []
-    };
     loading: boolean = false;
 
     @Input('visaWorkflow') visaWorkflow: any;

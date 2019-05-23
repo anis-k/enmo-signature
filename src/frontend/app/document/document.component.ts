@@ -16,6 +16,7 @@ import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-vali
 import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
 import { TranslateService } from '@ngx-translate/core';
 import { CdkDragEnd, DragRef, CdkDrag } from '@angular/cdk/drag-drop';
+import { DocumentListComponent } from './document-list/document-list.component';
 
 declare var PDFJS: any;
 
@@ -78,7 +79,29 @@ export class DocumentComponent implements OnInit {
     loadingDoc: boolean = true;
     currentDoc: number = 0;
     docList: any = [];
-    actionsList: any = [];
+    actionsList: any = [
+        {
+            id : 2,
+            label : 'lang.reject',
+            color : '#e74c3c',
+            logo : 'fas fa-backspace',
+            event : 'refuseDocument'
+        },
+        {
+            id : 3,
+            label : 'lang.signatures',
+            color : '#135F7F',
+            logo : '',
+            event : 'openDrawer'
+        },
+        {
+            id : 1,
+            label : 'lang.validate',
+            color : '#2ecc71',
+            logo : 'fas fa-check-circle',
+            event : 'validateDocument'
+        },
+    ];
     pdfDataArr: any;
     freezeSidenavClose: boolean = false;
     startX: number = 0;
@@ -87,12 +110,16 @@ export class DocumentComponent implements OnInit {
     widthDoc: string = '100%';
     resetDragPos: boolean = false;
 
-    @Input() mainDocument: any = {};
+    mainDocument: any = {
+        attachments : [],
+        workflow : [],
+    };
 
     @ViewChild('snav') snav: MatSidenav;
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
+    @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
     @ViewChild(SimplePdfViewerComponent) private pdfViewer: SimplePdfViewerComponent;
 
     @HostListener('mousedown', ['$event']) protected onPMouseDown(event: any) {
@@ -129,24 +156,9 @@ export class DocumentComponent implements OnInit {
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.mainDocument = data.document;
-                        // FOR TEST
-                        this.mainDocument.workflow = [];
 
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.initDoc();
-                        if (this.actionsList.length === 0) {
-                            this.http.get('../rest/actions')
-                                .subscribe((dataActionsList: any) => {
-                                    this.actionsList = dataActionsList.actions;
-                                    this.actionsList.forEach((element: any) => {
-                                        element.allowed = (this.mainDocument.actionsAllowed.indexOf(element.id) > -1);
-                                    });
-                                });
-                        } else {
-                            this.actionsList.forEach((element: any) => {
-                                element.allowed = (this.mainDocument.actionsAllowed.indexOf(element.id) > -1);
-                            });
-                        }
 
                         if (this.signaturesService.signaturesList.length === 0) {
                             this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
@@ -476,24 +488,6 @@ export class DocumentComponent implements OnInit {
     }
 
     openVisaWorkflow() {
-        // FOR TEST
-        this.mainDocument.workflow.push(
-            {
-                'mode': 'visa',
-                'userId': 10,
-                'userDisplayName': 'Barbara BAIN',
-                'processDate': '2019-01-26',
-                'current' : false
-            });
-
-        this.mainDocument.workflow.push(
-            {
-                'mode': 'sign',
-                'userId': 10,
-                'userDisplayName': 'Jenny JANE',
-                'processDate': null,
-                'current' : true
-            });
 
         this.signaturesService.sideNavRigtDatas = {
             mode : 'visaWorkflow',
@@ -502,5 +496,18 @@ export class DocumentComponent implements OnInit {
         };
 
         this.snavRight.open();
+    }
+
+    openDocumentList() {
+        this.signaturesService.sideNavRigtDatas = {
+            mode : 'documentList',
+            width : '50',
+            locked : false,
+        };
+        this.snavRight.open();
+
+        setTimeout(() => {
+            this.appDocumentList.loadDocumentList(this.mainDocument.id);
+        }, 0);
     }
 }

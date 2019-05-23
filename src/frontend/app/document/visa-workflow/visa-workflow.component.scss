@@ -13,6 +13,14 @@
     opacity: 0.5;
 }
 
-.current {
+.current ::ng-deep.mat-list-item-content{
     border-left: solid 8px $primary;
+}
+
+.green {
+    color: $accent;
+}
+
+.mat-list-item {
+    height: 90px !important;
 }
