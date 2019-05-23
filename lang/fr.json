@@ -135,10 +135,14 @@
 		"wrongPassword"                      : "Mauvais mot de passe",
 		"wsUser"                             : "Utilisateur web service",
 		"visaUser"                             : "Viseur",
-		"signUser"                             : "Signataire",
-		"visaProcessInfo"                             : "Visé le",
-		"signProcessInfo"                             : "Signé le",
-		"inProgress"                             : "En cours",
-		"waiting"                             : "En attente"
+		"signUser": "Signataire",
+		"visaProcessInfo": "Visé le",
+		"signProcessInfo": "Signé le",
+		"inProgress": "En cours",
+		"waiting": "En attente",
+		"visaLabel": "à viser",
+		"signLabel": "à signer",
+		"noteLabel": "à annoter",
+		"documents": "document(s)"
 	}
 }

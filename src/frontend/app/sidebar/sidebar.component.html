@@ -11,10 +11,12 @@
       </div>
     </header>
     <header class="sidebar-header">
+      1 {{'lang.documents' | translate}}&nbsp;<span class="primary" *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
     </header>
     <section class="sidebar-btn">
-      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'NOTE' ? 'active' : '']" (click)="filter('NOTE')">{{'lang.annotation' | translate}} <span *ngIf="signaturesService.documentsListCount['NOTE']" class="badgeNbDocument">{{signaturesService.documentsListCount["NOTE"]}}</span></button>
-      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'SIGN' ? 'active' : '']" (click)="filter('SIGN')">{{'lang.signature' | translate}} <span *ngIf="signaturesService.documentsListCount['SIGN']" class="badgeNbDocument">{{signaturesService.documentsListCount["SIGN"]}}</span></button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']" (click)="filter('sign')"><i class="fas fa-file-signature"></i></button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'visa' ? 'active' : '']" (click)="filter('visa')"><i class="fas fa-thumbs-up"></i></button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'note' ? 'active' : '']" (click)="filter('note')"><i class="far fa-comment-dots"></i></button>
     </section>
   </div>
   <ul #listContent class="nav" detect-scroll (onScroll)="handleScroll($event)" [bottomOffset]="1" [topOffset]="1">

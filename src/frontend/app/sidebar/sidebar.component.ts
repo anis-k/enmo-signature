@@ -83,7 +83,8 @@ export class SidebarComponent implements OnInit {
     }
 
     filter(mode: string) {
-        this.signaturesService.mode = mode;
+        this.signaturesService.mode == mode ? this.signaturesService.mode = '' : this.signaturesService.mode = mode;
+        
         this.offset = 0;
         this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
             .subscribe((data: any) => {
