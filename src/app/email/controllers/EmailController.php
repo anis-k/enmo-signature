@@ -19,9 +19,13 @@ use Email\models\EmailModel;
 use History\controllers\HistoryController;
 use PHPMailer\PHPMailer\PHPMailer;
 use Respect\Validation\Validator;
+use SrcCore\controllers\LanguageController;
+use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
+use User\models\UserModel;
+use Workflow\models\WorkflowModel;
 
 class EmailController
 {
@@ -159,6 +163,37 @@ class EmailController
         }
 
         return ['success' => 'success'];
+    }
+
+    public static function sendNotificationToNextUserInWorkflow(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['documentId', 'userId']);
+        ValidatorModel::intVal($args, ['documentId', 'userId']);
+
+        $workflow = WorkflowModel::getCurrentStep(['select' => ['user_id'], 'documentId' => $args['documentId']]);
+        if (empty($workflow)) {
+            return true;
+        }
+
+        $nextUser = UserModel::getById(['select' => ['email', 'preferences'], 'id' => $workflow['user_id']]);
+
+        $nextUser['preferences'] = json_decode($nextUser['preferences'], true);
+        if ($nextUser['preferences']['notifications']) {
+            $lang = LanguageController::get(['lang' => $nextUser['preferences']['lang']]);
+            $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $args['documentId'];
+            EmailController::createEmail([
+                'userId'    => $args['userId'],
+                'data'      => [
+                    'sender'        => 'Notification',
+                    'recipients'    => [$nextUser['email']],
+                    'subject'       => $lang['notificationDocumentAddedSubject'],
+                    'body'          => $lang['notificationDocumentAddedBody'] . $url . $lang['notificationFooter'],
+                    'isHtml'        => true
+                ]
+            ]);
+        }
+
+        return true;
     }
 
     private static function controlCreateEmail(array $args)

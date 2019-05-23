@@ -19,8 +19,6 @@ use Docserver\models\AdrModel;
 use Email\controllers\EmailController;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
-use SrcCore\controllers\LanguageController;
-use SrcCore\controllers\UrlController;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
 use Docserver\controllers\DocserverController;
@@ -37,10 +35,8 @@ use Workflow\models\WorkflowModel;
 
 class DocumentController
 {
-    const ACTIONS = [
-        1   => 'VAL',
-        2   => 'REF'
-    ];
+    const ACTIONS   = [1 => 'VAL', 2 => 'REF'];
+    const MODES     = ['visa', 'sign', 'note'];
 
     public function get(Request $request, Response $response)
     {
@@ -200,12 +196,10 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Body encodedDocument is empty']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['title'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body title is empty or not a string']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['mode'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Body mode is empty or not a string']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['processingUser'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Body processingUser is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['sender'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body sender is empty or not a string']);
+        } elseif (!Validator::arrayType()->notEmpty()->validate($body['workflow'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body workflow is empty or not an array']);
         }
 
         $body['attachments'] = empty($body['attachments']) ? [] : $body['attachments'];
@@ -217,9 +211,14 @@ class DocumentController
             }
         }
 
-        $processingUser = UserModel::getByLogin(['select' => ['id', 'email', 'preferences'], 'login' => $body['processingUser']]);
-        if (empty($processingUser)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Processing user does not exist']);
+        foreach ($body['workflow'] as $key => $workflow) {
+            $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $workflow['processingUser']]);
+            if (empty($processingUser)) {
+                return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] processingUser is empty or does not exist"]);
+            } elseif (!Validator::stringType()->notEmpty()->validate($workflow['mode']) || !in_array($workflow['mode'], DocumentController::MODES)) {
+                return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] mode is empty or not a string in ('visa', 'sign', 'note')"]);
+            }
+            $body['workflow'][$key]['userId'] = $processingUser['id'];
         }
 
         $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $body['encodedDocument']]);
@@ -241,9 +240,6 @@ class DocumentController
             'title'             => $body['title'],
             'reference'         => empty($body['reference']) ? null : $body['reference'],
             'description'       => empty($body['description']) ? null : $body['description'],
-            'mode'              => $body['mode'] == 'SIGN' ? 'SIGN' : 'NOTE',
-            'status'            => $status[0]['id'],
-            'processing_user'   => $processingUser['id'],
             'sender'            => $body['sender'],
             'deadline'          => empty($body['deadline']) ? null : $body['deadline'],
             'metadata'          => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
@@ -257,6 +253,15 @@ class DocumentController
             'filename'       => $storeInfos['filename'],
             'fingerprint'    => $storeInfos['fingerprint']
         ]);
+
+        foreach ($body['workflow'] as $key => $workflow) {
+            WorkflowModel::create([
+                'userId'            => $workflow['userId'],
+                'mainDocumentId'    => $id,
+                'mode'              => $workflow['mode'],
+                'order'             => $key + 1
+            ]);
+        }
 
         foreach ($body['attachments'] as $key => $value) {
             $value['mainDocumentId'] = $id;
@@ -277,21 +282,7 @@ class DocumentController
 
         DatabaseModel::commitTransaction();
 
-        $processingUser['preferences'] = json_decode($processingUser['preferences'], true);
-        if ($processingUser['preferences']['notifications']) {
-            $lang = LanguageController::get(['lang' => $processingUser['preferences']['lang']]);
-            $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $id;
-            EmailController::createEmail([
-                'userId'    => $GLOBALS['id'],
-                'data'      => [
-                    'sender'        => 'Notification',
-                    'recipients'    => [$processingUser['email']],
-                    'subject'       => $lang['notificationDocumentAddedSubject'],
-                    'body'          => $lang['notificationDocumentAddedBody'] . $url . $lang['notificationFooter'],
-                    'isHtml'        => true
-                ]
-            ]);
-        }
+        EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
         return $response->withJson(['id' => $id]);
     }
@@ -388,7 +379,7 @@ class DocumentController
                 }
             }
 
-            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'SIGN') {
+            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
                 $loadedXml = CoreConfigModel::getConfig();
                 if ($loadedXml->electronicSignature->enable == 'true') {
                     $certPath       = realpath((string)$loadedXml->electronicSignature->certPath);
@@ -416,6 +407,9 @@ class DocumentController
                 'format'          => 'pdf',
                 'docserverType'   => 'DOC'
             ]);
+            if (!empty($storeInfos['errors'])) {
+                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+            }
 
             AdrModel::deleteDocumentAdr([
                 'where' => ['main_document_id = ?', 'type = ?'],
@@ -435,6 +429,8 @@ class DocumentController
             'where' => ['id = ?'],
             'data'  => [$workflow['id']]
         ]);
+
+        EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['id'], 'userId' => $GLOBALS['id']]);
 
         HistoryController::add([
             'code'          => 'OK',

@@ -64,6 +64,3 @@ INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 TRUNCATE TABLE configurations;
 INSERT INTO configurations (identifier, value) VALUES ('emailServer', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
 ALTER SEQUENCE configurations_id_seq RESTART WITH 2;
-
-/* TESTS */
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 1, 'SIGN', 1);

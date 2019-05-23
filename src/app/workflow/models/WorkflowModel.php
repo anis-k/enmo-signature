@@ -81,6 +81,25 @@ class WorkflowModel
         return $currentStep[0];
     }
 
+    public static function create(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['userId', 'mainDocumentId', 'mode', 'order']);
+        ValidatorModel::intVal($args, ['userId', 'mainDocumentId', 'order']);
+        ValidatorModel::stringType($args, ['mode']);
+
+        DatabaseModel::insert([
+            'table'         => 'workflows',
+            'columnsValues' => [
+                'user_id'           => $args['userId'],
+                'main_document_id'  => $args['mainDocumentId'],
+                'mode'              => $args['mode'],
+                '"order"'           => $args['order']
+            ]
+        ]);
+
+        return true;
+    }
+
     public static function update(array $args)
     {
         ValidatorModel::notEmpty($args, ['set', 'where', 'data']);
