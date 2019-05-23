@@ -138,6 +138,7 @@
 		"signUser"                             : "Signataire",
 		"visaProcessInfo"                             : "Visé le",
 		"signProcessInfo"                             : "Signé le",
-		"inProgress"                             : "En cours"
+		"inProgress"                             : "En cours",
+		"waiting"                             : "En attente"
 	}
 }

@@ -7,20 +7,25 @@
             {{'lang.noPerson' | translate}}
         </div>
         <mat-list-item *ngFor="let diffusion of visaWorkflow;let i=index"
-            [class.processed]="diffusion.processDate != null" [class.current]="diffusion.current">
+            [class.current]="diffusion.current">
             <mat-icon mat-list-icon color="primary" [style.background-image]="'url('+diffusion.userPicture+')'" style="height:70px;width:70px;background-size: contain;background-repeat: no-repeat;background-position: center;"></mat-icon>
             <h4 mat-line style="display: flex;">
                 <span style="flex: 1;font-size: 25px;">{{diffusion.userDisplay}}</span>
             </h4>
             <p mat-line style="display: flex;">
-                    <span class="workflowData workflowSubData" style="text-align:left"><i mat-list-icon class="fa"
-                        [ngClass]="diffusion.processDate == null ? 'fa-hourglass' : 'fa-check green'" style="font-size:12px;opacity:0.5;width: auto;height: auto;"></i>
-                        <ng-container *ngIf="diffusion.processDate == null">
+                    <span class="workflowData" style="text-align:left">
+                        <span class="workflowSubData" *ngIf="diffusion.processDate == null && diffusion.current">
+                            <i mat-list-icon class="fa fa-hourglass" style="font-size:12px;opacity:0.5;width: auto;height: auto;"></i>
                             {{'lang.inProgress' | translate}}
-                        </ng-container>
-                        <ng-container *ngIf="diffusion.processDate != null">
-                            {{'lang.'+diffusion.mode+'ProcessInfo' | translate}} {{diffusion.processDate}}
-                        </ng-container>
+                        </span>
+                        <span class="workflowSubData" *ngIf="diffusion.processDate == null && !diffusion.current">
+                            <i mat-list-icon class="fa fa-question"  style="font-size:12px;opacity:0.5;width: auto;height: auto;"></i>
+                            {{'lang.waiting' | translate}}
+                        </span>
+                        <span *ngIf="diffusion.processDate != null">
+                            <i mat-list-icon class="fa fa-check green" style="font-size:12px;opacity:0.5;width: auto;height: auto;"></i>
+                            <span class="green">{{'lang.'+diffusion.mode+'ProcessInfo' | translate}} {{diffusion.processDate}}</span>
+                        </span>
                     </span>
                     <span class="workflowData workflowSubData">{{'lang.'+diffusion.mode+'User' | translate}}</span>
             </p>

@@ -138,6 +138,7 @@
 		"signUser"                             : "Sign user",
 		"visaProcessInfo"                             : "Visa to",
 		"signProcessInfo"                             : "Sign to",
-		"inProgress"                             : "In progress"
+		"inProgress"                             : "In progress",
+		"waiting"                             : "Waiting"
 	}
 }
