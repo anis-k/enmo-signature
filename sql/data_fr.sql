@@ -42,8 +42,6 @@ VALUES ('DOC', 'Documents principaux', 'N', 50000000000, 0, '/opt/maarchparapheu
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
 VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/');
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
-VALUES ('HANDWRITTEN', 'Documents annotés ou signés', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/handwritten/');
-INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
 VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/');
 
 

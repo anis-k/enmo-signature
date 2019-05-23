@@ -149,8 +149,25 @@ class DocumentController
             }
         }
 
-        //TODO current + display user + tout en camelcase
-        $formattedDocument['workflow'] = WorkflowModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $currentFound = false;
+        foreach ($workflow as $value) {
+            if (!empty($value['process_date'])) {
+                $date = new \DateTime($document['deadline']);
+                $value['process_date'] = $date->format('d-m-Y H:i');
+            }
+            $user = UserModel::getById(['select' => ['firstname', 'lastname', 'picture'], 'id' => $value['user_id']]);
+            $formattedDocument['workflow'][] = [
+                'userDisplay'   => "{$user['firstname']} {$user['lastname']}",
+                'mode'          => $value['mode'],
+                'processDate'   => $value['process_date'],
+                'userPicture'   => $user['picture'],
+                'current'       => !$currentFound && empty($value['process_date'])
+            ];
+            if (empty($value['process_date'])) {
+                $currentFound = true;
+            }
+        }
 
         $formattedDocument['attachments'] = [];
         $attachments = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
@@ -281,7 +298,6 @@ class DocumentController
 
     public function setAction(Request $request, Response $response, array $args)
     {
-        //TODO change control lui est celui qui doit faire l'action
         if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
@@ -430,49 +446,6 @@ class DocumentController
         ]);
 
         return $response->withJson(['success' => 'success']);
-    }
-
-    public function getProcessedDocumentById(Request $request, Response $response, array $args)
-    {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-        }
-
-        $adr = AdrModel::getDocumentsAdr([
-            'select'    => ['path', 'filename', 'fingerprint'],
-            'where'     => ['main_document_id = ?', 'type = ?'],
-            'data'      => [$args['id'], 'HANDWRITTEN']
-        ]);
-        if (empty($adr[0])) {
-            return $response->withJson(['encodedDocument' => null]);
-        }
-
-        $docserver = DocserverModel::getByType(['type' => 'HANDWRITTEN', 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
-
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!file_exists($pathToDocument)) {
-            return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
-        }
-
-        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
-        if ($adr[0]['fingerprint'] != $fingerprint) {
-            return $response->withStatus(400)->withJson(['errors' => 'Fingerprints do not match']);
-        }
-
-        $document = DocumentModel::getById(['select' => ['title'], 'id' => $args['id']]);
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'main_documents',
-            'objectId'      => $args['id'],
-            'type'          => 'VIEW',
-            'message'       => "{processedDocumentViewed} : {$document['title']}"
-        ]);
-
-        return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
     }
 
     public static function hasRightById(array $args)
