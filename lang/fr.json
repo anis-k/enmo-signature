@@ -142,6 +142,7 @@
 		"visaLabel": "à viser",
 		"signLabel": "à signer",
 		"noteLabel": "à annoter",
-		"documents": "document(s)"
+		"documents": "document(s)",
+		"visaWorkflow": "Circuit de visa"
 	}
 }

@@ -142,6 +142,7 @@
 		"visaLabel": "to approve",
 		"signLabel": "to sign",
 		"noteLabel": "to note",
-		"documents": "document(s)"
+		"documents": "document(s)",
+		"visaWorkflow": "Visa workflow"
 	}
 }
