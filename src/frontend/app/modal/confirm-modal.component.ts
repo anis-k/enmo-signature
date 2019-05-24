@@ -53,10 +53,9 @@ export class ConfirmModalComponent {
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
                 .subscribe(() => {
                     if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
-                        const mode = this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]['mode'];
                         this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                        if (this.signaturesService.documentsListCount[mode] > 0) {
-                            this.signaturesService.documentsListCount[mode]--;
+                        if (this.signaturesService.documentsListCount > 0) {
+                            this.signaturesService.documentsListCount--;
                         }
                     }
                     this.disableState = false;

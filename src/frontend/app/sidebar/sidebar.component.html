@@ -11,7 +11,7 @@
       </div>
     </header>
     <header class="sidebar-header">
-      1 {{'lang.documents' | translate}}&nbsp;<span class="primary" *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
+      <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span class="primary" *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
     </header>
     <section class="sidebar-btn">
       <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']" (click)="filter('sign')"><i class="fas fa-file-signature"></i></button>
