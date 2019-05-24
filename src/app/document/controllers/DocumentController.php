@@ -304,8 +304,8 @@ class DocumentController
             }
 
             $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-            if (!file_exists($pathToDocument)) {
-                return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
+            if (!is_file($pathToDocument) || !is_readable($pathToDocument)) {
+                return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver or not readable']);
             }
 
             $tmpPath     = CoreConfigModel::getTmpPath();
@@ -391,6 +391,7 @@ class DocumentController
                 return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
 
+            unlink($pathToDocument);
             AdrModel::deleteDocumentAdr([
                 'where' => ['main_document_id = ?', 'type = ?'],
                 'data'  => [$args['id'], 'DOC']
