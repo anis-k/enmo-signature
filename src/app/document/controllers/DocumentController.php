@@ -45,7 +45,11 @@ class DocumentController
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
         $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
-        $workflowSelect = 'SELECT main_document_id, user_id FROM workflows WHERE process_date is null ORDER BY "order" LIMIT 1';
+        $mode = '';
+        if (!empty($queryParams['mode']) && in_array($queryParams['mode'], DocumentController::MODES)) {
+            $mode = "AND mode = '{$queryParams['mode']}'";
+        }
+        $workflowSelect = "SELECT main_document_id, user_id FROM workflows WHERE main_documents.id = main_document_id AND process_date IS NULL {$mode} ORDER BY \"order\" LIMIT 1";
         $documents = DocumentModel::get([
             'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
             'where'     => ["(id, ?) in ({$workflowSelect})"],
@@ -55,36 +59,12 @@ class DocumentController
             'orderBy'   => ['creation_date desc']
         ]);
 
+        $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+        foreach ($documents as $key => $document) {
+            unset($documents[$key]['count']);
+        }
 
-//        $where = ['processing_user = ?', 'status = ?'];
-//        $dataGet = [$GLOBALS['id'], $status['id']];
-//        $count = [];
-//        if (!empty($queryParams['mode'])) {
-//            $where[] = 'mode = ?';
-//            $dataGet[] = $queryParams['mode'];
-//            $secondMode = ($queryParams['mode'] == 'SIGN' ? 'NOTE' : 'SIGN');
-//            $documents = DocumentModel::get([
-//                'select'    => ['count(1) OVER()'],
-//                'where'     => $where,
-//                'data'      => [$GLOBALS['id'], $status['id'], $secondMode]
-//            ]);
-//            $count[$secondMode] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
-//        }
-
-//        $documents = DocumentModel::get([
-//            'select'    => ['id', 'title', 'reference', 'status', 'mode', 'count(1) OVER()'],
-//            'where'     => $where,
-//            'data'      => $dataGet,
-//            'limit'     => $queryParams['limit'],
-//            'offset'    => $queryParams['offset'],
-//            'orderBy'   => ['creation_date desc']
-//        ]);
-//        $count[$queryParams['mode']] = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
-//        foreach ($documents as $key => $document) {
-//            unset($documents[$key]['count']);
-//        }
-
-        return $response->withJson(['documents' => $documents, 'count' => 1]);
+        return $response->withJson(['documents' => $documents, 'count' => $count]);
     }
 
     public function getById(Request $request, Response $response, array $args)
@@ -149,7 +129,7 @@ class DocumentController
         $currentFound = false;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
-                $date = new \DateTime($document['deadline']);
+                $date = new \DateTime($document['process_date']);
                 $value['process_date'] = $date->format('d-m-Y H:i');
             }
             $user = UserModel::getById(['select' => ['firstname', 'lastname', 'picture'], 'id' => $value['user_id']]);

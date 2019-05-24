@@ -81,7 +81,6 @@
 		"passwordNotMatch"                   : "Les mots de passe ne correspondent pas",
 		"passwordOfUserUpdated"              : "Mot de passe de {{user}} modifié",
 		"preferences"                        : "Préférences",
-		"processedDocumentViewed"            : "Document traité consulté",
 		"processingDeadline"                 : "Date limite de traitement",
 		"profileUpdated"                     : "Profil modifié",
 		"receiveNotif"                       : "Recevoir les notifications",

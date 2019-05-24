@@ -81,7 +81,6 @@
 		"passwordNotMatch"                   : "Passwords does not match",
 		"passwordOfUserUpdated"              : "Password of {{user}} updated",
 		"preferences"                        : "Preferences",
-		"processedDocumentViewed"            : "Processed document viewed",
 		"processingDeadline"                 : "Processing deadline",
 		"profileUpdated"                     : "Profile updated",
 		"receiveNotif"                       : "Receive notifications",
