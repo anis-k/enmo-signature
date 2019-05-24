@@ -105,7 +105,10 @@ class UserController
         if (empty($body['mode']) || !in_array($body['mode'], $logingModes)) {
             $body['mode'] = 'standard';
         }
-        $body['picture'] = empty($body['picture']) ? null : $body['picture'];
+        if (empty($body['picture'])) {
+            $body['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
+            $body['picture'] = 'data:image/png;base64,' . $body['picture'];
+        }
 
         $id = UserModel::create($body);
 
