@@ -88,15 +88,9 @@
     <ng-container *ngIf="!freezeSidenavClose">
       <button class="btn-previous" [disabled]="snapshot == null" (tap)="prevPage()"
         *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i></button>
-      <button class="btn-previous" (tap)="prevDoc()"
-        *ngIf="currentDoc > 0 &&  pageNum === 1 && !this.signaturesService.annotationMode"><i
-          class="fas fa-chevron-left fa-3x"></i><i class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-next" [disabled]="snapshot == null" (tap)="nextPage()"
         *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i></button>
-      <button class="btn-next" (tap)="nextDoc()"
-        *ngIf="pageNum == totalPages && docList.length > currentDoc+1 && !this.signaturesService.annotationMode"><i
-          class="fas fa-chevron-right fa-3x"></i><i class="fas fa-chevron-right fa-3x"></i></button>
     </ng-container>
     
     <div [style.width]="widthDoc" style="height:100%;overflow:hidden;background:grey;">
@@ -125,7 +119,7 @@
   </mat-sidenav-content>
   <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width" position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
     <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
-    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
-    <app-document-list #appDocumentList *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"></app-document-list>
+    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight" *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
+    <app-document-list #appDocumentList [currentDocId]="docList[currentDoc].id" [snavRightComponent]="this.snavRight" [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'" (triggerEvent)="loadDoc($event)"></app-document-list>
   </mat-sidenav>
 </mat-sidenav-container>

@@ -15,18 +15,21 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class SidebarComponent implements OnInit {
 
-    loadingList : boolean   = false;
-    offset      : number    = 0;
-    limit       : number    = 25;
+    loadingList: boolean   = false;
+    offset: number    = 0;
+    limit: number    = 25;
 
     @ViewChild('listContent') listContent: ElementRef;
+    // tslint:disable-next-line:no-input-rename
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
+    // tslint:disable-next-line:no-input-rename
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
     constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
     }
 
     ngOnInit() {
+        console.log(this.signaturesService);
         $('.avatar').css({'background': 'url(data:image/png;base64,' + this.signaturesService.userLogged.picture + ') no-repeat #135F7F'}).css({'background-size': 'cover'}).css({'background-position': 'center'});
         this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
             .subscribe((data: any) => {

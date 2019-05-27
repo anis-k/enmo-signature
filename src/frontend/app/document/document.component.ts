@@ -444,6 +444,35 @@ export class DocumentComponent implements OnInit {
         }
     }
 
+    loadDoc(id: any) {
+        const index = this.docList.map((doc: any) => (doc.id)).indexOf(id);
+        if (this.docList[index] && this.docList[index].id && this.docList[index].encodedDocument === '') {
+            this.loadingDoc = true;
+            this.http.get('../rest/attachments/' + this.docList[index].id)
+                .subscribe((dataPj: any) => {
+                    this.docList[index] = dataPj.attachment;
+                    this.signaturesService.renderingDoc = true;
+                    if (index > 0) {
+                        this.signaturesService.isTaggable = false;
+                    }
+                    this.pageNum = 1;
+                    this.currentDoc = index;
+                    this.pdfRender(this.docList[this.currentDoc]);
+                    this.loadingDoc = false;
+                }, (err: any) => {
+                    this.notificationService.handleErrors(err);
+                });
+        } else {
+            this.signaturesService.renderingDoc = true;
+            if (index > 0) {
+                this.signaturesService.isTaggable = false;
+            }
+            this.pageNum = 1;
+            this.currentDoc = index;
+            this.pdfRender(this.docList[this.currentDoc]);
+        }
+    }
+
     launchEvent(action: any) {
         this.signaturesService.currentAction = action.id;
         this[action.event]();
@@ -488,26 +517,20 @@ export class DocumentComponent implements OnInit {
     }
 
     openVisaWorkflow() {
-
+        this.snavRight.open();
         this.signaturesService.sideNavRigtDatas = {
             mode : 'visaWorkflow',
             width : '450px',
             locked : false,
         };
-
-        this.snavRight.open();
     }
 
     openDocumentList() {
+        this.snavRight.open();
         this.signaturesService.sideNavRigtDatas = {
             mode : 'documentList',
             width : '450px',
             locked : false,
         };
-        this.snavRight.open();
-
-        setTimeout(() => {
-            this.appDocumentList.loadDocumentList(this.mainDocument.id);
-        }, 0);
     }
 }

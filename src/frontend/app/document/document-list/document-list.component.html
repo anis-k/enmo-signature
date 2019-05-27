@@ -1,40 +1,25 @@
-<ng-container *ngIf="!loading">
-    <div style="font-size: 30px;opacity: 0.1;padding-bottom: 30px;text-align: center;">
-        <mat-icon fontSet="fas" fontIcon="fa-list-ol fa-2x"></mat-icon> Documents
+<div class="panel-content" *ngIf="!loading">
+    <div class="panel-header">
+        <button class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
+            <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
+        </button>
+        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{mainDocument.attachments.length + 1}}</b>&nbsp;document(s)
     </div>
-    <div *ngIf="attachments.length == 0" style="text-align:center;font-size:24px;font-weight:bold;opacity:0.3;">
-        {{'lang.noAttachment' | translate}}
-    </div>
-    <!--<mat-list>
-        <h3 mat-subheader>Document à signer / annoter</h3>
-        <mat-list-item *ngFor="let attachment of attachments">
-            <ng-container *ngIf="attachment.main == true">
-                <p mat-line style="width: 100%;"> <button mat-raised-button
-                        [style.background-image]="'url('+attachment.thumbnailUrl+')'"
-                        style="margin:10px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;"></button>
-                </p>
-            </ng-container>
-        </mat-list-item>
-        <mat-divider></mat-divider>
-        <h3 mat-subheader>Annexes</h3>
-        <mat-list-item *ngFor="let attachment of attachments">
-            <ng-container *ngIf="attachment.main == false">
-                <p mat-line style="width: 100%;"> <button mat-raised-button
-                        [style.background-image]="'url('+attachment.thumbnailUrl+')'"
-                        style="margin:10px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;"></button>
-                </p>
-            </ng-container>
-
-        </mat-list-item>
-    </mat-list>-->
-    <div style="padding-left:30px;padding-right: 30px;">
-        <mat-card *ngFor="let attachment of attachments;let i=index" [style.background-image]="'url('+attachment.thumbnailUrl+')'"
-            style="padding:0;margin-top: 30px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;">
+    <div class="pjListContent">
+        <mat-card [style.background-image]="'url('+mainDocument.thumbnailUrl+')'" [class.current]="mainDocument.id == currentDocId"
+            style="padding:0;margin-top: 30px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;"
+            (click)="loadDoc(mainDocument.id)">
             <div class="pjToolsContent">
-                    Annexes {{i}}
+                Main doc
+            </div>
+        </mat-card>
+        <mat-card *ngFor="let attachment of mainDocument.attachments;let i=index"
+            [style.background-image]="'url('+attachment.thumbnailUrl+')'" [class.current]="attachment == currentDocId"
+            style="padding:0;margin-top: 30px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;"
+            (click)="loadDoc(attachment)">
+            <div class="pjToolsContent">
+                Annexes {{i}}
             </div>
         </mat-card>
     </div>
-    
-
-</ng-container>
+</div>

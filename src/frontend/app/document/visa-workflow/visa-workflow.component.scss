@@ -57,3 +57,38 @@
     font-size: 10px;
     padding: 10px;
 }
+
+.panel-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.panel-header {
+    box-shadow: 0px 0px 10px 0px #656565;
+    color: white;
+    background: $primary;
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    font-size: 20px;
+    align-items: center;
+}
+
+.panel-content {
+    flex: 1;
+    overflow: auto;
+}
+
+.mat-icon {
+    height:auto;
+}
+
+.closePanel {
+    position: absolute;
+    left: 0px;
+    font-size: 24px;
+}
