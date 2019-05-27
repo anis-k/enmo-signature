@@ -533,4 +533,13 @@ export class DocumentComponent implements OnInit {
             locked : false,
         };
     }
+
+    openMainDocumentDetail() {
+        this.snavRight.open();
+        this.signaturesService.sideNavRigtDatas = {
+            mode : 'mainDocumentDetail',
+            width : '450px',
+            locked : false,
+        };
+    }
 }

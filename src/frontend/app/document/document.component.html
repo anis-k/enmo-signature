@@ -16,8 +16,11 @@
           <button mat-icon-button (click)="this.snav.toggle();">
             <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
+          <button mat-icon-button (click)="openMainDocumentDetail();">
+            <mat-icon fontSet="fas" fontIcon="fa-info-circle"></mat-icon>
+          </button>
         </section>
-        <mat-accordion class="header-expand">
+        <!--<mat-accordion class="header-expand">
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -65,12 +68,12 @@
               </mat-form-field>
             </div>
           </mat-expansion-panel>
-        </mat-accordion>
+        </mat-accordion>-->
 
         <section class="header-action">
           <button mat-icon-button [matBadge]="mainDocument.attachments.length + 1" (click)="openDocumentList();">
-              <mat-icon fontSet="fas" fontIcon="fa-file"></mat-icon>
-            </button>
+            <mat-icon fontSet="fas" fontIcon="fa-file"></mat-icon>
+          </button>
           <button mat-icon-button [matBadge]="mainDocument.workflow.length" (click)="openVisaWorkflow();">
             <mat-icon fontSet="fas" fontIcon="fa-list-ol"></mat-icon>
           </button>
@@ -78,8 +81,10 @@
             <mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button [disabled]="checkEmptiness()" mat-menu-item (click)="removeTags();">{{'lang.deleteAll' | translate}}</button>
-            <button [disabled]="checkEmptyNote()" mat-menu-item (click)="undoTag();">{{'lang.cancelPreviousNote' | translate}}</button>
+            <button [disabled]="checkEmptiness()" mat-menu-item
+              (click)="removeTags();">{{'lang.deleteAll' | translate}}</button>
+            <button [disabled]="checkEmptyNote()" mat-menu-item
+              (click)="undoTag();">{{'lang.cancelPreviousNote' | translate}}</button>
           </mat-menu>
         </section>
       </article>
@@ -92,21 +97,27 @@
         *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i></button>
     </ng-container>
-    
+
     <div [style.width]="widthDoc" style="height:100%;overflow:hidden;background:grey;">
-      <div *ngIf="!resetDragPos" #dragElem class="example-box" cdkDragLockAxis="y" cdkDrag [cdkDragDisabled]="this.signaturesService.annotationMode" style="width: 100%;transform: translate3d(0px, 80px, 0px)" (cdkDragEnded)="testDrag($event)">
-        <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0 && snapshot != null"></app-document-note-list>
+      <div *ngIf="!resetDragPos" #dragElem class="example-box" cdkDragLockAxis="y" cdkDrag
+        [cdkDragDisabled]="this.signaturesService.annotationMode"
+        style="width: 100%;transform: translate3d(0px, 80px, 0px)" (cdkDragEnded)="testDrag($event)">
+        <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0 && snapshot != null">
+        </app-document-note-list>
         <app-document-sign-list *ngIf="currentDoc == 0 && snapshot != null"></app-document-sign-list>
-        <img (tap)="addAnnotation($event)" *ngIf="snapshot != null" id="snapshotPdf" [src]="snapshot" style="width:100%"/>
-        <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0"></app-document-note-pad>
+        <img (tap)="addAnnotation($event)" *ngIf="snapshot != null" id="snapshotPdf" [src]="snapshot"
+          style="width:100%" />
+        <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
+        </app-document-note-pad>
       </div>
-      </div>
-      
-      <simple-pdf-viewer #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()"
-            (onError)="pdfError($event)" style="display:none;"></simple-pdf-viewer>
-    
+    </div>
+
+    <simple-pdf-viewer #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()"
+      (onError)="pdfError($event)" style="display:none;"></simple-pdf-viewer>
+
     <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-      <div class="page-info-doc">{{'lang.doc' | translate}} {{currentDoc+1}}/{{docList.length}} : {{docList[currentDoc].title}}</div>
+      <div class="page-info-doc">{{'lang.doc' | translate}} {{currentDoc+1}}/{{docList.length}} :
+        {{docList[currentDoc].title}}</div>
       <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
     </section>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>
@@ -117,9 +128,16 @@
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width" position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
-    <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-my-profile>
-    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight" *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
-    <app-document-list #appDocumentList [currentDocId]="docList[currentDoc].id" [snavRightComponent]="this.snavRight" [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'" (triggerEvent)="loadDoc($event)"></app-document-list>
+  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width"
+    position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
+    <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
+      [snavRightComponent]="this.snavRight"></app-my-profile>
+    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
+      *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
+    <app-document-list #appDocumentList [currentDocId]="docList[currentDoc].id" [snavRightComponent]="this.snavRight"
+      [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
+      (triggerEvent)="loadDoc($event)"></app-document-list>
+    <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight"
+      [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'"></app-main-document-detail>
   </mat-sidenav>
 </mat-sidenav-container>
