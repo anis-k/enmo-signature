@@ -411,6 +411,14 @@ class DocumentController
             'data'  => [$workflow['id']]
         ]);
 
+        if (DocumentController::ACTIONS[$args['actionId']] == 'REF') {
+            WorkflowModel::update([
+                'set'   => ['process_date' => 'CURRENT_TIMESTAMP', 'status' => 'END'],
+                'where' => ['main_document_id = ?', 'process_date is null'],
+                'data'  => [$args['id']]
+            ]);
+        }
+
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['id'], 'userId' => $GLOBALS['id']]);
 
         HistoryController::add([
