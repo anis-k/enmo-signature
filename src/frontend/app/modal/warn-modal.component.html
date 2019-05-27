@@ -4,7 +4,7 @@
       <!--<p *ngIf="signaturesService.notesContent.length == 0 && signaturesService.signaturesContent.length == 0">{{'lang.refuseDocumentWithoutSignature' | translate}}</p>-->
       <p>{{'lang.wouldLikeConfirm' | translate}}</p>
       <p>
-        <textarea class="note" matInput placeholder="Ajouter un commentaire"></textarea>
+        <textarea [(ngModel)]="note" class="note" matInput placeholder="Ajouter un commentaire"></textarea>
       </p>
     </div>
     <div mat-dialog-actions>

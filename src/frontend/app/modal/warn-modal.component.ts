@@ -12,7 +12,8 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class WarnModalComponent {
     disableState = false;
-    msgButton = 'lang.rejectDocument';
+    msgButton: string = 'lang.rejectDocument';
+    note: string = '';
 
     constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public http: HttpClient, public dialogRef: MatDialogRef<WarnModalComponent>, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
@@ -51,7 +52,7 @@ export class WarnModalComponent {
             }
             this.disableState = true;
             this.msgButton = 'lang.sending';
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures, 'note' : this.note})
                 .subscribe(() => {
                     if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                         this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
