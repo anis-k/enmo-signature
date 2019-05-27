@@ -491,7 +491,7 @@ export class DocumentComponent implements OnInit {
 
         this.signaturesService.sideNavRigtDatas = {
             mode : 'visaWorkflow',
-            width : '50',
+            width : '650px',
             locked : false,
         };
 
@@ -501,7 +501,7 @@ export class DocumentComponent implements OnInit {
     openDocumentList() {
         this.signaturesService.sideNavRigtDatas = {
             mode : 'documentList',
-            width : '50',
+            width : '650px',
             locked : false,
         };
         this.snavRight.open();

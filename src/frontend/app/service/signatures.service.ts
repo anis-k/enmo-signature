@@ -18,7 +18,7 @@ export class SignaturesContentService {
     showDrawer = false;
     sideNavRigtDatas = {
         mode : '',
-        width : '99',
+        width : '650px',
         locked : true,
     };
     currentAction = 0;
@@ -59,7 +59,7 @@ export class SignaturesContentService {
         this.showDrawer = false;
         this.sideNavRigtDatas = {
             mode : '',
-            width : '99',
+            width : '650px',
             locked : true,
         };
         this.currentAction = 0;

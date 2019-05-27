@@ -65,7 +65,7 @@ export class SidebarComponent implements OnInit {
     openProfile() {
         this.signaturesService.sideNavRigtDatas = {
             mode : 'profile',
-            width : '99',
+            width : '650px',
             locked : true,
         };
         this.snavLeftComponent.close();
