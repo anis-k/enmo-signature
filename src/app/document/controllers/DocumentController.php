@@ -124,9 +124,12 @@ class DocumentController
         }
 
         $formattedDocument['attachments'] = [];
-        $attachments = AttachmentModel::getByDocumentId(['select' => ['id'], 'documentId' => $args['id']]);
+        $attachments = AttachmentModel::getByDocumentId(['select' => ['id', 'title'], 'documentId' => $args['id']]);
         foreach ($attachments as $attachment) {
-            $formattedDocument['attachments'][] = $attachment['id'];
+            $formattedDocument['attachments'][] = [
+                'id'    => $attachment['id'],
+                'title' => $attachment['title']
+            ];
         }
 
         HistoryController::add([
