@@ -122,4 +122,46 @@ class AttachmentController
 
         return ['id' => $id];
     }
+
+    public function getThumbnailContent(Request $request, Response $response, array $args)
+    {
+        $attachment = AttachmentModel::getById(['select' => ['main_document_id'], 'id' => $args['id']]);
+        if (empty($attachment)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Attachment does not exist']);
+        }
+
+        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $adr = AdrModel::getAttachmentsAdr([
+            'select'  => ['path', 'filename'],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'TNL' . $args['page']]
+        ]);
+
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            ['errors' => 'Docserver does not exist'];
+        }
+
+        $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
+            return ['errors' => 'Document not found on docserver or not readable'];
+        }
+
+        $fileContent = file_get_contents($pathToThumbnail);
+        if ($fileContent === false) {
+            return $response->withStatus(404)->withJson(['errors' => 'Thumbnail not found on docserver']);
+        }
+
+        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($fileContent);
+        $pathInfo = pathinfo($pathToThumbnail);
+
+        $response->write($fileContent);
+        $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch.{$pathInfo['extension']}");
+
+        return $response->withHeader('Content-Type', $mimeType);
+    }
 }

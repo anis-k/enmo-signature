@@ -78,27 +78,6 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
-        $adr = AdrModel::getDocumentsAdr([
-            'select'    => ['path', 'filename', 'fingerprint'],
-            'where'     => ['main_document_id = ?', 'type = ?'],
-            'data'      => [$args['id'], 'DOC']
-        ]);
-
-        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
-
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!file_exists($pathToDocument)) {
-            return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
-        }
-
-        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
-        if ($adr[0]['fingerprint'] != $fingerprint) {
-            return $response->withStatus(404)->withJson(['errors' => 'Fingerprints do not match']);
-        }
-
         $formattedDocument = [
             'id'                => $document['id'],
             'title'             => $document['title'],
@@ -115,7 +94,6 @@ class DocumentController
         $creator = UserModel::getById(['select' => ['firstname', 'lastname', 'login'], 'id' => $document['creator']]);
         $formattedDocument['creator'] = $creator['login'];
         $formattedDocument['creatorDisplay'] = "{$creator['firstname']} {$creator['lastname']}";
-        $formattedDocument['encodedDocument'] = base64_encode(file_get_contents($pathToDocument));
 
         $formattedDocument['metadata'] = [];
         $metadata = json_decode($document['metadata'], true);
@@ -160,6 +138,49 @@ class DocumentController
         ]);
 
         return $response->withJson(['document' => $formattedDocument]);
+    }
+
+    public function getContent(Request $request, Response $response, array $args)
+    {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $adr = AdrModel::getDocumentsAdr([
+            'select'    => ['path', 'filename', 'fingerprint'],
+            'where'     => ['main_document_id = ?', 'type = ?'],
+            'data'      => [$args['id'], 'DOC']
+        ]);
+        if (empty($adr[0])) {
+            return $response->withJson(['encodedDocument' => null]);
+        }
+
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
+        }
+
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToDocument)) {
+            return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
+        }
+
+        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+        if ($adr[0]['fingerprint'] != $fingerprint) {
+            return $response->withStatus(400)->withJson(['errors' => 'Fingerprints do not match']);
+        }
+
+        $document = DocumentModel::getById(['select' => ['title'], 'id' => $args['id']]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'main_documents',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "{documentViewed} : {$document['title']}"
+        ]);
+
+        return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
     }
 
     public function create(Request $request, Response $response)
@@ -451,7 +472,7 @@ class DocumentController
             'where'   => ['main_document_id = ?', 'type = ?'],
             'data'    => [$args['id'], 'TNL' . $args['page']]
         ]);
-        
+
         $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
         if (empty($docserver['path']) || !file_exists($docserver['path'])) {
             ['errors' => 'Docserver does not exist'];
