@@ -279,9 +279,9 @@ class DocumentController
 
         $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode'], 'documentId' => $args['id']]);
 
-        $data = $request->getParams();
-        if (!empty($data['signatures'])) {
-            foreach ($data['signatures'] as $signature) {
+        $body = $request->getParsedBody();
+        if (!empty($body['signatures'])) {
+            foreach ($body['signatures'] as $signature) {
                 foreach (['encodedImage', 'width', 'positionX', 'positionY', 'page', 'type'] as $value) {
                     if (!isset($signature[$value])) {
                         return $response->withStatus(400)->withJson(['errors' => $value . ' is empty']);
@@ -324,7 +324,7 @@ class DocumentController
                 $pdf->SetAutoPageBreak(false, 0);
                 $pdf->SetMargins(0, 0, 0);
                 $pdf->SetAutoPageBreak(false, 0);
-                foreach ($data['signatures'] as $signature) {
+                foreach ($body['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
                         if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
                             $signWidth = $size['width']*2;
@@ -405,8 +405,12 @@ class DocumentController
             ]);
         }
 
+        $set = ['process_date' => 'CURRENT_TIMESTAMP', 'status' => DocumentController::ACTIONS[$args['actionId']]];
+        if (!empty($body['note'])) {
+            $set['note'] = $body['note'];
+        }
         WorkflowModel::update([
-            'set'   => ['process_date' => 'CURRENT_TIMESTAMP', 'status' => DocumentController::ACTIONS[$args['actionId']]],
+            'set'   => $set,
             'where' => ['id = ?'],
             'data'  => [$workflow['id']]
         ]);
