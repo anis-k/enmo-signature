@@ -143,6 +143,7 @@
 		"signLabel": "to sign",
 		"noteLabel": "to note",
 		"documents": "document(s)",
-		"visaWorkflow": "Visa workflow"
+		"visaWorkflow": "Visa workflow",
+		"noteUser": "Note user"
 	}
 }

@@ -143,6 +143,7 @@
 		"signLabel": "à signer",
 		"noteLabel": "à annoter",
 		"documents": "document(s)",
-		"visaWorkflow": "Circuit de visa"
+		"visaWorkflow": "Circuit de visa",
+		"noteUser": "Annotateur"
 	}
 }
