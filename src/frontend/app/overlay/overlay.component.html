@@ -1,9 +1,9 @@
 <div>
-    <span style="z-index:1;position: fixed;left:0;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
+    <span style="z-index:1;position: absolute;left:0;bottom: 10px;top: 10px;font-size: 25px;height:50px;">
         <button class="btn blue" (tap)="this.appDocumentNotePad.cancelAnnotation();"><i
                 class="fas fa-arrow-left fa-2x"></i>{{'lang.exitAnnotation' | translate}}</button>
     </span>
-    <span style="z-index:1;position: fixed;bottom: 10px;left: 50%;transform: translateX(-50%);font-size: 25px;">
+    <span style="z-index:1;position: absolute;bottom: 70px;left: 50%;transform: translateX(-50%);font-size: 25px;">
         <button class="btn green" (tap)="this.appDocumentNotePad.validateAnnotation();"><i
                 class="fas fa-check-circle fa-2x"></i>{{'lang.validateAnnotation' | translate}}</button>
     </span>

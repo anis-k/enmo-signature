@@ -51,9 +51,6 @@
     border-bottom-left-radius: 5px;
     background: white;
     padding: 10px;
-    font-weight: 600;
-    color: #135F7F;
-    font-size: 14px;
 }
 
 .current {
@@ -89,4 +86,12 @@
     position: absolute;
     left: 0px;
     font-size: 24px;
+}
+
+.panel-content ::ng-deep.mat-form-field-label {
+    color: #F99830;
+}
+
+.panel-content ::ng-deep.mat-input-element:disabled {
+    color: $primary;
 }

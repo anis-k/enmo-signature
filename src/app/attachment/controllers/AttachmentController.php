@@ -136,7 +136,7 @@ class AttachmentController
 
         $adr = AdrModel::getAttachmentsAdr([
             'select'  => ['path', 'filename'],
-            'where'   => ['main_document_id = ?', 'type = ?'],
+            'where'   => ['attachment_id = ?', 'type = ?'],
             'data'    => [$args['id'], 'TNL' . $args['page']]
         ]);
 

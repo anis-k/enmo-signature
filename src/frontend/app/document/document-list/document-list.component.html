@@ -3,22 +3,16 @@
         <button class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
         </button>
-        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{mainDocument.attachments.length + 1}}</b>&nbsp;document(s)
+        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;document(s)
     </div>
     <div class="pjListContent">
-        <mat-card [style.background-image]="'url('+mainDocument.thumbnailUrl+')'" [class.current]="mainDocument.id == currentDocId"
+        <mat-card *ngFor="let doc of docList;let i=index"
+            [style.background-image]="'url('+doc.imgUrl+'/1)'" [class.current]="i == currentDocId"
             style="padding:0;margin-top: 30px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;"
-            (click)="loadDoc(mainDocument.id)">
+            (click)="loadDoc(i)">
             <div class="pjToolsContent">
-                Main doc
-            </div>
-        </mat-card>
-        <mat-card *ngFor="let attachment of mainDocument.attachments;let i=index"
-            [style.background-image]="'url('+attachment.thumbnailUrl+')'" [class.current]="attachment == currentDocId"
-            style="padding:0;margin-top: 30px;height: 400px;width: 100%;background-size: contain;background-repeat: no-repeat;background-position: center;"
-            (click)="loadDoc(attachment)">
-            <div class="pjToolsContent">
-                Annexes {{i}}
+                {{doc.title}}&nbsp;<ng-container *ngIf="i == 0">(à signer)</ng-container>
+                
             </div>
         </mat-card>
     </div>

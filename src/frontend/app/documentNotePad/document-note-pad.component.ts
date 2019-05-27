@@ -66,7 +66,7 @@ export class DocumentNotePadComponent implements OnInit {
             this.signaturesService.renderingDoc = true;
         }
         this.signaturesService.annotationMode = false;
-        this.notificationService.success('lang.annotationAdded');
+        // this.notificationService.success('lang.annotationAdded');
     }
 
     undo() {

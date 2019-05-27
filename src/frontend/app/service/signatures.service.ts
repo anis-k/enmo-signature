@@ -41,6 +41,11 @@ export class SignaturesContentService {
             this.mobileMode = true;
         } else {
             this.mobileMode = false;
+            this.sideNavRigtDatas = {
+                mode : 'mainDocumentDetail',
+                width : '450px',
+                locked : true,
+            };
         }
     }
 
@@ -76,6 +81,11 @@ export class SignaturesContentService {
             this.mobileMode = true;
         } else {
             this.mobileMode = false;
+            this.sideNavRigtDatas = {
+                mode : 'mainDocumentDetail',
+                width : '450px',
+                locked : true,
+            };
         }
         this.mode = '';
         this.scale = 1;

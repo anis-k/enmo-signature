@@ -13,7 +13,7 @@ export class DocumentListComponent implements OnInit {
     loading: boolean = false;
 
     // tslint:disable-next-line:no-input-rename
-    @Input('mainDocument') mainDocument: any;
+    @Input('docList') docList: any;
     // tslint:disable-next-line:no-input-rename
     @Input('currentDocId') currentDocId: any;
     // tslint:disable-next-line:no-input-rename

@@ -1,6 +1,6 @@
 <div class="panel-container" *ngIf="!loading">
     <div class="panel-header">
-        <button class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
+        <button *ngIf="signaturesService.mobileMode" class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
         </button>
         <mat-icon fontSet="fas" fontIcon="fa-list-ol fa-2x"></mat-icon> {{'lang.visaWorkflow' | translate}}

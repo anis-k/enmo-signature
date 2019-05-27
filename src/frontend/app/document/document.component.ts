@@ -13,12 +13,10 @@ import { WarnModalComponent } from '../modal/warn-modal.component';
 import { RejectInfoBottomSheetComponent } from '../modal/reject-info.component';
 import { ConfirmModalComponent } from '../modal/confirm-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
-import { SimplePdfViewerComponent } from 'simple-pdf-viewer';
 import { TranslateService } from '@ngx-translate/core';
 import { CdkDragEnd, DragRef, CdkDrag } from '@angular/cdk/drag-drop';
 import { DocumentListComponent } from './document-list/document-list.component';
 
-declare var PDFJS: any;
 
 @Component({
     selector: 'app-document',
@@ -120,7 +118,6 @@ export class DocumentComponent implements OnInit {
     @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
-    @ViewChild(SimplePdfViewerComponent) private pdfViewer: SimplePdfViewerComponent;
 
     @HostListener('mousedown', ['$event']) protected onPMouseDown(event: any) {
         event.preventDefault();
@@ -128,8 +125,14 @@ export class DocumentComponent implements OnInit {
 
     @HostListener('window:resize', ['$event'])
     onResize(event: any) {
-        this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
-        this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
+        this.resetDragPos = true;
+        setTimeout(() => {
+            this.resetDragPos = false;
+        }, 200);
+        setTimeout(() => {
+            this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
+            this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
+        }, 400);
     }
 
     constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute, public http: HttpClient,
@@ -138,7 +141,6 @@ export class DocumentComponent implements OnInit {
         private cookieService: CookieService,
         private sanitizer: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
-        PDFJS.workerSrc = './../node_modules/simple-pdf-viewer/node_modules/pdfjs-dist/build/pdf.worker.min.js';
 
         if (!this.cookieService.check('maarchParapheurAuth')) {
             this.router.navigate(['/login']);
@@ -167,16 +169,12 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.loadingSign = false;
                                 });
                         }
-                        this.docList.push({ 'id': this.mainDocument.id, 'encodedDocument': this.mainDocument.encodedDocument, 'subject': this.mainDocument.subject });
+                        this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
                         this.mainDocument.attachments.forEach((attach: any) => {
-                            this.docList.push({ 'id': attach, 'encodedDocument': '', 'title': '' });
+                            this.docList.push({ 'id': attach.id, 'title': attach.title, 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
                         });
 
-                        this.pdfRender(this.docList[this.currentDoc]);
-                        setTimeout(() => {
-                            this.loadingDoc = false;
-                        }, 500);
-                        this.loadNextDoc();
+                        this.loadingDoc = false;
                     }, (err: any) => {
                         this.notificationService.handleErrors(err);
                     });
@@ -187,6 +185,14 @@ export class DocumentComponent implements OnInit {
             }
         });
     }
+
+    ngDoCheck() {
+        if (this.signaturesService.workingAreaHeight !== $('#snapshotPdf').height() || this.signaturesService.workingAreaWidth !== $('#snapshotPdf').width()) {
+            this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
+            this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
+        }
+    }
+
 
     initDoc() {
         this.docList = [];
@@ -205,44 +211,6 @@ export class DocumentComponent implements OnInit {
         this.pageNum = 1;
         this.signaturesContent.currentDoc = 1;
         this.currentDoc = 0;
-    }
-
-    pdfRender(document: any) {
-        const binary_string = window.atob(document.encodedDocument);
-        const len = binary_string.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binary_string.charCodeAt(i);
-        }
-        this.pdfDataArr = bytes.buffer;
-        this.pdfViewer.openDocument(this.pdfDataArr);
-    }
-
-    pdfRendered() {
-        this.pdfViewer.setZoom(this.signaturesService.scale);
-
-        this.totalPages = this.pdfViewer.getNumberOfPages();
-        this.signaturesService.totalPage = this.totalPages;
-
-        this.getPdfImage();
-
-        this.signaturesService.renderingDoc = false;
-    }
-
-    getPdfImage() {
-        this.resetDragPosition();
-        this.snapshot = null;
-        this.pdfViewer.getPageSnapshot(2).then(snapshot => {
-            if (snapshot) {
-                this.snapshot = URL.createObjectURL(snapshot);
-                this.snapshot = this.sanitizer.bypassSecurityTrustResourceUrl(this.snapshot);
-                setTimeout(() => {
-                    this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
-                    this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
-                }, 1000);
-
-            }
-        });
     }
 
     testDrag(event: any) {
@@ -265,10 +233,6 @@ export class DocumentComponent implements OnInit {
         return { top: y, left: x };
     }
 
-    pdfError(e: any) {
-        console.log(e);
-    }
-
     zoomForNotes() {
         this.widthDoc = '200%';
         this.signaturesService.scale = 2;
@@ -280,27 +244,23 @@ export class DocumentComponent implements OnInit {
     }
 
     zoomForView() {
-        this.resetDragPosition();
+        // this.resetDragPosition();
+        this.resetDragPos = true;
         this.widthDoc = '100%';
-        this.signaturesService.workingAreaHeight /= this.signaturesService.scale;
-        this.signaturesService.workingAreaWidth /= this.signaturesService.scale;
+        setTimeout(() => {
+            this.resetDragPos = false;
+        }, 200);
+        setTimeout(() => {
+            this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
+            this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
+        }, 400);
         this.signaturesService.scale = 1;
 
     }
 
-    resetDragPosition() {
-        this.signaturesService.y = 0;
-        this.signaturesService.x = 0;
-        this.resetDragPos = true;
-        setTimeout(() => {
-            this.resetDragPos = false;
-        }, 200);
-    }
-
     prevPage() {
         this.pageNum--;
-        this.pdfViewer.prevPage();
-        this.getPdfImage();
+
         if (this.pageNum === 0) {
             this.pageNum = 1;
         } else {
@@ -317,32 +277,11 @@ export class DocumentComponent implements OnInit {
         } else {
             this.pageNum++;
         }
-        this.pdfViewer.nextPage();
-        this.getPdfImage();
+
         // only for main document
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
-    }
-
-    nextDoc() {
-        this.signaturesService.renderingDoc = true;
-        this.signaturesService.isTaggable = false;
-        this.pageNum = 1;
-        this.currentDoc++;
-        this.pdfRender(this.docList[this.currentDoc]);
-        this.loadNextDoc();
-    }
-
-    prevDoc() {
-        this.signaturesService.renderingDoc = true;
-        this.pageNum = 1;
-        this.currentDoc--;
-        if (this.currentDoc === 0) {
-            this.signaturesService.currentPage = 1;
-            this.signaturesService.isTaggable = true;
-        }
-        this.pdfRender(this.docList[this.currentDoc]);
     }
 
     addAnnotation(e: any) {
@@ -352,7 +291,13 @@ export class DocumentComponent implements OnInit {
             const posX = e.srcEvent.layerX - this.signaturesService.x;
             const posY = e.srcEvent.layerY - this.signaturesService.y;
 
-            this.signaturesService.x = -posX;
+
+            if (this.signaturesService.mobileMode) {
+                this.signaturesService.x = -posX;
+            } else {
+                this.signaturesService.x = -posX + 350;
+            }
+
             this.signaturesService.y = -posY;
             this.zoomForNotes();
             $('.example-box').css({ 'transform': 'translate3d(' + -(posX) + 'px, ' + -(posY) + 'px, 0px)' });
@@ -405,7 +350,6 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc > 0) {
             this.currentDoc = 0;
             this.pageNum = 1;
-            this.pdfRender(this.docList[this.currentDoc]);
         }
         this.signaturesService.showSign = true;
         this.signaturesService.showPad = false;
@@ -433,44 +377,13 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    loadNextDoc() {
-        if (this.docList[this.currentDoc + 1] && this.docList[this.currentDoc + 1].id && this.docList[this.currentDoc + 1].encodedDocument === '') {
-            this.http.get('../rest/attachments/' + this.docList[this.currentDoc + 1].id)
-                .subscribe((dataPj: any) => {
-                    this.docList[this.currentDoc + 1] = dataPj.attachment;
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
-                });
+    loadDoc(index: any) {
+        this.signaturesService.renderingDoc = true;
+        if (index > 0) {
+            this.signaturesService.isTaggable = false;
         }
-    }
-
-    loadDoc(id: any) {
-        const index = this.docList.map((doc: any) => (doc.id)).indexOf(id);
-        if (this.docList[index] && this.docList[index].id && this.docList[index].encodedDocument === '') {
-            this.loadingDoc = true;
-            this.http.get('../rest/attachments/' + this.docList[index].id)
-                .subscribe((dataPj: any) => {
-                    this.docList[index] = dataPj.attachment;
-                    this.signaturesService.renderingDoc = true;
-                    if (index > 0) {
-                        this.signaturesService.isTaggable = false;
-                    }
-                    this.pageNum = 1;
-                    this.currentDoc = index;
-                    this.pdfRender(this.docList[this.currentDoc]);
-                    this.loadingDoc = false;
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
-                });
-        } else {
-            this.signaturesService.renderingDoc = true;
-            if (index > 0) {
-                this.signaturesService.isTaggable = false;
-            }
-            this.pageNum = 1;
-            this.currentDoc = index;
-            this.pdfRender(this.docList[this.currentDoc]);
-        }
+        this.pageNum = 1;
+        this.currentDoc = index;
     }
 
     launchEvent(action: any) {

@@ -2,18 +2,18 @@
   <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
 </div>
 <mat-sidenav-container autosize>
-  <mat-sidenav #snav mode="over" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
+  <mat-sidenav #snav [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode || freezeSidenavClose" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="mainView">
-    <div *ngIf="loadingDoc || snapshot == null"
+    <div *ngIf="loadingDoc"
       style="position: fixed;z-index: 2;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
       <mat-spinner></mat-spinner>
     </div>
     <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideDown]>
       <article class="header-infos">
         <section class="header-action">
-          <button mat-icon-button (click)="this.snav.toggle();">
+          <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
             <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
           <button mat-icon-button (click)="openMainDocumentDetail();">
@@ -102,22 +102,18 @@
       <div *ngIf="!resetDragPos" #dragElem class="example-box" cdkDragLockAxis="y" cdkDrag
         [cdkDragDisabled]="this.signaturesService.annotationMode"
         style="width: 100%;transform: translate3d(0px, 80px, 0px)" (cdkDragEnded)="testDrag($event)">
-        <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0 && snapshot != null">
+        <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0">
         </app-document-note-list>
-        <app-document-sign-list *ngIf="currentDoc == 0 && snapshot != null"></app-document-sign-list>
-        <img (tap)="addAnnotation($event)" *ngIf="snapshot != null" id="snapshotPdf" [src]="snapshot"
-          style="width:100%" />
+        <app-document-sign-list *ngIf="currentDoc == 0"></app-document-sign-list>
+        <img *ngIf="!loadingDoc && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf" [src]="docList[currentDoc].imgUrl+'/'+pageNum"
+          style="width:100%;" />
         <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
         </app-document-note-pad>
       </div>
     </div>
 
-    <simple-pdf-viewer #pdfViewer [src]="pdfDataArr" removePageBorders="true" (onLoadComplete)="pdfRendered()"
-      (onError)="pdfError($event)" style="display:none;"></simple-pdf-viewer>
-
     <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-      <div class="page-info-doc">{{'lang.doc' | translate}} {{currentDoc+1}}/{{docList.length}} :
-        {{docList[currentDoc].title}}</div>
+      <div class="page-info-doc">{{docList[currentDoc].title}}</div>
       <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
     </section>
     <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>
@@ -128,14 +124,14 @@
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight mode="over" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width"
+  <mat-sidenav #snavRight [mode]="this.signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width"
     position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
     <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
       [snavRightComponent]="this.snavRight"></app-my-profile>
     <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
       *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
-    <app-document-list #appDocumentList [currentDocId]="docList[currentDoc].id" [snavRightComponent]="this.snavRight"
-      [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
+    <app-document-list #appDocumentList [currentDocId]="currentDoc" [snavRightComponent]="this.snavRight"
+      [docList]="docList" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
       (triggerEvent)="loadDoc($event)"></app-document-list>
     <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight"
       [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'"></app-main-document-detail>

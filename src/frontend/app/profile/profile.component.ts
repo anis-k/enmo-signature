@@ -79,8 +79,11 @@ export class ProfileComponent implements OnInit {
         $('.avatarProfile').css({ 'content': '' });
         this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
         this.passwordContent.close();
-        this.snavLeftComponent.open();
-        this.snavRightComponent.close();
+
+        if (this.signaturesService.mobileMode) {
+            this.snavLeftComponent.open();
+            this.snavRightComponent.close();
+        }
     }
 
 

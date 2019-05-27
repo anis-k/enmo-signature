@@ -7,6 +7,7 @@
             [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}"
             (tap)="uploadFile.click();">
         </div>
+        <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
     </div>
     <div class="panel-content">
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
@@ -234,7 +235,7 @@
                 <button class="validate" mat-button color="primary" type="submit"
                     [disabled]="allowValidate() || !profileForm.form.valid">{{
                             msgButton | translate}}</button>
-                <button class="cancel" mat-icon-button type="button" (tap)="closeProfile();">
+                <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button" (tap)="closeProfile();">
                     <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
                 </button>
             </span>

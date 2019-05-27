@@ -29,7 +29,6 @@ export class SidebarComponent implements OnInit {
     }
 
     ngOnInit() {
-        console.log(this.signaturesService);
         $('.avatar').css({'background': 'url(data:image/png;base64,' + this.signaturesService.userLogged.picture + ') no-repeat #135F7F'}).css({'background-size': 'cover'}).css({'background-position': 'center'});
         this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
             .subscribe((data: any) => {
@@ -62,7 +61,9 @@ export class SidebarComponent implements OnInit {
     gotTo(documentId: Number, i: any) {
         this.router.navigate(['/documents/' + documentId]);
         this.signaturesService.indexDocumentsList = i;
-        this.sidenav.close();
+        if (this.signaturesService.mobileMode) {
+            this.sidenav.close();
+        }
     }
 
     openProfile() {
@@ -71,8 +72,10 @@ export class SidebarComponent implements OnInit {
             width : '650px',
             locked : true,
         };
-        this.snavLeftComponent.close();
-        this.snavRightComponent.open();
+        if (this.signaturesService.mobileMode) {
+            this.snavLeftComponent.close();
+            this.snavRightComponent.open();
+        }
     }
 
     logout() {
