@@ -22,6 +22,7 @@ use Document\controllers\DocumentController;
 use History\controllers\HistoryController;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\controllers\UserController;
 
@@ -115,6 +116,9 @@ class AttachmentController
             'message'       => "{attachmentAdded} : {$args['title']}",
             'data'          => ['mainDocumentId' => $args['mainDocumentId']]
         ]);
+
+        $configPath = CoreConfigModel::getConfigPath();
+        exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$id} 'attachment' '{$GLOBALS['id']}' > /dev/null &");
 
         return ['id' => $id];
     }

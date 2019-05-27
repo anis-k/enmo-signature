@@ -106,6 +106,7 @@
 		"stylusWidh"                         : "Épaisseur du trait",
 		"subject"                            : "Objet",
 		"test"                               : "test",
+		"thumbnailFailed"                 		: "La conversion en imagette du document a échoué",
 		"toBeProcessedBy"                    : "À traiter par",
 		"toRange"                            : "à",
 		"update"                             : "Modifier",

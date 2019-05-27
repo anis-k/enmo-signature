@@ -264,6 +264,9 @@ class DocumentController
 
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
+        $configPath = CoreConfigModel::getConfigPath();
+        exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$id} 'document' '{$GLOBALS['id']}' > /dev/null &");
+
         return $response->withJson(['id' => $id]);
     }
 
@@ -435,6 +438,43 @@ class DocumentController
         ]);
 
         return $response->withJson(['success' => 'success']);
+    }
+
+    public function getThumbnailContent(Request $request, Response $response, array $args)
+    {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $adr = AdrModel::getDocumentsAdr([
+            'select'  => ['path', 'filename'],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'TNL' . $args['page']]
+        ]);
+        
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            ['errors' => 'Docserver does not exist'];
+        }
+
+        $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
+            return ['errors' => 'Document not found on docserver or not readable'];
+        }
+
+        $fileContent = file_get_contents($pathToThumbnail);
+        if ($fileContent === false) {
+            return $response->withStatus(404)->withJson(['errors' => 'Thumbnail not found on docserver']);
+        }
+
+        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($fileContent);
+        $pathInfo = pathinfo($pathToThumbnail);
+
+        $response->write($fileContent);
+        $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch.{$pathInfo['extension']}");
+
+        return $response->withHeader('Content-Type', $mimeType);
     }
 
     public static function hasRightById(array $args)

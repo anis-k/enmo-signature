@@ -106,6 +106,7 @@
 		"stylusWidh"                         : "Stylus width",
 		"subject"                            : "Subject",
 		"test"                               : "test",
+		"thumbnailFailed"                 		: "Thumbnail conversion failed",
 		"toBeProcessedBy"                    : "To be processed by",
 		"toRange"                            : "to",
 		"update"                             : "Update",

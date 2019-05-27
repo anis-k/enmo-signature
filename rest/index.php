@@ -64,6 +64,7 @@ $app->get('/documents/{id}', \Document\controllers\DocumentController::class . '
 $app->get('/documents/{id}/history', \History\controllers\HistoryController::class . ':getByDocumentId');
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 $app->get('/documents/{id}/workflow', \Workflow\controllers\WorkflowController::class . ':getByDocumentId');
+$app->get('/documents/{id}/thumbnails/{page}', \Document\controllers\DocumentController::class . ':getThumbnailContent');
 
 //Languages
 $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
