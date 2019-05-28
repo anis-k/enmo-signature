@@ -173,7 +173,7 @@ class DocumentController
             $adr = AdrModel::getAttachmentsAdr([
                 'select'  => ['path', 'filename'],
                 'where'   => ['attachment_id = ?', 'type = ?'],
-                'data'    => [$args['id'], 'ATTACH']
+                'data'    => [$attachment['id'], 'ATTACH']
             ]);
             $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
 
