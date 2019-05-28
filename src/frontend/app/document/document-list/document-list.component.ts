@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { SignaturesContentService } from '../../service/signatures.service';
+import { HttpClient } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-document-list',
@@ -20,10 +22,18 @@ export class DocumentListComponent implements OnInit {
 
     @Output() triggerEvent = new EventEmitter<string>();
 
-    constructor(public signaturesService: SignaturesContentService) { }
+    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sanitizer: DomSanitizer) { }
 
-    ngOnInit(): void { }
-
+    ngOnInit(): void {
+        this.docList.forEach((element: any, index: number) => {
+            if (element.imgContent[0] === undefined && index > 0 ) {
+                this.http.get('../rest/attachments/' + element.id + '/thumbnails/1')
+                .subscribe((data: any) => {
+                    element.imgContent[1] = data.fileContent;
+                });
+            }
+        });
+    }
 
     loadDoc(id: string) {
         this.triggerEvent.emit(id);

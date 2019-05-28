@@ -41,7 +41,7 @@ export class DocumentNotePadComponent implements OnInit {
         setTimeout(() => {
             this.triggerEvent.emit();
             this.signaturesService.x = 0;
-            this.signaturesService.y = 85;
+            this.signaturesService.y = 90;
             this.signaturesService.annotationMode = false;
         }, 200);
     }
@@ -65,7 +65,7 @@ export class DocumentNotePadComponent implements OnInit {
         localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         this.triggerEvent.emit();
         this.signaturesService.x = 0;
-        this.signaturesService.y = 85;
+        this.signaturesService.y = 90;
         if (this.signaturesService.scale > 1) {
             this.signaturesService.renderingDoc = true;
         }

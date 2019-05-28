@@ -113,6 +113,8 @@ export class DocumentComponent implements OnInit {
         workflow : [],
     };
 
+    loadingUI: any = false;
+
     @ViewChild('snav') snav: MatSidenav;
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;
@@ -170,12 +172,12 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.loadingSign = false;
                                 });
                         }
-                        this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
+                        this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgContent': [], 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
                         this.mainDocument.attachments.forEach((attach: any) => {
-                            this.docList.push({ 'id': attach.id, 'title': attach.title, 'pages': attach.pages, 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
+                            this.docList.push({ 'id': attach.id, 'title': attach.title, 'pages': attach.pages, 'imgContent': [], 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
                         });
+                        this.renderImage();
 
-                        this.loadingDoc = false;
                     }, (err: any) => {
                         this.notificationService.handleErrors(err);
                         this.router.navigate(['/documents']);
@@ -201,6 +203,31 @@ export class DocumentComponent implements OnInit {
         }
     }
 
+    renderImage() {
+        if (this.docList[this.currentDoc].imgContent[this.pageNum] === undefined) {
+            this.loadingDoc = true;
+            this.loadingUI = true;
+            if (this.currentDoc === 0) {
+                this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum)
+                .subscribe((data: any) => {
+                    this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
+                    this.loadingDoc = false;
+                    setTimeout(() => {
+                        this.loadingUI = false;
+                    }, 400);
+                });
+            } else {
+                this.http.get('../rest/attachments/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum)
+                .subscribe((data: any) => {
+                    this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
+                    this.loadingDoc = false;
+                    setTimeout(() => {
+                        this.loadingUI = false;
+                    }, 400);
+                });
+            }
+        }
+    }
 
     initDoc() {
         this.docList = [];
@@ -277,6 +304,7 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
+        this.renderImage();
     }
 
     nextPage() {
@@ -290,6 +318,7 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
+        this.renderImage();
     }
 
     addAnnotation(e: any) {

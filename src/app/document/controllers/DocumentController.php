@@ -550,14 +550,9 @@ class DocumentController
             return $response->withStatus(404)->withJson(['errors' => 'Thumbnail not found on docserver']);
         }
 
-        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->buffer($fileContent);
-        $pathInfo = pathinfo($pathToThumbnail);
+        $base64Content = base64_encode($fileContent);
 
-        $response->write($fileContent);
-        $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch.{$pathInfo['extension']}");
-
-        return $response->withHeader('Content-Type', $mimeType);
+        return $response->withJson(['fileContent' => $base64Content]);
     }
 
     public static function hasRightById(array $args)

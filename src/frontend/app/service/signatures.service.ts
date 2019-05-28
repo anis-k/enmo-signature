@@ -90,6 +90,6 @@ export class SignaturesContentService {
         this.mode = '';
         this.scale = 1;
         this.x = 0;
-        this.y = 85;
+        this.y = 90;
     }
 }

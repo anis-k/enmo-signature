@@ -17,19 +17,19 @@
             <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
           <button mat-button (click)="openMainDocumentDetail();">
-            <i class="fas fa-info-circle fa-2x"></i><span style="display: block">Informations</span>
+            <i class="fas fa-info-circle fa-2x"></i><span style="display: block;line-height: 10px;">Informations</span>
           </button>
         </section>
 
         <section class="header-action">
-          <button mat-button [matBadge]="mainDocument.attachments.length + 1" (click)="openDocumentList();">
-            <i class="fas fa-file fa-2x"></i><span style="display: block">Documents</span>
+          <button mat-button (click)="openDocumentList();">
+            <i class="fas fa-file fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span style="display: block;line-height: 10px;">Documents</span>
           </button>
-          <button mat-button [matBadge]="mainDocument.workflow.length" (click)="openVisaWorkflow();">
-              <i class="fas fa-list-ol fa-2x"></i><span style="display: block">Circuit</span>
+          <button mat-button (click)="openVisaWorkflow();">
+              <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span style="display: block;line-height: 10px;">Circuit</span>
           </button>
           <button mat-button [matMenuTriggerFor]="menu">
-            <i class="fas fa-cog fa-2x"></i><span style="display: block">Actions</span>
+            <i class="fas fa-cog fa-2x"></i><span style="display: block;line-height: 10px;">Actions</span>
           </button>
           <mat-menu #menu="matMenu">
             <button [disabled]="checkEmptiness()" mat-menu-item
@@ -41,7 +41,7 @@
       </article>
     </header>
     <app-overlay *ngIf="this.signaturesService.annotationMode" [appDocumentNotePad]="appDocumentNotePad"></app-overlay>
-    <ng-container *ngIf="!freezeSidenavClose">
+    <ng-container *ngIf="!freezeSidenavClose && !loadingUI">
       <button class="btn-previous" (tap)="prevPage()"
         *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-next" (tap)="nextPage()"
@@ -56,7 +56,7 @@
         <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0">
         </app-document-note-list>
         <app-document-sign-list *ngIf="currentDoc == 0"></app-document-sign-list>
-        <img *ngIf="!loadingDoc && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf" [src]="docList[currentDoc].imgUrl+'/'+pageNum"
+        <img *ngIf="!loadingDoc && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf" [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+docList[currentDoc].imgContent[pageNum])"
           style="width:100%;" />
         <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
         </app-document-note-pad>

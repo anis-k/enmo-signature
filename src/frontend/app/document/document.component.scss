@@ -21,7 +21,7 @@
 }
 
 .mainView {
-  height: 100vh;
+  height: 100%;
   width: auto;
   display: flex;
   flex-direction: column;
@@ -89,7 +89,7 @@ canvas {
     align-items: flex-start;
     width: 100%;
     padding-top: 12px;
-    padding-bottom: 12px;
+    padding-bottom: 7px;
     position: relative;
     overflow-y: hidden;
     overflow-x: auto;
@@ -165,7 +165,7 @@ canvas {
 .page {
   &-info {
     position: absolute;
-    bottom: 25%;
+    bottom: 70px;
     height: 30px;
     width: auto;
     max-width: 70%;
@@ -275,7 +275,5 @@ button.disabled {
 }
 
 .mat-badge-content {
-  top: 30px !important;
-  right: 0 !important;
   background: $warn;
 }
