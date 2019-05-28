@@ -27,7 +27,7 @@
       <mat-spinner></mat-spinner>
     </div>
     <ng-container *ngFor="let document of signaturesService.documentsList;let i=index">
-      <li class="nav-item active" matRipple (click)="gotTo(document.id, i)">
+      <li [class.active]="signaturesService.mainDocumentId === document.id" class="nav-item" matRipple (click)="gotTo(document.id, i)">
         <div class="nav-item-left">
           <i class="fas" [ngClass]="{
             'fa-file-signature':document.mode == 'sign',

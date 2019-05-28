@@ -104,11 +104,11 @@ export class DocumentComponent implements OnInit {
     freezeSidenavClose: boolean = false;
     startX: number = 0;
     startY: number = 0;
-    snapshot: any = '';
     widthDoc: string = '100%';
     resetDragPos: boolean = false;
 
     mainDocument: any = {
+        id: 0,
         attachments : [],
         workflow : [],
     };
@@ -153,7 +153,7 @@ export class DocumentComponent implements OnInit {
         }, 500);
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
-                this.snapshot = null;
+                this.loadingDoc = true;
                 this.signaturesService.renderingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
@@ -178,9 +178,16 @@ export class DocumentComponent implements OnInit {
                         this.loadingDoc = false;
                     }, (err: any) => {
                         this.notificationService.handleErrors(err);
+                        this.router.navigate(['/documents']);
+                        this.signaturesService.mainDocumentId = null;
+                        this.freezeSidenavClose = true;
                     });
             } else {
+                this.docList = [];
+                this.signaturesService.signaturesContent = [];
+                this.signaturesService.notesContent = [];
                 this.snav.open();
+                this.signaturesService.mainDocumentId = null;
                 this.freezeSidenavClose = true;
                 this.loadingDoc = false;
             }

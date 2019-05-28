@@ -20,7 +20,6 @@ export class CustomHammerConfig extends HammerGestureConfig {
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { CookieService } from 'ngx-cookie-service';
-import { SimplePdfViewerModule } from 'simple-pdf-viewer';
 
 
 import { AppMaterialModule } from './app-material.module';
@@ -99,7 +98,6 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
     SignaturePadModule,
     ScrollEventModule,
     AngularDraggableModule,
-    SimplePdfViewerModule,
     AppMaterialModule,
     RouterModule.forRoot([
       { path: 'documents/:id', component: DocumentComponent },

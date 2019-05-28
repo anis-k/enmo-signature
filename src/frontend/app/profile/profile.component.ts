@@ -21,7 +21,9 @@ export class ProfileComponent implements OnInit {
 
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
 
-    profileInfo: any = {};
+    profileInfo: any = {
+        preferences: []
+    };
     hideCurrentPassword: Boolean = true;
     hideNewPassword: Boolean = true;
     hideNewPasswordConfirm: Boolean = true;
@@ -56,6 +58,7 @@ export class ProfileComponent implements OnInit {
 
     disableState = false;
     msgButton = 'lang.validate';
+    loading: boolean = false;
 
     constructor(private translate: TranslateService, public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
@@ -63,10 +66,12 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit(): void {
         if (this.cookieService.check('maarchParapheurAuth')) {
+            this.loading = true;
             const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
             this.http.get('../rest/users/' + cookieInfo.id)
                 .subscribe((data: any) => {
                     this.profileInfo = data.user;
+                    this.loading = false;
                 },
                     (err: any) => {
                         this.notificationService.handleErrors(err);

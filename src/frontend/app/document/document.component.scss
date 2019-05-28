@@ -211,7 +211,7 @@ canvas {
   padding: 10px;
   border: none;
   outline: none;
-  position: fixed;
+  position: absolute;
   right: 25px;
   top: 50%;
   cursor: pointer;
@@ -229,7 +229,7 @@ canvas {
   padding: 10px;
   border: none;
   outline: none;
-  position: fixed;
+  position: absolute;
   left: 25px;
   top: 50%;
   cursor: pointer;

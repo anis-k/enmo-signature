@@ -58,8 +58,9 @@ export class SidebarComponent implements OnInit {
             }
     }
 
-    gotTo(documentId: Number, i: any) {
+    gotTo(documentId: number, i: any) {
         this.router.navigate(['/documents/' + documentId]);
+        this.signaturesService.mainDocumentId = documentId;
         this.signaturesService.indexDocumentsList = i;
         if (this.signaturesService.mobileMode) {
             this.sidenav.close();
