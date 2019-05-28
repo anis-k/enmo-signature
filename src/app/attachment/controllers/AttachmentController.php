@@ -140,14 +140,14 @@ class AttachmentController
             'data'    => [$args['id'], 'TNL' . $args['page']]
         ]);
 
-        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        $docserver = DocserverModel::getByType(['type' => 'ATTACH', 'select' => ['path']]);
         if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            ['errors' => 'Docserver does not exist'];
+            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
         }
 
         $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
-            return ['errors' => 'Document not found on docserver or not readable'];
+            return $response->withStatus(400)->withJson(['errors' => 'Attachment not found on docserver or not readable']);
         }
 
         $fileContent = file_get_contents($pathToThumbnail);
