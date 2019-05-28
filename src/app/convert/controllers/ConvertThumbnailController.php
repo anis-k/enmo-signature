@@ -50,8 +50,8 @@ class ConvertThumbnailController
         }
 
         $docserver = DocserverModel::getByType(['type' => $docserverType, 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            ['errors' => 'Docserver does not exist'];
+        if (empty($docserver['path']) || !is_dir($docserver['path'])) {
+            return ['errors' => 'Docserver does not exist'];
         }
 
         $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
@@ -70,8 +70,7 @@ class ConvertThumbnailController
         while ($i < $pageCount) {
             $fileNameOnTmp = rand() . $filename;
 
-            $size = '750x900';
-            $command = "convert -thumbnail {$size} -background white -alpha remove "
+            $command = "convert -geometry 1600x1600 -density 200x200 -quality 100 -background white -alpha remove "
                 . escapeshellarg($pathToDocument) . "[{$i}] " . escapeshellarg("{$tmpPath}{$fileNameOnTmp}.png");
             exec($command.' 2>&1', $output, $return);
 

@@ -97,6 +97,29 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
+        $adr = AdrModel::getDocumentsAdr([
+            'select'  => ['path', 'filename'],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'DOC']
+        ]);
+        if (empty($adr)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        }
+
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (empty($docserver['path']) || !is_dir($docserver['path'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
+        }
+
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToDocument) || !is_readable($pathToDocument)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document not found on docserver or not readable']);
+        }
+
+        $img = new \Imagick();
+        $img->pingImage($pathToDocument);
+        $pagesCount = $img->getNumberImages();
+
         $formattedDocument = [
             'id'                => $document['id'],
             'title'             => $document['title'],
@@ -104,7 +127,8 @@ class DocumentController
             'description'       => $document['description'],
             'sender'            => $document['sender'],
             'creationDate'      => $document['creation_date'],
-            'modificationDate'  => $document['modification_date']
+            'modificationDate'  => $document['modification_date'],
+            'pages'             => $pagesCount
         ];
         if (!empty($document['deadline'])) {
             $date = new \DateTime($document['deadline']);
@@ -145,9 +169,25 @@ class DocumentController
         $formattedDocument['attachments'] = [];
         $attachments = AttachmentModel::getByDocumentId(['select' => ['id', 'title'], 'documentId' => $args['id']]);
         foreach ($attachments as $attachment) {
+            $pagesCount = 0;
+            $adr = AdrModel::getAttachmentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['attachment_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'ATTACH']
+            ]);
+            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            if (is_file($pathToDocument) && is_readable($pathToDocument)) {
+                $img = new \Imagick();
+                $img->pingImage($pathToDocument);
+                $pagesCount = $img->getNumberImages();
+            }
+
             $formattedDocument['attachments'][] = [
                 'id'    => $attachment['id'],
-                'title' => $attachment['title']
+                'title' => $attachment['title'],
+                'pages' => $pagesCount
             ];
         }
 
