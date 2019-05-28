@@ -1,6 +1,6 @@
 <div class="panel-content" *ngIf="!loading">
     <div class="panel-header">
-        <button class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
+        <button *ngIf="signaturesService.mobileMode" class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
         </button>
         <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;document(s)

@@ -373,7 +373,7 @@ class DocumentController
                 foreach ($body['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
                         if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
-                            $signWidth = $size['width']*2;
+                            $signWidth = $size['width'];
                             $signPosX = 0;
                             $signPosY = 0;
                         } else {

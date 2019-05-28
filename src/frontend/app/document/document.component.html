@@ -13,72 +13,23 @@
     <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideDown]>
       <article class="header-infos">
         <section class="header-action">
-          <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
+          <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();" style="width:70px;">
             <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
-          <button mat-icon-button (click)="openMainDocumentDetail();">
-            <mat-icon fontSet="fas" fontIcon="fa-info-circle"></mat-icon>
+          <button mat-button (click)="openMainDocumentDetail();">
+            <i class="fas fa-info-circle fa-2x"></i><span style="display: block">Informations</span>
           </button>
         </section>
-        <!--<mat-accordion class="header-expand">
-          <mat-expansion-panel>
-            <mat-expansion-panel-header>
-              <mat-panel-title>
-                <div>
-                  <mat-form-field>
-                    <input matInput [value]="mainDocument.sender" title="{{mainDocument.sender}}" placeholder="{{'lang.emittedBy' | translate}}"
-                      disabled>
-                  </mat-form-field>
-                </div>
-                <div *ngIf="mainDocument.description != null">
-                  <mat-form-field>
-                    <input matInput [value]="mainDocument.description" title="{{mainDocument.description}}"
-                      placeholder="{{'lang.description' | translate}}" disabled>
-                  </mat-form-field>
-                </div>
-                <div *ngIf="mainDocument.deadline != null">
-                  <mat-form-field>
-                    <input matInput [value]="mainDocument.deadline" title="{{mainDocument.deadline}}"
-                      placeholder="{{'lang.processingDeadline' | translate}}" disabled>
-                  </mat-form-field>
-                </div>
-              </mat-panel-title>
-            </mat-expansion-panel-header>
-            <div class="header-expand-content">
-              <mat-form-field>
-                <input matInput [value]="mainDocument.reference" title="{{mainDocument.reference}}"
-                  placeholder="{{'lang.reference' | translate}}" disabled>
-              </mat-form-field>
-            </div>
-            <div class="header-expand-content">
-              <mat-form-field>
-                <input matInput [value]="mainDocument.processingUserDisplay"
-                  title="{{mainDocument.processingUserDisplay}}" placeholder="{{'lang.toBeProcessedBy' | translate}}" disabled>
-              </mat-form-field>
-            </div>
-            <div class="header-expand-content">
-              <mat-form-field>
-                <input matInput [value]="mainDocument.title" title="{{mainDocument.title}}" placeholder="{{'lang.subject' | translate}}"
-                  disabled>
-              </mat-form-field>
-            </div>
-            <div class="header-expand-content" *ngFor="let data of mainDocument.metadata;">
-              <mat-form-field>
-                <input matInput [value]="data.value" title="{{data.value | translate}}" placeholder="{{data.label | translate}}" disabled>
-              </mat-form-field>
-            </div>
-          </mat-expansion-panel>
-        </mat-accordion>-->
 
         <section class="header-action">
-          <button mat-icon-button [matBadge]="mainDocument.attachments.length + 1" (click)="openDocumentList();">
-            <mat-icon fontSet="fas" fontIcon="fa-file"></mat-icon>
+          <button mat-button [matBadge]="mainDocument.attachments.length + 1" (click)="openDocumentList();">
+            <i class="fas fa-file fa-2x"></i><span style="display: block">Documents</span>
           </button>
-          <button mat-icon-button [matBadge]="mainDocument.workflow.length" (click)="openVisaWorkflow();">
-            <mat-icon fontSet="fas" fontIcon="fa-list-ol"></mat-icon>
+          <button mat-button [matBadge]="mainDocument.workflow.length" (click)="openVisaWorkflow();">
+              <i class="fas fa-list-ol fa-2x"></i><span style="display: block">Circuit</span>
           </button>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
-            <mat-icon fontSet="fas" fontIcon="fa-cog"></mat-icon>
+          <button mat-button [matMenuTriggerFor]="menu">
+            <i class="fas fa-cog fa-2x"></i><span style="display: block">Actions</span>
           </button>
           <mat-menu #menu="matMenu">
             <button [disabled]="checkEmptiness()" mat-menu-item

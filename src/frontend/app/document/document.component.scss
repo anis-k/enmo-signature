@@ -30,7 +30,7 @@
 
 .header button {
   height: 70px;
-  width: 70px;
+  width: auto;
 }
 
 .header button mat-icon {
@@ -71,12 +71,13 @@ canvas {
   justify-content: center;
   align-items: center;
   padding: 0;
-
   /*&-left
       position absolute
       top 15px
       left -60px*/
   &-action {
+    justify-content: center;
+    display: flex;
     color: $primary;
   }
 
@@ -90,6 +91,8 @@ canvas {
     padding-top: 12px;
     padding-bottom: 12px;
     position: relative;
+    overflow-y: hidden;
+    overflow-x: auto;
   }
 
   &-info {
@@ -272,7 +275,7 @@ button.disabled {
 }
 
 .mat-badge-content {
-  top: 10px !important;
+  top: 30px !important;
   right: 0 !important;
   background: $warn;
 }

@@ -3,6 +3,6 @@
       'pdf-page-canvas':!signaturesService.renderingDoc,
       'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
     }">
-      <img [style.width.px]="signaturesService.mobileMode ? signaturesService.workingAreaWidth*2 : signaturesService.workingAreaWidth" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
+      <img [style.width.px]="signaturesService.workingAreaWidth" [src]="sanitization.bypassSecurityTrustUrl(note.fullPath)">
     </div>
   </ng-container>

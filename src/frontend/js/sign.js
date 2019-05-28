@@ -26,6 +26,7 @@ jQuery(document).ready(function (e) {
             fixWidth: options.fixWidth ? options.fixWidth : 0,
             fixHeight: options.fixHeight ? options.fixHeight : 0,
             lineWidth: options.lineWidth ? options.lineWidth : 10,
+            mobileMode: options.mobileMode ? options.mobileMode : false,
         }, options);
 
         var canvas = jQuery(this);
@@ -33,12 +34,16 @@ jQuery(document).ready(function (e) {
         var lineWidth = params.lineWidth;
 
         var context = canvas.get(0).getContext('2d');
-        context.lineJoin = context.lineCap = 'round';
 
         var fixFingerPosition = 15;
 
-        canvas.attr("width", params.width);
-        canvas.attr("height", params.height);
+        if (params.mobileMode === true) {
+            canvas.attr("width", params.width / 2);
+            canvas.attr("height", params.height / 2);
+        } else {
+            canvas.attr("width", params.width);
+            canvas.attr("height", params.height);
+        }
 
         var points = [];
         var last = {

@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { NotificationService } from '../../service/notification.service';
 import { MatSidenav } from '@angular/material';
+import { SignaturesContentService } from '../../service/signatures.service';
 
 @Component({
     selector: 'app-document-list',
@@ -21,13 +20,15 @@ export class DocumentListComponent implements OnInit {
 
     @Output() triggerEvent = new EventEmitter<string>();
 
-    constructor(public http: HttpClient, public notificationService: NotificationService) { }
+    constructor(public signaturesService: SignaturesContentService) { }
 
     ngOnInit(): void { }
 
 
     loadDoc(id: string) {
         this.triggerEvent.emit(id);
-        this.snavRightComponent.close();
+        if (this.signaturesService.mobileMode) {
+            this.snavRightComponent.close();
+        }
     }
 }

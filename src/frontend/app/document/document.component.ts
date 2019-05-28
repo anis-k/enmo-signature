@@ -158,6 +158,7 @@ export class DocumentComponent implements OnInit {
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
                         this.mainDocument = data.document;
+                        this.totalPages = this.mainDocument.pages;
 
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.initDoc();
@@ -169,9 +170,9 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.loadingSign = false;
                                 });
                         }
-                        this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
+                        this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
                         this.mainDocument.attachments.forEach((attach: any) => {
-                            this.docList.push({ 'id': attach.id, 'title': attach.title, 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
+                            this.docList.push({ 'id': attach.id, 'title': attach.title, 'pages': attach.pages, 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
                         });
 
                         this.loadingDoc = false;
@@ -384,6 +385,7 @@ export class DocumentComponent implements OnInit {
         }
         this.pageNum = 1;
         this.currentDoc = index;
+        this.totalPages = this.docList[index].pages;
     }
 
     launchEvent(action: any) {

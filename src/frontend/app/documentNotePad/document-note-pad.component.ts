@@ -30,7 +30,8 @@ export class DocumentNotePadComponent implements OnInit {
                 height: this.signaturesService.workingAreaHeight * 2,
                 width: this.signaturesService.workingAreaWidth * 2,
                 fixHeight: this.signaturesService.y,
-                fixWidth: this.signaturesService.x
+                fixWidth: this.signaturesService.x,
+                mobileMode: this.signaturesService.mobileMode
             });
             $('input[value=\'' + this.signaturesService.userLogged.preferences.writingColor + '\']').click();
         }, 200);
@@ -49,6 +50,9 @@ export class DocumentNotePadComponent implements OnInit {
         if (!this.signaturesService.notesContent[this.signaturesService.currentPage]) {
             this.signaturesService.notesContent[this.signaturesService.currentPage] = [];
         }
+
+        console.log(<HTMLCanvasElement>this.canvas.nativeElement.toDataURL('image/png'));
+
         this.signaturesService.notesContent[this.signaturesService.currentPage].push(
             {
                 'fullPath': <HTMLCanvasElement>this.canvas.nativeElement.toDataURL('image/png'),
@@ -66,7 +70,7 @@ export class DocumentNotePadComponent implements OnInit {
             this.signaturesService.renderingDoc = true;
         }
         this.signaturesService.annotationMode = false;
-        // this.notificationService.success('lang.annotationAdded');
+        this.notificationService.success('lang.annotationAdded');
     }
 
     undo() {

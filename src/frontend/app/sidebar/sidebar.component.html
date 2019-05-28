@@ -17,9 +17,9 @@
       <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span class="primary" *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
     </header>
     <section class="sidebar-btn">
-      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']" (click)="filter('sign')"><i class="fas fa-file-signature"></i></button>
-      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'visa' ? 'active' : '']" (click)="filter('visa')"><i class="fas fa-thumbs-up"></i></button>
-      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'note' ? 'active' : '']" (click)="filter('note')"><i class="far fa-comment-dots"></i></button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']" (click)="filter('sign')">{{'lang.signLabel' | translate | titlecase}}</button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'visa' ? 'active' : '']" (click)="filter('visa')">{{'lang.visaLabel' | translate | titlecase}}</button>
+      <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'note' ? 'active' : '']" (click)="filter('note')">{{'lang.noteLabel' | translate | titlecase}}</button>
     </section>
   </div>
   <ul #listContent class="nav" detect-scroll (onScroll)="handleScroll($event)" [bottomOffset]="1" [topOffset]="1">
@@ -29,7 +29,11 @@
     <ng-container *ngFor="let document of signaturesService.documentsList;let i=index">
       <li class="nav-item active" matRipple (click)="gotTo(document.id, i)">
         <div class="nav-item-left">
-          <i class="fas fa-mail-bulk"></i>
+          <i class="fas" [ngClass]="{
+            'fa-file-signature':document.mode == 'sign',
+            'fa-thumbs-up':document.mode == 'visa',
+            'fa-comment-dots':document.mode == 'note'
+          }"></i>
         </div>
         <div class="nav-item-middle">
           <div class="">{{document.reference}}</div>
