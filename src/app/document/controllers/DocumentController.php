@@ -175,7 +175,7 @@ class DocumentController
                 'where'   => ['attachment_id = ?', 'type = ?'],
                 'data'    => [$attachment['id'], 'ATTACH']
             ]);
-            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+            $docserver = DocserverModel::getByType(['type' => 'ATTACH', 'select' => ['path']]);
 
             $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
             if (is_file($pathToDocument) && is_readable($pathToDocument)) {
