@@ -45,23 +45,42 @@ class DocumentController
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
         $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
-        $mode = '';
+        $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
+        $where = ['user_id = ?', "(id) in ({$workflowSelect})"];
+        $data = [$GLOBALS['id']];
         if (!empty($queryParams['mode']) && in_array($queryParams['mode'], DocumentController::MODES)) {
-            $mode = "AND mode = '{$queryParams['mode']}'";
+            $where[] = 'mode = ?';
+            $data[] = $queryParams['mode'];
         }
-        $workflowSelect = "SELECT main_document_id, user_id FROM workflows WHERE main_documents.id = main_document_id AND process_date IS NULL {$mode} ORDER BY \"order\" LIMIT 1";
-        $documents = DocumentModel::get([
-            'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
-            'where'     => ["(id, ?) in ({$workflowSelect})"],
-            'data'      => [$GLOBALS['id']],
-            'limit'     => $queryParams['limit'],
-            'offset'    => $queryParams['offset'],
-            'orderBy'   => ['creation_date desc']
+
+        $workflows = WorkflowModel::get([
+            'select'    => ['main_document_id', 'mode'],
+            'where'     => $where,
+            'data'      => $data
         ]);
+        $documentIds = [];
+        $workflowsShortcut = [];
+        foreach ($workflows as $workflow) {
+            $documentIds[] = $workflow['main_document_id'];
+            $workflowsShortcut[$workflow['main_document_id']] = $workflow['mode'];
+        }
+
+        $documents = [];
+        if (!empty($documentIds)) {
+            $documents = DocumentModel::get([
+                'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
+                'where'     => ['id in (?)'],
+                'data'      => [$documentIds],
+                'limit'     => $queryParams['limit'],
+                'offset'    => $queryParams['offset'],
+                'orderBy'   => ['creation_date desc']
+            ]);
+        }
 
         $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
             unset($documents[$key]['count']);
+            $documents[$key]['mode'] = $workflowsShortcut[$document['id']];
         }
 
         return $response->withJson(['documents' => $documents, 'count' => $count]);
