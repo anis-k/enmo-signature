@@ -68,7 +68,7 @@ class WorkflowModel
         $currentStep = DatabaseModel::select([
             'select'    => $args['select'],
             'table'     => ['workflows'],
-            'where'     => ['main_document_id = ?', 'process_date is null'],
+            'where'     => ['main_document_id = ?', 'process_date is null', 'status is null'],
             'data'      => [$args['documentId']],
             'orderBy'   => ['"order"'],
             'limit'     => 1,

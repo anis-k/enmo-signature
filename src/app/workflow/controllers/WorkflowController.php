@@ -33,6 +33,11 @@ class WorkflowController
 
         $workflow = [];
         foreach ($rawWorkflow as $value) {
+            if (!empty($value['process_date'])) {
+                $date = new \DateTime($value['process_date']);
+                $value['process_date'] = $date->format('d-m-Y H:i');
+            }
+
             $workflow[] = [
                 'userId'        => $value['user_id'],
                 'userDisplay'   => UserModel::getLabelledUserById(['id' => $value['user_id']]),
