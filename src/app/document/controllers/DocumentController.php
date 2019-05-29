@@ -67,10 +67,18 @@ class DocumentController
 
         $documents = [];
         if (!empty($documentIds)) {
+            $where = ['id in (?)'];
+            $data = [$documentIds];
+            if (!empty($queryParams['search'])) {
+                $where[] = '(title like ? OR reference like ?)';
+                $data[] = "%{$queryParams['search']}%";
+                $data[] = "%{$queryParams['search']}%";
+            }
+
             $documents = DocumentModel::get([
                 'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
-                'where'     => ['id in (?)'],
-                'data'      => [$documentIds],
+                'where'     => $where,
+                'data'      => $data,
                 'limit'     => $queryParams['limit'],
                 'offset'    => $queryParams['offset'],
                 'orderBy'   => ['creation_date desc']
