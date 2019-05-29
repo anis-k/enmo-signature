@@ -199,6 +199,7 @@ CREATE TABLE users
   enabled boolean DEFAULT TRUE,
   mode character varying(50) NOT NULL,
   preferences jsonb NOT NULL DEFAULT '{"lang" : "fr", "writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
+  substitute INTEGER DEFAULT NULL,
   cookie_key character varying(255) DEFAULT NULL,
   cookie_date timestamp without time zone,
   reset_token jsonb NOT NULL DEFAULT '{"token" : "", "until" : ""}',

@@ -35,20 +35,22 @@ class UserController
     {
         $queryParams = $request->getQueryParams();
 
+        $select = ['id', 'firstname', 'lastname'];
         if (!empty($queryParams['mode']) && $queryParams['mode'] == 'rest') {
             if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
             $queryData = ['rest'];
         } else {
-            if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            if (UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+                $select[] = 'login';
+                $select[] = 'email';
             }
             $queryData = ['standard'];
         }
 
         $users = UserModel::get([
-            'select'    => ['id', 'login', 'firstname', 'lastname', 'email'],
+            'select'    => $select,
             'where'     => ['mode = ?'],
             'data'      => $queryData,
             'orderBy'   => ['lastname', 'firstname']
@@ -186,6 +188,13 @@ class UserController
         ];
         if (!empty($body['picture'])) {
             $set['picture'] = $body['picture'];
+        }
+        if (!empty($body['substitute'])) {
+            $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => [1]]);
+            if (empty($existingUser)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Substitute user does not exist']);
+            }
+            $set['substitute'] = $body['substitute'];
         }
 
         UserModel::update([
