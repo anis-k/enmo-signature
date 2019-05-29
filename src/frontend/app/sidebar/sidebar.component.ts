@@ -2,10 +2,12 @@ import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
-import { MatSidenav } from '@angular/material';
+import { MatSidenav, MatInput } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
+import { FormControl } from '@angular/forms';
+import { debounceTime, switchMap, distinctUntilChanged, filter } from 'rxjs/operators';
 
 
 @Component({
@@ -18,14 +20,27 @@ export class SidebarComponent implements OnInit {
     loadingList: boolean   = false;
     offset: number    = 0;
     limit: number    = 25;
+    searchMode: boolean = false;
 
     @ViewChild('listContent') listContent: ElementRef;
+    @ViewChild('searchInput') searchInput: ElementRef;
     // tslint:disable-next-line:no-input-rename
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
     // tslint:disable-next-line:no-input-rename
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
+    searchTerm: FormControl = new FormControl();
+
     constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
+        this.searchTerm.valueChanges.pipe(
+            debounceTime(500),
+            distinctUntilChanged(),
+            switchMap(data => this.http.get('../rest/documents?limit=' + this.limit + '&search=' + data))
+        ).subscribe((response: any) => {
+            this.signaturesService.documentsList = response.documents;
+            this.signaturesService.documentsListCount = response.count;
+            this.loadingList = false;
+        });
     }
 
     ngOnInit() {
@@ -88,7 +103,22 @@ export class SidebarComponent implements OnInit {
             });
     }
 
+    search() {
+        this.searchMode = true;
+        this.signaturesService.mode = '';
+        this.filter('');
+        setTimeout(() => {
+            this.searchInput.nativeElement.value = '';
+            this.searchInput.nativeElement.focus();
+            this.searchInput.nativeElement.click();
+        }, 0);
+    }
+
     filter(mode: string) {
+        if (mode !== '') {
+            this.searchMode = false;
+        }
+
         this.loadingList = true;
         this.signaturesService.mode === mode ? this.signaturesService.mode = '' : this.signaturesService.mode = mode;
 

@@ -14,7 +14,18 @@
       </div>
     </header>
     <header class="sidebar-header">
-      <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span class="primary" *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
+      <div *ngIf="!searchMode"(click)="search();" style="cursor: pointer;">
+          <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span class="primary" *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
+      </div>
+      <button *ngIf="!searchMode" color="primary" mat-icon-button type="button" (click)="search();" title="{{'lang.search' | translate}}">
+        <mat-icon fontSet="fas" fontIcon="fa-search fa-2x"></mat-icon>
+      </button>
+      <mat-form-field *ngIf="searchMode" floatLabel="never">
+        <input #searchInput matInput placeholder="Filtrer par objet / chrono" [formControl]="searchTerm" (keyup)="loadingList=true;">
+        <button matSuffix color="primary" mat-icon-button type="button" (click)="searchMode = !searchMode;this.filter('');" title="{{'lang.cancel' | translate}}">
+            <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
+          </button>
+      </mat-form-field>
     </header>
     <section class="sidebar-btn">
       <button class="btn btn-xs blue filter" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']" (click)="filter('sign')">{{'lang.signLabel' | translate | titlecase}}</button>

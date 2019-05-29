@@ -146,6 +146,7 @@
 		"documents": "document(s)",
 		"visaWorkflow": "Circuit de visa",
 		"noteUser": "Annotateur",
-		"mainDocument": "document principal"
+		"mainDocument": "document principal",
+		"search": "Rechercher"
 	}
 }
