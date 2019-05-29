@@ -4,7 +4,7 @@
             (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
         </button>
-        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;document(s)
+        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;{{'lang.documents' | translate}}
     </div>
     <div class="pjListContent">
         <div *ngFor="let doc of docList;let i=index" style="position: relative;">
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="pjToolsContent">
-                {{doc.title}}&nbsp;<ng-container *ngIf="i == 0">(à signer)</ng-container>
+                {{doc.title}}&nbsp;<span class="red" *ngIf="i == 0">({{'lang.mainDocument' | translate}})</span>
             </div>
         </div>
 

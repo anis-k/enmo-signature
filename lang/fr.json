@@ -145,6 +145,7 @@
 		"noteLabel": "à annoter",
 		"documents": "document(s)",
 		"visaWorkflow": "Circuit de visa",
-		"noteUser": "Annotateur"
+		"noteUser": "Annotateur",
+		"mainDocument": "document principal"
 	}
 }

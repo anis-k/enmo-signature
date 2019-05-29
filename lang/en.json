@@ -145,6 +145,7 @@
 		"noteLabel": "to note",
 		"documents": "document(s)",
 		"visaWorkflow": "Visa workflow",
-		"noteUser": "Note user"
+		"noteUser": "Note user",
+		"mainDocument": "main document"
 	}
 }

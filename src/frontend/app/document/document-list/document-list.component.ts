@@ -25,8 +25,9 @@ export class DocumentListComponent implements OnInit {
     constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sanitizer: DomSanitizer) { }
 
     ngOnInit(): void {
+        console.log(this.docList);
         this.docList.forEach((element: any, index: number) => {
-            if (element.imgContent[0] === undefined && index > 0 ) {
+            if (element.imgContent[1] === undefined && index > 0 ) {
                 this.http.get('../rest/attachments/' + element.id + '/thumbnails/1')
                 .subscribe((data: any) => {
                     element.imgContent[1] = data.fileContent;

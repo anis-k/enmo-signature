@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { SignaturesContentService } from '../../service/signatures.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-visa-workflow',
@@ -17,7 +18,16 @@ export class VisaWorkflowComponent implements OnInit {
     // tslint:disable-next-line:no-input-rename
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
 
-    constructor(public signaturesService: SignaturesContentService) { }
+    constructor(public http: HttpClient, public signaturesService: SignaturesContentService) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        this.visaWorkflow.forEach((element: any) => {
+            if (element.userPicture === undefined ) {
+                this.http.get('../rest/users/' + element.userId + '/picture')
+                .subscribe((data: any) => {
+                    element.userPicture = data.picture;
+                });
+            }
+        });
+    }
 }
