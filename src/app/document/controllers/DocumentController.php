@@ -70,7 +70,7 @@ class DocumentController
             $where = ['id in (?)'];
             $data = [$documentIds];
             if (!empty($queryParams['search'])) {
-                $where[] = '(title like ? OR reference like ?)';
+                $where[] = '(title ilike ? OR reference ilike ?)';
                 $data[] = "%{$queryParams['search']}%";
                 $data[] = "%{$queryParams['search']}%";
             }
@@ -106,27 +106,13 @@ class DocumentController
         }
 
         $adr = AdrModel::getDocumentsAdr([
-            'select'  => ['path', 'filename'],
-            'where'   => ['main_document_id = ?', 'type = ?'],
+            'select'  => ['count(1)'],
+            'where'   => ['main_document_id = ?', 'type != ?'],
             'data'    => [$args['id'], 'DOC']
         ]);
-        if (empty($adr)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        if (empty($adr[0]['count'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document thumbnails do not exist']);
         }
-
-        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-        if (empty($docserver['path']) || !is_dir($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
-
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!is_file($pathToDocument) || !is_readable($pathToDocument)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document not found on docserver or not readable']);
-        }
-
-        $img = new \Imagick();
-        $img->pingImage($pathToDocument);
-        $pagesCount = $img->getNumberImages();
 
         $formattedDocument = [
             'id'                => $document['id'],
@@ -136,7 +122,7 @@ class DocumentController
             'sender'            => $document['sender'],
             'creationDate'      => $document['creation_date'],
             'modificationDate'  => $document['modification_date'],
-            'pages'             => $pagesCount
+            'pages'             => $adr[0]['count']
         ];
         if (!empty($document['deadline'])) {
             $date = new \DateTime($document['deadline']);
@@ -179,17 +165,12 @@ class DocumentController
         foreach ($attachments as $attachment) {
             $pagesCount = 0;
             $adr = AdrModel::getAttachmentsAdr([
-                'select'  => ['path', 'filename'],
-                'where'   => ['attachment_id = ?', 'type = ?'],
+                'select'  => ['count(1)'],
+                'where'   => ['attachment_id = ?', 'type != ?'],
                 'data'    => [$attachment['id'], 'ATTACH']
             ]);
-            $docserver = DocserverModel::getByType(['type' => 'ATTACH', 'select' => ['path']]);
-
-            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-            if (is_file($pathToDocument) && is_readable($pathToDocument)) {
-                $img = new \Imagick();
-                $img->pingImage($pathToDocument);
-                $pagesCount = $img->getNumberImages();
+            if (!empty($adr[0]['count'])) {
+                $pagesCount = $adr[0]['count'];
             }
 
             $formattedDocument['attachments'][] = [
