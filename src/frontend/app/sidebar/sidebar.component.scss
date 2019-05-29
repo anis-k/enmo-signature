@@ -185,3 +185,11 @@
   border-radius: 10px;
   margin-left: 5px;
 }
+
+.noResult {
+  position: absolute;
+  top: 50%;
+  text-align: center;
+  width: 100%;
+  opacity: 0.5;
+}

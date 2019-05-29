@@ -11,8 +11,11 @@
                 {{'lang.noPerson' | translate}}
             </div>
             <mat-list-item *ngFor="let diffusion of visaWorkflow;let i=index" [class.current]="diffusion.current">
-                <mat-icon class="avatar" mat-list-icon color="primary"
+                <mat-icon *ngIf="diffusion.userPicture !== undefined" class="avatar" mat-list-icon color="primary"
                     [style.background-image]="'url('+diffusion.userPicture+')'"></mat-icon>
+                <div *ngIf="diffusion.userPicture === undefined" mat-list-icon class="avatar">
+                    <mat-spinner diameter="50"></mat-spinner>
+                </div>
                 <h4 mat-line class="userDisplay primary">
                     {{diffusion.userDisplay}}
                 </h4>
