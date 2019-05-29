@@ -189,7 +189,7 @@ class UserController
         if (!empty($body['picture'])) {
             $set['picture'] = $body['picture'];
         }
-        if (!empty($body['substitute'])) {
+        if (!empty($body['substitute']) && $args['id'] != $body['substitute']) {
             $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => [1]]);
             if (empty($existingUser)) {
                 return $response->withStatus(400)->withJson(['errors' => 'Substitute user does not exist']);
