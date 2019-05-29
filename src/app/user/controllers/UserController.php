@@ -384,7 +384,7 @@ class UserController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute'], 'id' => $args['id']]);
 
         if (empty($user['picture'])) {
             $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));

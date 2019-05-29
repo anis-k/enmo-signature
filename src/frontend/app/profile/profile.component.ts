@@ -22,6 +22,7 @@ export class ProfileComponent implements OnInit {
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
 
     profileInfo: any = {
+        substitute: '',
         preferences: []
     };
     hideCurrentPassword: Boolean = true;
@@ -199,8 +200,14 @@ export class ProfileComponent implements OnInit {
             'lastname': this.profileInfo.lastname,
             'email': this.profileInfo.email,
             'picture': this.profileInfo.picture,
-            'preferences': this.profileInfo.preferences
+            'preferences': this.profileInfo.preferences,
+            'substitute': this.profileInfo.substitute,
         };
+
+        if (this.profileInfo.substitute.userId !== '') {
+            alert('Vous avez choisie une délégation, vous ne pourrez plus viser ou signer de courrier.');
+        }
+
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
             profileToSend.picture = '';
         } else {
@@ -215,6 +222,7 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.userLogged.lastname = this.profileInfo.lastname;
                 this.signaturesService.userLogged.picture = data.user.picture;
                 this.signaturesService.userLogged.preferences = data.user.preferences;
+                this.signaturesService.userLogged.substitute = data.user.substitute;
                 this.profileInfo.picture = data.user.picture;
                 this.setLang(this.signaturesService.userLogged.preferences.lang);
                 this.cookieService.set( 'maarchParapheurLang', this.signaturesService.userLogged.preferences.lang );
@@ -248,6 +256,14 @@ export class ProfileComponent implements OnInit {
                     this.msgButton = 'lang.validate';
                     this.closeProfile();
                 }
+
+                if (this.profileInfo.substitute.userId !== '') {
+                    this.http.patch('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/substituted', {'signatures': this.signaturesService.signaturesList})
+                        .subscribe(() => { }, (err) => {
+                            this.notificationService.handleErrors(err);
+                        });
+                }
+
             }, (err) => {
                 this.disableState = false;
                 this.msgButton = 'lang.validate';
@@ -345,13 +361,32 @@ export class ProfileComponent implements OnInit {
     }
 
     swithToAdmin() {
-        if (this.usersRest.length === 0) {
+        /*if (this.usersRest.length === 0) {
             this.getPassRules();
             this.http.get('../rest/users?mode=rest')
                 .subscribe((data: any) => {
                     this.usersRest = data.users;
                     this.currentUserRest = data.users[0];
 
+                }, (err: any) => {
+                    this.notificationService.handleErrors(err);
+                });
+        }*/
+
+        if (this.usersRest.length === 0) {
+            this.getPassRules();
+            this.http.get('../rest/users')
+                .subscribe((data: any) => {
+                    this.usersRest = data.users;
+                }, (err: any) => {
+                    this.notificationService.handleErrors(err);
+                });
+        }
+
+        if (this.signaturesService.signaturesList.length === 0) {
+            this.http.get('../rest/users/' + this.profileInfo.id + '/signatures')
+                .subscribe((data: any) => {
+                    this.signaturesService.signaturesList = data.signatures;
                 }, (err: any) => {
                     this.notificationService.handleErrors(err);
                 });
@@ -370,8 +405,11 @@ export class ProfileComponent implements OnInit {
             });
     }
 
-
     setLang(lang: any) {
         this.translate.use(lang);
+    }
+
+    toggleSignature(i: number) {
+        this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
     }
 }

@@ -60,6 +60,7 @@ class SignatureController
                 if ($signature['fingerprint'] == $fingerprint) {
                     $signatures[] = [
                         'id'                => $signature['id'],
+                        'substituted'       => $signature['substituted'],
                         'encodedSignature'  => base64_encode(file_get_contents($pathToSignature))
                     ];
                 } else {

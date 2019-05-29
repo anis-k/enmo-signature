@@ -147,6 +147,7 @@
 		"visaWorkflow": "Circuit de visa",
 		"noteUser": "Annotateur",
 		"mainDocument": "document principal",
-		"search": "Rechercher"
+		"search": "Rechercher",
+		"substitution": "Délégation"
 	}
 }

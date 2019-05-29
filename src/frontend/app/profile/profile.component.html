@@ -196,10 +196,9 @@
                         </div>
                     </div>
                 </mat-tab>
-                <mat-tab label="{{'lang.administrations' | translate}}"
-                    *ngIf="signaturesService.userLogged.canManageRestUsers">
+                <mat-tab label="{{'lang.administrations' | translate}}">
                     <div class="profile-content">
-                        <div class="input-row">
+                        <div class="input-row" *ngIf="signaturesService.userLogged.canManageRestUsers">
                             <fieldset>
                                 <legend align="left">{{'lang.wsUser' | translate}}</legend>
                                 <div class="form-container">
@@ -232,6 +231,33 @@
                                 </div>
                             </fieldset>
                         </div>
+                        <div class="input-row">
+                            <fieldset>
+                                <legend align="left">{{'lang.substitution' | translate}}</legend>
+                                <div class="form-container">
+                                    <div class="form-2-col">
+                                        Utilisateur délégataire
+                                    </div>
+                                    <div class="form-2-col">
+                                        <mat-form-field>
+                                            <mat-select placeholder="Choisissez un remplaçant" name="usersRest"
+                                                [(ngModel)]="profileInfo.substitute">
+                                                <mat-option value=""></mat-option>
+                                                <ng-container *ngFor="let userRest of usersRest">
+                                                    <mat-option *ngIf="userRest.id !== profileInfo.id"
+                                                        [value]="userRest.id">
+                                                        {{userRest.firstname}}
+                                                        {{userRest.lastname}}</mat-option>
+                                                </ng-container>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <ng-container *ngIf="this.profileInfo.substitute !== '' && this.profileInfo.substitute !== undefined">
+                                    <button type="button" class="signListButton" mat-stroked-button *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)" [class.selected]="signature.substituted"><img [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"/></button>
+                                </ng-container>
+                            </fieldset>
+                        </div>
                     </div>
                 </mat-tab>
             </mat-tab-group>
@@ -239,7 +265,8 @@
                 <button class="validate" mat-button color="primary" type="submit"
                     [disabled]="allowValidate() || !profileForm.form.valid">{{
                             msgButton | translate}}</button>
-                <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button" (tap)="closeProfile();">
+                <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button"
+                    (tap)="closeProfile();">
                     <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
                 </button>
             </span>
