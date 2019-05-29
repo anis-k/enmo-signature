@@ -204,8 +204,8 @@ export class ProfileComponent implements OnInit {
             'substitute': this.profileInfo.substitute,
         };
 
-        if (this.profileInfo.substitute.userId !== '') {
-            alert('Vous avez choisie une délégation, vous ne pourrez plus viser ou signer de courrier.');
+        if (this.profileInfo.substitute !== '') {
+            alert('Vous avez choisi une délégation, vous ne pourrez plus viser ou signer de courrier.');
         }
 
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
@@ -257,7 +257,7 @@ export class ProfileComponent implements OnInit {
                     this.closeProfile();
                 }
 
-                if (this.profileInfo.substitute.userId !== '') {
+                if (this.profileInfo.substitute !== '') {
                     this.http.patch('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/substituted', {'signatures': this.signaturesService.signaturesList})
                         .subscribe(() => { }, (err) => {
                             this.notificationService.handleErrors(err);
