@@ -205,6 +205,16 @@ class UserController
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
     }
 
+    public function getPictureById(Request $request, Response $response, array $args)
+    {
+        $user = UserModel::getById(['select' => ['picture'], 'id' => $args['id']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        return $response->withJson(['picture' => $user['picture']]);
+    }
+
     public function updatePassword(Request $request, Response $response, array $args)
     {
         $data = $request->getParams();
