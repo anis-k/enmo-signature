@@ -17,19 +17,19 @@
             <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
           <button mat-button (click)="openMainDocumentDetail();">
-            <i class="fas fa-info-circle fa-2x"></i><span style="display: block;line-height: 10px;">Informations</span>
+            <i class="fas fa-info-circle fa-2x"></i><span style="display: block;line-height: 10px;">{{'lang.informations' | translate}}</span>
           </button>
         </section>
 
         <section class="header-action">
           <button mat-button (click)="openDocumentList();">
-            <i class="fas fa-file fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span style="display: block;line-height: 10px;">Documents</span>
+            <i class="fas fa-file fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span style="display: block;line-height: 10px;">{{'lang.documents' | translate | titlecase}}</span>
           </button>
           <button mat-button (click)="openVisaWorkflow();">
-              <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span style="display: block;line-height: 10px;">Circuit</span>
+              <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span style="display: block;line-height: 10px;">{{'lang.circuit' | translate}}</span>
           </button>
           <button mat-button [matMenuTriggerFor]="menu">
-            <i class="fas fa-cog fa-2x"></i><span style="display: block;line-height: 10px;">Actions</span>
+            <i class="fas fa-cog fa-2x"></i><span style="display: block;line-height: 10px;">{{'lang.actions' | translate}}</span>
           </button>
           <mat-menu #menu="matMenu">
             <button [disabled]="checkEmptiness()" mat-menu-item

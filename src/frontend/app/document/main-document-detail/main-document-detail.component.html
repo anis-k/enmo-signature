@@ -3,7 +3,7 @@
         <button *ngIf="signaturesService.mobileMode" class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
         </button>
-        <mat-icon fontSet="fas" fontIcon="fa-info-circle fa-2x"></mat-icon> Informations
+        <mat-icon fontSet="fas" fontIcon="fa-info-circle fa-2x"></mat-icon> {{'lang.informations' | translate}}
     </div>
     <div class="panel-content" *ngIf="mainDocument.id">
         <mat-list>

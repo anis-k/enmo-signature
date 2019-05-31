@@ -148,6 +148,13 @@
 		"noteUser": "Note user",
 		"mainDocument": "main document",
 		"search": "Search",
-		"substitution": "Délégation"
+		"substitute": "Substitue user",
+		"substitution": "Délégation",
+		"signSubstituted": "Signatures to substitute",
+		"chooseSubstitute": "Choose a substitute",
+		"noResult": "No result",
+		"informations": "Informations",
+		"circuit": "Circuit",
+		"actions": "Actions"
 	}
 }

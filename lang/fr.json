@@ -148,6 +148,13 @@
 		"noteUser": "Annotateur",
 		"mainDocument": "document principal",
 		"search": "Rechercher",
-		"substitution": "Délégation"
+		"substitution": "Délégation",
+		"substitute": "Utilisateur délégataire",
+		"signSubstituted": "Signature(s) à déléguer",
+		"chooseSubstitute": "Choisissez un remplaçant",
+		"noResult": "Aucun résultat",
+		"informations": "Informations",
+		"circuit": "Circuit",
+		"actions": "Actions"
 	}
 }

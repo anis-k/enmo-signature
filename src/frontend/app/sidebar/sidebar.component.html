@@ -69,7 +69,7 @@
       </li>
     </ng-container>
     <span *ngIf="signaturesService.documentsList.length == 0" class="noResult">
-      Aucun résultat
+      {{'lang.noResult' | translate | titlecase}}
     </span>
   </ul>
 </nav>

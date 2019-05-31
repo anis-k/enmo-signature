@@ -236,11 +236,11 @@
                                 <legend align="left">{{'lang.substitution' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
-                                        Utilisateur délégataire
+                                        {{'lang.substitute' | translate}}
                                     </div>
                                     <div class="form-2-col">
-                                        <mat-form-field>
-                                            <mat-select placeholder="Choisissez un remplaçant" name="usersRest"
+                                        <mat-form-field style="width:100%">
+                                            <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersRest"
                                                 [(ngModel)]="profileInfo.substitute">
                                                 <mat-option value=""></mat-option>
                                                 <ng-container *ngFor="let userRest of usersRest">
@@ -253,9 +253,12 @@
                                         </mat-form-field>
                                     </div>
                                 </div>
-                                <ng-container *ngIf="this.profileInfo.substitute !== '' && this.profileInfo.substitute !== undefined">
-                                    <button type="button" class="signListButton" mat-stroked-button *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)" [class.selected]="signature.substituted"><img [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"/></button>
-                                </ng-container>
+                                <fieldset *ngIf="this.profileInfo.substitute !== '' && this.profileInfo.substitute !== undefined">
+                                    <legend align="left">{{'lang.signSubstituted' | translate}} :</legend>
+                                    <ng-container>
+                                        <button type="button" class="signListButton" mat-stroked-button *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)" [class.selected]="signature.substituted"><img [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"/></button>
+                                    </ng-container>
+                                </fieldset>
                             </fieldset>
                         </div>
                     </div>
