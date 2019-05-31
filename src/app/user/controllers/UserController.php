@@ -189,6 +189,7 @@ class UserController
         if (!empty($body['picture'])) {
             $set['picture'] = $body['picture'];
         }
+        $set['substitute'] = null;
         if (!empty($body['substitute']) && $args['id'] != $body['substitute']) {
             $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => [1]]);
             if (empty($existingUser)) {
