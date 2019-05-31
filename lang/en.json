@@ -157,6 +157,7 @@
 		"circuit": "Circuit",
 		"actions": "Actions",
 		"addNote": "Add note",
-		"filterInfo": "Filter by subject / reference"
+		"filterInfo": "Filter by subject / reference",
+		"attachment": "attachment"
 	}
 }

@@ -157,6 +157,7 @@
 		"circuit": "Circuit",
 		"actions": "Actions",
 		"addNote": "Ajouter un commentaire",
-		"filterInfo": "Filtrer par objet / référence"
+		"filterInfo": "Filtrer par objet / référence",
+		"attachment": "annexe"
 	}
 }

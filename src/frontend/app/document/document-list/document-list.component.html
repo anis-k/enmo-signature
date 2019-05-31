@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="pjToolsContent">
-                {{doc.title}}&nbsp;<span class="red" *ngIf="i == 0">({{'lang.mainDocument' | translate}})</span>
+                {{doc.title}}&nbsp;<span class="red" *ngIf="i == 0">({{'lang.mainDocument' | translate}})</span><span class="red" *ngIf="i > 0">({{'lang.attachment' | translate}})</span>
             </div>
         </div>
 
