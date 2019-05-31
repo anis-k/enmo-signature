@@ -11,7 +11,7 @@
             <div>
                 <img *ngIf="doc.imgContent[1] !== undefined" (click)="loadDoc(i)"
                     [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+doc.imgContent[1])"
-                    style="padding:0;margin-top: 30px;width: 100%;height: auto;border-radius: 4px;transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);border: solid 1px #E0E0E0;"
+                    style="cursor:pointer;padding:0;margin-top: 30px;width: 100%;height: auto;border-radius: 4px;transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);border: solid 1px #E0E0E0;"
                     [class.current]="i == currentDocId" />
                 <div *ngIf="doc.imgContent[1] === undefined"
                     style="width: 380px;height:380px;z-index: 2;display: flex;background: #fffc;justify-content: center;align-items: center;">

@@ -29,7 +29,7 @@
       </button>
       <mat-form-field *ngIf="searchMode" floatLabel="never" style="width: 80%;">
         <input #searchInput matInput placeholder="{{'lang.filterInfo' | translate}}" [formControl]="searchTerm"
-          (keyup)="loadingList=true;">
+          (keyup)="initFilter($event);">
         <button matSuffix color="primary" mat-icon-button type="button"
           (click)="searchMode = !searchMode;this.filter('');" title="{{'lang.cancel' | translate}}">
           <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>

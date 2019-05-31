@@ -114,6 +114,12 @@ export class SidebarComponent implements OnInit {
         }, 0);
     }
 
+    initFilter(ev: any) {
+        if ([37, 38, 39, 40].indexOf(ev.keyCode) === -1) {
+            this.loadingList = true;
+        }
+    }
+
     filter(mode: string) {
         if (mode !== '') {
             this.searchMode = false;
