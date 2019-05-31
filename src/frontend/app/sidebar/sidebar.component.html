@@ -27,8 +27,8 @@
         title="{{'lang.search' | translate}}">
         <mat-icon fontSet="fas" fontIcon="fa-search fa-2x"></mat-icon>
       </button>
-      <mat-form-field *ngIf="searchMode" floatLabel="never">
-        <input #searchInput matInput placeholder="Filtrer par objet / chrono" [formControl]="searchTerm"
+      <mat-form-field *ngIf="searchMode" floatLabel="never" style="width: 80%;">
+        <input #searchInput matInput placeholder="{{'lang.filterInfo' | translate}}" [formControl]="searchTerm"
           (keyup)="loadingList=true;">
         <button matSuffix color="primary" mat-icon-button type="button"
           (click)="searchMode = !searchMode;this.filter('');" title="{{'lang.cancel' | translate}}">

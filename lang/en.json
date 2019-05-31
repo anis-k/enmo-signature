@@ -156,6 +156,7 @@
 		"informations": "Informations",
 		"circuit": "Circuit",
 		"actions": "Actions",
-		"addNote": "Add note"
+		"addNote": "Add note",
+		"filterInfo": "Filter by subject / reference"
 	}
 }
