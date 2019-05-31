@@ -56,7 +56,8 @@ export class SignaturesComponent implements OnInit {
         this.signaturesService.signaturesList.unshift(
             {
                 id: this.signaturesService.newSign.id,
-                encodedSignature: this.signaturesService.newSign.encodedSignature
+                encodedSignature: this.signaturesService.newSign.encodedSignature,
+                substituted: false
             }
         );
         this.signaturesService.newSign = {};
