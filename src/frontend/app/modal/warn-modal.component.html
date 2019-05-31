@@ -1,17 +1,15 @@
 <div class="modalContent">
     <h1 mat-dialog-title><i class="fa fa-exclamation-triangle fa-2x"></i><br/>{{'lang.warning' | translate}} !</h1>
     <div mat-dialog-content>
-      <!--<p *ngIf="signaturesService.notesContent.length == 0 && signaturesService.signaturesContent.length == 0">{{'lang.refuseDocumentWithoutSignature' | translate}}</p>-->
       <p>{{'lang.wouldLikeConfirm' | translate}}</p>
       <p>
-        <textarea [(ngModel)]="note" class="note" matInput placeholder="Ajouter un commentaire"></textarea>
+        <textarea [(ngModel)]="note" class="note" matInput placeholder="{{'lang.addNote' | translate}}"></textarea>
       </p>
     </div>
     <div mat-dialog-actions>
       <button mat-icon-button class="close" (click)="this.dialogRef.close();">
         <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
       </button>
-      <!--<button class="actions btn" [disabled]="disableState" mat-button (click)="this.dialogRef.close('annotation');" *ngIf="signaturesService.notesContent.length == 0"><i class="fas fa-pen-alt fa-2x"></i> {{'lang.annotateDocument' | translate}}</button>-->
       <button class="actions btn red" mat-button cdkFocusInitial (click)="confirmDoc();" [disabled]="disableState"><i class="fas fa-backspace fa-2x"></i> {{ msgButton | translate}}</button>
     </div>
 </div>
