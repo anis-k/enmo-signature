@@ -67,7 +67,7 @@
       <div class="page-info-doc">{{docList[currentDoc].title}}</div>
       <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
     </section>
-    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideUp]>
+    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && currentDoc === 0" [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button [style.color]="action.color" [style.borderColor]="action.color" class="btn"
           (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}</button>
