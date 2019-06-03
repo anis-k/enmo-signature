@@ -2,7 +2,7 @@
   <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
 </div>
 <mat-sidenav-container autosize>
-  <mat-sidenav #snav [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode || freezeSidenavClose" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
+  <mat-sidenav #snav disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode || freezeSidenavClose" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="mainView">
@@ -75,7 +75,7 @@
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight [mode]="this.signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width"
+  <mat-sidenav #snavRight disableClose [mode]="this.signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width"
     position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
     <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
       [snavRightComponent]="this.snavRight"></app-my-profile>
