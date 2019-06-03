@@ -498,6 +498,14 @@ class DocumentController
             ]);
         }
 
+        AdrModel::deleteDocumentAdr([
+            'where' => ['main_document_id = ?', 'type != ?'],
+            'data'  => [$args['id'], 'DOC']
+        ]);
+
+        $configPath = CoreConfigModel::getConfigPath();
+        exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' > /dev/null &");
+
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['id'], 'userId' => $GLOBALS['id']]);
 
         HistoryController::add([
