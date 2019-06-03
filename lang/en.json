@@ -158,6 +158,7 @@
 		"actions": "Actions",
 		"addNote": "Add note",
 		"filterInfo": "Filter by subject / reference",
-		"attachment": "attachment"
+		"attachment": "attachment",
+		"deleteSubtitution": "Delete subtitution"
 	}
 }

@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit {
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
 
     profileInfo: any = {
-        substitute: '',
+        substitute: null,
         preferences: []
     };
     hideCurrentPassword: Boolean = true;
@@ -204,7 +204,7 @@ export class ProfileComponent implements OnInit {
             'substitute': this.profileInfo.substitute,
         };
 
-        if (this.profileInfo.substitute !== '') {
+        if (this.profileInfo.substitute !== null) {
             alert('Vous avez choisi une délégation, vous ne pourrez plus viser ou signer de courrier.');
         }
 
@@ -257,7 +257,7 @@ export class ProfileComponent implements OnInit {
                     this.closeProfile();
                 }
 
-                if (this.profileInfo.substitute !== '') {
+                if (this.profileInfo.substitute !== null) {
                     this.http.patch('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/substituted', {'signatures': this.signaturesService.signaturesList})
                         .subscribe(() => { }, (err) => {
                             this.notificationService.handleErrors(err);

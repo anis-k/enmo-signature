@@ -158,6 +158,7 @@
 		"actions": "Actions",
 		"addNote": "Ajouter un commentaire",
 		"filterInfo": "Filtrer par objet / référence",
-		"attachment": "annexe"
+		"attachment": "annexe",
+		"deleteSubtitution": "Supprimer la délégation"
 	}
 }

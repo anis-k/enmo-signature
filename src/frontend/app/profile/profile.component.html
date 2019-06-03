@@ -242,7 +242,6 @@
                                         <mat-form-field style="width:100%">
                                             <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersRest"
                                                 [(ngModel)]="profileInfo.substitute">
-                                                <mat-option value=""></mat-option>
                                                 <ng-container *ngFor="let userRest of usersRest">
                                                     <mat-option *ngIf="userRest.id !== profileInfo.id"
                                                         [value]="userRest.id">
@@ -250,10 +249,14 @@
                                                         {{userRest.lastname}}</mat-option>
                                                 </ng-container>
                                             </mat-select>
+                                            <button matSuffix *ngIf="profileInfo.substitute != null" mat-icon-button type="button"
+                                                (tap)="profileInfo.substitute = null" color="warn" title="{{'lang.deleteSubtitution' | translate}}">
+                                                <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
+                                            </button>
                                         </mat-form-field>
                                     </div>
                                 </div>
-                                <fieldset *ngIf="this.profileInfo.substitute !== '' && this.profileInfo.substitute !== undefined">
+                                <fieldset *ngIf="profileInfo.substitute != null">
                                     <legend align="left">{{'lang.signSubstituted' | translate}} :</legend>
                                     <ng-container>
                                         <button type="button" class="signListButton" mat-stroked-button *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)" [class.selected]="signature.substituted"><img [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"/></button>
