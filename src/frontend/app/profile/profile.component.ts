@@ -257,7 +257,7 @@ export class ProfileComponent implements OnInit {
                     this.closeProfile();
                 }
 
-                if (this.profileInfo.substitute !== null) {
+                if (this.profileInfo.substitute !== null && this.signaturesService.signaturesList.length > 0) {
                     this.http.patch('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/substituted', {'signatures': this.signaturesService.signaturesList})
                         .subscribe(() => { }, (err) => {
                             this.notificationService.handleErrors(err);
