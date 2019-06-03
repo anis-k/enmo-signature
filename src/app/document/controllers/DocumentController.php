@@ -70,7 +70,7 @@ class DocumentController
             $where = ['id in (?)'];
             $data = [$documentIds];
             if (!empty($queryParams['search'])) {
-                $where[] = '(title ilike ? OR reference ilike ?)';
+                $where[] = '(reference ilike ? OR translate(title, \'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿŔŕ\', \'aaaaaaaceeeeiiiidnoooooouuuuybsaaaaaaaceeeeiiiidnoooooouuuyybyrr\') ilike translate(?, \'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿŔŕ\', \'aaaaaaaceeeeiiiidnoooooouuuuybsaaaaaaaceeeeiiiidnoooooouuuyybyrr\'))';
                 $data[] = "%{$queryParams['search']}%";
                 $data[] = "%{$queryParams['search']}%";
             }
