@@ -31,7 +31,6 @@ export class DocumentSignListComponent implements OnInit {
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = percenty;
         localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         this.signaturesService.documentFreeze = false;
-        console.log(this.signaturesService.signaturesContent);
     }
 
     cloneSign(i: number) {

@@ -51,8 +51,6 @@ export class DocumentNotePadComponent implements OnInit {
             this.signaturesService.notesContent[this.signaturesService.currentPage] = [];
         }
 
-        console.log(<HTMLCanvasElement>this.canvas.nativeElement.toDataURL('image/png'));
-
         this.signaturesService.notesContent[this.signaturesService.currentPage].push(
             {
                 'fullPath': <HTMLCanvasElement>this.canvas.nativeElement.toDataURL('image/png'),
