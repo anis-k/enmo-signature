@@ -323,7 +323,7 @@ export class DocumentComponent implements OnInit {
 
     addAnnotation(e: any) {
 
-        if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
+        if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.signaturesService.userLogged.substitute === null) {
 
             const posX = e.srcEvent.layerX - this.signaturesService.x;
             const posY = e.srcEvent.layerY - this.signaturesService.y;
@@ -492,5 +492,22 @@ export class DocumentComponent implements OnInit {
             width : '450px',
             locked : false,
         };
+    }
+
+    deleteSubstution() {
+        const r = confirm(this.translate.instant('lang.deleteSubstitution') + ' ?');
+
+        if (r) {
+            const oldId = this.signaturesService.userLogged.subtitute;
+            this.signaturesService.userLogged.substitute = null;
+
+            this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.signaturesService.userLogged)
+            .subscribe((data: any) => {
+                this.notificationService.success('lang.substitutionDeleted');
+            }, (err) => {
+                this.signaturesService.userLogged.subtitute = oldId;
+                this.notificationService.handleErrors(err);
+            });
+        }
     }
 }

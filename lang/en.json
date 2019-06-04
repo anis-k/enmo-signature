@@ -158,6 +158,8 @@
 		"addNote": "Add note",
 		"filterInfo": "Filter by subject / reference",
 		"attachment": "attachment",
-		"deleteSubtitution": "Delete subtitution"
+		"deleteSubstitution": "Delete subtitution",
+		"substitutionDeleted": "Substitution deleted",
+		"substitutionInfo": "You are in substitution mode, you can't make any action"
 	}
 }

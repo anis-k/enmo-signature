@@ -158,6 +158,8 @@
 		"addNote": "Ajouter un commentaire",
 		"filterInfo": "Filtrer par objet / référence",
 		"attachment": "annexe",
-		"deleteSubtitution": "Supprimer la délégation"
+		"deleteSubstitution": "Supprimer la délégation",
+		"substitutionDeleted": "Délégation supprimée",
+		"substitutionInfo": "Vous êtes en mode délégation, vous ne pouvez pas faire d'action sur ce document"
 	}
 }

@@ -277,3 +277,17 @@ button.disabled {
 .mat-badge-content {
   background: $warn;
 }
+
+.substutionModal {
+  color: white;
+  background: $primary;
+
+  div {
+    padding:10px;
+  }
+
+  .msgModal {
+    text-align: center;
+    flex: 1;
+  }
+}

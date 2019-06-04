@@ -2,7 +2,9 @@
   <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
 </div>
 <mat-sidenav-container autosize>
-  <mat-sidenav #snav disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode || freezeSidenavClose" fixedInViewport="true" [disableClose]="freezeSidenavClose" [style.width.px]="350">
+  <mat-sidenav #snav disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'"
+    [opened]="!signaturesService.mobileMode || freezeSidenavClose" fixedInViewport="true"
+    [disableClose]="freezeSidenavClose" [style.width.px]="350">
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="mainView">
@@ -13,23 +15,28 @@
     <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideDown]>
       <article class="header-infos">
         <section class="header-action">
-          <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();" style="width:70px;">
+          <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();"
+            style="width:70px;">
             <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
           </button>
           <button mat-button (click)="openMainDocumentDetail();">
-            <i class="fas fa-info-circle fa-2x"></i><span style="display: block;line-height: 10px;">{{'lang.informations' | translate}}</span>
+            <i class="fas fa-info-circle fa-2x"></i><span
+              style="display: block;line-height: 10px;">{{'lang.informations' | translate}}</span>
           </button>
         </section>
 
         <section class="header-action">
           <button mat-button (click)="openDocumentList();">
-            <i class="fas fa-file fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span style="display: block;line-height: 10px;">{{'lang.documents' | translate | titlecase}}</span>
+            <i class="fas fa-file fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span
+              style="display: block;line-height: 10px;">{{'lang.documents' | translate | titlecase}}</span>
           </button>
           <button mat-button (click)="openVisaWorkflow();">
-              <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span style="display: block;line-height: 10px;">{{'lang.circuit' | translate}}</span>
+            <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span
+              style="display: block;line-height: 10px;">{{'lang.circuit' | translate}}</span>
           </button>
           <button mat-button [matMenuTriggerFor]="menu">
-            <i class="fas fa-cog fa-2x"></i><span style="display: block;line-height: 10px;">{{'lang.actions' | translate}}</span>
+            <i class="fas fa-cog fa-2x"></i><span
+              style="display: block;line-height: 10px;">{{'lang.actions' | translate}}</span>
           </button>
           <mat-menu #menu="matMenu">
             <button [disabled]="checkEmptiness()" mat-menu-item
@@ -42,8 +49,8 @@
     </header>
     <app-overlay *ngIf="this.signaturesService.annotationMode" [appDocumentNotePad]="appDocumentNotePad"></app-overlay>
     <ng-container *ngIf="!freezeSidenavClose && !loadingUI">
-      <button class="btn-previous" (tap)="prevPage()"
-        *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i class="fas fa-chevron-left fa-3x"></i></button>
+      <button class="btn-previous" (tap)="prevPage()" *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
+          class="fas fa-chevron-left fa-3x"></i></button>
       <button class="btn-next" (tap)="nextPage()"
         *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
           class="fas fa-chevron-right fa-3x"></i></button>
@@ -56,7 +63,8 @@
         <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0">
         </app-document-note-list>
         <app-document-sign-list *ngIf="currentDoc == 0"></app-document-sign-list>
-        <img *ngIf="!loadingDoc && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf" [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+docList[currentDoc].imgContent[pageNum])"
+        <img *ngIf="!loadingDoc && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf"
+          [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+docList[currentDoc].imgContent[pageNum])"
           style="width:100%;" />
         <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
         </app-document-note-pad>
@@ -67,16 +75,30 @@
       <div class="page-info-doc">{{docList[currentDoc].title}}</div>
       <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
     </section>
-    <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && currentDoc === 0" [@slideUp]>
+    <footer class="footer"
+      *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && currentDoc === 0 && signaturesService.userLogged.substitute === null"
+      [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button [style.color]="action.color" [style.borderColor]="action.color" class="btn"
           (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}</button>
       </ng-container>
     </footer>
+    <footer class="footer substutionModal" *ngIf="!freezeSidenavClose && currentDoc === 0 && signaturesService.userLogged.substitute !== null" [@slideUp]>
+      <div class="msgModal">
+        {{'lang.substitutionInfo' | translate}}
+      </div>
+      <div>
+        <button mat-icon-button title="{{'lang.deleteSubstitution' | translate}}" (click)="deleteSubstution()">
+          <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
+        </button>
+      </div>
+    </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight disableClose [mode]="this.signaturesService.mobileMode ? 'over': 'side'" [opened]="!signaturesService.mobileMode" fixedInViewport="true" [style.width]="signaturesService.sideNavRigtDatas.width"
-    position='end' [disableClose]='signaturesService.sideNavRigtDatas.locked'>
+  <mat-sidenav #snavRight disableClose [mode]="this.signaturesService.mobileMode ? 'over': 'side'"
+    [opened]="!signaturesService.mobileMode" fixedInViewport="true"
+    [style.width]="signaturesService.sideNavRigtDatas.width" position='end'
+    [disableClose]='signaturesService.sideNavRigtDatas.locked'>
     <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
       [snavRightComponent]="this.snavRight"></app-my-profile>
     <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
@@ -84,7 +106,7 @@
     <app-document-list #appDocumentList [currentDocId]="currentDoc" [snavRightComponent]="this.snavRight"
       [docList]="docList" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
       (triggerEvent)="loadDoc($event)"></app-document-list>
-    <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight"
-      [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'"></app-main-document-detail>
+    <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight" [mainDocument]="mainDocument"
+      *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'"></app-main-document-detail>
   </mat-sidenav>
 </mat-sidenav-container>
