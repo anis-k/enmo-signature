@@ -325,6 +325,8 @@ export class DocumentComponent implements OnInit {
 
         if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.signaturesService.userLogged.substitute === null) {
 
+            this.backToDetails();
+
             const posX = e.srcEvent.layerX - this.signaturesService.x;
             const posY = e.srcEvent.layerY - this.signaturesService.y;
 
@@ -425,6 +427,7 @@ export class DocumentComponent implements OnInit {
     }
 
     launchEvent(action: any) {
+        this.backToDetails();
         this.signaturesService.currentAction = action.id;
         this[action.event]();
     }
@@ -487,6 +490,14 @@ export class DocumentComponent implements OnInit {
 
     openMainDocumentDetail() {
         this.snavRight.open();
+        this.signaturesService.sideNavRigtDatas = {
+            mode : 'mainDocumentDetail',
+            width : '450px',
+            locked : false,
+        };
+    }
+
+    backToDetails() {
         this.signaturesService.sideNavRigtDatas = {
             mode : 'mainDocumentDetail',
             width : '450px',

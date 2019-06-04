@@ -98,7 +98,7 @@
   <mat-sidenav #snavRight disableClose [mode]="this.signaturesService.mobileMode ? 'over': 'side'"
     [opened]="!signaturesService.mobileMode" fixedInViewport="true"
     [style.width]="signaturesService.sideNavRigtDatas.width" position='end'
-    [disableClose]='signaturesService.sideNavRigtDatas.locked'>
+    [disableClose]='signaturesService.sideNavRigtDatas.locked' (closedStart)="backToDetails()">
     <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
       [snavRightComponent]="this.snavRight"></app-my-profile>
     <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
