@@ -175,7 +175,10 @@ class EmailController
             return true;
         }
 
-        $nextUser = UserModel::getById(['select' => ['email', 'preferences'], 'id' => $workflow['user_id']]);
+        $nextUser = UserModel::getById(['select' => ['email', 'preferences', 'substitute'], 'id' => $workflow['user_id']]);
+        if (!empty($nextUser['substitute'])) {
+            $nextUser = UserModel::getById(['select' => ['email', 'preferences'], 'id' => $nextUser['substitute']]);
+        }
 
         $nextUser['preferences'] = json_decode($nextUser['preferences'], true);
         if ($nextUser['preferences']['notifications']) {
