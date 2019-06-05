@@ -27,35 +27,33 @@ class SignatureController
 {
     public function get(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        if ($GLOBALS['id'] != $args['id']) {
+            $user = UserModel::getById(['id' => $args['id'], 'select' => ['substitute']]);
+            if (empty($user) || $user['substitute'] != $GLOBALS['id']) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
         }
 
-        $data = $request->getQueryParams();
-        if (empty($data['offset']) || !is_numeric($data['offset'])) {
-            $data['offset'] = 0;
-        }
-        if (empty($data['limit']) || !is_numeric($data['limit'])) {
-            $data['limit'] = 0;
+        $docserver = DocserverModel::getByType(['type' => 'SIGNATURE', 'select' => ['path']]);
+        if (empty($docserver['path']) || !is_dir($docserver['path'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Docserver \'SIGNATURE\' does not exist']);
         }
 
+        $where = ['user_id = ?'];
+        if ($GLOBALS['id'] != $args['id']) {
+            $where[] = 'substituted = true';
+        }
         $rawSignatures = SignatureModel::get([
             'select'    => ['id', 'path', 'filename', 'fingerprint', 'substituted'],
-            'where'     => ['user_id = ?'],
+            'where'     => $where,
             'data'      => [$args['id']],
-            'orderBy'   => ['id DESC'],
-            'offset'    => (int)$data['offset'],
-            'limit'     => (int)$data['limit']
+            'orderBy'   => ['id DESC']
         ]);
-        $docserver = DocserverModel::getByType(['type' => 'SIGNATURE', 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
 
         $signatures = [];
         foreach ($rawSignatures as $signature) {
             $pathToSignature = $docserver['path'] . $signature['path'] . $signature['filename'];
-            if (file_exists($pathToSignature)) {
+            if (is_file($pathToSignature)) {
                 $fingerprint = DocserverController::getFingerPrint(['path' => $pathToSignature]);
                 if ($signature['fingerprint'] == $fingerprint) {
                     $signatures[] = [
@@ -63,11 +61,7 @@ class SignatureController
                         'substituted'       => $signature['substituted'],
                         'encodedSignature'  => base64_encode(file_get_contents($pathToSignature))
                     ];
-                } else {
-                    //TODO LOG
                 }
-            } else {
-                //TODO LOG
             }
         }
 
