@@ -55,6 +55,9 @@ $app->get('/logout', \SrcCore\controllers\AuthenticationController::class . ':lo
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
 $app->get('/attachments/{id}/thumbnails/{page}', \Attachment\controllers\AttachmentController::class . ':getThumbnailContent');
 
+//AutoComplete
+$app->get('/autocomplete/users', \SrcCore\controllers\AutoCompleteController::class . ':getUsers');
+
 //Configurations
 $app->put('/configurations/{identifier}', \Configuration\controllers\ConfigurationController::class . ':update');
 

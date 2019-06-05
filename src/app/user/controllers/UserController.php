@@ -50,12 +50,6 @@ class UserController
             $queryData = ['standard'];
         }
 
-        if (!empty($queryParams['search'])) {
-            $where[] = '(firstname ilike ? OR lastname ilike ?)';
-            $queryData[] = "%{$queryParams['search']}%";
-            $queryData[] = "%{$queryParams['search']}%";
-        }
-
         $users = UserModel::get([
             'select'    => $select,
             'where'     => $where,
