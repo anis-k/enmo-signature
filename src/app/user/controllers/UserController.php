@@ -35,7 +35,7 @@ class UserController
     {
         $queryParams = $request->getQueryParams();
 
-        $select = ['id', 'firstname', 'lastname'];
+        $select = ['id', 'firstname', 'lastname', 'substitute'];
         if (!empty($queryParams['mode']) && $queryParams['mode'] == 'rest') {
             if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
@@ -55,6 +55,10 @@ class UserController
             'data'      => $queryData,
             'orderBy'   => ['lastname', 'firstname']
         ]);
+
+        foreach ($users as $key => $user) {
+            $users[$key]['substitute'] = !empty($user['substitute']);
+        }
 
         return $response->withJson(['users' => $users]);
     }
@@ -191,9 +195,20 @@ class UserController
         }
         $set['substitute'] = null;
         if (!empty($body['substitute']) && $args['id'] != $body['substitute']) {
-            $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => [1]]);
+            $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => ['substitute']]);
             if (empty($existingUser)) {
                 return $response->withStatus(400)->withJson(['errors' => 'Substitute user does not exist']);
+            } elseif (!empty($existingUser['substitute'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Substitute user has already substituted']);
+            }
+
+            $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
+            foreach ($substitutedUsers as $user) {
+                UserModel::update([
+                    'set'   => ['substitute' => $body['substitute']],
+                    'where' => ['id = ?'],
+                    'data'  => [$user['id']]
+                ]);
             }
             $set['substitute'] = $body['substitute'];
         }
