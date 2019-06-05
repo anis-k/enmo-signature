@@ -275,7 +275,7 @@ class DocumentController
             if (!empty($workflow['processingUser'])) {
                 $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $workflow['processingUser']]);
             } elseif (!empty($workflow['userId'])) {
-                $processingUser = UserModel::getById(['select' => ['id'], 'login' => $workflow['userId']]);
+                $processingUser = UserModel::getById(['select' => ['id'], 'id' => $workflow['userId']]);
             }
             if (empty($processingUser)) {
                 return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] processingUser/userId is empty or does not exist"]);
