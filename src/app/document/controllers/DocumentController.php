@@ -348,6 +348,11 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
+        $currentUser = UserModel::getById(['id' => $GLOBALS['id'], 'select' => ['substitute']]);
+        if (!empty($currentUser['substitute'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'User can not make action with substituted account']);
+        }
+
         if (empty(DocumentController::ACTIONS[$args['actionId']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
