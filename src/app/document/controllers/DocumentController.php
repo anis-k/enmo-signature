@@ -45,16 +45,23 @@ class DocumentController
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
         $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
+        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$GLOBALS['id']]]);
+
+        $users = [$GLOBALS['id']];
+        foreach ($substitutedUsers as $value) {
+            $users[] = $value['id'];
+        }
+
         $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
-        $where = ['user_id = ?', "(id) in ({$workflowSelect})"];
-        $data = [$GLOBALS['id']];
+        $where = ['user_id in (?)', "(id) in ({$workflowSelect})"];
+        $data = [$users];
         if (!empty($queryParams['mode']) && in_array($queryParams['mode'], DocumentController::MODES)) {
             $where[] = 'mode = ?';
             $data[] = $queryParams['mode'];
         }
 
         $workflows = WorkflowModel::get([
-            'select'    => ['main_document_id', 'mode'],
+            'select'    => ['main_document_id', 'mode', 'user_id'],
             'where'     => $where,
             'data'      => $data
         ]);
@@ -62,7 +69,7 @@ class DocumentController
         $workflowsShortcut = [];
         foreach ($workflows as $workflow) {
             $documentIds[] = $workflow['main_document_id'];
-            $workflowsShortcut[$workflow['main_document_id']] = $workflow['mode'];
+            $workflowsShortcut[$workflow['main_document_id']] = $workflow;
         }
 
         $documents = [];
@@ -88,7 +95,8 @@ class DocumentController
         $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
             unset($documents[$key]['count']);
-            $documents[$key]['mode'] = $workflowsShortcut[$document['id']];
+            $documents[$key]['mode'] = $workflowsShortcut[$document['id']]['mode'];
+            $documents[$key]['property'] = $workflowsShortcut[$document['id']]['user_id'] == $GLOBALS['id'];
         }
 
         return $response->withJson(['documents' => $documents, 'count' => $count]);
@@ -563,8 +571,15 @@ class DocumentController
         ValidatorModel::intVal($args, ['id', 'userId']);
 
         $workflow = WorkflowModel::getCurrentStep(['select' => ['user_id'], 'documentId' => $args['id']]);
-        if (empty($workflow) || $workflow['user_id'] != $args['userId']) {
+        if (empty($workflow)) {
             return false;
+        }
+
+        if ($workflow['user_id'] != $args['userId']) {
+            $user = UserModel::getById(['id' => $workflow['user_id'], 'select' => ['substitute']]);
+            if ($user['substitute'] != $args['userId']) {
+                return false;
+            }
         }
 
         return true;
