@@ -272,9 +272,13 @@ class DocumentController
         }
 
         foreach ($body['workflow'] as $key => $workflow) {
-            $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $workflow['processingUser']]);
+            if (!empty($workflow['processingUser'])) {
+                $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $workflow['processingUser']]);
+            } elseif (!empty($workflow['userId'])) {
+                $processingUser = UserModel::getById(['select' => ['id'], 'login' => $workflow['userId']]);
+            }
             if (empty($processingUser)) {
-                return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] processingUser is empty or does not exist"]);
+                return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] processingUser/userId is empty or does not exist"]);
             } elseif (!Validator::stringType()->notEmpty()->validate($workflow['mode']) || !in_array($workflow['mode'], DocumentController::MODES)) {
                 return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] mode is empty or not a string in ('visa', 'sign', 'note')"]);
             }
