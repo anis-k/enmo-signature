@@ -36,6 +36,7 @@ class UserController
         $queryParams = $request->getQueryParams();
 
         $select = ['id', 'firstname', 'lastname', 'substitute'];
+        $where = ['mode = ?'];
         if (!empty($queryParams['mode']) && $queryParams['mode'] == 'rest') {
             if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
@@ -49,9 +50,15 @@ class UserController
             $queryData = ['standard'];
         }
 
+        if (!empty($queryParams['search'])) {
+            $where[] = '(firstname ilike ? OR lastname ilike ?)';
+            $queryData[] = "%{$queryParams['search']}%";
+            $queryData[] = "%{$queryParams['search']}%";
+        }
+
         $users = UserModel::get([
             'select'    => $select,
-            'where'     => ['mode = ?'],
+            'where'     => $where,
             'data'      => $queryData,
             'orderBy'   => ['lastname', 'firstname']
         ]);
