@@ -20,7 +20,7 @@ export class CustomHammerConfig extends HammerGestureConfig {
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { CookieService } from 'ngx-cookie-service';
-
+import { NgPipesModule } from 'ngx-pipes';
 
 import { AppMaterialModule } from './app-material.module';
 
@@ -97,6 +97,7 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
     }),
     SignaturePadModule,
     ScrollEventModule,
+    NgPipesModule,
     AngularDraggableModule,
     AppMaterialModule,
     RouterModule.forRoot([

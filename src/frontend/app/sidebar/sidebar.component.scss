@@ -66,7 +66,8 @@
       padding-left: 30px;
       cursor: pointer;
       &.active {
-        box-shadow: inset 0px 0px 5px 0px #656565;
+        border-left: solid 5px $primary;
+        background: rgba($primary, 0.14);
         &:after {
           position: absolute;
           right: 10px;
@@ -75,6 +76,9 @@
           height: 60px;
           background: #F1F4F4;
         }
+      }
+      &-right {
+        text-align: center;
       }
       &-left {
         width: 50px;

@@ -160,6 +160,7 @@
 		"attachment": "attachment",
 		"deleteSubstitution": "Delete subtitution",
 		"substitutionDeleted": "Substitution deleted",
-		"substitutionInfo": "You are in substitution mode, you can't make any action"
+		"substitutionInfo": "You are in substitution mode, you can't make any action",
+		"substitutedDoc": "Document subtituted"
 	}
 }

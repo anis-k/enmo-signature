@@ -7,7 +7,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, switchMap, distinctUntilChanged, filter } from 'rxjs/operators';
+import { debounceTime, switchMap, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -34,6 +34,7 @@ export class SidebarComponent implements OnInit {
     constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),
+            tap((value) => this.loadingList = true),
             distinctUntilChanged(),
             switchMap(data => this.http.get('../rest/documents?limit=' + this.limit + '&search=' + data))
         ).subscribe((response: any) => {
@@ -117,12 +118,6 @@ export class SidebarComponent implements OnInit {
             this.searchInput.nativeElement.focus();
             this.searchInput.nativeElement.click();
         }, 0);
-    }
-
-    initFilter(ev: any) {
-        if ([37, 38, 39, 40].indexOf(ev.keyCode) === -1) {
-            this.loadingList = true;
-        }
     }
 
     filter(mode: string) {

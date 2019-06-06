@@ -160,6 +160,7 @@
 		"attachment": "annexe",
 		"deleteSubstitution": "Supprimer la délégation",
 		"substitutionDeleted": "Délégation supprimée",
-		"substitutionInfo": "Vous êtes en mode délégation, vous ne pouvez pas faire d'action sur ce document"
+		"substitutionInfo": "Vous êtes en mode délégation, vous ne pouvez pas faire d'action sur ce document",
+		"substitutedDoc": "Document délégué"
 	}
 }

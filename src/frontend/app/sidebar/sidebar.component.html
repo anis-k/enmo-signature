@@ -28,8 +28,7 @@
         <mat-icon fontSet="fas" fontIcon="fa-search fa-2x"></mat-icon>
       </button>
       <mat-form-field *ngIf="searchMode" floatLabel="never" style="width: 80%;">
-        <input #searchInput matInput placeholder="{{'lang.filterInfo' | translate}}" [formControl]="searchTerm"
-          (keyup)="initFilter($event);">
+        <input #searchInput matInput placeholder="{{'lang.filterInfo' | translate}}" [formControl]="searchTerm">
         <button matSuffix color="primary" mat-icon-button type="button"
           (click)="searchMode = !searchMode;this.filter('');" title="{{'lang.cancel' | translate}}">
           <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
@@ -61,7 +60,8 @@
         </div>
         <div class="nav-item-middle">
           <div class="">{{document.reference}}</div>
-          <div class="nav-item-title">{{document.title}}</div>
+          <div class="nav-item-title">{{document.title | shorten: 50: '...'}}</div>
+          <div *ngIf="!document.property" style="color:#F99830;font-size: 10px;">{{'lang.substitutedDoc' | translate}}</div>
         </div>
         <div class="nav-item-right">
           <i class="fas fa-arrow-right"></i>

@@ -66,6 +66,7 @@
     "karma": "~4.0.1",
     "ngx-cookie-service": "^2.1.0",
     "ngx-scroll-event": "^1.0.8",
+    "ngx-pipes": "^2.5.1",
     "node-sass": "^4.11.0",
     "npm-check-updates": "^3.1.8",
     "protractor": "^5.4.2",
