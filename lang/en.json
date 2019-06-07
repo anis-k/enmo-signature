@@ -162,6 +162,6 @@
 		"substitutionDeleted": "Substitution deleted",
 		"substitutionInfo": "You are in substitution mode, you can't make any action",
 		"substitutedDoc": "Document subtituted",
-		"substitutionWarn": "Vous avez délégué vos document, vous ne pouvez plus faire d'action"
+		"substitutionWarn": "You choose a substitution, délégation, you will not be able to make any action."
 	}
 }
