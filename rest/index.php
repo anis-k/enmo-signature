@@ -77,6 +77,9 @@ $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . 
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
 
+//Privileges
+$app->get('/administrativePrivileges', \Group\controllers\PrivilegeController::class . ':getAdministrativePrivilegesByUser');
+
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');
 $app->get('/users', \User\controllers\UserController::class . ':get');

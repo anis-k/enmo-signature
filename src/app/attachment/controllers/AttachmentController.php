@@ -19,6 +19,7 @@ use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\controllers\DocumentController;
+use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -35,7 +36,7 @@ class AttachmentController
             return $response->withStatus(400)->withJson(['errors' => 'Attachment does not exist']);
         }
 
-        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']]) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
@@ -130,7 +131,7 @@ class AttachmentController
             return $response->withStatus(400)->withJson(['errors' => 'Attachment does not exist']);
         }
 
-        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+        if (!DocumentController::hasRightById(['id' => $attachment['main_document_id'], 'userId' => $GLOBALS['id']]) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 

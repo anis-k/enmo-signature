@@ -15,6 +15,7 @@
 namespace Workflow\controllers;
 
 use Document\controllers\DocumentController;
+use Group\controllers\PrivilegeController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use User\controllers\UserController;
@@ -25,7 +26,7 @@ class WorkflowController
 {
     public function getByDocumentId(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 

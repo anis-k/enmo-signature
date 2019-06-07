@@ -16,6 +16,7 @@ namespace User\controllers;
 
 use Docserver\controllers\DocserverController;
 use Docserver\models\DocserverModel;
+use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
@@ -70,7 +71,7 @@ class SignatureController
 
     public function create(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -114,7 +115,7 @@ class SignatureController
 
     public function delete(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -134,7 +135,7 @@ class SignatureController
 
     public function updateExternalSignatures(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -194,7 +195,7 @@ class SignatureController
 
     public function updateSubstituted(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 

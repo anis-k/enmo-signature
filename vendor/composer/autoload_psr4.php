@@ -10,7 +10,6 @@ return array(
     'Workflow\\' => array($baseDir . '/src/app/workflow'),
     'User\\' => array($baseDir . '/src/app/user'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
-    'Status\\' => array($baseDir . '/src/app/status'),
     'SrcCore\\' => array($baseDir . '/src/core'),
     'Slim\\' => array($vendorDir . '/slim/slim/Slim'),
     'Respect\\Validation\\' => array($vendorDir . '/respect/validation/library'),
@@ -19,6 +18,7 @@ return array(
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
     'History\\' => array($baseDir . '/src/app/history'),
+    'Group\\' => array($baseDir . '/src/app/group'),
     'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
     'Email\\' => array($baseDir . '/src/app/email'),
     'Document\\' => array($baseDir . '/src/app/document'),
@@ -26,5 +26,4 @@ return array(
     'Convert\\' => array($baseDir . '/src/app/convert'),
     'Configuration\\' => array($baseDir . '/src/app/configuration'),
     'Attachment\\' => array($baseDir . '/src/app/attachment'),
-    'Action\\' => array($baseDir . '/src/app/action'),
 );

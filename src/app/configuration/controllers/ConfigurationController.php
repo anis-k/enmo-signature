@@ -15,18 +15,18 @@
 namespace Configuration\controllers;
 
 use Configuration\models\ConfigurationModel;
+use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
-use User\controllers\UserController;
 
 class ConfigurationController
 {
     public function update(Request $request, Response $response, array $args)
     {
-        if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_configuration'])) {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 

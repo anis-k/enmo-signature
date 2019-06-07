@@ -16,6 +16,7 @@ namespace History\controllers;
 
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
+use Group\controllers\PrivilegeController;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\controllers\LanguageController;
@@ -48,7 +49,7 @@ class HistoryController
 
     public function getByDocumentId(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 

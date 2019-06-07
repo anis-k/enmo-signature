@@ -8,6 +8,7 @@
             "Docserver\\"         : "src/app/docserver/",
             "Document\\"          : "src/app/document/",
             "Email\\"             : "src/app/email/",
+            "Group\\"             : "src/app/group/",
             "History\\"           : "src/app/history/",
             "User\\"              : "src/app/user/",
             "Workflow\\"          : "src/app/workflow/"

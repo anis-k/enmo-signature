@@ -14,8 +14,8 @@
 
 namespace User\controllers;
 
-
 use Email\controllers\EmailController;
+use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
@@ -26,28 +26,25 @@ use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
-use User\models\UserGroupModel;
 use User\models\UserModel;
 
 class UserController
 {
+    const LOGING_MODES  = ['standard', 'rest'];
+
     public function get(Request $request, Response $response)
     {
         $queryParams = $request->getQueryParams();
 
         $select = ['id', 'firstname', 'lastname', 'substitute'];
-        $where = ['mode = ?'];
-        if (!empty($queryParams['mode']) && $queryParams['mode'] == 'rest') {
-            if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
-                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-            }
-            $queryData = ['rest'];
-        } else {
-            if (UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-                $select[] = 'login';
-                $select[] = 'email';
-            }
-            $queryData = ['standard'];
+        $where = ['mode in (?)'];
+        $queryData = [['standard']];
+        if (!empty($queryParams['mode']) && $queryParams['mode'] == 'all') {
+            $queryData[0][] = 'rest';
+        }
+        if (PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            $select[] = 'login';
+            $select[] = 'email';
         }
 
         $users = UserModel::get([
@@ -66,7 +63,7 @@ class UserController
 
     public function getById(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -85,7 +82,7 @@ class UserController
 
     public function create(Request $request, Response $response)
     {
-        if (!UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -108,8 +105,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Login already exists']);
         }
 
-        $logingModes = ['standard', 'rest'];
-        if (empty($body['mode']) || !in_array($body['mode'], $logingModes)) {
+        if (empty($body['mode']) || !in_array($body['mode'], UserController::LOGING_MODES)) {
             $body['mode'] = 'standard';
         }
         if (empty($body['picture'])) {
@@ -132,7 +128,7 @@ class UserController
 
     public function update(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -161,6 +157,14 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Wrong format for user preferences data']);
         }
 
+        $set = [
+            'firstname'     => $body['firstname'],
+            'lastname'      => $body['lastname'],
+            'email'         => $body['email'],
+            'preferences'   => $body['preferences'],
+            'substitute'    => null,
+        ];
+
         if (!empty($body['picture'])) {
             $infoContent = '';
             if (preg_match('/^data:image\/(\w+);base64,/', $body['picture'])) {
@@ -182,19 +186,9 @@ class UserController
                 $imagick->rotateImage(new \ImagickPixel(), $body['pictureOrientation']);
                 $body['picture'] = base64_encode($imagick->getImageBlob());
             }
-            $body['picture'] = $infoContent . $body['picture'];
+            $set['picture'] = $infoContent . $body['picture'];
         }
 
-        $set = [
-            'firstname'     => $body['firstname'],
-            'lastname'      => $body['lastname'],
-            'email'         => $body['email'],
-            'preferences'   => $body['preferences']
-        ];
-        if (!empty($body['picture'])) {
-            $set['picture'] = $body['picture'];
-        }
-        $set['substitute'] = null;
         if (!empty($body['substitute']) && $args['id'] != $body['substitute']) {
             $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => ['substitute']]);
             if (empty($existingUser)) {
@@ -212,6 +206,10 @@ class UserController
                 ]);
             }
             $set['substitute'] = $body['substitute'];
+        }
+
+        if (!empty($body['mode']) && in_array($body['mode'], UserController::LOGING_MODES)) {
+            $set['mode'] = $body['mode'];
         }
 
         UserModel::update([
@@ -243,32 +241,28 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
-        $data = $request->getParams();
-        if (!Validator::stringType()->notEmpty()->validate($data['newPassword'])) {
+        $body = $request->getParsedBody();
+        if (!Validator::stringType()->notEmpty()->validate($body['newPassword'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
         $user = UserModel::getById(['select' => ['login', 'mode'], 'id' => $args['id']]);
         if ($GLOBALS['id'] != $args['id']) {
-            if ($user['mode'] == 'rest' && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_rest_users'])) {
-                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-            } elseif ($user['mode'] == 'standard' && !UserController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
         }
 
         if ($user['mode'] == 'standard') {
-            if ($data['newPassword'] != $data['passwordConfirmation']) {
-                return $response->withStatus(400)->withJson(['errors' => 'New password does not match password confirmation']);
-            } elseif (empty($data['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $data['currentPassword']])) {
+            if (empty($body['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $body['currentPassword']])) {
                 return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
             }
         }
-        if (!PasswordController::isPasswordValid(['password' => $data['newPassword']])) {
+        if (!PasswordController::isPasswordValid(['password' => $body['newPassword']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
         }
 
-        UserModel::updatePassword(['id' => $args['id'], 'password' => $data['newPassword']]);
+        UserModel::updatePassword(['id' => $args['id'], 'password' => $body['newPassword']]);
 
         if ($user['mode'] == 'standard') {
             AuthenticationModel::revokeCookie(['userId' => $args['id']]);
@@ -282,7 +276,7 @@ class UserController
             'message'       => '{userPasswordUpdated}'
         ]);
 
-        return $response->withJson(['success' => 'success']);
+        return $response->withStatus(204);
     }
 
     public function forgotPassword(Request $request, Response $response)
@@ -409,27 +403,8 @@ class UserController
         }
 
         $user['preferences']        = json_decode($user['preferences'], true);
-        $user['canManageRestUsers'] = UserController::hasPrivilege(['userId' => $args['id'], 'privilege' => 'manage_rest_users']);
         $user['availableLanguages'] = LanguageController::getAvailableLanguages();
 
         return $user;
-    }
-
-    public static function hasPrivilege(array $args)
-    {
-        ValidatorModel::notEmpty($args, ['userId', 'privilege']);
-        ValidatorModel::intVal($args, ['userId']);
-        ValidatorModel::stringType($args, ['privilege']);
-
-        $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['userId']]]);
-
-        foreach ($groups as $group) {
-            $privilege = UserGroupModel::getPrivileges(['select' => [1], 'where' => ['group_id = ?', 'privilege = ?'], 'data' => [$group['group_id'], $args['privilege']]]);
-            if (!empty($privilege)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

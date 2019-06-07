@@ -27,7 +27,6 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
-            'Status\\' => 7,
             'SrcCore\\' => 8,
             'Slim\\' => 5,
         ),
@@ -48,6 +47,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'H' => 
         array (
             'History\\' => 8,
+        ),
+        'G' => 
+        array (
+            'Group\\' => 6,
         ),
         'F' => 
         array (
@@ -70,7 +73,6 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'A' => 
         array (
             'Attachment\\' => 11,
-            'Action\\' => 7,
         ),
     );
 
@@ -90,10 +92,6 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
-        ),
-        'Status\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/status',
         ),
         'SrcCore\\' => 
         array (
@@ -127,6 +125,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         array (
             0 => __DIR__ . '/../..' . '/src/app/history',
         ),
+        'Group\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/app/group',
+        ),
         'FastRoute\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/fast-route/src',
@@ -154,10 +156,6 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'Attachment\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/attachment',
-        ),
-        'Action\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/app/action',
         ),
     );
 
