@@ -243,7 +243,7 @@
                                             <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersRest"
                                                 [(ngModel)]="profileInfo.substitute">
                                                 <ng-container *ngFor="let userRest of usersRest">
-                                                    <mat-option *ngIf="userRest.id !== profileInfo.id"
+                                                    <mat-option *ngIf="userRest.id !== profileInfo.id && !userRest.substitute"
                                                         [value]="userRest.id">
                                                         {{userRest.firstname}}
                                                         {{userRest.lastname}}</mat-option>

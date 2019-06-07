@@ -46,12 +46,13 @@ import { OverlayComponent } from './overlay/overlay.component';
 import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.component';
 import { DocumentListComponent } from './document/document-list/document-list.component';
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
-
+import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 
 // SERVICES
 import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
 import { SignaturesContentService } from './service/signatures.service';
-import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
+import { FiltersService } from './service/filters.service';
+
 
 
 
@@ -118,6 +119,7 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
     SignaturesComponent
   ],
   providers: [SignaturesContentService,
+    FiltersService,
     NotificationService,
     {
       provide: HAMMER_GESTURE_CONFIG,

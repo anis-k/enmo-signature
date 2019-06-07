@@ -7,6 +7,8 @@ import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
+import { FiltersService } from '../service/filters.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-my-profile',
@@ -18,6 +20,7 @@ export class ProfileComponent implements OnInit {
 
     @Input('snavRightComponent') snavRightComponent: MatSidenav;
     @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
+
 
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
 
@@ -61,9 +64,7 @@ export class ProfileComponent implements OnInit {
     msgButton = 'lang.validate';
     loading: boolean = false;
 
-    constructor(private translate: TranslateService, public http: HttpClient, iconReg: MatIconRegistry, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService) {
-        iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
-    }
+    constructor(private translate: TranslateService, public http: HttpClient,  private router: Router, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService, public filtersService: FiltersService) { }
 
     ngOnInit(): void {
         if (this.cookieService.check('maarchParapheurAuth')) {
@@ -226,6 +227,13 @@ export class ProfileComponent implements OnInit {
                 this.profileInfo.picture = data.user.picture;
                 this.setLang(this.signaturesService.userLogged.preferences.lang);
                 this.cookieService.set( 'maarchParapheurLang', this.signaturesService.userLogged.preferences.lang );
+
+                if (this.profileInfo.substitute !== null) {
+                    this.filtersService.resfreshDocuments();
+                    if (this.signaturesService.documentsList.length > 0 && this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].owner === false) {
+                        this.router.navigate(['/documents']);
+                    }
+                }
 
                 $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
 
