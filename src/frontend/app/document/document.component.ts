@@ -165,12 +165,16 @@ export class DocumentComponent implements OnInit {
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.initDoc();
 
-                        if (this.signaturesService.signaturesList.length === 0) {
-                            this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
+                        const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
+
+                        if (realUserWorkflow.userId !== this.signaturesService.userLogged.id) {
+                            this.http.get('../rest/users/' + realUserWorkflow.userId + '/signatures')
                                 .subscribe((dataSign: any) => {
-                                    this.signaturesService.signaturesList = dataSign.signatures;
+                                    this.signaturesService.signaturesListSubstituted = dataSign.signatures;
                                     this.signaturesService.loadingSign = false;
                                 });
+                        } else {
+                            this.signaturesService.signaturesListSubstituted = [];
                         }
                         this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgContent': [], 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
                         this.mainDocument.attachments.forEach((attach: any) => {

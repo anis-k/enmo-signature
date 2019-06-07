@@ -33,6 +33,13 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      .substituteInfo {
+        color: #F99830;
+        font-size: 10px;
+        position: absolute;
+        top: 0px;
+        right: 10px;
+      }
       &.create {
         background-color: #F1F4F4;
         flex-direction: column;

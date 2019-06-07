@@ -161,7 +161,8 @@
 		"deleteSubstitution": "Delete subtitution",
 		"substitutionDeleted": "Substitution deleted",
 		"substitutionInfo": "You are in substitution mode, you can't make any action",
-		"substitutedDoc": "Document subtituted",
+		"substitutedDoc": "Substituted document",
+		"substitutedSignature": "Substituted signature",
 		"substitutionWarn": "You choose a substitution, délégation, you will not be able to make any action."
 	}
 }

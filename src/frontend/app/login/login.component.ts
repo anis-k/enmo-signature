@@ -78,7 +78,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password })
             .subscribe((data: any) => {
                 this.signaturesService.userLogged = data.user;
-
+                this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
+                .subscribe((dataSign: any) => {
+                    this.signaturesService.signaturesList = dataSign.signatures;
+                });
                 this.translate.use(this.signaturesService.userLogged.preferences.lang);
                 this.cookieService.set( 'maarchParapheurLang', this.signaturesService.userLogged.preferences.lang );
 

@@ -102,10 +102,15 @@ export class SignaturesComponent implements OnInit {
         this.inAllPage = !this.inAllPage;
     }
 
-    tapEvent(signature: any, i: any) {
+    tapEvent(signature: any, i: any, mode: string) {
         this.count++;
-        $('[class*=remove_icon_]').hide();
-        $('.remove_icon_' + i).show();
+        if (mode === '') {
+            $('[class*=remove_icon_]').hide();
+            $('.remove_icon_' + i).show();
+        } else {
+            $('[class*=remove_icon_]').hide();
+        }
+
         setTimeout(() => {
             if (this.count === 1) {
                 this.count = 0;

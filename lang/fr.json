@@ -162,6 +162,7 @@
 		"substitutionDeleted": "Délégation supprimée",
 		"substitutionInfo": "Vous avez délégué vos documents, vous ne pouvez pas faire d'action",
 		"substitutedDoc": "Document délégué",
+		"substitutedSignature": "Signature déléguée",
 		"substitutionWarn": "Vous avez choisi une délégation, vous ne pourrez plus faire d'action."
 	}
 }
