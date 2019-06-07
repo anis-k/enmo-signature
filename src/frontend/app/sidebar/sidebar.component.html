@@ -61,7 +61,7 @@
         <div class="nav-item-middle">
           <div class="">{{document.reference}}</div>
           <div class="nav-item-title">{{document.title | shorten: 50: '...'}}</div>
-          <div *ngIf="!document.property" style="color:#F99830;font-size: 10px;">{{'lang.substitutedDoc' | translate}}</div>
+          <div *ngIf="!document.owner" style="color:#F99830;font-size: 10px;">{{'lang.substitutedDoc' | translate}}</div>
         </div>
         <div class="nav-item-right">
           <i class="fas fa-arrow-right"></i>

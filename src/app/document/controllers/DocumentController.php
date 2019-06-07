@@ -97,7 +97,7 @@ class DocumentController
         foreach ($documents as $key => $document) {
             unset($documents[$key]['count']);
             $documents[$key]['mode'] = $workflowsShortcut[$document['id']]['mode'];
-            $documents[$key]['property'] = $workflowsShortcut[$document['id']]['user_id'] == $GLOBALS['id'];
+            $documents[$key]['owner'] = $workflowsShortcut[$document['id']]['user_id'] == $GLOBALS['id'];
         }
 
         return $response->withJson(['documents' => $documents, 'count' => $count]);
