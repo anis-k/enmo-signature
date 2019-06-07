@@ -205,7 +205,7 @@ export class ProfileComponent implements OnInit {
         };
 
         if (this.profileInfo.substitute !== null) {
-            alert('Vous avez choisi une délégation, vous ne pourrez plus viser ou signer de courrier.');
+            alert(this.translate.instant('lang.substitutionWarn'));
         }
 
         if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {

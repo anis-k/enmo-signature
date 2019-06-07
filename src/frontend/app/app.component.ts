@@ -31,6 +31,13 @@ export class AppComponent {
       this.http.get('../rest/users/' + cookieInfo.id)
         .subscribe((data: any) => {
           this.signaturesService.userLogged = data.user;
+          if (this.signaturesService.signaturesList.length === 0) {
+            console.log(this.signaturesService);
+            this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
+                .subscribe((dataSign: any) => {
+                    this.signaturesService.signaturesList = dataSign.signatures;
+                });
+        }
           this.translate.use(this.signaturesService.userLogged.preferences.lang);
         },
           (err: any) => {

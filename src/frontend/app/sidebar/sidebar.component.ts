@@ -34,8 +34,8 @@ export class SidebarComponent implements OnInit {
     constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),
-            tap((value) => this.loadingList = true),
             distinctUntilChanged(),
+            tap((value) => this.loadingList = true),
             switchMap(data => this.http.get('../rest/documents?limit=' + this.limit + '&search=' + data))
         ).subscribe((response: any) => {
             this.signaturesService.documentsList = response.documents;
