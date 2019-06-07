@@ -16,7 +16,10 @@
                 <div *ngIf="diffusion.userPicture === undefined" mat-list-icon class="avatar">
                     <mat-spinner diameter="50"></mat-spinner>
                 </div>
-                <h4 mat-line class="userDisplay primary">
+                <p class="userSubstitute" mat-line *ngIf="diffusion.current && diffusion.userId !== signaturesService.userLogged.id">
+                    {{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}
+                </p>
+                <h4 mat-line class="userDisplay primary" [class.substitute]="diffusion.current && diffusion.userId !== signaturesService.userLogged.id">
                     {{diffusion.userDisplay}}
                 </h4>
                 <p mat-line style="display: flex;">
