@@ -16,6 +16,7 @@ namespace User\controllers;
 
 use Email\controllers\EmailController;
 use Group\controllers\PrivilegeController;
+use Group\models\GroupModel;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
@@ -26,6 +27,7 @@ use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
+use User\models\UserGroupModel;
 use User\models\UserModel;
 
 class UserController
@@ -68,6 +70,14 @@ class UserController
         }
 
         $user =  UserController::getUserInformationsById(['id' => $args['id']]);
+        $user['groups'] = [];
+
+        $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
+        $groupsIds = array_column($userGroups, 'group_id');
+        if (!empty($groupsIds)) {
+            $groups = GroupModel::get(['select' => ['label'], 'where' => ['id in (?)'], 'data' => [$groupsIds]]);
+            $user['groups'] = $groups;
+        }
 
         HistoryController::add([
             'code'          => 'OK',

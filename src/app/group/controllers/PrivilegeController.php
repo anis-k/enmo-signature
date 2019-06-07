@@ -28,10 +28,7 @@ class PrivilegeController
     {
         $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$GLOBALS['id']]]);
 
-        $allGroups = [];
-        foreach ($groups as $group) {
-            $allGroups[] = $group['group_id'];
-        }
+        $allGroups = array_column($groups, 'group_id');
 
         $administrativePrivileges = [];
         if (!empty($allGroups)) {
