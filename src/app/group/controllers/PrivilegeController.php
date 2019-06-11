@@ -21,8 +21,11 @@ use User\models\UserGroupModel;
 
 class PrivilegeController
 {
-    const PRIVILEGES                = ['manage_users', 'manage_email_configuration', 'manage_documents'];
-    const ADMINISTRATIVE_PRIVILEGES = ['manage_users', 'manage_email_configuration'];
+    const PRIVILEGES = [
+        ['id' => 'manage_users',                'icon' => 'fa', 'route' => '/administration/users'],
+        ['id' => 'manage_email_configuration',  'icon' => 'fa', 'route' => '/administration/configuration'],
+        ['id' => 'manage_documents']
+    ];
 
     public function getAdministrativePrivilegesByUser(Request $request, Response $response)
     {
@@ -33,9 +36,13 @@ class PrivilegeController
         $administrativePrivileges = [];
         if (!empty($allGroups)) {
             $privileges = UserGroupModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
-            foreach ($privileges as $privilege) {
-                if (in_array($privilege['privilege'], PrivilegeController::ADMINISTRATIVE_PRIVILEGES) && !in_array($privilege['privilege'], $administrativePrivileges)) {
-                    $administrativePrivileges[] = $privilege['privilege'];
+            $privileges = array_column($privileges, 'privilege');
+
+            if (!empty($privileges)) {
+                foreach (PrivilegeController::PRIVILEGES as $value) {
+                    if (!empty($value['route']) && in_array($value['id'], $privileges)) {
+                        $administrativePrivileges[] = $value;
+                    }
                 }
             }
         }
