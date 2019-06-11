@@ -22,8 +22,8 @@ use User\models\UserGroupModel;
 class PrivilegeController
 {
     const PRIVILEGES = [
-        ['id' => 'manage_users',                'icon' => 'fa', 'route' => '/administration/users'],
-        ['id' => 'manage_email_configuration',  'icon' => 'fa', 'route' => '/administration/configuration'],
+        ['id' => 'manage_users',                'icon' => 'fa fa-user', 'route' => '/administration/users'],
+        ['id' => 'manage_email_configuration',  'icon' => 'fa fa-paper-plane', 'route' => '/administration/configuration'],
         ['id' => 'manage_documents']
     ];
 

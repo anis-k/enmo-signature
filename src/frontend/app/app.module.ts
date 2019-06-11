@@ -47,6 +47,7 @@ import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.co
 import { DocumentListComponent } from './document/document-list/document-list.component';
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
+import { AdministrationComponent } from './administration/administration.component';
 
 // SERVICES
 import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
@@ -79,7 +80,8 @@ import { FiltersService } from './service/filters.service';
     OverlayComponent,
     VisaWorkflowComponent,
     DocumentListComponent,
-    MainDocumentDetailComponent
+    MainDocumentDetailComponent,
+    AdministrationComponent
   ],
   imports: [
     FormsModule,
@@ -102,6 +104,7 @@ import { FiltersService } from './service/filters.service';
     AngularDraggableModule,
     AppMaterialModule,
     RouterModule.forRoot([
+      { path: 'administration', component: AdministrationComponent },
       { path: 'documents/:id', component: DocumentComponent },
       { path: 'documents', component: DocumentComponent },
       { path: 'login', component: LoginComponent },

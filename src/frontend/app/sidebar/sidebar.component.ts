@@ -1,6 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
 import { MatSidenav, MatInput } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
@@ -31,7 +31,7 @@ export class SidebarComponent implements OnInit {
 
     searchTerm: FormControl = new FormControl();
 
-    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private router: Router, public notificationService: NotificationService) {
+    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),
             distinctUntilChanged(),
@@ -100,6 +100,13 @@ export class SidebarComponent implements OnInit {
         }
     }
 
+    openAdmin() {
+        this.router.navigate(['/administration/']);
+        if (this.signaturesService.mobileMode) {
+            this.snavLeftComponent.close();
+        }
+    }
+
     logout() {
         this.http.get('../rest/logout')
             .subscribe(() => {
@@ -138,5 +145,13 @@ export class SidebarComponent implements OnInit {
                 this.notificationService.handleErrors(err);
                 this.loadingList = false;
             });
+    }
+
+    checkClose() {
+        if ((this.route.routeConfig.path === 'administration' || this.signaturesService.mainDocumentId > 0) && this.signaturesService.mobileMode) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -4,7 +4,10 @@
       <button class="logout-button" mat-icon-button (click)="logout()">
         <mat-icon fontSet="fas" fontIcon="fa-power-off"></mat-icon>
       </button>
-      <button *ngIf="signaturesService.mainDocumentId > 0 && signaturesService.mobileMode" class="closePanel"
+      <button class="admin-button" mat-icon-button (click)="openAdmin()">
+        <mat-icon fontSet="fas" fontIcon="fa-tools"></mat-icon>
+      </button>
+      <button *ngIf="checkClose()" class="closePanel"
         mat-icon-button type="button" (tap)="snavLeftComponent.close();">
         <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
       </button>
