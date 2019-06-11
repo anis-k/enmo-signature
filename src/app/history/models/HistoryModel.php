@@ -40,9 +40,8 @@ class HistoryModel
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['code', 'object_type', 'object_id', 'type', 'user_id', 'message', 'data', 'ip']);
-        ValidatorModel::stringType($args, ['code', 'objectType', 'type', 'message', 'data', 'ip']);
-        ValidatorModel::intVal($args, ['user_id']);
+        ValidatorModel::notEmpty($args, ['code', 'object_type', 'object_id', 'type', 'user', 'message', 'data', 'ip']);
+        ValidatorModel::stringType($args, ['code', 'object_type', 'type', 'user', 'message', 'data', 'ip']);
 
         DatabaseModel::insert([
             'table'         => 'history',
@@ -51,7 +50,7 @@ class HistoryModel
                 'object_type'   => $args['object_type'],
                 'object_id'     => $args['object_id'],
                 'type'          => $args['type'],
-                'user_id'       => $args['user_id'],
+                '"user"'        => $args['user'],
                 'date'          => 'CURRENT_TIMESTAMP',
                 'message'       => $args['message'],
                 'data'          => $args['data'],

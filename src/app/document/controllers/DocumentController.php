@@ -156,10 +156,9 @@ class DocumentController
                 $date = new \DateTime($document['process_date']);
                 $value['process_date'] = $date->format('d-m-Y H:i');
             }
-            $user = UserModel::getById(['select' => ['id', 'firstname', 'lastname'], 'id' => $value['user_id']]);
             $formattedDocument['workflow'][] = [
-                'userId'        => $user['id'],
-                'userDisplay'   => "{$user['firstname']} {$user['lastname']}",
+                'userId'        => $value['user_id'],
+                'userDisplay'   => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                 'mode'          => $value['mode'],
                 'processDate'   => $value['process_date'],
                 'current'       => !$currentFound && empty($value['process_date'])

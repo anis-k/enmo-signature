@@ -38,7 +38,7 @@ class HistoryController
             'object_type'   => $args['objectType'],
             'object_id'     => $args['objectId'],
             'type'          => $args['type'],
-            'user_id'       => $GLOBALS['id'],
+            'user'          => UserModel::getLabelledUserById(['id' => $GLOBALS['id']]),
             'message'       => $args['message'],
             'data'          => empty($args['data']) ? '{}' : json_encode($args['data']),
             'ip'            => empty($_SERVER['REMOTE_ADDR']) ? 'script' : $_SERVER['REMOTE_ADDR']
@@ -59,7 +59,7 @@ class HistoryController
         }
 
         $history = HistoryModel::get([
-            'select'    => ['code', 'type', 'user_id', 'date', 'message', 'data'],
+            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data'],
             'where'     => ["(object_type = ? AND object_id = ?) OR (data->>'mainDocumentId' = ?)"],
             'data'      => ['main_documents', $args['id'], $args['id']],
             'orderBy'   => ['date']
@@ -76,13 +76,12 @@ class HistoryController
         }
 
         foreach ($history as $value) {
-            $user = UserModel::getById(['select' => ['login'], 'id' => $value['user_id']]);
             $date = new \DateTime($value['date']);
 
             $formattedHistory[] = [
                 'code'          => $value['code'],
                 'type'          => $value['type'],
-                'userLogin'     => $user['login'],
+                'user'          => $value['user'],
                 'date'          => $date->format('d-m-Y H:i'),
                 'message'       => preg_replace($langKeys, $langValues, $value['message']),
                 'data'          => json_decode($value['data'], true)
