@@ -114,4 +114,18 @@ class WorkflowModel
 
         return true;
     }
+
+    public static function delete(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['where', 'data']);
+        ValidatorModel::arrayType($args, ['where', 'data']);
+
+        DatabaseModel::update([
+            'table' => 'workflows',
+            'where' => $args['where'],
+            'data'  => $args['data']
+        ]);
+
+        return true;
+    }
 }

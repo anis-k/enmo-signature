@@ -117,6 +117,20 @@ class UserModel
         return true;
     }
 
+    public static function delete(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['id']);
+        ValidatorModel::intVal($args, ['id']);
+
+        DatabaseModel::delete([
+            'table' => 'users',
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
+
+        return true;
+    }
+
     public static function updatePassword(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['id', 'password']);

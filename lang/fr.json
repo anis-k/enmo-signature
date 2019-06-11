@@ -122,6 +122,7 @@
 		"userSignatureAdded"                 : "Signature utilisateur ajoutée",
 		"userSignatureDeleted"               : "Signature utilisateur supprimée",
 		"userUpdated"                        : "Utilisateur modifié",
+		"userDeleted"                        : "Utilisateur supprimé",
 		"userViewed"                         : "Utilisateur consulté",
 		"validate"                           : "Valider",
 		"validateAnnotation"                 : "Valider l'annotation",

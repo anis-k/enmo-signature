@@ -36,6 +36,20 @@ class UserGroupModel
         return $usersGroups;
     }
 
+    public static function delete(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['where', 'data']);
+        ValidatorModel::arrayType($args, ['where', 'data']);
+
+        DatabaseModel::update([
+            'table' => 'users_groups',
+            'where' => $args['where'],
+            'data'  => $args['data']
+        ]);
+
+        return true;
+    }
+
     public static function getPrivileges(array $aArgs)
     {
         ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);

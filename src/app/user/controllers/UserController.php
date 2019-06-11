@@ -29,6 +29,7 @@ use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
 use User\models\UserModel;
+use Workflow\models\WorkflowModel;
 
 class UserController
 {
@@ -237,6 +238,53 @@ class UserController
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
+    }
+
+    public function delete(Request $request, Response $response, array $args)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $user = UserModel::getById(['id' => $args['id'], 'select' => ['firstname', 'lastname']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
+        $workflows = WorkflowModel::get([
+            'select'    => [1],
+            'where'     => ['user_id = ?', "(id) in ({$workflowSelect})"],
+            'data'      => [$args['id']]
+        ]);
+        if (!empty($workflows)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User has current workflows']);
+        }
+
+        //Workflows
+        WorkflowModel::delete(['where' => ['process_date is null', 'status is null', 'user_id = ?'], 'data' => [$args['id']]]);
+
+        //Substituted Users
+        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
+        $allSubstitutedUsers = array_column($substitutedUsers, 'id');
+        if (!empty($allSubstitutedUsers)) {
+            UserModel::update(['set' => ['substitute' => null], 'where' => ['id in (?)'], 'data' => [$allSubstitutedUsers]]);
+        }
+
+        //Groups
+        UserGroupModel::delete(['where' => ['user_id = ?'], 'data' => [$args['id']]]);
+
+        UserModel::delete(['id' => $args['id']]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'SUPPRESSION',
+            'message'       => "{userDeleted} : {$user['firstname']} {$user['lastname']}"
+        ]);
+
+        return $response->withStatus(204);
     }
 
     public function getPictureById(Request $request, Response $response, array $args)
