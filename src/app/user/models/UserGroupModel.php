@@ -41,7 +41,7 @@ class UserGroupModel
         ValidatorModel::notEmpty($args, ['where', 'data']);
         ValidatorModel::arrayType($args, ['where', 'data']);
 
-        DatabaseModel::update([
+        DatabaseModel::delete([
             'table' => 'users_groups',
             'where' => $args['where'],
             'data'  => $args['data']
