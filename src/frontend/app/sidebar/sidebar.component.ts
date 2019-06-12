@@ -148,7 +148,7 @@ export class SidebarComponent implements OnInit {
     }
 
     checkClose() {
-        if ((this.route.routeConfig.path === 'administration' || this.signaturesService.mainDocumentId > 0) && this.signaturesService.mobileMode) {
+        if ((this.route.routeConfig.path.indexOf('administration') !== -1 || this.signaturesService.mainDocumentId > 0) && this.signaturesService.mobileMode) {
             return true;
         } else {
             return false;

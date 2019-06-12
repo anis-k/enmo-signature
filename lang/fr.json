@@ -165,10 +165,13 @@
 		"substitutedDoc": "Document délégué",
 		"substitutedSignature": "Signature déléguée",
 		"substitutionWarn": "Vous avez choisi une délégation, vous ne pourrez plus faire d'action.",
-		"manage_users": "Utilisateurs",
+		"manage_users": "Utilisateur(s)",
 		"manage_usersDesc": "Ajouter / Modifier / Supprimer les utilisateurs de l'application. Vous pouvez également lier les comptes à Maarch Courrier.",
 		"manage_email_configuration": "Serveur courriel",
 		"manage_email_configurationDesc": "Paraméter le serveur de courriels pour les envois de notifications aux utilisateurs.",
-		"administration": "Administration"
+		"administration": "Administration",
+		"confirmMsg": "Voulez-vous effectuer cette action",
+		"yes": "Oui",
+		"no": "Non"
 	}
 }

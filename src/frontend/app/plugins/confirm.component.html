@@ -1,0 +1,9 @@
+<div class="modalContent">
+  <div mat-dialog-content>
+      {{'lang.confirmMsg' | translate}} ?
+  </div>
+  <div mat-dialog-actions>
+    <button class="actions btn blue" mat-button (click)="this.dialogRef.close('yes');">{{'lang.yes' | translate}}</button>
+    <button class="actions btn red" mat-button (click)="this.dialogRef.close('no');">{{'lang.no' | translate}}</button>
+  </div>
+</div>

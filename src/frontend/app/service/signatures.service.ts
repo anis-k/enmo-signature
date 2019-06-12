@@ -32,12 +32,18 @@ export class SignaturesContentService {
     workingAreaHeight = 0;
     renderingDoc = true;
     mobileMode = true;
+    smartphoneMode = true;
     mode = '';
     scale = 1;
     x = 0;
     y = 0;
 
     constructor() {
+        if (window.screen.width <= 360) {
+            this.smartphoneMode = true;
+        } else {
+            this.smartphoneMode = false;
+        }
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             this.mobileMode = true;
         } else {
@@ -78,7 +84,12 @@ export class SignaturesContentService {
         this.workingAreaWidth = 0;
         this.workingAreaHeight = 0;
         this.renderingDoc = true;
-        this.mobileMode = true;
+
+        if (window.screen.width <= 360) {
+            this.smartphoneMode = true;
+        } else {
+            this.smartphoneMode = false;
+        }
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             this.mobileMode = true;
         } else {

@@ -199,3 +199,16 @@ mat-accordion mat-expansion-panel {
 .mat-drawer-container {
   height: 100%;
 }
+
+.mat-paginator {
+  background: none;
+  color: white;
+}
+.mat-paginator-page-size {
+  display: none !important;
+}
+
+.mat-paginator-range-label {
+  position: absolute;
+  line-height: 50px;
+}

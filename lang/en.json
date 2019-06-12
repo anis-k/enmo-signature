@@ -165,10 +165,13 @@
 		"substitutedDoc": "Substituted document",
 		"substitutedSignature": "Substituted signature",
 		"substitutionWarn": "You choose a substitution, délégation, you will not be able to make any action.",
-		"manage_users": "Users",
+		"manage_users": "User(s)",
 		"manage_usersDesc": "Add / Update / Delete users in application. You can link the accounts to Maarch Courrier.",
 		"manage_email_configuration": "Email server",
 		"manage_email_configurationDesc": "Configure email server for users notifications.",
-		"administration": "Administration"
+		"administration": "Administration",
+		"confirmMsg": "Are you sure",
+		"yes": "Yes",
+		"no": "No"
 	}
 }

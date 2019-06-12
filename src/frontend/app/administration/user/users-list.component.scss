@@ -1,0 +1,56 @@
+@import '../../../css/vars.scss';
+
+.header {
+  background: $primary;
+  height: 95px;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 25px;
+  &-title {
+    flex: 1;
+    align-items: center;
+    display: flex;
+  }
+  b {
+    color: #F99830;
+  }
+}
+
+.mainView {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  flex: 1;
+  overflow: auto;
+}
+
+.loader {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  background: #fffc;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  top: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.noResult {
+  padding: 10px;
+  text-align: center;
+  opacity: 0.5;
+}
+
+.dataTable {
+  height: 100%;
+}
+.emptyTable {
+  height: auto;
+}

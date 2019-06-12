@@ -21,6 +21,7 @@ import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
 import { CookieService } from 'ngx-cookie-service';
 import { NgPipesModule } from 'ngx-pipes';
+import { LatinisePipe } from 'ngx-pipes';
 
 import { AppMaterialModule } from './app-material.module';
 
@@ -47,12 +48,19 @@ import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.co
 import { DocumentListComponent } from './document/document-list/document-list.component';
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
+
+// ADMINISTRATION
 import { AdministrationComponent } from './administration/administration.component';
+import { UsersListComponent } from './administration/user/users-list.component';
+
 
 // SERVICES
 import { NotificationService, CustomSnackbarComponent } from './service/notification.service';
 import { SignaturesContentService } from './service/signatures.service';
 import { FiltersService } from './service/filters.service';
+
+// OTHERS
+import { ConfirmComponent } from './plugins/confirm.component';
 
 
 
@@ -81,7 +89,9 @@ import { FiltersService } from './service/filters.service';
     VisaWorkflowComponent,
     DocumentListComponent,
     MainDocumentDetailComponent,
-    AdministrationComponent
+    AdministrationComponent,
+    UsersListComponent,
+    ConfirmComponent
   ],
   imports: [
     FormsModule,
@@ -105,6 +115,7 @@ import { FiltersService } from './service/filters.service';
     AppMaterialModule,
     RouterModule.forRoot([
       { path: 'administration', component: AdministrationComponent },
+      { path: 'administration/users', component: UsersListComponent },
       { path: 'documents/:id', component: DocumentComponent },
       { path: 'documents', component: DocumentComponent },
       { path: 'login', component: LoginComponent },
@@ -119,7 +130,8 @@ import { FiltersService } from './service/filters.service';
     ConfirmModalComponent,
     SuccessInfoValidBottomSheetComponent,
     RejectInfoBottomSheetComponent,
-    SignaturesComponent
+    SignaturesComponent,
+    ConfirmComponent
   ],
   providers: [SignaturesContentService,
     FiltersService,
@@ -128,7 +140,8 @@ import { FiltersService } from './service/filters.service';
       provide: HAMMER_GESTURE_CONFIG,
       useClass: CustomHammerConfig
     },
-    CookieService],
+    CookieService,
+    LatinisePipe],
   exports: [
     RouterModule
   ],

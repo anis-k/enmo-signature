@@ -17,12 +17,18 @@ import {
   MatSliderModule,
   MatSelectModule,
   MatSlideToggleModule,
-  MatBadgeModule
+  MatBadgeModule,
+  MatTableModule,
+  MatPaginatorModule,
+  MatSortModule,
+  MatPaginatorIntl
 } from '@angular/material';
 
 import { MatMenuModule } from '@angular/material/menu';
 
-import {DragDropModule} from '@angular/cdk/drag-drop';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
+import { getFrenchPaginatorIntl } from './plugins/paginator-fr-intl';
 
 @NgModule({
   imports: [
@@ -44,7 +50,10 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
       MatSliderModule,
       MatSelectModule,
       MatSlideToggleModule,
-      MatBadgeModule
+      MatBadgeModule,
+      MatTableModule,
+      MatPaginatorModule,
+      MatSortModule
   ],
   exports: [
       MatSidenavModule,
@@ -65,7 +74,13 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
       MatSliderModule,
       MatSelectModule,
       MatSlideToggleModule,
-      MatBadgeModule
+      MatBadgeModule,
+      MatTableModule,
+      MatPaginatorModule,
+      MatSortModule
+  ],
+  providers: [
+      { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },
   ]
 })
 export class AppMaterialModule { }
