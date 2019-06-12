@@ -14,6 +14,7 @@
 
 namespace SrcCore\controllers;
 
+use Configuration\models\ConfigurationModel;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
@@ -53,7 +54,32 @@ class AuthenticationController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        if (!AuthenticationModel::authentication(['login' => $body['login'], 'password' => $body['password']])) {
+        $connection = ConfigurationModel::getConnection();
+        if ($connection == 'ldap') {
+            $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => ['value']]);
+            if (empty($ldapConfigurations)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Ldap configuration is missing']);
+            }
+            $ldapConfigurations = json_decode($ldapConfigurations['value'], true);
+            foreach ($ldapConfigurations as $ldapConfiguration) {
+                $uri = ($ldapConfiguration['ssl'] === true ? "LDAPS://{$ldapConfiguration['uri']}" : $ldapConfiguration['uri']);
+                $ldap = ldap_connect($uri);
+                if ($ldap !== false) {
+                    break;
+                }
+            }
+            if (empty($ldap)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Ldap connection failed']);
+            }
+            ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+            ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+            $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
+            $authenticated = @ldap_bind($ldap, $login, $body['password']);
+        } else {
+            $authenticated = AuthenticationModel::authentication(['login' => $body['login'], 'password' => $body['password']]);
+        }
+
+        if (!$authenticated) {
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 

@@ -65,4 +65,5 @@ INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 -----
 TRUNCATE TABLE configurations;
 INSERT INTO configurations (identifier, value) VALUES ('emailServer', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
-ALTER SEQUENCE configurations_id_seq RESTART WITH 2;
+INSERT INTO configurations (identifier, value) VALUES ('ldapServer', '[{"uri" : "10.2.95.60", "prefix" : "MAARCH", "ssl" : false}]');
+INSERT INTO configurations (identifier, value) VALUES ('connection', '{"standard" : true, "ldap" : false}');

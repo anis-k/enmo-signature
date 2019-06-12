@@ -69,4 +69,27 @@ class ConfigurationModel
 
         return true;
     }
+
+    public static function getConnection()
+    {
+        $configuration = DatabaseModel::select([
+            'select'    => ['value'],
+            'table'     => ['configurations'],
+            'where'     => ['identifier = ?'],
+            'data'      => ['connection']
+        ]);
+
+        if (empty($configuration[0])) {
+            return 'standard';
+        }
+
+        $connections = json_decode($configuration[0]['value'], true);
+        foreach ($connections as $key => $connection) {
+            if ($connection) {
+                return $key;
+            }
+        }
+
+        return 'standard';
+    }
 }
