@@ -16,7 +16,7 @@ const frenchRangeLabel = (page: number, pageSize: number, length: number) => {
       startIndex + pageSize;
 
   const nbPage = Math.ceil(length / pageSize);
-      return `Page ${page + 1} / ${nbPage}`;
+      return `${page + 1} / ${nbPage}`;
 };
 
 export function getFrenchPaginatorIntl() {
