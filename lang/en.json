@@ -164,7 +164,7 @@
 		"substitutionInfo": "You are in substitution mode, you can't make any action",
 		"substitutedDoc": "Substituted document",
 		"substitutedSignature": "Substituted signature",
-		"substitutionWarn": "You choose a substitution, délégation, you will not be able to make any action.",
+		"substitutionWarn": "You choose a substitution, you will not be able to make any action.",
 		"manage_users": "User(s)",
 		"manage_usersDesc": "Add / Update / Delete users in application. You can link the accounts to Maarch Courrier.",
 		"manage_email_configuration": "Email server",
