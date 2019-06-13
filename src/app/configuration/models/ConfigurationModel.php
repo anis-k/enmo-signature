@@ -83,13 +83,8 @@ class ConfigurationModel
             return 'standard';
         }
 
-        $connections = json_decode($configuration[0]['value'], true);
-        foreach ($connections as $key => $connection) {
-            if ($connection) {
-                return $key;
-            }
-        }
+        $connection = json_decode($configuration[0]['value']);
 
-        return 'standard';
+        return $connection;
     }
 }

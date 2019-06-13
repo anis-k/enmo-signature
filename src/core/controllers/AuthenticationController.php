@@ -63,23 +63,28 @@ class AuthenticationController
             $ldapConfigurations = json_decode($ldapConfigurations['value'], true);
             foreach ($ldapConfigurations as $ldapConfiguration) {
                 $uri = ($ldapConfiguration['ssl'] === true ? "LDAPS://{$ldapConfiguration['uri']}" : $ldapConfiguration['uri']);
-                $ldap = ldap_connect($uri);
-                if ($ldap !== false) {
-                    break;
+                $ldap = @ldap_connect($uri);
+                if ($ldap === false) {
+                    $error = 'Ldap connect failed';
+                    continue;
+                }
+                ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+                ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+                ldap_set_option($ldap, LDAP_OPT_NETWORK_TIMEOUT, 10);
+                $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
+                $login = (!empty($ldapConfiguration['suffix']) ? $login . $ldapConfiguration['suffix'] : $login);
+                $authenticated = @ldap_bind($ldap, $login, $body['password']);
+                if (!$authenticated) {
+                    $error = ldap_error($ldap);
                 }
             }
-            if (empty($ldap)) {
-                return $response->withStatus(400)->withJson(['errors' => 'Ldap connection failed']);
+            if (empty($authenticated) && !empty($error) && $error != 'Invalid credentials') {
+                return $response->withStatus(400)->withJson(['errors' => $error]);
             }
-            ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
-            ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
-            $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
-            $authenticated = @ldap_bind($ldap, $login, $body['password']);
         } else {
             $authenticated = AuthenticationModel::authentication(['login' => $body['login'], 'password' => $body['password']]);
         }
-
-        if (!$authenticated) {
+        if (empty($authenticated)) {
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
