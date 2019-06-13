@@ -1,9 +1,6 @@
-<div *ngIf="enterApp" class="enterApp" [@enterApp]>
-  <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
-</div>
 <mat-sidenav-container autosize>
   <mat-sidenav #snav disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
-  [opened]="!signaturesService.mobileMode" [disableClose]="freezeSidenavClose" [style.width.px]="350">
+  [opened]="!signaturesService.mobileMode" [style.width.px]="350">
   <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="mainView">
