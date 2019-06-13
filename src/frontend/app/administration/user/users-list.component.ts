@@ -5,8 +5,9 @@ import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, finalize } from 'rxjs/operators';
 import { LatinisePipe } from 'ngx-pipes';
+
 
 export interface User {
     id: string;
@@ -73,17 +74,15 @@ export class UsersListComponent implements OnInit {
         this.http.get('../rest/users')
             .pipe(
                 map((data: any) => data.users),
-                tap(() => this.loading = true)
+                tap(() => this.loading = true),
+                finalize(() => this.loading = false)
             )
             .subscribe({
                 next: data => {
                     this.userList = data;
                     this.updateDataTable();
                 },
-                error: err => this.notificationService.handleErrors(err),
-                complete: () => {
-                    this.loading = false;
-                }
+                error: err => this.notificationService.handleErrors(err)
             });
     }
 
@@ -96,7 +95,8 @@ export class UsersListComponent implements OnInit {
                 this.loading = true;
                 this.http.delete('../rest/users/' + userToDelete.id)
                     .pipe(
-                        tap(() => this.loading = true)
+                        tap(() => this.loading = true),
+                        finalize(() => this.loading = false)
                     )
                     .subscribe({
                         next: data => {
@@ -109,10 +109,7 @@ export class UsersListComponent implements OnInit {
                             this.notificationService.success('lang.userDeleted');
 
                         },
-                        error: err => this.notificationService.handleErrors(err),
-                        complete: () => {
-                            this.loading = false;
-                        }
+                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });
