@@ -164,6 +164,7 @@
 		"substitutionInfo": "Vous avez délégué vos documents, vous ne pouvez pas faire d'action",
 		"substitutedDoc": "Document délégué",
 		"substitutedSignature": "Signature déléguée",
+		"substituteMsg": "Vous agissez en tant que",
 		"substitutionWarn": "Vous avez choisi une délégation, vous ne pourrez plus faire d'action.",
 		"manage_users": "Utilisateur(s)",
 		"manage_usersDesc": "Ajouter / Modifier / Supprimer les utilisateurs de l'application.",
