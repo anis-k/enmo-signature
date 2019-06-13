@@ -21,8 +21,9 @@ export class VisaWorkflowComponent implements OnInit {
     constructor(public http: HttpClient, public signaturesService: SignaturesContentService) { }
 
     ngOnInit(): void {
+        console.log(this.visaWorkflow);
         this.visaWorkflow.forEach((element: any) => {
-            if (element.userPicture === undefined ) {
+            if (element.userPicture === undefined  && element.userDisplay !== '') {
                 this.http.get('../rest/users/' + element.userId + '/picture')
                 .subscribe((data: any) => {
                     element.userPicture = data.picture;
