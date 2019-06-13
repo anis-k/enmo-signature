@@ -46,7 +46,7 @@
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row matRipple *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/users/{{row.id}}"
+        <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/users/{{row.id}}"
           style="cursor:pointer;"></mat-row>
       </mat-table>
       <div class="noResult" *ngIf="dataSource.filteredData.length === 0">

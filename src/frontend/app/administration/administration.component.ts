@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { HttpClient } from '@angular/common/http';
+import { map, tap, finalize } from 'rxjs/operators';
 
 export interface Privilege {
     title: string;
@@ -18,25 +19,21 @@ export interface Privilege {
 
 export class AdministrationComponent implements OnInit {
 
+    loading: boolean = true;
     privileges: Privilege[] = [];
 
     constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
 
     ngOnInit(): void {
         this.http.get('../rest/administrativePrivileges')
-            .subscribe((data: any) => {
-                data.privileges.forEach((element: any) => {
-                    this.privileges.push({
-                        title: element.id,
-                        description: element.id + 'Desc',
-                        icon: element.icon,
-                        route: element.route
-                    }
-                    );
-                });
-                console.log(this.privileges);
-            }, (err) => {
-                this.notificationService.handleErrors(err);
-            });
+        .pipe(
+            map((data: any) => data.privileges),
+            tap(() => this.loading = true),
+            finalize(() => this.loading = false)
+        )
+        .subscribe({
+            next: data => this.privileges = data,
+            error: err => this.notificationService.handleErrors(err)
+        });
     }
 }
