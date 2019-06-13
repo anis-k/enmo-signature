@@ -74,7 +74,6 @@ export class UsersListComponent implements OnInit {
         this.http.get('../rest/users')
             .pipe(
                 map((data: any) => data.users),
-                tap(() => this.loading = true),
                 finalize(() => this.loading = false)
             )
             .subscribe({
@@ -95,7 +94,6 @@ export class UsersListComponent implements OnInit {
                 this.loading = true;
                 this.http.delete('../rest/users/' + userToDelete.id)
                     .pipe(
-                        tap(() => this.loading = true),
                         finalize(() => this.loading = false)
                     )
                     .subscribe({

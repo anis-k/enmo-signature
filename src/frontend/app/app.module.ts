@@ -50,6 +50,8 @@ import { MainDocumentDetailComponent } from './document/main-document-detail/mai
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 
 // ADMINISTRATION
+import { AdminSidebarComponent } from './sidebar/administration/admin-sidebar.component';
+
 import { AdministrationComponent } from './administration/administration.component';
 import { UsersListComponent } from './administration/user/users-list.component';
 import { UserComponent } from './administration/user/user.component';
@@ -93,7 +95,8 @@ import { ConfirmComponent } from './plugins/confirm.component';
     AdministrationComponent,
     UsersListComponent,
     UserComponent,
-    ConfirmComponent
+    ConfirmComponent,
+    AdminSidebarComponent
   ],
   imports: [
     FormsModule,

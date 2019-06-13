@@ -1,0 +1,97 @@
+@import '../../../css/vars.scss';
+
+.sidebar {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &-header {
+    background: #F1F4F4;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    padding-top: 10px;
+  }
+  .nav {
+    flex: 1;
+    overflow-y: scroll;
+    margin-top: 0px;
+    overflow-x: hidden;
+    margin-bottom: 0px;
+    padding: 0px;
+  }
+}
+
+.profile-header {
+  background: $primary;
+  height: 95px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.avatar {
+  cursor: pointer;
+  position: absolute;
+  width: 65px;
+  height: 65px;
+  border-radius: 40px;
+  bottom: -20px;
+  border: solid 3px #F99830;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: all 0.2s;
+}
+
+.avatar:hover {
+  box-shadow: 0px 0px 5px 0px #656565;
+}
+
+.user {
+  color: white;
+  padding-top: 10px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.logout-button {
+  font-size: 24px;
+  color: white;
+  position: absolute;
+  left: 10px;
+}
+
+.home-button {
+  font-size: 24px;
+  color: white;
+  position: absolute;
+  left: 50px;
+}
+
+.closePanel {
+  color: white;
+  position: absolute;
+  right: 10px;
+  font-size: 24px;
+}
+
+.admin-list {
+    padding-top: 0;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    color: #666;
+}
+
+.item-active {
+    border-left: solid 5px $primary;
+    background: rgba($primary, 0.14);
+    color: $primary;
+    font-weight: bold;
+}

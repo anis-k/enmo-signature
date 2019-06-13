@@ -42,7 +42,6 @@ export class UserComponent implements OnInit {
                 this.http.get('../rest/users/' + params['id'])
                 .pipe(
                     map((data: any) => data.user),
-                    tap(() => this.loading = true),
                     finalize(() => this.loading = false)
                 )
                 .subscribe({
@@ -65,9 +64,9 @@ export class UserComponent implements OnInit {
     }
 
     onSubmit() {
+        this.loading = true;
         this.http.put('../rest/users/' + this.user.id, this.user)
         .pipe(
-            tap(() => this.loading = true),
             finalize(() => this.loading = false)
         )
         .subscribe({
@@ -87,7 +86,6 @@ export class UserComponent implements OnInit {
                 this.loading = true;
                 this.http.delete('../rest/users/' + this.user.id)
                     .pipe(
-                        tap(() => this.loading = true),
                         finalize(() => this.loading = false)
                     )
                     .subscribe({

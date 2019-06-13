@@ -1,0 +1,37 @@
+<nav class="sidebar" *ngIf="snavLeftComponent.opened">
+  <div class="main-header">
+    <header class="profile-header">
+      <button class="logout-button" mat-icon-button (click)="logout()">
+        <mat-icon fontSet="fas" fontIcon="fa-power-off"></mat-icon>
+      </button>
+      <button class="home-button" mat-icon-button (click)="openHome()">
+        <mat-icon fontSet="fas" fontIcon="fa-home"></mat-icon>
+      </button>
+      <button *ngIf="checkClose()" class="closePanel" mat-icon-button type="button" (tap)="snavLeftComponent.close();">
+        <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
+      </button>
+      <div class="user" style="color: #F99830">
+        {{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}
+      </div>
+      <div *ngIf="signaturesService.userLogged.picture" class="avatar"
+        [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}"
+        (click)="openProfile()">
+      </div>
+    </header>
+    <header class="sidebar-header">
+      <div routerLink="/administration"  style="cursor: pointer;">
+        {{'lang.administration' | translate}}
+      </div>
+    </header>
+  </div>
+  <mat-nav-list class="admin-list">
+    <mat-list-item *ngFor="let privilege of privileges" [routerLink]="privilege.route" [class.item-active]="('/' + route.routeConfig.path).indexOf(privilege.route) !== -1">
+      <mat-icon matListIcon [class]="privilege.icon" color="primary"></mat-icon>
+      <p matLine>
+        {{'lang.' + privilege.id | translate}}
+      </p>
+      <mat-divider></mat-divider>
+    </mat-list-item>
+
+  </mat-nav-list>
+</nav>

@@ -5,8 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, tap, finalize } from 'rxjs/operators';
 
 export interface Privilege {
-    title: string;
-    description: string;
+    id: string;
     icon: string;
     route: string;
 }
