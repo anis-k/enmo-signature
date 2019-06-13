@@ -22,9 +22,9 @@ use User\models\UserGroupModel;
 class PrivilegeController
 {
     const PRIVILEGES = [
-        ['id' => 'manage_users',                'icon' => 'fa fa-user', 'route' => '/administration/users'],
-        ['id' => 'manage_email_configuration',  'icon' => 'fa fa-paper-plane', 'route' => '/administration/configuration'],
-        ['id' => 'manage_documents']
+        ['id' => 'manage_users',                'type' => 'admin', 'icon' => 'fa fa-user',          'route' => '/administration/users'],
+        ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'fa fa-paper-plane',   'route' => '/administration/configuration'],
+        ['id' => 'manage_documents',            'type' => 'simple']
     ];
 
     public function getAdministrativePrivilegesByUser(Request $request, Response $response)
@@ -40,7 +40,7 @@ class PrivilegeController
 
             if (!empty($privileges)) {
                 foreach (PrivilegeController::PRIVILEGES as $value) {
-                    if (!empty($value['route']) && in_array($value['id'], $privileges)) {
+                    if ($value['type'] == 'admin' && in_array($value['id'], $privileges)) {
                         $administrativePrivileges[] = $value;
                     }
                 }
