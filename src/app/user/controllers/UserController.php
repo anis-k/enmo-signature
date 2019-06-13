@@ -242,7 +242,7 @@ class UserController
 
     public function delete(Request $request, Response $response, array $args)
     {
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users']) || $GLOBALS['id'] == $args['id']) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -251,11 +251,14 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
         }
 
+        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
+        $allSubstitutedUsers = array_column($substitutedUsers, 'id');
+
         $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
         $workflows = WorkflowModel::get([
             'select'    => [1],
-            'where'     => ['user_id = ?', "(id) in ({$workflowSelect})"],
-            'data'      => [$args['id']]
+            'where'     => ['user_id in (?)', "(id) in ({$workflowSelect})"],
+            'data'      => [array_merge([$args['id']], $allSubstitutedUsers)]
         ]);
         if (!empty($workflows)) {
             return $response->withStatus(400)->withJson(['errors' => 'User has current workflows']);
@@ -265,8 +268,6 @@ class UserController
         WorkflowModel::delete(['where' => ['process_date is null', 'status is null', 'user_id = ?'], 'data' => [$args['id']]]);
 
         //Substituted Users
-        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
-        $allSubstitutedUsers = array_column($substitutedUsers, 'id');
         if (!empty($allSubstitutedUsers)) {
             UserModel::update(['set' => ['substitute' => null], 'where' => ['id in (?)'], 'data' => [$allSubstitutedUsers]]);
         }
