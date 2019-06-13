@@ -137,9 +137,6 @@ class DocumentController
             $date = new \DateTime($document['deadline']);
             $formattedDocument['deadline'] = $date->format('d-m-Y H:i');
         }
-        $creator = UserModel::getById(['select' => ['firstname', 'lastname', 'login'], 'id' => $document['creator']]);
-        $formattedDocument['creator'] = $creator['login'];
-        $formattedDocument['creatorDisplay'] = "{$creator['firstname']} {$creator['lastname']}";
 
         $formattedDocument['metadata'] = [];
         $metadata = json_decode($document['metadata'], true);
@@ -306,8 +303,7 @@ class DocumentController
             'description'       => empty($body['description']) ? null : $body['description'],
             'sender'            => $body['sender'],
             'deadline'          => empty($body['deadline']) ? null : $body['deadline'],
-            'metadata'          => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
-            'creator'           => $GLOBALS['id']
+            'metadata'          => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
         ]);
 
         AdrModel::createDocumentAdr([

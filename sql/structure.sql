@@ -144,7 +144,6 @@ CREATE TABLE main_documents
   sender text NOT NULL,
   deadline timestamp without time zone,
   metadata jsonb NOT NULL DEFAULT '{}',
-  creator INTEGER NOT NULL,
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),
   CONSTRAINT main_documents_pkey PRIMARY KEY (id)
