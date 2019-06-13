@@ -52,6 +52,7 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
 // ADMINISTRATION
 import { AdministrationComponent } from './administration/administration.component';
 import { UsersListComponent } from './administration/user/users-list.component';
+import { UserComponent } from './administration/user/user.component';
 
 
 // SERVICES
@@ -91,6 +92,7 @@ import { ConfirmComponent } from './plugins/confirm.component';
     MainDocumentDetailComponent,
     AdministrationComponent,
     UsersListComponent,
+    UserComponent,
     ConfirmComponent
   ],
   imports: [
@@ -116,6 +118,8 @@ import { ConfirmComponent } from './plugins/confirm.component';
     RouterModule.forRoot([
       { path: 'administration', component: AdministrationComponent },
       { path: 'administration/users', component: UsersListComponent },
+      { path: 'administration/users/new', component: UserComponent },
+      { path: 'administration/users/:id', component: UserComponent },
       { path: 'documents/:id', component: DocumentComponent },
       { path: 'documents', component: DocumentComponent },
       { path: 'login', component: LoginComponent },

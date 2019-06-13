@@ -1,5 +1,5 @@
 <mat-sidenav-container autosize>
-  <mat-sidenav #snav disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
+  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode" [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
   [opened]="!signaturesService.mobileMode" [style.width.px]="350">
   <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
