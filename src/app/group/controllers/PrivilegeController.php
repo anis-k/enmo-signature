@@ -67,4 +67,29 @@ class PrivilegeController
 
         return false;
     }
+
+    public static function hasAdmin(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['userId']);
+        ValidatorModel::intVal($args, ['userId']);
+
+        $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['userId']]]);
+
+        $allGroups = array_column($groups, 'group_id');
+
+        if (!empty($allGroups)) {
+            $privileges = UserGroupModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
+            $privileges = array_column($privileges, 'privilege');
+
+            if (!empty($privileges)) {
+                foreach (PrivilegeController::PRIVILEGES as $value) {
+                    if ($value['type'] == 'admin' && in_array($value['id'], $privileges)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

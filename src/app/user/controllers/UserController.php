@@ -71,9 +71,6 @@ class UserController
         }
 
         $user = UserController::getUserInformationsById(['id' => $args['id']]);
-        if ($GLOBALS['id'] != $args['id']) {
-            unset($user['preferences'], $user['availableLanguages']);
-        }
         $user['groups'] = [];
 
         $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
@@ -496,8 +493,11 @@ class UserController
             $user['picture'] = 'data:image/png;base64,' . $user['picture'];
         }
 
-        $user['preferences']        = json_decode($user['preferences'], true);
-        $user['availableLanguages'] = LanguageController::getAvailableLanguages();
+        if ($GLOBALS['id'] == $args['id']) {
+            $user['preferences']        = json_decode($user['preferences'], true);
+            $user['availableLanguages'] = LanguageController::getAvailableLanguages();
+            $user['hasAdmin']           = PrivilegeController::hasAdmin(['userId' => $args['id']]);
+        }
 
         return $user;
     }
