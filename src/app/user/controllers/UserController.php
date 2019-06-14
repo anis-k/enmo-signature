@@ -70,7 +70,10 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $user =  UserController::getUserInformationsById(['id' => $args['id']]);
+        $user = UserController::getUserInformationsById(['id' => $args['id']]);
+        if ($GLOBALS['id'] != $args['id']) {
+            unset($user['preferences'], $user['availableLanguages']);
+        }
         $user['groups'] = [];
 
         $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
@@ -153,30 +156,14 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
-        $check = Validator::arrayType()->notEmpty()->validate($body['preferences']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['lang']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingMode']);
-        $check = $check && Validator::intType()->notEmpty()->validate($body['preferences']['writingSize']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($body['preferences']['writingColor']);
-        $check = $check && Validator::boolType()->validate($body['preferences']['notifications']);
-        if (!$check) {
-            return $response->withStatus(400)->withJson(['errors' => 'Missing parameter in user preferences data']);
-        }
-
-        $body['preferences'] = json_encode($body['preferences']);
-        if (!is_string($body['preferences'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Wrong format for user preferences data']);
-        }
-
         $set = [
             'firstname'     => $body['firstname'],
             'lastname'      => $body['lastname'],
             'email'         => $body['email'],
-            'preferences'   => $body['preferences'],
             'substitute'    => null,
         ];
 
-        if (!empty($body['picture'])) {
+        if ($GLOBALS['id'] == $args['id'] && !empty($body['picture'])) {
             $infoContent = '';
             if (preg_match('/^data:image\/(\w+);base64,/', $body['picture'])) {
                 $infoContent = substr($body['picture'], 0, strpos($body['picture'], ',') + 1);
@@ -296,6 +283,54 @@ class UserController
         }
 
         return $response->withJson(['picture' => $user['picture']]);
+    }
+
+    public function updatePreferences(Request $request, Response $response, array $args)
+    {
+        if ($GLOBALS['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        if (!Validator::stringType()->notEmpty()->validate($body['lang'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body lang is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['writingMode'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body writingMode is empty or not a string']);
+        } elseif (!Validator::intType()->notEmpty()->validate($body['writingSize'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body writingSize is empty or not an integer']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['writingColor'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body writingColor is empty or not a string']);
+        } elseif (!Validator::boolType()->validate($body['notifications'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body notifications is empty or not a boolean']);
+        }
+
+        $preferences = json_encode([
+            'lang'          => $body['lang'],
+            'writingMode'   => $body['writingMode'],
+            'writingSize'   => $body['writingSize'],
+            'writingColor'  => $body['writingColor'],
+            'notifications' => $body['notifications'],
+        ]);
+        if (!is_string($preferences)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Wrong format for user preferences data']);
+        }
+
+        UserModel::update([
+            'set'   => ['preferences' => $preferences],
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => "{userUpdated} : {$body['firstname']} {$body['lastname']}"
+        ]);
+
+        return $response->withStatus(204);
     }
 
     public function updatePassword(Request $request, Response $response, array $args)
