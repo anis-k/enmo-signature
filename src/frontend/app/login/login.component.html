@@ -7,7 +7,8 @@
             </mat-form-field>
             <mat-form-field class="input-row">
                 <input id="password" name="password" matInput placeholder="{{'lang.password' | translate}}" type="password" [(ngModel)]="newLogin.password">
-                <mat-hint align="end"><a routerLink="/forgot-password" class="forgotPwdLink">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
+                <mat-hint align="end" *ngIf="signaturesService.authMode === 'default'"><a routerLink="/forgot-password" class="infoLogin">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
+                <mat-hint align="end" *ngIf="signaturesService.authMode === 'ldap'"><span class="infoLogin">{{'lang.ldapEnabled' | translate}}</span></mat-hint>
             </mat-form-field>
             <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton | translate}}</button>
         </form>

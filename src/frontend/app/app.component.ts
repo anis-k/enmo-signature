@@ -16,7 +16,12 @@ import { TranslateService } from '@ngx-translate/core';
 export class AppComponent {
 
   constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService) {
-
+    this.http.get('../rest/connection')
+      .subscribe((data: any) => {
+          this.signaturesService.authMode = data.connection;
+      }, (err: any) => {
+          this.notificationService.handleErrors(err);
+      });
     if (this.cookieService.check('maarchParapheurLang')) {
       const cookieInfoLang = this.cookieService.get('maarchParapheurLang');
       translate.setDefaultLang(cookieInfoLang);
