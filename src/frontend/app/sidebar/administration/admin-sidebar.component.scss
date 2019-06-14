@@ -36,7 +36,6 @@
 }
 
 .avatar {
-  cursor: pointer;
   position: absolute;
   width: 65px;
   height: 65px;
@@ -46,11 +45,6 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  transition: all 0.2s;
-}
-
-.avatar:hover {
-  box-shadow: 0px 0px 5px 0px #656565;
 }
 
 .user {

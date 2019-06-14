@@ -143,10 +143,6 @@ export class DocumentComponent implements OnInit {
         private cookieService: CookieService,
         private sanitizer: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
         this.draggable = false;
-
-        if (!this.cookieService.check('maarchParapheurAuth')) {
-            this.router.navigate(['/login']);
-        }
     }
 
     ngOnInit(): void {

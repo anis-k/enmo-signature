@@ -24,24 +24,5 @@ export class AppComponent {
       this.cookieService.set( 'maarchParapheurLang', 'fr' );
       translate.setDefaultLang('fr');
     }
-
-    if (this.cookieService.check('maarchParapheurAuth')) {
-      const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
-
-      this.http.get('../rest/users/' + cookieInfo.id)
-        .subscribe((data: any) => {
-          this.signaturesService.userLogged = data.user;
-          if (this.signaturesService.signaturesList.length === 0) {
-            this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
-                .subscribe((dataSign: any) => {
-                    this.signaturesService.signaturesList = dataSign.signatures;
-                });
-        }
-          this.translate.use(this.signaturesService.userLogged.preferences.lang);
-        },
-          (err: any) => {
-            this.notificationService.handleErrors(err);
-          });
-    }
   }
 }

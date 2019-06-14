@@ -45,18 +45,6 @@ export class AdminSidebarComponent implements OnInit {
         });
     }
 
-    openProfile() {
-        this.signaturesService.sideNavRigtDatas = {
-            mode : 'profile',
-            width : '650px',
-            locked : true,
-        };
-        if (this.signaturesService.mobileMode) {
-            this.snavLeftComponent.close();
-            this.snavRightComponent.open();
-        }
-    }
-
     openHome() {
         this.router.navigate(['/documents/']);
         if (this.signaturesService.mobileMode) {

@@ -4,7 +4,7 @@
       <button class="logout-button" mat-icon-button (click)="logout()">
         <mat-icon fontSet="fas" fontIcon="fa-power-off"></mat-icon>
       </button>
-      <button class="admin-button" mat-icon-button (click)="openAdmin()">
+      <button *ngIf="signaturesService.userLogged.hasAdmin" class="admin-button" mat-icon-button (click)="openAdmin()">
         <mat-icon fontSet="fas" fontIcon="fa-tools"></mat-icon>
       </button>
       <button *ngIf="checkClose()" class="closePanel"
