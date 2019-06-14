@@ -123,4 +123,11 @@ class AuthenticationController
 
         return $response->withJson(['success' => 'success']);
     }
+
+    public static function getConnection(Request $request, Response $response)
+    {
+        $connection = ConfigurationModel::getConnection();
+
+        return $response->withJson(['connection' => $connection]);
+    }
 }
