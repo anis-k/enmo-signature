@@ -80,7 +80,7 @@ class ConfigurationModel
         ]);
 
         if (empty($configuration[0])) {
-            return 'standard';
+            return 'default';
         }
 
         $connection = json_decode($configuration[0]['value']);
