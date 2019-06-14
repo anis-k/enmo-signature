@@ -124,6 +124,7 @@
 		"userUpdated"                        : "User updated",
 		"userDeleted"                        : "User deleted",
 		"userViewed"                         : "User viewed",
+		"userHasCurrentDocuments"            : "User has current documents",
 		"validate"                           : "Validate",
 		"validateAnnotation"                 : "Validate the annotation",
 		"validateDocumentWithoutSignOrNote"  : "You are about to validate this document without signature or annotation!",

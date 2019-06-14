@@ -248,7 +248,7 @@ class UserController
             'data'      => [array_merge([$args['id']], $allSubstitutedUsers)]
         ]);
         if (!empty($workflows)) {
-            return $response->withStatus(400)->withJson(['errors' => 'User has current workflows']);
+            return $response->withStatus(400)->withJson(['errors' => 'User has current documents', 'lang' => 'userHasCurrentDocuments']);
         }
 
         //Workflows
