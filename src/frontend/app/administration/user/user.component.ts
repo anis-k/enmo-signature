@@ -136,10 +136,6 @@ export class UserComponent implements OnInit {
     }
 
     cancel() {
-        if (!this.creationMode) {
-            this.user = JSON.parse(JSON.stringify(this.userClone));
-        } else {
-            this.router.navigate(['/administration/users']);
-        }
+        this.router.navigate(['/administration/users']);
     }
 }
