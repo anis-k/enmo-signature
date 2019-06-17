@@ -58,7 +58,6 @@ export class SignaturesContentService {
     }
 
     reset() {
-        this.authMode = '';
         this.userLogged = {};
         this.mainDocumentId = 0;
         this.signaturesContent = [];
