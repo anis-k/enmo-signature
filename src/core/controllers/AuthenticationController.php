@@ -65,7 +65,7 @@ class AuthenticationController
                 $uri = ($ldapConfiguration['ssl'] === true ? "LDAPS://{$ldapConfiguration['uri']}" : $ldapConfiguration['uri']);
                 $ldap = @ldap_connect($uri);
                 if ($ldap === false) {
-                    $error = 'Ldap connect failed';
+                    $error = 'Ldap connect failed : uri is maybe wrong';
                     continue;
                 }
                 ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -73,6 +73,15 @@ class AuthenticationController
                 ldap_set_option($ldap, LDAP_OPT_NETWORK_TIMEOUT, 10);
                 $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
                 $login = (!empty($ldapConfiguration['suffix']) ? $login . $ldapConfiguration['suffix'] : $login);
+                if (!empty($ldapConfiguration['baseDN'])) { //OpenLDAP
+                    $search = ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
+                    if ($search === false) {
+                        $error = 'Ldap search failed : baseDN is maybe wrong';
+                        continue;
+                    }
+                    $entries = ldap_get_entries($ldap, $search);
+                    $login = $entries[0]['dn'];
+                }
                 $authenticated = @ldap_bind($ldap, $login, $body['password']);
                 if (!$authenticated) {
                     $error = ldap_error($ldap);
@@ -89,7 +98,7 @@ class AuthenticationController
         }
 
         $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', 'mode']]);
-        if ($user['mode'] != 'standard') {
+        if (empty($user) || $user['mode'] != 'standard') {
             return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
         }
 
