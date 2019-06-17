@@ -70,7 +70,7 @@ class ConvertThumbnailController
         while ($i < $pageCount) {
             $fileNameOnTmp = rand() . $filename;
 
-            $command = "convert -geometry 1600x1600 -density 200x200 -quality 100 -background white -alpha remove "
+            $command = "convert -density 500x500 -quality 100 -background white -alpha remove "
                 . escapeshellarg($pathToDocument) . "[{$i}] " . escapeshellarg("{$tmpPath}{$fileNameOnTmp}.png");
             exec($command.' 2>&1', $output, $return);
 
