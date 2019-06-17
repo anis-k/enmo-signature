@@ -67,7 +67,7 @@ export class ProfileComponent implements OnInit {
     constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService, public filtersService: FiltersService) { }
 
     ngOnInit(): void {
-        this.profileInfo = this.signaturesService.userLogged;
+        this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
     }
 
     closeProfile() {
