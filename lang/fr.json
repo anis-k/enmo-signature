@@ -64,7 +64,7 @@
 		"newPassword"                        : "Nouveau mot de passe",
 		"notAnImage"                         : "Ceci n'est pas une image",
 		"noteAndSignatureDeleted"            : "Annotations / signatures supprimées du document",
-		"notificationDocumentAddedBody"      : "Un document vient de vous être transmis sur Maarch Parapheur.<br/>Cliquer sur le lien ci-dessous pour le consulter :<br/>",
+		"notificationDocumentAddedBody"      : "Un document vient de vous être transmis sur Maarch Parapheur.<br/>Cliquez sur le lien ci-dessous pour le consulter :<br/>",
 		"notificationDocumentAddedSubject"   : "[Maarch Parapheur] Notification",
 		"notificationFooter"                 : "<br/><br/>Ce courriel vous est envoyé automatiquement par Maarch Parapheur.<br/>Si vous souhaitez ne plus recevoir ces notifications, indiquez-le sur votre profil.",
 		"notificationForgotPasswordBody"     : "Bonjour,<br/>Vous avez demandé à retrouver le mot de passe d'accès à votre compte Maarch Parapheur.<br/>Pour modifier votre mot de passe, merci de bien vouloir cliquer sur le lien ci-dessous :<br/>",
