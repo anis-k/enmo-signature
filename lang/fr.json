@@ -124,7 +124,7 @@
 		"userUpdated"                        : "Utilisateur modifié",
 		"userDeleted"                        : "Utilisateur supprimé",
 		"userViewed"                         : "Utilisateur consulté",
-		"userHasCurrentDocuments"            : "L'utilisateur à des documents en cours",
+		"userHasCurrentDocuments"            : "L'utilisateur a des documents en cours",
 		"validate"                           : "Valider",
 		"validateAnnotation"                 : "Valider l'annotation",
 		"validateDocumentWithoutSignOrNote"  : "Vous êtes sur le point de valider ce document sans signature ou annotation !",

@@ -74,9 +74,9 @@ class AuthenticationController
                 $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
                 $login = (!empty($ldapConfiguration['suffix']) ? $login . $ldapConfiguration['suffix'] : $login);
                 if (!empty($ldapConfiguration['baseDN'])) { //OpenLDAP
-                    $search = ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
+                    $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
                     if ($search === false) {
-                        $error = 'Ldap search failed : baseDN is maybe wrong';
+                        $error = ldap_error($ldap);
                         continue;
                     }
                     $entries = ldap_get_entries($ldap, $search);
