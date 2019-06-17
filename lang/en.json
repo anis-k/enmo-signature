@@ -175,6 +175,7 @@
 		"confirmMsg": "Are you sure",
 		"yes": "Yes",
 		"no": "No",
-		"ldapEnabled": "LDAP enabled"
+		"ldapEnabled": "LDAP enabled",
+		"userCreation": "Add a user"
 	}
 }

@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material';
 import { map, tap, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
+import { TranslateService } from '@ngx-translate/core';
 
 
 export interface User {
@@ -29,28 +30,40 @@ export class UserComponent implements OnInit {
     loading: boolean = true;
     user: User;
     userClone: User;
+    title: string = '';
 
-    constructor(public http: HttpClient, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService,  public dialog: MatDialog) {
+    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
     }
 
     ngOnInit(): void {
         this.route.params.subscribe((params: any) => {
             if (params['id'] === undefined) {
                 this.creationMode = true;
+                this.title = this.translate.instant('lang.userCreation');
+                this.user = {
+                    id: '',
+                    firstname: '',
+                    lastname: '',
+                    login: '',
+                    email: '',
+                    picture: ''
+                };
+                this.loading = false;
             } else {
                 this.creationMode = false;
                 this.http.get('../rest/users/' + params['id'])
-                .pipe(
-                    map((data: any) => data.user),
-                    finalize(() => this.loading = false)
-                )
-                .subscribe({
-                    next: data => {
-                        this.user = data;
-                        this.userClone = JSON.parse(JSON.stringify(this.user));
-                    },
-                    error: err => this.notificationService.handleErrors(err)
-                });
+                    .pipe(
+                        map((data: any) => data.user),
+                        finalize(() => this.loading = false)
+                    )
+                    .subscribe({
+                        next: data => {
+                            this.user = data;
+                            this.userClone = JSON.parse(JSON.stringify(this.user));
+                            this.title = this.user.firstname + ' ' + this.user.lastname;
+                        },
+                        error: err => this.notificationService.handleErrors(err)
+                    });
             }
         });
     }
@@ -64,18 +77,41 @@ export class UserComponent implements OnInit {
     }
 
     onSubmit() {
+        if (this.creationMode) {
+            this.createUser();
+        } else {
+            this.modifyUser();
+        }
+    }
+
+    modifyUser() {
         this.loading = true;
         this.http.put('../rest/users/' + this.user.id, this.user)
-        .pipe(
-            finalize(() => this.loading = false)
-        )
-        .subscribe({
-            next: () => {
-                this.router.navigate(['/administration/users']);
-                this.notificationService.success('lang.userUpdated');
-            },
-            error: err => this.notificationService.handleErrors(err)
-        });
+            .pipe(
+                finalize(() => this.loading = false)
+            )
+            .subscribe({
+                next: () => {
+                    this.router.navigate(['/administration/users']);
+                    this.notificationService.success('lang.userUpdated');
+                },
+                error: err => this.notificationService.handleErrors(err)
+            });
+    }
+
+    createUser() {
+        this.loading = true;
+        this.http.post('../rest/users', this.user)
+            .pipe(
+                finalize(() => this.loading = false)
+            )
+            .subscribe({
+                next: () => {
+                    this.router.navigate(['/administration/users']);
+                    this.notificationService.success('lang.userAdded');
+                },
+                error: err => this.notificationService.handleErrors(err)
+            });
     }
 
     delete() {
@@ -97,5 +133,13 @@ export class UserComponent implements OnInit {
                     });
             }
         });
+    }
+
+    cancel() {
+        if (!this.creationMode) {
+            this.user = JSON.parse(JSON.stringify(this.userClone));
+        } else {
+            this.router.navigate(['/administration/users']);
+        }
     }
 }

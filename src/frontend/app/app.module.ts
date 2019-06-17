@@ -126,7 +126,7 @@ import { ConfirmComponent } from './plugins/confirm.component';
       { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
       { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
       { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
-      { path: 'documents/:id', component: DocumentComponent },
+      { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'login', component: LoginComponent },
       { path: 'forgot-password', component: ForgotPasswordComponent },

@@ -56,9 +56,12 @@
   opacity: 0.5;
 }
 
-.dataTable {
-  height: 100%;
-}
 .emptyTable {
   height: auto;
+}
+
+.addButton {
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
 }

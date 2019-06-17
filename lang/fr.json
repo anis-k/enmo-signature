@@ -175,6 +175,7 @@
 		"confirmMsg": "Voulez-vous effectuer cette action",
 		"yes": "Oui",
 		"no": "Non",
-		"ldapEnabled": "LDAP activé"
+		"ldapEnabled": "LDAP activé",
+		"userCreation": "Ajouter un utilisateur"
 	}
 }

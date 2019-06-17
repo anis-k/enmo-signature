@@ -49,6 +49,9 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/users/{{row.id}}"
           style="cursor:pointer;"></mat-row>
       </mat-table>
+      <div class="addButton">
+        <button mat-stroked-button type="button" class="btn blue" routerLink="/administration/users/new">{{'lang.userCreation' | translate}}</button>
+      </div>
       <div class="noResult" *ngIf="dataSource.filteredData.length === 0">
           {{'lang.noResult' | translate}}
       </div>
