@@ -140,6 +140,7 @@
 		"signUser": "Signataire",
 		"visaProcessInfo": "Visé le",
 		"signProcessInfo": "Signé le",
+		"noteProcessInfo": "Annoté le",
 		"inProgress": "En cours",
 		"waiting": "En attente",
 		"visaLabel": "à viser",
