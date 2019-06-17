@@ -16,7 +16,6 @@ export class AuthGuard implements CanActivate {
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
         if (this.cookieService.check('maarchParapheurAuth')) {
-            console.log('Cookie ok !');
             if (this.signaturesService.userLogged.id === undefined) {
                 const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
                 this.http.get('../rest/users/' + cookieInfo.id)
@@ -38,7 +37,6 @@ export class AuthGuard implements CanActivate {
                 return true;
             }
         } else {
-            console.log('auth failed !');
             this.router.navigateByUrl('/login');
             return false;
         }

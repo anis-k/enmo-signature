@@ -377,7 +377,6 @@ export class ProfileComponent implements OnInit {
         }*/
 
         if (this.usersRest.length === 0) {
-            this.getPassRules();
             this.http.get('../rest/users')
                 .subscribe((data: any) => {
                     this.usersRest = data.users;
