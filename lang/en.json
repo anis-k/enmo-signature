@@ -125,6 +125,7 @@
 		"userDeleted"                        : "User deleted",
 		"userViewed"                         : "User viewed",
 		"userHasCurrentDocuments"            : "User has current documents",
+		"userLoginAlreadyExists"       			: "User login already exists",
 		"validate"                           : "Validate",
 		"validateAnnotation"                 : "Validate the annotation",
 		"validateDocumentWithoutSignOrNote"  : "You are about to validate this document without signature or annotation!",

@@ -113,7 +113,7 @@ class UserController
 
         $existingUser = UserModel::getByLogin(['login' => $body['login'], 'select' => [1]]);
         if (!empty($existingUser)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Login already exists']);
+            return $response->withStatus(400)->withJson(['errors' => 'Login already exists', 'lang' => 'userLoginAlreadyExists']);
         }
 
         if (empty($body['mode']) || !in_array($body['mode'], UserController::LOGING_MODES)) {
