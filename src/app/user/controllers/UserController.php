@@ -71,22 +71,24 @@ class UserController
         }
 
         $user = UserController::getUserInformationsById(['id' => $args['id']]);
-        $user['groups'] = [];
-
-        $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
-        $groupsIds = array_column($userGroups, 'group_id');
-        if (!empty($groupsIds)) {
-            $groups = GroupModel::get(['select' => ['label'], 'where' => ['id in (?)'], 'data' => [$groupsIds]]);
-            $user['groups'] = $groups;
+        if (!empty($user)) {
+            $user['groups'] = [];
+    
+            $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
+            $groupsIds = array_column($userGroups, 'group_id');
+            if (!empty($groupsIds)) {
+                $groups = GroupModel::get(['select' => ['label'], 'where' => ['id in (?)'], 'data' => [$groupsIds]]);
+                $user['groups'] = $groups;
+            }
+    
+            HistoryController::add([
+                'code'          => 'OK',
+                'objectType'    => 'users',
+                'objectId'      => $args['id'],
+                'type'          => 'VIEW',
+                'message'       => "{userViewed} : {$user['firstname']} {$user['lastname']}"
+            ]);
         }
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $args['id'],
-            'type'          => 'VIEW',
-            'message'       => "{userViewed} : {$user['firstname']} {$user['lastname']}"
-        ]);
 
         return $response->withJson(['user' => $user]);
     }
@@ -488,7 +490,7 @@ class UserController
 
         $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute'], 'id' => $args['id']]);
 
-        if (empty($user['picture'])) {
+        if (!empty($user) && empty($user['picture'])) {
             $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
             $user['picture'] = 'data:image/png;base64,' . $user['picture'];
         }
