@@ -41,6 +41,11 @@ class AutoCompleteController
             'fieldsNumber'  => 2
         ]);
 
+        if (!empty($queryParams['excludeId'])) {
+            $requestData['where'][] = 'id NOT IN (?)';
+            $requestData['data'][] = $queryParams['excludeId'];
+        }
+
         $users = UserModel::get([
             'select'    => ['id', 'firstname', 'lastname'],
             'where'     => $requestData['where'],
