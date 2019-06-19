@@ -1,0 +1,55 @@
+<mat-sidenav-container autosize>
+  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode" [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
+    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
+    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content class="mainView">
+    <header class="header">
+      <div class="header-title">
+        <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
+          <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
+        </button>
+        <span *ngIf="!loading">{{title}}</span>
+      </div>
+      <div *ngIf="!signaturesService.smartphoneMode" style="padding-right: 10px;">
+        <div *ngIf="!loading && !creationMode" class="avatarProfile"
+          [ngStyle]="{'background': 'url(' + user.picture + ') no-repeat scroll center center / cover'}">
+        </div>
+      </div>
+      <div *ngIf="!creationMode" style="width: 70px;text-align: center;">
+        <button mat-icon-button (click)="delete()">
+          <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
+        </button>
+      </div>
+    </header>
+    <div class="container">
+      <div *ngIf="loading" class="loader">
+        <mat-spinner></mat-spinner>
+      </div>
+      <form class="admin-form" *ngIf="!loading" (ngSubmit)="onSubmit()" #adminForm="ngForm">
+        <mat-form-field class="input-row">
+          <input name="login" matInput placeholder="{{'lang.login' | translate}}" type="text" [(ngModel)]="user.login"
+          oninput="this.value = this.value.toLowerCase()" [disabled]="!creationMode" required pattern="^[\w.@-]*$">
+        </mat-form-field>
+        <mat-form-field class="input-row">
+          <input name="firstname" matInput placeholder="{{'lang.firstname' | translate}}" [(ngModel)]="user.firstname"
+            required>
+        </mat-form-field>
+        <mat-form-field class="input-row">
+          <input name="nom" matInput placeholder="{{'lang.lastname' | translate}}" [(ngModel)]="user.lastname" required>
+        </mat-form-field>
+        <mat-form-field class="input-row">
+          <input name="email" matInput placeholder="{{'lang.email' | translate}}" type="mail" [(ngModel)]="user.email"
+            pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required>
+        </mat-form-field>
+        <div class="actions-form">
+            <button mat-stroked-button type="submit" class="btn blue" [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
+            <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+        </div>
+      </form>
+    </div>
+  </mat-sidenav-content>
+  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
+    fixedInViewport="true" position='end'>
+  </mat-sidenav>
+</mat-sidenav-container>

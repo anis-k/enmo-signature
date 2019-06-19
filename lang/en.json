@@ -178,6 +178,10 @@
 		"yes": "Yes",
 		"no": "No",
 		"ldapEnabled": "LDAP enabled",
-		"userCreation": "Add a user"
+		"userCreation": "Add a user",
+		"manage_ldap_configurations": "Ldap",
+		"manage_ldap_configurationsDesc": "Add / Update / Delete ldap entries in order to authenticate users.",
+		"ldapCreation": "Add an ldap entry",
+		"label": "Label"
 	}
 }

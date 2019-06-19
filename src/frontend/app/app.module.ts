@@ -58,6 +58,8 @@ import { AdminSidebarComponent } from './sidebar/administration/admin-sidebar.co
 import { AdministrationComponent } from './administration/administration.component';
 import { UsersListComponent } from './administration/user/users-list.component';
 import { UserComponent } from './administration/user/user.component';
+import { LdapListComponent } from './administration/ldap/ldap-list.component';
+import { LdapComponent } from './administration/ldap/ldap.component';
 
 
 // SERVICES
@@ -99,7 +101,9 @@ import { ConfirmComponent } from './plugins/confirm.component';
     UsersListComponent,
     UserComponent,
     ConfirmComponent,
-    AdminSidebarComponent
+    AdminSidebarComponent,
+    LdapListComponent,
+    LdapComponent
   ],
   imports: [
     FormsModule,
@@ -126,6 +130,8 @@ import { ConfirmComponent } from './plugins/confirm.component';
       { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
       { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
       { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
+      { path: 'administration/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
+      { path: 'administration/ldaps/:id', canActivate: [AuthGuard], component: LdapListComponent },
       { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'login', component: LoginComponent },

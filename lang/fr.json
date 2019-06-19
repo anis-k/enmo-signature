@@ -169,7 +169,8 @@
 		"substitutedSignature": "Signature déléguée",
 		"substituteMsg": "Vous agissez en tant que",
 		"substitutionWarn": "Vous avez choisi une délégation, vous ne pourrez plus faire d'action.",
-		"manage_users": "Utilisateur(s)",
+		"manage_users": "Utilisateurs",
+		"manage_usersAlt": "Utilisateur(s)",
 		"manage_usersDesc": "Ajouter / Modifier / Supprimer les utilisateurs de l'application.",
 		"manage_email_configuration": "Serveur courriel",
 		"manage_email_configurationDesc": "Paramétrer le serveur de courriels pour les envois de notifications aux utilisateurs.",
@@ -178,6 +179,11 @@
 		"yes": "Oui",
 		"no": "Non",
 		"ldapEnabled": "LDAP activé",
-		"userCreation": "Ajouter un utilisateur"
+		"userCreation": "Ajouter un utilisateur",
+		"manage_ldap_configurations": "Annuaires ldap",
+		"manage_ldap_configurationsAlt": "Annuaire(s) ldap",
+		"manage_ldap_configurationsDesc": "Ajouter / modifier / supprimer les annuaires ldap servant à l'authentification utilisateur.",
+		"ldapCreation": "Ajouter une entrée ldap",
+		"label": "Label"
 	}
 }

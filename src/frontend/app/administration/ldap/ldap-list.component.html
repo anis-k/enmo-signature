@@ -9,7 +9,7 @@
         <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
           <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
         </button>
-        <span><b>{{userList.length}}</b> {{'lang.manage_usersAlt' | translate}}</span>
+        <span><b>{{ldapList.length}}</b> {{'lang.manage_ldap_configurationsAlt' | translate}}</span>
       </div>
       <div>
         <mat-paginator #paginator [length]="100" [pageSize]="10"></mat-paginator>
@@ -19,19 +19,15 @@
       <div *ngIf="loading" class="loader">
         <mat-spinner></mat-spinner>
       </div>
-      <mat-table #table class="dataTable" [dataSource]="dataSource" matSort matSortActive="lastname"
+      <mat-table #table class="dataTable" [dataSource]="dataSource" matSort matSortActive="label"
         matSortDirection="asc" [class.emptyTable]="dataSource.filteredData.length === 0">
-        <ng-container matColumnDef="firstname">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.firstname' | translate}}</mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{element.firstname}} </mat-cell>
+        <ng-container matColumnDef="label">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.label' | translate}}</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.label}} </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="lastname">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.lastname' | translate}}</mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{element.lastname}} </mat-cell>
-        </ng-container>
-        <ng-container matColumnDef="email">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.email' | translate}}</mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{element.email}} </mat-cell>
+        <ng-container matColumnDef="description">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.description' | translate}}</mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef style="justify-content: end;">
@@ -40,17 +36,17 @@
             </mat-form-field>
           </mat-header-cell>
           <mat-cell *matCellDef="let element" style="justify-content: flex-end;">
-            <button mat-icon-button color="warn" [disabled]="element.id === signaturesService.userLogged.id" (click)="$event.stopPropagation();delete(element)">
+            <button mat-icon-button color="warn" (click)="$event.stopPropagation();delete(element)">
               <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
             </button>
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/users/{{row.id}}"
+        <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/ldaps/{{row.id}}"
           style="cursor:pointer;"></mat-row>
       </mat-table>
       <div class="addButton">
-        <button mat-stroked-button type="button" class="btn blue" routerLink="/administration/users/new">{{'lang.userCreation' | translate}}</button>
+        <button mat-stroked-button type="button" class="btn blue" routerLink="/administration/ldaps/new">{{'lang.ldapCreation' | translate}}</button>
       </div>
       <div class="noResult" *ngIf="dataSource.filteredData.length === 0">
           {{'lang.noResult' | translate}}
