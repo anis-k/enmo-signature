@@ -24,17 +24,43 @@ use SrcCore\models\AuthenticationModel;
 
 class ConfigurationController
 {
-    public function update(Request $request, Response $response, array $args)
+    public function getByIdentifier(Request $request, Response $response, array $args)
     {
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        $configuration = ConfigurationModel::getByIdentifier(['identifier' => $args['identifier']]);
+
+        if ($args['identifier'] == 'emailServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+
+        } elseif ($args['identifier'] == 'ldapServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_ldap_configurations'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
         }
 
+        if (!empty($data)) {
+            if (empty($configuration)) {
+                ConfigurationModel::create(['identifier' => $args['identifier'], 'value' => $data]);
+            } else {
+                ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['identifier = ?'], 'data' => [$args['identifier']]]);
+            }
+        }
+
+        return $response->withJson(['errors' => 'Privilege forbidden']);
+    }
+
+    public function update(Request $request, Response $response, array $args)
+    {
         $body = $request->getParsedBody();
 
         $configuration = ConfigurationModel::getByIdentifier(['identifier' => $args['identifier']]);
 
         if ($args['identifier'] == 'emailServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+
             $check = ConfigurationController::checkMailer($body);
             if (!empty($check['errors'])) {
                 return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
@@ -62,6 +88,17 @@ class ConfigurationController
                 'from'      => $body['from'],
                 'charset'   => empty($body['charset']) ? 'utf-8' : $body['charset']
             ]);
+        } elseif ($args['identifier'] == 'ldapServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_ldap_configurations'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+
+            $check = ConfigurationController::checkLdapConfigurations($body);
+            if (!empty($check['errors'])) {
+                return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
+            }
+
+            $data = json_encode($body);
         }
 
         if (!empty($data)) {
@@ -105,6 +142,23 @@ class ConfigurationController
                 if (!Validator::stringType()->notEmpty()->validate($args['user'])) {
                     return ['errors' => 'Body user is empty or not a string'];
                 }
+            }
+        }
+
+        return ['success' => 'success'];
+    }
+
+    private static function checkLdapConfigurations(array $configurations)
+    {
+        if (!Validator::arrayType()->notEmpty()->validate($configurations)) {
+            return ['errors' => 'Body is empty or not an array'];
+        }
+
+        foreach ($configurations as $key => $configuration) {
+            if (!Validator::stringType()->notEmpty()->validate($configuration['uri'])) {
+                return ['errors' => "Body[{$key}] uri is empty or not a string"];
+            } elseif (!Validator::boolType()->validate($configuration['ssl'])) {
+                return ['errors' => "Body[{$key}] ssl is empty or not a boolean"];
             }
         }
 

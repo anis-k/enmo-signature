@@ -24,6 +24,7 @@ class PrivilegeController
     const PRIVILEGES = [
         ['id' => 'manage_users',                'type' => 'admin', 'icon' => 'fa fa-user',          'route' => '/administration/users'],
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'fa fa-paper-plane',   'route' => '/administration/configuration'],
+        ['id' => 'manage_ldap_configurations',   'type' => 'admin', 'icon' => 'fa fa-paper-plane',   'route' => '/administration/configuration'],
         ['id' => 'manage_documents',            'type' => 'simple']
     ];
 
