@@ -19,6 +19,7 @@ return array(
     'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
     'History\\' => array($baseDir . '/src/app/history'),
     'Group\\' => array($baseDir . '/src/app/group'),
+    'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'FastRoute\\' => array($vendorDir . '/nikic/fast-route/src'),
     'Email\\' => array($baseDir . '/src/app/email'),
     'Document\\' => array($baseDir . '/src/app/document'),

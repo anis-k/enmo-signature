@@ -34,12 +34,13 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
     if (in_array($currentMethod.$currentRoute, $routesWithoutAuthentication)) {
         $response = $next($request, $response);
     } else {
-        $id = \SrcCore\controllers\AuthenticationController::authentication();
+        $authorizationHeaders = $request->getHeader('Authorization');
+        $id = \SrcCore\controllers\AuthenticationController::authentication($authorizationHeaders);
         if (!empty($id)) {
             $GLOBALS['id'] = $id;
+            $response = $response->withHeader('Token', \SrcCore\controllers\AuthenticationController::getJWT());
             $response = $next($request, $response);
         } else {
-            \SrcCore\models\AuthenticationModel::deleteCookieAuth();
             $response = $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
     }
@@ -50,7 +51,6 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 //Authentication
 $app->get('/connection', \SrcCore\controllers\AuthenticationController::class . ':getConnection');
 $app->post('/log', \SrcCore\controllers\AuthenticationController::class . ':log');
-$app->get('/logout', \SrcCore\controllers\AuthenticationController::class . ':logout');
 
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');

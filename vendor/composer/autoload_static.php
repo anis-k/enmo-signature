@@ -54,6 +54,7 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         ),
         'F' => 
         array (
+            'Firebase\\JWT\\' => 13,
             'FastRoute\\' => 10,
         ),
         'E' => 
@@ -128,6 +129,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'Group\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src/app/group',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'FastRoute\\' => 
         array (

@@ -15,17 +15,19 @@
 namespace SrcCore\controllers;
 
 use Configuration\models\ConfigurationModel;
+use Firebase\JWT\JWT;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
+use SrcCore\models\CoreConfigModel;
 use User\controllers\UserController;
 use User\models\UserModel;
 
 class AuthenticationController
 {
-    public static function authentication()
+    public static function authentication($authorizationHeaders = [])
     {
         $id = null;
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
@@ -34,10 +36,24 @@ class AuthenticationController
                 $id = $user['id'];
             }
         } else {
-            $cookie = AuthenticationModel::getCookieAuth();
-            if (!empty($cookie) && AuthenticationModel::cookieAuthentication($cookie)) {
-                AuthenticationModel::setCookieAuth(['id' => $cookie['id']]);
-                $id = $cookie['id'];
+            if (!empty($authorizationHeaders)) {
+                $token = null;
+                foreach ($authorizationHeaders as $authorizationHeader) {
+                    if (strpos($authorizationHeader, 'Bearer') === 0) {
+                        $token = str_replace('Bearer ', '', $authorizationHeader);
+                    }
+                }
+                if (!empty($token)) {
+                    try {
+                        $jwt = JWT::decode($token, CoreConfigModel::getEncryptKey(), ['HS256']);
+                    } catch (\Exception $e) {
+                        return null;
+                    }
+                    $time = time();
+                    if (!empty($jwt) && $jwt['exp'] > $time && !empty($jwt['user']['id'])) {
+                        $id = $jwt['user']['id'];
+                    }
+                }
             }
         }
 
@@ -102,8 +118,6 @@ class AuthenticationController
             return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
         }
 
-        AuthenticationModel::setCookieAuth(['id' => $user['id']]);
-
         $GLOBALS['id'] = $user['id'];
         UserModel::update(['set' => ['reset_token' => json_encode(['token' => null, 'until' => null])], 'where' => ['id = ?'], 'data' => [$user['id']]]);
 
@@ -115,22 +129,9 @@ class AuthenticationController
             'message'       => '{userLogIn}'
         ]);
 
+        $response = $response->withHeader('Token', AuthenticationController::getJWT());
+
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
-    }
-
-    public static function logout(Request $request, Response $response)
-    {
-        AuthenticationModel::deleteCookieAuth();
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $GLOBALS['id'],
-            'type'          => 'LOGOUT',
-            'message'       => '{userLogOut}'
-        ]);
-
-        return $response->withJson(['success' => 'success']);
     }
 
     public static function getConnection(Request $request, Response $response)
@@ -138,5 +139,26 @@ class AuthenticationController
         $connection = ConfigurationModel::getConnection();
 
         return $response->withJson(['connection' => $connection]);
+    }
+
+    public static function getJWT()
+    {
+        $cookieTime = 1;
+
+        $loadedXml = CoreConfigModel::getConfig();
+        if ($loadedXml) {
+            $cookieTime = (int)$loadedXml->config->CookieTime;
+        }
+
+        $token = [
+            'exp'   => time() + 60 * $cookieTime,
+            'user'  => [
+                'id' => $GLOBALS['id']
+            ]
+        ];
+
+        $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
+
+        return $jwt;
     }
 }
