@@ -184,6 +184,8 @@
 		"manage_ldap_configurationsAlt": "Annuaire(s) ldap",
 		"manage_ldap_configurationsDesc": "Ajouter / modifier / supprimer les annuaires ldap servant à l'authentification utilisateur.",
 		"ldapCreation": "Ajouter une entrée ldap",
-		"label": "Label"
+		"label": "Label",
+		"sessionExpired": "La session a expirée, veuillez vous reconnecter"
+
 	}
 }

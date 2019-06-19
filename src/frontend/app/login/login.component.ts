@@ -10,6 +10,7 @@ import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { Validators, FormControl } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -50,7 +51,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     constructor(private translate: TranslateService, public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
-        if (this.cookieService.check('maarchParapheurAuth')) {
+        const myItem = localStorage.getItem('MaarchParapheur');
+        console.log(myItem);
+        if (myItem !== null) {
             this.router.navigate(['/documents']);
         }
     }
@@ -75,21 +78,40 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.labelButton = 'lang.connexion';
         this.loadingConnexion = true;
 
-        this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password })
-            .subscribe((data: any) => {
-                this.signaturesService.userLogged = data.user;
-                this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
-                .subscribe((dataSign: any) => {
-                    this.signaturesService.signaturesList = dataSign.signatures;
-                });
-                this.translate.use(this.signaturesService.userLogged.preferences.lang);
-                this.cookieService.set( 'maarchParapheurLang', this.signaturesService.userLogged.preferences.lang );
+        this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password }, { observe: 'response' })
+            .pipe(
+                finalize(() => {
+                    this.labelButton = 'lang.connect';
+                    this.loadingConnexion = false;
+                })
+            )
+            .subscribe({
+                next: (data: any) => {
+                    localStorage.setItem('MaarchParapheur', data.headers.get('Token'));
+                    this.signaturesService.userLogged = data.body.user;
+                    this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
+                        .subscribe((dataSign: any) => {
+                            this.signaturesService.signaturesList = dataSign.signatures;
+                        });
+                    this.translate.use(this.signaturesService.userLogged.preferences.lang);
+                    this.cookieService.set('maarchParapheurLang', this.signaturesService.userLogged.preferences.lang);
 
-                this.loadingForm = true;
-                $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
-                setTimeout(() => {
-                    this.router.navigate(['/documents']);
-                }, 700);
+                    this.loadingForm = true;
+                    $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
+                    setTimeout(() => {
+                        this.router.navigate(['/documents']);
+                    }, 700);
+                },
+                error: err => {
+                    if (err.status === 401) {
+                        this.notificationService.error('lang.wrongLoginPassword');
+                    } else {
+                        this.notificationService.handleErrors(err);
+                    }
+                }
+            });
+        /*.subscribe((data: any) => {
+
             }, (err: any) => {
                 if (err.status === 401) {
                     this.notificationService.error('lang.wrongLoginPassword');
@@ -98,7 +120,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 }
                 this.labelButton = 'lang.connect';
                 this.loadingConnexion = false;
-            });
+            });*/
     }
 
     fixAutoFill() {

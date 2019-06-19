@@ -15,10 +15,12 @@ export class AuthGuard implements CanActivate {
     constructor(public http: HttpClient, private router: Router, public signaturesService: SignaturesContentService, private cookieService: CookieService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (this.cookieService.check('maarchParapheurAuth')) {
+        const myItem = localStorage.getItem('MaarchParapheur');
+        if (myItem !== null) {
+            const infoUser = JSON.parse(atob(myItem.split('.')[1])).user;
+
             if (this.signaturesService.userLogged.id === undefined) {
-                const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
-                this.http.get('../rest/users/' + cookieInfo.id)
+                this.http.get('../rest/users/' + infoUser.id)
                     .subscribe((data: any) => {
                         this.signaturesService.userLogged = data.user;
 

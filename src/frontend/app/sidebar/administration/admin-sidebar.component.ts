@@ -53,12 +53,8 @@ export class AdminSidebarComponent implements OnInit {
     }
 
     logout() {
-        this.http.get('../rest/logout')
-            .subscribe(() => {
-                this.router.navigate(['/login']);
-            }, (err: any) => {
-                this.notificationService.handleErrors(err);
-            });
+        localStorage.removeItem('MaarchParapheur');
+        this.router.navigate(['/login']);
     }
 
     checkClose() {
