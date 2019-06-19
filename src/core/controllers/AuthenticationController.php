@@ -51,6 +51,7 @@ class AuthenticationController
                     }
                     $time = time();
                     $jwt = (array)$jwt;
+                    $jwt['user'] = (array)$jwt['user'];
                     if (!empty($jwt) && $jwt['exp'] > $time && !empty($jwt['user']['id'])) {
                         $id = $jwt['user']['id'];
                     }
