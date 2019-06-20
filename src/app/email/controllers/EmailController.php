@@ -96,7 +96,7 @@ class EmailController
         }
 
         $phpmailer = new PHPMailer();
-
+        $phpmailer->setFrom($configuration['from']);
         if ($configuration['type'] == 'smtp' || $configuration['type'] == 'mail') {
             if ($configuration['type'] == 'smtp') {
                 $phpmailer->isSMTP();
@@ -117,7 +117,6 @@ class EmailController
                     $phpmailer->Password = AuthenticationModel::decrypt(['cryptedPassword' => $configuration['password']]);
                 }
             }
-            $phpmailer->setFrom($configuration['from']);
         } elseif ($configuration['type'] == 'sendmail') {
             $phpmailer->isSendmail();
         } elseif ($configuration['type'] == 'qmail') {
