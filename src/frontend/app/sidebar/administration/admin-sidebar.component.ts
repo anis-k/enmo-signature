@@ -28,7 +28,7 @@ export class AdminSidebarComponent implements OnInit {
     loading: boolean = true;
     privileges: Privilege[] = [];
 
-    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService) {
+    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService) {
     }
 
     ngOnInit() {
@@ -53,7 +53,8 @@ export class AdminSidebarComponent implements OnInit {
     }
 
     logout() {
-        localStorage.removeItem('MaarchParapheur');
+        localStorage.removeItem('MaarchParapheurToken');
+        localStorage.removeItem('MaarchParapheurRefreshToken');
         this.router.navigate(['/login']);
     }
 

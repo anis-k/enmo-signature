@@ -1,17 +1,14 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
-import { CookieService } from 'ngx-cookie-service';
 import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
-import { TranslateService } from '@ngx-translate/core';
 import { Validators, FormControl } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
-import { AlertComponent } from '../plugins/alert.component';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -50,8 +47,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     idMail = new FormControl('', [Validators.required]);
     password = new FormControl('', [Validators.required]);
 
-    constructor(private translate: TranslateService, public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
-        iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
+    constructor(public http: HttpClient, private router: Router, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
+
         const myItem = localStorage.getItem('MaarchParapheur');
         if (myItem !== null) {
             this.router.navigate(['/documents']);
@@ -78,7 +75,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.labelButton = 'lang.connexion';
         this.loadingConnexion = true;
 
-        this.http.post('../rest/log', { 'login': this.newLogin.login, 'password': this.newLogin.password }, { observe: 'response' })
+        this.http.post('../rest/authenticate', { 'login': this.newLogin.login, 'password': this.newLogin.password }, { observe: 'response' })
             .pipe(
                 finalize(() => {
                     this.labelButton = 'lang.connect';
@@ -87,14 +84,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
             )
             .subscribe({
                 next: (data: any) => {
-                    localStorage.setItem('MaarchParapheur', data.headers.get('Token'));
-                    this.signaturesService.userLogged = data.body.user;
-                    this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
-                        .subscribe((dataSign: any) => {
-                            this.signaturesService.signaturesList = dataSign.signatures;
-                        });
-                    this.translate.use(this.signaturesService.userLogged.preferences.lang);
-                    this.cookieService.set('maarchParapheurLang', this.signaturesService.userLogged.preferences.lang);
+                    localStorage.setItem('MaarchParapheurToken', data.headers.get('Token'));
+                    localStorage.setItem('MaarchParapheurRefreshToken', data.headers.get('Refresh-Token'));
 
                     this.loadingForm = true;
                     $('.maarchLogo').css({ 'transform': 'translateY(0px)' });

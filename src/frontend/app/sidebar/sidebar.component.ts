@@ -2,12 +2,11 @@ import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ScrollEvent } from 'ngx-scroll-event';
-import { MatSidenav, MatInput } from '@angular/material';
+import { MatSidenav } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
-import { TranslateService } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
-import { debounceTime, switchMap, distinctUntilChanged, filter, tap } from 'rxjs/operators';
+import { debounceTime, switchMap, distinctUntilChanged, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -31,7 +30,7 @@ export class SidebarComponent implements OnInit {
 
     searchTerm: FormControl = new FormControl();
 
-    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService) {
+    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),
             distinctUntilChanged(),
@@ -108,7 +107,8 @@ export class SidebarComponent implements OnInit {
     }
 
     logout() {
-        localStorage.removeItem('MaarchParapheur');
+        localStorage.removeItem('MaarchParapheurToken');
+        localStorage.removeItem('MaarchParapheurRefreshToken');
         this.router.navigate(['/login']);
     }
 

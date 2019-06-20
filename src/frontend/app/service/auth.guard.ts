@@ -1,43 +1,45 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { HttpClient } from '@angular/common/http';
 import { SignaturesContentService } from './signatures.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
 
-    constructor(public http: HttpClient, private router: Router, public signaturesService: SignaturesContentService, private cookieService: CookieService) { }
+    constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public signaturesService: SignaturesContentService, private cookieService: CookieService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        const myItem = localStorage.getItem('MaarchParapheur');
-        if (myItem !== null) {
-            const infoUser = JSON.parse(atob(myItem.split('.')[1])).user;
 
+        const tokenInfo = localStorage.getItem('MaarchParapheurToken');
+        if (tokenInfo !== null) {
             if (this.signaturesService.userLogged.id === undefined) {
-                this.http.get('../rest/users/' + infoUser.id)
-                    .subscribe((data: any) => {
-                        this.signaturesService.userLogged = data.user;
+                const userInfo = JSON.parse(atob(tokenInfo.split('.')[1])).user;
+                this.signaturesService.userLogged = userInfo;
 
-                        if (this.signaturesService.signaturesList.length === 0) {
-                            this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
-                                .subscribe((dataSign: any) => {
-                                    this.signaturesService.signaturesList = dataSign.signatures;
-                                });
-                        }
-                    },
-                        (err: any) => {
-                            this.router.navigateByUrl('/login');
+                this.translate.use(this.signaturesService.userLogged.preferences.lang);
+                this.cookieService.set('maarchParapheurLang', this.signaturesService.userLogged.preferences.lang);
+
+                if (this.signaturesService.signaturesList.length === 0) {
+                    this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/signatures')
+                        .subscribe((dataSign: any) => {
+                            this.signaturesService.signaturesList = dataSign.signatures;
                         });
-                return true;
-            } else {
-                return true;
+                }
+
+                if (this.signaturesService.userLogged.picture === undefined) {
+                    this.http.get('../rest/users/' + this.signaturesService.userLogged.id + '/picture')
+                        .subscribe((dataPic: any) => {
+                            this.signaturesService.userLogged.picture = dataPic.picture;
+                        });
+                }
             }
+
+            return true;
         } else {
             this.router.navigateByUrl('/login');
             return false;

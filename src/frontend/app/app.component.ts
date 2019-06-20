@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from './service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatIconRegistry } from '@angular/material';
 import { AlertComponent } from './plugins/alert.component';
 
 @Component({
@@ -17,7 +17,9 @@ import { AlertComponent } from './plugins/alert.component';
 
 export class AppComponent {
 
-  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService, public dialog: MatDialog) {
+  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService, public dialog: MatDialog, iconReg: MatIconRegistry) {
+    iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
+
     this.http.get('../rest/authenticationInformations')
       .subscribe((data: any) => {
         this.signaturesService.authMode = data.connection;
