@@ -27,6 +27,8 @@ use User\models\UserModel;
 
 class AuthenticationController
 {
+    const MAX_DURATION_TOKEN = 30; //Minutes
+
     public static function authentication($authorizationHeaders = [])
     {
         $id = null;
@@ -45,12 +47,11 @@ class AuthenticationController
                 }
                 if (!empty($token)) {
                     try {
-                        $jwt = JWT::decode($token, CoreConfigModel::getEncryptKey(), ['HS256']);
+                        $jwt = (array)JWT::decode($token, CoreConfigModel::getEncryptKey(), ['HS256']);
                     } catch (\Exception $e) {
                         return null;
                     }
                     $time = time();
-                    $jwt = (array)$jwt;
                     $jwt['user'] = (array)$jwt['user'];
                     if (!empty($jwt) && $jwt['exp'] > $time && !empty($jwt['user']['id'])) {
                         $id = $jwt['user']['id'];
@@ -62,7 +63,7 @@ class AuthenticationController
         return $id;
     }
 
-    public static function log(Request $request, Response $response)
+    public static function authenticate(Request $request, Response $response)
     {
         $body = $request->getParsedBody();
 
@@ -115,13 +116,32 @@ class AuthenticationController
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', 'mode']]);
+        $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', 'mode', 'refresh_token']]);
         if (empty($user) || $user['mode'] != 'standard') {
-            return $response->withStatus(403)->withJson(['errors' => 'Login unauthorized']);
+            return $response->withStatus(403)->withJson(['errors' => 'Authentication unauthorized']);
         }
 
         $GLOBALS['id'] = $user['id'];
-        UserModel::update(['set' => ['reset_token' => json_encode(['token' => null, 'until' => null])], 'where' => ['id = ?'], 'data' => [$user['id']]]);
+
+        $user['refresh_token'] = json_decode($user['refresh_token']);
+        foreach ($user['refresh_token'] as $key => $refreshToken) {
+            $refreshToken = (array)JWT::decode($refreshToken, CoreConfigModel::getEncryptKey(), ['HS256']);
+            $time = time();
+            if ($refreshToken['exp'] < $time) {
+                unset($user['refresh_token'][$key]);
+            }
+        }
+        if (count($user['refresh_token']) > 10) {
+            array_shift($user['refresh_token']);
+        }
+
+        $refreshToken = AuthenticationController::getRefreshJWT();
+        $user['refresh_token'][] = $refreshToken;
+        UserModel::update([
+            'set'   => ['reset_token' => json_encode(['token' => null, 'until' => null]), 'refresh_token' => json_encode($user['refresh_token'])],
+            'where' => ['id = ?'],
+            'data'  => [$user['id']]
+        ]);
 
         HistoryController::add([
             'code'          => 'OK',
@@ -132,8 +152,9 @@ class AuthenticationController
         ]);
 
         $response = $response->withHeader('Token', AuthenticationController::getJWT());
+        $response = $response->withHeader('Refresh-Token', $refreshToken);
 
-        return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
+        return $response->withStatus(204);
     }
 
     public static function getInformations(Request $request, Response $response)
@@ -145,6 +166,32 @@ class AuthenticationController
     }
 
     public static function getJWT()
+    {
+        $sessionTime = AuthenticationController::MAX_DURATION_TOKEN;
+
+        $loadedXml = CoreConfigModel::getConfig();
+        if ($loadedXml) {
+            if (!empty($loadedXml->config->sessionTime)) {
+                if ($sessionTime > (int)$loadedXml->config->sessionTime) {
+                    $sessionTime = (int)$loadedXml->config->sessionTime;
+                }
+            }
+        }
+
+        $user = UserController::getUserInformationsById(['id' => $GLOBALS['id']]);
+        unset($user['picture']);
+
+        $token = [
+            'exp'   => time() + 60 * $sessionTime,
+            'user'  => $user
+        ];
+
+        $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
+
+        return $jwt;
+    }
+
+    private static function getRefreshJWT()
     {
         $sessionTime = 1;
 

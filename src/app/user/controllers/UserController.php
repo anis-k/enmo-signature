@@ -479,9 +479,7 @@ class UserController
             'set' => [
                 'password'                      => AuthenticationModel::getPasswordHash($body['password']),
                 'password_modification_date'    => 'CURRENT_TIMESTAMP',
-                'reset_token'                   => json_encode(['token' => null, 'until' => null]),
-                'cookie_key'                    => null,
-                'cookie_date'                   => null
+                'reset_token'                   => json_encode(['token' => null, 'until' => null])
             ],
             'where' => ['id = ?'],
             'data' => [$user['id']]

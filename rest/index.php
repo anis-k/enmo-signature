@@ -38,7 +38,6 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
         $id = \SrcCore\controllers\AuthenticationController::authentication($authorizationHeaders);
         if (!empty($id)) {
             $GLOBALS['id'] = $id;
-            $response = $response->withHeader('Token', \SrcCore\controllers\AuthenticationController::getJWT());
             $response = $next($request, $response);
         } else {
             $response = $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
@@ -50,7 +49,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 
 //Authentication
 $app->get('/authenticationInformations', \SrcCore\controllers\AuthenticationController::class . ':getInformations');
-$app->post('/log', \SrcCore\controllers\AuthenticationController::class . ':log');
+$app->post('/authenticate', \SrcCore\controllers\AuthenticationController::class . ':authenticate');
 
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
