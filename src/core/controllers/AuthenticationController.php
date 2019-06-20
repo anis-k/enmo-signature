@@ -51,9 +51,8 @@ class AuthenticationController
                     } catch (\Exception $e) {
                         return null;
                     }
-                    $time = time();
                     $jwt['user'] = (array)$jwt['user'];
-                    if (!empty($jwt) && $jwt['exp'] > $time && !empty($jwt['user']['id'])) {
+                    if (!empty($jwt) && !empty($jwt['user']['id'])) {
                         $id = $jwt['user']['id'];
                     }
                 }
@@ -125,9 +124,9 @@ class AuthenticationController
 
         $user['refresh_token'] = json_decode($user['refresh_token']);
         foreach ($user['refresh_token'] as $key => $refreshToken) {
-            $refreshToken = (array)JWT::decode($refreshToken, CoreConfigModel::getEncryptKey(), ['HS256']);
-            $time = time();
-            if ($refreshToken['exp'] < $time) {
+            try {
+                JWT::decode($refreshToken, CoreConfigModel::getEncryptKey(), ['HS256']);
+            } catch (\Exception $e) {
                 unset($user['refresh_token'][$key]);
             }
         }
