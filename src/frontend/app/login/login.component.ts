@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry, MatDialog } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
@@ -11,6 +11,7 @@ import { environment } from '../../core/environments/environment';
 import { TranslateService } from '@ngx-translate/core';
 import { Validators, FormControl } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
+import { AlertComponent } from '../plugins/alert.component';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -49,10 +50,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
     idMail = new FormControl('', [Validators.required]);
     password = new FormControl('', [Validators.required]);
 
-    constructor(private translate: TranslateService, public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
+    constructor(private translate: TranslateService, public http: HttpClient, private cookieService: CookieService, private router: Router, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
         const myItem = localStorage.getItem('MaarchParapheur');
-        console.log(myItem);
         if (myItem !== null) {
             this.router.navigate(['/documents']);
         }
@@ -110,17 +110,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
                     }
                 }
             });
-        /*.subscribe((data: any) => {
-
-            }, (err: any) => {
-                if (err.status === 401) {
-                    this.notificationService.error('lang.wrongLoginPassword');
-                } else {
-                    this.notificationService.handleErrors(err);
-                }
-                this.labelButton = 'lang.connect';
-                this.loadingConnexion = false;
-            });*/
     }
 
     fixAutoFill() {

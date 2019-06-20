@@ -183,6 +183,9 @@
 		"manage_ldap_configurationsDesc": "Add / Update / Delete ldap entries in order to authenticate users.",
 		"ldapCreation": "Add an ldap entry",
 		"label": "Label",
-		"sessionExpired": "Session expired, please login again"
+		"sessionExpired": "Session expired, please login again",
+		"warnPrivateKeyTitle": "The private key is not updated !",
+		"warnPrivateKey": "This cause security issues",
+		"ok": "Ok"
 	}
 }

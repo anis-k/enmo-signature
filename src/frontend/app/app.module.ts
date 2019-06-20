@@ -69,6 +69,7 @@ import { FiltersService } from './service/filters.service';
 
 // OTHERS
 import { ConfirmComponent } from './plugins/confirm.component';
+import { AlertComponent } from './plugins/alert.component';
 
 
 
@@ -101,6 +102,7 @@ import { ConfirmComponent } from './plugins/confirm.component';
     UsersListComponent,
     UserComponent,
     ConfirmComponent,
+    AlertComponent,
     AdminSidebarComponent,
     LdapListComponent,
     LdapComponent
@@ -147,7 +149,8 @@ import { ConfirmComponent } from './plugins/confirm.component';
     SuccessInfoValidBottomSheetComponent,
     RejectInfoBottomSheetComponent,
     SignaturesComponent,
-    ConfirmComponent
+    ConfirmComponent,
+    AlertComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

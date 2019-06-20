@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 export class SignaturesContentService {
 
     authMode: string = '';
+    changeKey: boolean = false;
     userLogged: any = {};
     mainDocumentId = 0;
     signaturesContent: any[] = [];

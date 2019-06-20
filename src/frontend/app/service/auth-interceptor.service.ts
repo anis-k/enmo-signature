@@ -8,6 +8,7 @@ import { NotificationService } from './notification.service';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
+  excludeUrls: string[] = ['../rest/log', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
   constructor(private injector: Injector, private router: Router, public notificationService: NotificationService) { }
 
   addAuthHeader(request: HttpRequest<any>) {
@@ -23,7 +24,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
     // We don't want to intercept rest/log
-    if (request.url.includes('../rest/log')) {
+    if (this.excludeUrls.indexOf(request.url) > -1) {
       return next.handle(request);
     } else {
       // Add current token in header request

@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from './service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
+import { MatDialog } from '@angular/material';
+import { AlertComponent } from './plugins/alert.component';
 
 @Component({
   selector: 'app-root',
@@ -15,18 +17,22 @@ import { TranslateService } from '@ngx-translate/core';
 
 export class AppComponent {
 
-  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService) {
-    this.http.get('../rest/connection')
+  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService, public dialog: MatDialog) {
+    this.http.get('../rest/authenticationInformations')
       .subscribe((data: any) => {
-          this.signaturesService.authMode = data.connection;
+        this.signaturesService.authMode = data.connection;
+        this.signaturesService.changeKey = data.changeKey;
+        if (this.signaturesService.changeKey) {
+          this.dialog.open(AlertComponent, { autoFocus: false, disableClose: true, data: { mode: 'warning', title: 'lang.warnPrivateKeyTitle', msg: 'lang.warnPrivateKey' } });
+        }
       }, (err: any) => {
-          this.notificationService.handleErrors(err);
+        this.notificationService.handleErrors(err);
       });
     if (this.cookieService.check('maarchParapheurLang')) {
       const cookieInfoLang = this.cookieService.get('maarchParapheurLang');
       translate.setDefaultLang(cookieInfoLang);
     } else {
-      this.cookieService.set( 'maarchParapheurLang', 'fr' );
+      this.cookieService.set('maarchParapheurLang', 'fr');
       translate.setDefaultLang('fr');
     }
   }
