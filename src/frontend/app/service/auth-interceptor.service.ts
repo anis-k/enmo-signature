@@ -8,7 +8,7 @@ import { NotificationService } from './notification.service';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  excludeUrls: string[] = ['../rest/authenticate', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
+  excludeUrls: string[] = ['../rest/authenticate', '../rest/auth/refresh', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
   constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService) { }
 
   addAuthHeader(request: HttpRequest<any>) {
