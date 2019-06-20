@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ROOT>
     <config>
-        <CookieTime>1440</CookieTime> <!-- minutes -->
+        <SessionTime>1440</SessionTime> <!-- minutes -->
         <timezone>Europe/Paris</timezone>
         <customLangPathDirectory></customLangPathDirectory>
     </config>

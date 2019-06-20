@@ -70,6 +70,10 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
         $user = UserController::getUserInformationsById(['id' => $args['id']]);
         if (!empty($user)) {
             $user['groups'] = [];
@@ -103,8 +107,8 @@ class UserController
 
         if (empty($body)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['login'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Body login is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['login']) || !preg_match("/^[\w.@-]*$/", $body['login'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body login is empty, not a string or wrong formatted']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
@@ -147,7 +151,9 @@ class UserController
 
         $body = $request->getParsedBody();
 
-        if (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
@@ -232,6 +238,10 @@ class UserController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
         $user = UserModel::getById(['id' => $args['id'], 'select' => ['firstname', 'lastname']]);
         if (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
@@ -276,6 +286,10 @@ class UserController
 
     public function getPictureById(Request $request, Response $response, array $args)
     {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
         $user = UserModel::getById(['select' => ['picture'], 'id' => $args['id']]);
         if (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
@@ -292,7 +306,9 @@ class UserController
 
         $body = $request->getParsedBody();
 
-        if (!Validator::stringType()->notEmpty()->validate($body['lang'])) {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['lang'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body lang is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['writingMode'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body writingMode is empty or not a string']);
@@ -334,6 +350,10 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
         $body = $request->getParsedBody();
         if (!Validator::stringType()->notEmpty()->validate($body['newPassword'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
@@ -356,10 +376,6 @@ class UserController
         }
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $body['newPassword']]);
-
-        if ($user['mode'] == 'standard') {
-            AuthenticationModel::revokeCookie(['userId' => $args['id']]);
-        }
 
         HistoryController::add([
             'code'          => 'OK',

@@ -136,24 +136,27 @@ class AuthenticationController
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $user['id']])]);
     }
 
-    public static function getConnection(Request $request, Response $response)
+    public static function getInformations(Request $request, Response $response)
     {
         $connection = ConfigurationModel::getConnection();
+        $encryptKey = CoreConfigModel::getEncryptKey();
 
-        return $response->withJson(['connection' => $connection]);
+        return $response->withJson(['connection' => $connection, 'changeKey' => $encryptKey == 'Security Key Maarch Parapheur #2008']);
     }
 
     public static function getJWT()
     {
-        $cookieTime = 1;
+        $sessionTime = 1;
 
         $loadedXml = CoreConfigModel::getConfig();
         if ($loadedXml) {
-            $cookieTime = (int)$loadedXml->config->CookieTime;
+            if (!empty($loadedXml->config->sessionTime)) {
+                $sessionTime = (int)$loadedXml->config->sessionTime;
+            }
         }
 
         $token = [
-            'exp'   => time() + 60 * $cookieTime,
+            'exp'   => time() + 60 * $sessionTime,
             'user'  => [
                 'id' => $GLOBALS['id']
             ]
