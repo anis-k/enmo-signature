@@ -26,7 +26,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
     if (!is_file($configPath . '/config.xml')) {
         return $response->withStatus(400)->withJson(['errors' => 'Configuration file is missing']);
     }
-    $routesWithoutAuthentication = ['GET/authenticationInformations', 'POST/log', 'POST/password', 'PUT/password', 'GET/passwordRules', 'GET/languages/{lang}'];
+    $routesWithoutAuthentication = ['GET/authenticationInformations', 'POST/authenticate', 'POST/password', 'PUT/password', 'GET/passwordRules', 'GET/languages/{lang}'];
     $route = $request->getAttribute('route');
     $currentMethod = empty($route) ? '' : $route->getMethods()[0];
     $currentRoute = empty($route) ? '' : $route->getPattern();
