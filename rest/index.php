@@ -50,6 +50,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 //Authentication
 $app->get('/authenticationInformations', \SrcCore\controllers\AuthenticationController::class . ':getInformations');
 $app->post('/authenticate', \SrcCore\controllers\AuthenticationController::class . ':authenticate');
+$app->get('/authenticate/token', \SrcCore\controllers\AuthenticationController::class . ':getRefreshedToken');
 
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');

@@ -122,7 +122,7 @@ class AuthenticationController
 
         $GLOBALS['id'] = $user['id'];
 
-        $user['refresh_token'] = json_decode($user['refresh_token']);
+        $user['refresh_token'] = json_decode($user['refresh_token'], true);
         foreach ($user['refresh_token'] as $key => $refreshToken) {
             try {
                 JWT::decode($refreshToken, CoreConfigModel::getEncryptKey(), ['HS256']);
