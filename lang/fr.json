@@ -186,7 +186,7 @@
 		"ldapCreation": "Ajouter une entrée ldap",
 		"label": "Label",
 		"sessionExpired": "La session a expirée, veuillez vous reconnecter",
-		"warnPrivateKeyTitle": "La clé privé de cryptage n'a pas été modifié !",
+		"warnPrivateKeyTitle": "La clé privée de chiffrement n'a pas été modifié !",
 		"warnPrivateKey": "Cela compromet la sécurité de l'application.",
 		"ok": "J'ai compris",
 		"groupAdded" : "Groupe ajouté",
