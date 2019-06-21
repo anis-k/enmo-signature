@@ -38,14 +38,11 @@ export class NotificationService {
 
     handleErrors(err: any) {
         console.log(err);
-        if (err.status === 401 && this.router.url !== '/login') {
-            this.router.navigate(['/login']);
-            this.error('lang.logAgain');
-        } else if (err.status === 0 && err.statusText === 'Unknown Error') {
+        if (err.status === 0 && err.statusText === 'Unknown Error') {
             this.error('lang.connectionServerFailed');
         } else {
             if (err.error.errors !== undefined) {
-                if (typeof err.error.lang !== "undefined") {
+                if (typeof err.error.lang !== undefined) {
                     this.error('lang.' + err.error.lang);
                 } else {
                     this.error(err.error.errors);
