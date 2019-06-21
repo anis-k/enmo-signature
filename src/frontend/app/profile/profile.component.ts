@@ -229,8 +229,10 @@ export class ProfileComponent implements OnInit {
                         $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
 
                         if (this.showPassword) {
-                            this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password)
-                                .subscribe(() => {
+                            this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password, { observe: 'response' })
+                                .subscribe((dataPass: any) => {
+                                    localStorage.setItem('MaarchParapheurToken', dataPass.headers.get('Token'));
+                                    localStorage.setItem('MaarchParapheurRefreshToken', dataPass.headers.get('Refresh-Token'));
                                     this.password.newPassword = '';
                                     this.password.passwordConfirmation = '';
                                     this.password.currentPassword = '';
