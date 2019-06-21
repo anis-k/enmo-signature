@@ -41,6 +41,8 @@ export class AuthGuard implements CanActivate {
 
             return true;
         } else {
+            localStorage.removeItem('MaarchParapheurToken');
+            localStorage.removeItem('MaarchParapheurRefreshToken');
             this.router.navigateByUrl('/login');
             return false;
         }

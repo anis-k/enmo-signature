@@ -47,9 +47,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     idMail = new FormControl('', [Validators.required]);
     password = new FormControl('', [Validators.required]);
 
-    constructor(public http: HttpClient, private router: Router, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
-
-        const myItem = localStorage.getItem('MaarchParapheur');
+    constructor(public http: HttpClient, private router: Router, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) { 
+        const myItem = localStorage.getItem('MaarchParapheurToken');
         if (myItem !== null) {
             this.router.navigate(['/documents']);
         }

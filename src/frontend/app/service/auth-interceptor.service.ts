@@ -4,11 +4,12 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
 import { NotificationService } from './notification.service';
+import { empty } from 'rxjs';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  excludeUrls: string[] = ['../rest/authenticate', '../rest/auth/refresh', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
+  excludeUrls: string[] = ['../rest/authenticate', '../rest/authenticate/token', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
   constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService) { }
 
   addAuthHeader(request: HttpRequest<any>) {
@@ -39,42 +40,45 @@ export class AuthInterceptor implements HttpInterceptor {
 
       // Handle response
       return next.handle(request).pipe(
-        // Upate current token with token received in response request (if exist)
         /*map((data: any) => {
-          if (data.headers !== undefined && data.headers.get('Token') !== null) {
-            console.log('Token Refresh!');
-            localStorage.setItem('MaarchParapheur', data.headers.get('Token'));
-          }
+          console.log('can modify datas for each response');
           return data;
         }
         ),*/
         catchError(error => {
           // Disconnect user if bad token process
           if (error.status === 401) {
-            return this.http.post('../rest/auth/refresh', { refreshToken: localStorage.getItem('MaarchParapheurToken') }).pipe(
+            return this.http.get('../rest/authenticate/token', {
+              params: {
+                refreshToken: localStorage.getItem('MaarchParapheurRefreshToken')
+              }
+            }).pipe(
               switchMap((data: any) => {
-                // If reload successful update tokens
-                if (data.status === 200) {
-                  // Update stored token
-                  localStorage.setItem('MaarchParapheurToken', data.token);
-                  // Clone our request with token updated ant try to resend it
-                  request = this.addAuthHeader(request);
 
-                  return next.handle(request).pipe(
-                    catchError(err => {
-                      // Disconnect user if bad token process
-                      if (err.status === 401) {
-                        this.logout();
-                      }
-                      return Observable;
-                    })
-                  );
-                } else {
-                  this.logout();
-                }
-                return Observable;
+                // Update stored token
+                localStorage.setItem('MaarchParapheurToken', data.token);
+                // Clone our request with token updated ant try to resend it
+                request = this.addAuthHeader(request);
+
+                return next.handle(request).pipe(
+                  catchError(err => {
+                    // Disconnect user if bad token process
+                    if (err.status === 401) {
+                      this.logout();
+                      return empty();
+                    }
+                  })
+                );
+
               }
               ),
+              catchError(err => {
+                // Disconnect user if bad token process
+                if (err.status === 401) {
+                  this.logout();
+                }
+                return empty();
+              })
             );
           }
         })
