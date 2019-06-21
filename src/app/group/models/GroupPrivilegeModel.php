@@ -49,4 +49,35 @@ class GroupPrivilegeModel
 
         return $groupsPrivileges;
     }
+
+    public static function addPrivilege(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['groupId', 'privilegeId']);
+        ValidatorModel::intVal($aArgs, ['groupId']);
+
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'groups_privileges_id_seq']);
+        DatabaseModel::insert([
+            'table'     => 'groups_privileges',
+            'columnsValues'  => [
+                'id'         => $nextSequenceId,
+                'group_id'   => $aArgs['groupId'],
+                'privilege'  => $aArgs['privilegeId']
+            ]
+        ]);
+
+        return $nextSequenceId;
+    }
+
+    public static function deletePrivilege(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['groupId', 'privilegeId']);
+        ValidatorModel::intVal($aArgs, ['groupId']);
+
+        GroupPrivilegeModel::delete([
+            'where' => ['group_id = ?', 'privilege = ?'],
+            'data'  => [$aArgs['groupId'], $aArgs['privilegeId']]
+        ]);
+
+        return true;
+    }
 }

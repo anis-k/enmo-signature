@@ -99,6 +99,50 @@ class GroupController
         return $response->withStatus(204);
     }
 
+    public function updateGroupPrivilege(Request $request, Response $response, $aArgs)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        if (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($aArgs['privilegeId'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'privilegeId is empty']);
+        } elseif (!Validator::boolType()->validate($body['checked'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body checked is empty']);
+        } elseif (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Id must be an integer']);
+        }
+
+        $group = GroupModel::getById(['id' => $aArgs['id']]);
+        if (empty($group)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
+        }
+
+        if ($body['checked'] === true && !empty(GroupPrivilegeModel::getPrivileges(['select' => [1], 'where' => ['privilege = ?', 'group_id = ?'], 'data' => [$aArgs['privilegeId'], $aArgs['id']]]))) {
+            return $response->withStatus(400)->withJson(['errors' => 'Privilege is already linked to this group']);
+        }
+
+        if ($body['checked']) {
+            GroupPrivilegeModel::addPrivilege(['groupId' => $aArgs['id'], 'privilegeId' => $aArgs['privilegeId']]);
+        } else {
+            GroupPrivilegeModel::deletePrivilege(['groupId' => $aArgs['id'], 'privilegeId' => $aArgs['privilegeId']]);
+        }
+
+        HistoryController::add([
+            'code'       => 'OK',
+            'objectType' => 'groups',
+            'objectId'   => $aArgs['id'],
+            'type'       => 'UPDATE',
+            'message'    => "{privilegeUpdated} : {$aArgs['privilegeId']}"
+        ]);
+
+        return $response->withStatus(204);
+    }
+
     public function delete(Request $request, Response $response, $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {

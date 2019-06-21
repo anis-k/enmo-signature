@@ -25,9 +25,11 @@ ALTER SEQUENCE groups_privileges_id_seq RESTART WITH 1;
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_documents');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_email_configuration');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_groups');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_documents');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_email_configuration');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_groups');
 
 TRUNCATE TABLE users_groups;
 ALTER SEQUENCE users_groups_id_seq RESTART WITH 1;
