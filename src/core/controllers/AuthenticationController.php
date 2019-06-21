@@ -154,6 +154,8 @@ class AuthenticationController
             'where' => ['id = ?'],
             'data'  => [$user['id']]
         ]);
+        $response = $response->withHeader('Token', AuthenticationController::getJWT());
+        $response = $response->withHeader('Refresh-Token', $refreshToken);
 
         HistoryController::add([
             'code'          => 'OK',
@@ -162,9 +164,6 @@ class AuthenticationController
             'type'          => 'LOGIN',
             'message'       => '{userLogIn}'
         ]);
-
-        $response = $response->withHeader('Token', AuthenticationController::getJWT());
-        $response = $response->withHeader('Refresh-Token', $refreshToken);
 
         return $response->withStatus(204);
     }
@@ -195,9 +194,7 @@ class AuthenticationController
 
         $GLOBALS['id'] = $user['id'];
 
-        $response = $response->withHeader('Token', AuthenticationController::getJWT());
-
-        return $response->withStatus(204);
+        return $response->withJson(['token' => AuthenticationController::getJWT()]);
     }
 
     public static function getJWT()
@@ -226,9 +223,9 @@ class AuthenticationController
         return $jwt;
     }
 
-    private static function getRefreshJWT()
+    public static function getRefreshJWT()
     {
-        $sessionTime = 1;
+        $sessionTime = AuthenticationController::MAX_DURATION_TOKEN;
 
         $loadedXml = CoreConfigModel::getConfig();
         if ($loadedXml) {
@@ -239,6 +236,20 @@ class AuthenticationController
 
         $token = [
             'exp'   => time() + 60 * $sessionTime,
+            'user'  => [
+                'id' => $GLOBALS['id']
+            ]
+        ];
+
+        $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
+
+        return $jwt;
+    }
+
+    public static function getResetJWT()
+    {
+        $token = [
+            'exp'   => time() + 3600,
             'user'  => [
                 'id' => $GLOBALS['id']
             ]
