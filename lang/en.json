@@ -188,6 +188,7 @@
 		"warnPrivateKey": "This cause security issues",
 		"ok": "Ok",
 		"groupAdded" : "Group added",
-		"groupdeleted" : "Group deleted"
+		"groupdeleted" : "Group deleted",
+		"groupUpdated" : "Group updated"
 	}
 }

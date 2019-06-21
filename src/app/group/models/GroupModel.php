@@ -72,6 +72,21 @@ class GroupModel
         return $nextSequenceId;
     }
 
+    public static function update(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['set', 'where', 'data']);
+        ValidatorModel::arrayType($args, ['set', 'where', 'data']);
+
+        DatabaseModel::update([
+            'table' => 'groups',
+            'set'   => $args['set'],
+            'where' => $args['where'],
+            'data'  => $args['data']
+        ]);
+
+        return true;
+    }
+
     public static function delete(array $args)
     {
         ValidatorModel::notEmpty($args, ['where', 'data']);

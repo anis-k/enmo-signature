@@ -85,6 +85,7 @@ $app->post('/groups', \Group\controllers\GroupController::class . ':create');
 $app->get('/groups', \Group\controllers\GroupController::class . ':get');
 $app->get('/groups/{id}', \Group\controllers\GroupController::class . ':getById');
 $app->delete('/groups/{id}', \Group\controllers\GroupController::class . ':delete');
+$app->put('/groups/{id}', \Group\controllers\GroupController::class . ':update');
 
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');

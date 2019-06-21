@@ -190,7 +190,8 @@
 		"warnPrivateKey": "Cela compromet la sécurité de l'application.",
 		"ok": "J'ai compris",
 		"groupAdded" : "Groupe ajouté",
-		"groupdeleted" : "Groupe supprimé"
+		"groupdeleted" : "Groupe supprimé",
+		"groupUpdated" : "Groupe mis à jour"
 
 	}
 }

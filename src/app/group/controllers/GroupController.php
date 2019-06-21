@@ -63,6 +63,42 @@ class GroupController
         return $response->withJson(['id' => $id]);
     }
 
+    public function update(Request $request, Response $response, $aArgs)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        $group = GroupModel::getById(['id' => $aArgs['id']]);
+        if (empty($group)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
+        }
+
+        if (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 128)->validate($body['label'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body label is empty or not a string or longer than 128 caracteres']);
+        }
+
+        GroupModel::update([
+            'set' => ['label' => $body['label']],
+            'where' => ['id = ?'],
+            'data'  => [$aArgs['id']]
+        ]);
+
+        HistoryController::add([
+            'code'       => 'OK',
+            'objectType' => 'groups',
+            'objectId'   => $aArgs['id'],
+            'type'       => 'UPDATE',
+            'message'    => "{groupUpdated} : {$body['label']}"
+        ]);
+
+        return $response->withStatus(204);
+    }
+
     public function delete(Request $request, Response $response, $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
