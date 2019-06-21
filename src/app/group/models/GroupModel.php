@@ -35,4 +35,54 @@ class GroupModel
 
         return $groups;
     }
+
+    public static function getById(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['id']);
+        ValidatorModel::intVal($aArgs, ['id']);
+        ValidatorModel::arrayType($aArgs, ['select']);
+
+        $group = GroupModel::get([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'where'     => ['id = ?'],
+            'data'      => [$aArgs['id']]
+        ]);
+
+        if (!empty($group)) {
+            return $group[0];
+        }
+
+        return [];
+    }
+
+    public static function create(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['label']);
+        ValidatorModel::stringType($aArgs, ['label']);
+
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'groups_id_seq']);
+        DatabaseModel::insert([
+            'table'         => 'groups',
+            'columnsValues' => [
+                'id'    => $nextSequenceId,
+                'label' => $aArgs['label']
+            ]
+        ]);
+
+        return $nextSequenceId;
+    }
+
+    public static function delete(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['where', 'data']);
+        ValidatorModel::arrayType($args, ['where', 'data']);
+
+        DatabaseModel::delete([
+            'table' => 'groups',
+            'where' => $args['where'],
+            'data'  => $args['data']
+        ]);
+
+        return true;
+    }
 }

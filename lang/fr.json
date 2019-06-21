@@ -188,7 +188,9 @@
 		"sessionExpired": "La session a expirée, veuillez vous reconnecter",
 		"warnPrivateKeyTitle": "La clé privé de cryptage n'a pas été modifié !",
 		"warnPrivateKey": "Cela compromet la sécurité de l'application.",
-		"ok": "J'ai compris"
+		"ok": "J'ai compris",
+		"groupAdded" : "Groupe ajouté",
+		"groupdeleted" : "Groupe supprimé"
 
 	}
 }

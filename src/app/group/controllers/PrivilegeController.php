@@ -18,12 +18,14 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
+use Group\models\GroupPrivilegeModel;
 
 class PrivilegeController
 {
     const PRIVILEGES = [
         ['id' => 'manage_users',                'type' => 'admin', 'icon' => 'fa fa-user',          'route' => '/administration/users'],
-        ['id' => 'manage_ldap_configurations',   'type' => 'admin', 'icon' => 'fas fa-database',          'route' => '/administration/ldaps'],
+        ['id' => 'manage_groups',               'type' => 'admin', 'icon' => 'fa fa-users',         'route' => '/administration/groups'],
+        ['id' => 'manage_ldap_configurations',  'type' => 'admin', 'icon' => 'fas fa-database',     'route' => '/administration/ldaps'],
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'fa fa-paper-plane',   'route' => '/administration/configuration'],
         ['id' => 'manage_documents',            'type' => 'simple']
     ];
@@ -36,7 +38,7 @@ class PrivilegeController
 
         $administrativePrivileges = [];
         if (!empty($allGroups)) {
-            $privileges = UserGroupModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
+            $privileges = GroupPrivilegeModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
             $privileges = array_column($privileges, 'privilege');
 
             if (!empty($privileges)) {
@@ -60,7 +62,7 @@ class PrivilegeController
         $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['userId']]]);
 
         foreach ($groups as $group) {
-            $privilege = UserGroupModel::getPrivileges(['select' => [1], 'where' => ['group_id = ?', 'privilege = ?'], 'data' => [$group['group_id'], $args['privilege']]]);
+            $privilege = GroupPrivilegeModel::getPrivileges(['select' => [1], 'where' => ['group_id = ?', 'privilege = ?'], 'data' => [$group['group_id'], $args['privilege']]]);
             if (!empty($privilege)) {
                 return true;
             }
@@ -79,7 +81,7 @@ class PrivilegeController
         $allGroups = array_column($groups, 'group_id');
 
         if (!empty($allGroups)) {
-            $privileges = UserGroupModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
+            $privileges = GroupPrivilegeModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
             $privileges = array_column($privileges, 'privilege');
 
             if (!empty($privileges)) {

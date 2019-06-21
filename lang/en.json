@@ -152,7 +152,7 @@
 		"noteUser": "Note user",
 		"mainDocument": "main document",
 		"search": "Search",
-		"substitute": "Substitue user",
+		"substitute": "Substitute user",
 		"substitution": "Substitution",
 		"signSubstituted": "Signatures to substitute",
 		"chooseSubstitute": "Choose a substitute",
@@ -186,6 +186,8 @@
 		"sessionExpired": "Session expired, please login again",
 		"warnPrivateKeyTitle": "The private key is not updated !",
 		"warnPrivateKey": "This cause security issues",
-		"ok": "Ok"
+		"ok": "Ok",
+		"groupAdded" : "Group added",
+		"groupdeleted" : "Group deleted"
 	}
 }

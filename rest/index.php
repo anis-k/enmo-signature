@@ -80,6 +80,12 @@ $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':g
 //Privileges
 $app->get('/administrativePrivileges', \Group\controllers\PrivilegeController::class . ':getAdministrativePrivilegesByUser');
 
+//Groups
+$app->post('/groups', \Group\controllers\GroupController::class . ':create');
+$app->get('/groups', \Group\controllers\GroupController::class . ':get');
+$app->get('/groups/{id}', \Group\controllers\GroupController::class . ':getById');
+$app->delete('/groups/{id}', \Group\controllers\GroupController::class . ':delete');
+
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');
 $app->get('/users', \User\controllers\UserController::class . ':get');

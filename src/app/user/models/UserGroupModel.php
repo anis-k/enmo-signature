@@ -36,6 +36,25 @@ class UserGroupModel
         return $usersGroups;
     }
 
+    public static function getByGroupId(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['id']);
+        ValidatorModel::arrayType($aArgs, ['select', 'orderBy']);
+        ValidatorModel::intType($aArgs, ['id']);
+
+        $usersGroups = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['users_groups', 'users'],
+            'where'     => ['group_id = ?'],
+            'data'      => [$aArgs['id']],
+            'left_join' => ['users.id = users_groups.user_id'],
+            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
+            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit']
+        ]);
+
+        return $usersGroups;
+    }
+
     public static function delete(array $args)
     {
         ValidatorModel::notEmpty($args, ['where', 'data']);
@@ -48,22 +67,5 @@ class UserGroupModel
         ]);
 
         return true;
-    }
-
-    public static function getPrivileges(array $aArgs)
-    {
-        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);
-        ValidatorModel::intType($aArgs, ['limit']);
-
-        $groupsPrivileges = DatabaseModel::select([
-            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
-            'table'     => ['groups_privileges'],
-            'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
-            'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
-            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
-            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit']
-        ]);
-
-        return $groupsPrivileges;
     }
 }
