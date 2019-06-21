@@ -8,7 +8,7 @@
 */
 
 /**
-* @brief Group Model
+* @brief Group Privilege Model
 * @author dev@maarch.org
 */
 

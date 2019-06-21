@@ -8,7 +8,7 @@
 */
 
 /**
-* @brief Privilege Controller
+* @brief Group Controller
 * @author dev@maarch.org
 */
 
