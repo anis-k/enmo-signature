@@ -32,7 +32,6 @@ export class AdministrationComponent implements OnInit {
         )
         .subscribe({
             next: data => this.privileges = data,
-            error: err => this.notificationService.handleErrors(err)
         });
     }
 }

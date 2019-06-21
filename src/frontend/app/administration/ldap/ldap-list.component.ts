@@ -85,7 +85,6 @@ export class LdapListComponent implements OnInit {
                     this.ldapList = data;
                     this.updateDataTable();
                 },
-                error: err => this.notificationService.handleErrors(err)
             });*/
     }
 
@@ -111,7 +110,6 @@ export class LdapListComponent implements OnInit {
                             this.notificationService.success('lang.ldapDeleted');
 
                         },
-                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });

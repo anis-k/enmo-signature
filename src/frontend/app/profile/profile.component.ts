@@ -9,6 +9,8 @@ import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
 import { FiltersService } from '../service/filters.service';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
+import { AuthService } from '../service/auth.service';
 
 @Component({
     selector: 'app-my-profile',
@@ -64,7 +66,7 @@ export class ProfileComponent implements OnInit {
     msgButton = 'lang.validate';
     loading: boolean = false;
 
-    constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, private cookieService: CookieService, public filtersService: FiltersService) { }
+    constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, public authService: AuthService, private cookieService: CookieService, public filtersService: FiltersService) { }
 
     ngOnInit(): void {
         this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
@@ -214,6 +216,13 @@ export class ProfileComponent implements OnInit {
                 this.profileInfo.picture = data.user.picture;
 
                 this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/preferences', profileToSend.preferences)
+                    .pipe(
+                        finalize(() => {
+                            this.disableState = false;
+                            this.msgButton = 'lang.validate';
+                            this.closeProfile();
+                        })
+                    )
                     .subscribe(() => {
                         this.signaturesService.userLogged.preferences = this.profileInfo.preferences;
                         this.setLang(this.signaturesService.userLogged.preferences.lang);
@@ -227,22 +236,16 @@ export class ProfileComponent implements OnInit {
                         }
 
                         $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
-
                         if (this.showPassword) {
                             this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password, { observe: 'response' })
                                 .subscribe((dataPass: any) => {
-                                    localStorage.setItem('MaarchParapheurToken', dataPass.headers.get('Token'));
-                                    localStorage.setItem('MaarchParapheurRefreshToken', dataPass.headers.get('Refresh-Token'));
+                                    this.authService.saveTokens(dataPass.headers.get('Token'), dataPass.headers.get('Refresh-Token'));
+
                                     this.password.newPassword = '';
                                     this.password.passwordConfirmation = '';
                                     this.password.currentPassword = '';
                                     this.notificationService.success('lang.profileUpdated');
-                                    this.disableState = false;
-                                    this.msgButton = 'lang.validate';
-                                    this.closeProfile();
                                 }, (err) => {
-                                    this.disableState = false;
-                                    this.msgButton = 'lang.validate';
                                     if (err.status === 401) {
                                         this.notificationService.error('lang.wrongPassword');
                                     } else {
@@ -253,27 +256,15 @@ export class ProfileComponent implements OnInit {
 
                         if (!this.showPassword) {
                             this.notificationService.success('lang.profileUpdated');
-                            this.disableState = false;
-                            this.msgButton = 'lang.validate';
-                            this.closeProfile();
                         }
 
                         if (this.profileInfo.substitute !== null && this.signaturesService.signaturesList.length > 0) {
                             this.http.patch('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
-                                .subscribe(() => { }, (err) => {
-                                    this.notificationService.handleErrors(err);
-                                });
+                                .subscribe();
                         }
 
-                    }, (err) => {
-                        this.notificationService.handleErrors(err);
                     });
 
-            }, (err) => {
-                this.disableState = false;
-                this.msgButton = 'lang.validate';
-                this.notificationService.handleErrors(err);
-                this.disableState = false;
             });
     }
 
@@ -373,8 +364,6 @@ export class ProfileComponent implements OnInit {
                     this.usersRest = data.users;
                     this.currentUserRest = data.users[0];
 
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
                 });
         }*/
 
@@ -382,8 +371,6 @@ export class ProfileComponent implements OnInit {
             this.http.get('../rest/users')
                 .subscribe((data: any) => {
                     this.usersRest = data.users;
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
                 });
         }
 
@@ -391,8 +378,6 @@ export class ProfileComponent implements OnInit {
             this.http.get('../rest/users/' + this.profileInfo.id + '/signatures')
                 .subscribe((data: any) => {
                     this.signaturesService.signaturesList = data.signatures;
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
                 });
         }
     }

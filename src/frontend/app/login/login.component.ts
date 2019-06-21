@@ -8,7 +8,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
 import { Validators, FormControl } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
+import { AuthService } from '../service/auth.service';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -34,8 +34,6 @@ import { finalize } from 'rxjs/operators';
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
-    loadingForm: boolean = true;
-    loadingConnexion: boolean = false;
     newLogin: any = {
         login: '',
         password: ''
@@ -47,14 +45,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
     idMail = new FormControl('', [Validators.required]);
     password = new FormControl('', [Validators.required]);
 
-    constructor(public http: HttpClient, private router: Router, sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) { 
-        const myItem = localStorage.getItem('MaarchParapheurToken');
-        if (myItem !== null) {
+    constructor(public http: HttpClient, private router: Router, sanitizer: DomSanitizer, public authService: AuthService, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
+        if (this.authService.isAuth) {
             this.router.navigate(['/documents']);
         }
     }
 
     ngOnInit(): void {
+        this.authService.loadingForm = true;
         this.appVersion = environment.VERSION;
         this.appAuthor = environment.AUTHOR;
         this.signaturesService.reset();
@@ -65,41 +63,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
             $('.maarchLogo').css({ 'transform': 'translateY(-200px)' });
         }, 200);
         setTimeout(() => {
-            this.loadingForm = false;
+            this.authService.loadingForm = false;
             this.fixAutoFill();
         }, 500);
-    }
-
-    login() {
-        this.labelButton = 'lang.connexion';
-        this.loadingConnexion = true;
-
-        this.http.post('../rest/authenticate', { 'login': this.newLogin.login, 'password': this.newLogin.password }, { observe: 'response' })
-            .pipe(
-                finalize(() => {
-                    this.labelButton = 'lang.connect';
-                    this.loadingConnexion = false;
-                })
-            )
-            .subscribe({
-                next: (data: any) => {
-                    localStorage.setItem('MaarchParapheurToken', data.headers.get('Token'));
-                    localStorage.setItem('MaarchParapheurRefreshToken', data.headers.get('Refresh-Token'));
-
-                    this.loadingForm = true;
-                    $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
-                    setTimeout(() => {
-                        this.router.navigate(['/documents']);
-                    }, 700);
-                },
-                error: err => {
-                    if (err.status === 401) {
-                        this.notificationService.error('lang.wrongLoginPassword');
-                    } else {
-                        this.notificationService.handleErrors(err);
-                    }
-                }
-            });
     }
 
     fixAutoFill() {

@@ -5,16 +5,18 @@ import { Router } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
 import { NotificationService } from './notification.service';
 import { empty } from 'rxjs';
+import { SignaturesContentService } from './signatures.service';
+import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
   excludeUrls: string[] = ['../rest/authenticate', '../rest/authenticate/token', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
-  constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService) { }
+  constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService, public signaturesService: SignaturesContentService, public authService: AuthService) { }
 
   addAuthHeader(request: HttpRequest<any>) {
 
-    const authHeader = localStorage.getItem('MaarchParapheurToken');
+    const authHeader = this.authService.getToken();
 
     return request.clone({
       setHeaders: {
@@ -24,15 +26,14 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   logout() {
-    localStorage.removeItem('MaarchParapheurToken');
-    localStorage.removeItem('MaarchParapheurRefreshToken');
-    this.router.navigate(['login']);
+    this.authService.logout();
     this.notificationService.error('lang.sessionExpired');
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
+
     // We don't want to intercept some routes
-    if (this.excludeUrls.indexOf(request.url) > -1) {
+    if (this.excludeUrls.indexOf(request.url) > -1 || request.url.indexOf('/password') > -1) {
       return next.handle(request);
     } else {
       // Add current token in header request
@@ -50,13 +51,13 @@ export class AuthInterceptor implements HttpInterceptor {
           if (error.status === 401) {
             return this.http.get('../rest/authenticate/token', {
               params: {
-                refreshToken: localStorage.getItem('MaarchParapheurRefreshToken')
+                refreshToken: this.authService.getRefreshToken()
               }
             }).pipe(
               switchMap((data: any) => {
 
                 // Update stored token
-                localStorage.setItem('MaarchParapheurToken', data.token);
+                this.authService.setToken(data.token);
                 // Clone our request with token updated ant try to resend it
                 request = this.addAuthHeader(request);
 
@@ -80,6 +81,13 @@ export class AuthInterceptor implements HttpInterceptor {
                 return empty();
               })
             );
+          } else {
+            if (request.url.indexOf('../rest/documents/') > -1) {
+              this.router.navigate(['/documents']);
+              this.signaturesService.mainDocumentId = null;
+            }
+            this.notificationService.handleErrors(error);
+            return empty();
           }
         })
       );

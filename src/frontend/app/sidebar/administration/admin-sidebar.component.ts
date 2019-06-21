@@ -6,6 +6,7 @@ import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { tap, map, finalize } from 'rxjs/operators';
+import { AuthService } from '../../service/auth.service';
 
 export interface Privilege {
     id: string;
@@ -28,7 +29,7 @@ export class AdminSidebarComponent implements OnInit {
     loading: boolean = true;
     privileges: Privilege[] = [];
 
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService) {
+    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService, public authService: AuthService) {
     }
 
     ngOnInit() {
@@ -36,12 +37,10 @@ export class AdminSidebarComponent implements OnInit {
         this.http.get('../rest/administrativePrivileges')
         .pipe(
             map((data: any) => data.privileges),
-            tap(() => this.loading = true),
             finalize(() => this.loading = false)
         )
         .subscribe({
             next: data => this.privileges = data,
-            error: err => this.notificationService.handleErrors(err)
         });
     }
 
@@ -50,12 +49,6 @@ export class AdminSidebarComponent implements OnInit {
         if (this.signaturesService.mobileMode) {
             this.snavLeftComponent.close();
         }
-    }
-
-    logout() {
-        localStorage.removeItem('MaarchParapheurToken');
-        localStorage.removeItem('MaarchParapheurRefreshToken');
-        this.router.navigate(['/login']);
     }
 
     checkClose() {

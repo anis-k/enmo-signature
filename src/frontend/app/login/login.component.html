@@ -1,7 +1,7 @@
 <div class="login-content">
     <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
-    <mat-card class="login-form" *ngIf="!loadingForm" [@myAnimation]>
-        <form (ngSubmit)="login()">
+    <mat-card class="login-form" *ngIf="!authService.loadingForm" [@myAnimation]>
+        <form (ngSubmit)="authService.login(newLogin.login, newLogin.password)">
             <mat-form-field class="input-row">
                 <input id="login"  name="login" matInput placeholder="{{'lang.login' | translate}}" [(ngModel)]="newLogin.login" type="text" oninput="this.value = this.value.toLowerCase()" (click)="fixAutoFill()">
             </mat-form-field>
@@ -10,7 +10,7 @@
                 <mat-hint align="end" *ngIf="signaturesService.authMode === 'default'"><a routerLink="/forgot-password" class="infoLogin">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
                 <mat-hint align="end" *ngIf="signaturesService.authMode === 'ldap'"><span class="infoLogin">{{'lang.ldapEnabled' | translate}}</span></mat-hint>
             </mat-form-field>
-            <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || loadingConnexion">{{labelButton | translate}}</button>
+            <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || authService.loadingConnection">{{labelButton | translate}}</button>
         </form>
     </mat-card>
     <footer>

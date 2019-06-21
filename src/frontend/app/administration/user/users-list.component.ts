@@ -81,7 +81,6 @@ export class UsersListComponent implements OnInit {
                     this.userList = data;
                     this.updateDataTable();
                 },
-                error: err => this.notificationService.handleErrors(err)
             });
     }
 
@@ -107,7 +106,6 @@ export class UsersListComponent implements OnInit {
                             this.notificationService.success('lang.userDeleted');
 
                         },
-                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });

@@ -1,7 +1,7 @@
 <nav class="sidebar" *ngIf="snavLeftComponent.opened">
   <div class="main-header">
     <header class="profile-header">
-      <button class="logout-button" mat-icon-button (click)="logout()">
+      <button class="logout-button" mat-icon-button (click)="authService.logout()">
         <mat-icon fontSet="fas" fontIcon="fa-power-off"></mat-icon>
       </button>
       <button class="home-button" mat-icon-button (click)="openHome()">

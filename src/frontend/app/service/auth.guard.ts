@@ -5,17 +5,18 @@ import { CookieService } from 'ngx-cookie-service';
 import { HttpClient } from '@angular/common/http';
 import { SignaturesContentService } from './signatures.service';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
 
-    constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public signaturesService: SignaturesContentService, private cookieService: CookieService) { }
+    constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public signaturesService: SignaturesContentService, private cookieService: CookieService, public authService: AuthService) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
 
-        const tokenInfo = localStorage.getItem('MaarchParapheurToken');
+        const tokenInfo = this.authService.getToken();
         if (tokenInfo !== null) {
             if (this.signaturesService.userLogged.id === undefined) {
                 const userInfo = JSON.parse(atob(tokenInfo.split('.')[1])).user;
@@ -41,9 +42,7 @@ export class AuthGuard implements CanActivate {
 
             return true;
         } else {
-            localStorage.removeItem('MaarchParapheurToken');
-            localStorage.removeItem('MaarchParapheurRefreshToken');
-            this.router.navigateByUrl('/login');
+            this.authService.logout();
             return false;
         }
     }

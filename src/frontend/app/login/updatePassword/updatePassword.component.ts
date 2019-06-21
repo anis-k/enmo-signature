@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
+import { finalize } from 'rxjs/operators';
 
 @Component({
     templateUrl: 'updatePassword.component.html',
@@ -60,15 +61,18 @@ export class UpdatePasswordComponent implements OnInit {
         this.loading = true;
 
         this.http.put('../rest/password', { 'token': this.token, 'password': this.password.newPassword })
+            .pipe(
+                finalize(() => {
+                    this.labelButton = 'lang.update';
+                    this.loading = false;
+                })
+            )
             .subscribe((data: any) => {
                 this.loadingForm = true;
                 this.notificationService.success('lang.passwordChanged');
                 this.router.navigate(['/login']);
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
-
-                this.labelButton = 'lang.update';
-                this.loading = false;
             });
     }
 

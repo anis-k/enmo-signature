@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import { TranslateService } from '@ngx-translate/core';
+import { finalize } from 'rxjs/operators';
 
 interface AfterViewInit {
   ngAfterViewInit(): void;
@@ -91,6 +92,11 @@ export class SignaturePadPageComponent implements AfterViewInit {
     const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
 
     this.http.post('../rest/users/' + cookieInfo.id + '/signatures', newSign)
+      .pipe(
+        finalize(() => {
+            this.disableState = false;
+        })
+      )
       .subscribe((data: any) => {
         newSign.id = data.signatureId;
         this.signaturesService.newSign = newSign;
@@ -99,10 +105,6 @@ export class SignaturePadPageComponent implements AfterViewInit {
         // this.store.dispatch({ type: HIDE_DRAWER });
         this.signaturePad.clear();
         this.notificationService.success('lang.signatureRegistered');
-        this.disableState = false;
-      }, (err: any) => {
-        this.disableState = false;
-        this.notificationService.handleErrors(err);
       });
 
     // BUG IMAGE CROPPED

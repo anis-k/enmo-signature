@@ -56,7 +56,6 @@ export class LdapComponent implements OnInit {
                             this.ldapClone = JSON.parse(JSON.stringify(this.ldap));
                             this.title = this.ldap.label;
                         },
-                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });
@@ -89,7 +88,6 @@ export class LdapComponent implements OnInit {
                     this.router.navigate(['/administration/ldaps']);
                     this.notificationService.success('lang.ldapUpdated');
                 },
-                error: err => this.notificationService.handleErrors(err)
             });
     }
 
@@ -104,7 +102,6 @@ export class LdapComponent implements OnInit {
                     this.router.navigate(['/administration/ldaps']);
                     this.notificationService.success('lang.ldapAdded');
                 },
-                error: err => this.notificationService.handleErrors(err)
             });
     }
 
@@ -123,7 +120,6 @@ export class LdapComponent implements OnInit {
                             this.router.navigate(['/administration/ldaps']);
                             this.notificationService.success('lang.ldapDeleted');
                         },
-                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });

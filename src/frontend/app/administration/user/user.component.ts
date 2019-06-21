@@ -62,7 +62,6 @@ export class UserComponent implements OnInit {
                             this.userClone = JSON.parse(JSON.stringify(this.user));
                             this.title = this.user.firstname + ' ' + this.user.lastname;
                         },
-                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });
@@ -95,7 +94,6 @@ export class UserComponent implements OnInit {
                     this.router.navigate(['/administration/users']);
                     this.notificationService.success('lang.userUpdated');
                 },
-                error: err => this.notificationService.handleErrors(err)
             });
     }
 
@@ -110,7 +108,6 @@ export class UserComponent implements OnInit {
                     this.router.navigate(['/administration/users']);
                     this.notificationService.success('lang.userAdded');
                 },
-                error: err => this.notificationService.handleErrors(err)
             });
     }
 
@@ -129,7 +126,6 @@ export class UserComponent implements OnInit {
                             this.router.navigate(['/administration/users']);
                             this.notificationService.success('lang.userDeleted');
                         },
-                        error: err => this.notificationService.handleErrors(err)
                     });
             }
         });

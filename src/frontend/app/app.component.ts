@@ -27,8 +27,6 @@ export class AppComponent {
         if (this.signaturesService.changeKey) {
           this.dialog.open(AlertComponent, { autoFocus: false, disableClose: true, data: { mode: 'warning', title: 'lang.warnPrivateKeyTitle', msg: 'lang.warnPrivateKey' } });
         }
-      }, (err: any) => {
-        this.notificationService.handleErrors(err);
       });
     if (this.cookieService.check('maarchParapheurLang')) {
       const cookieInfoLang = this.cookieService.get('maarchParapheurLang');

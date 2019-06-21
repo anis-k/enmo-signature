@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
+import { finalize } from 'rxjs/operators';
 
 @Component({
     templateUrl: 'forgotPassword.component.html',
@@ -33,15 +34,18 @@ export class ForgotPasswordComponent implements OnInit {
         this.loading = true;
 
         this.http.post('../rest/password', { 'login': this.newLogin.login })
+            .pipe(
+                finalize(() => {
+                    this.labelButton = 'lang.send';
+                    this.loading = false;
+                })
+            )
             .subscribe((data: any) => {
                 this.loadingForm = true;
                 this.notificationService.success('lang.requestSentByEmail');
                 this.router.navigate(['/login']);
             }, (err: any) => {
                 this.notificationService.handleErrors(err);
-
-                this.labelButton = 'lang.send';
-                this.loading = false;
             });
     }
 }

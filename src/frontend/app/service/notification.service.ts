@@ -42,7 +42,7 @@ export class NotificationService {
             this.error('lang.connectionServerFailed');
         } else {
             if (err.error.errors !== undefined) {
-                if (typeof err.error.lang !== undefined) {
+                if (err.error.lang !== undefined) {
                     this.error('lang.' + err.error.lang);
                 } else {
                     this.error(err.error.errors);

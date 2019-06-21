@@ -4,6 +4,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+import { finalize } from 'rxjs/operators';
 
 @Component({
     templateUrl: 'confirm-modal.component.html',
@@ -51,6 +52,12 @@ export class ConfirmModalComponent {
             this.disableState = true;
             this.msgButton = 'Envoi...';
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, {'signatures': signatures})
+                .pipe(
+                    finalize(() => {
+                        this.disableState = false;
+                        this.msgButton = 'lang.validate';
+                    })
+                )
                 .subscribe(() => {
                     if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                         this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
@@ -58,13 +65,7 @@ export class ConfirmModalComponent {
                             this.signaturesService.documentsListCount--;
                         }
                     }
-                    this.disableState = false;
-                    this.msgButton = 'lang.validate';
                     this.dialogRef.close('sucess');
-                }, (err: any) => {
-                    this.notificationService.handleErrors(err);
-                    this.disableState = false;
-                    this.msgButton = 'lang.validate';
                 });
         } else {
             this.dialogRef.close('sucess');

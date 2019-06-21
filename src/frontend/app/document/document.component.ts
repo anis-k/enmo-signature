@@ -178,11 +178,6 @@ export class DocumentComponent implements OnInit {
                         });
                         this.renderImage();
 
-                    }, (err: any) => {
-                        this.notificationService.handleErrors(err);
-                        this.router.navigate(['/documents']);
-                        this.signaturesService.mainDocumentId = null;
-                        this.freezeSidenavClose = true;
                     });
             } else {
                 this.docList = [];
@@ -509,15 +504,13 @@ export class DocumentComponent implements OnInit {
         const r = confirm(this.translate.instant('lang.deleteSubstitution') + ' ?');
 
         if (r) {
-            const oldId = this.signaturesService.userLogged.subtitute;
-            this.signaturesService.userLogged.substitute = null;
+            const userUpdated = this.signaturesService.userLogged;
+            userUpdated.substitute = null;
 
-            this.http.put('../rest/users/' + this.signaturesService.userLogged.id, this.signaturesService.userLogged)
-            .subscribe((data: any) => {
+            this.http.put('../rest/users/' + this.signaturesService.userLogged.id, userUpdated)
+            .subscribe(() => {
+                this.signaturesService.userLogged = userUpdated;
                 this.notificationService.success('lang.substitutionDeleted');
-            }, (err) => {
-                this.signaturesService.userLogged.subtitute = oldId;
-                this.notificationService.handleErrors(err);
             });
         }
     }
