@@ -28,6 +28,19 @@ use User\models\UserModel;
 class AuthenticationController
 {
     const MAX_DURATION_TOKEN = 30; //Minutes
+    const ROUTES_WITHOUT_AUTHENTICATION = [
+        'GET/authenticationInformations', 'POST/authenticate', 'GET/authenticate/token',
+        'POST/password', 'PUT/password', 'GET/passwordRules', 'GET/languages/{lang}'
+    ];
+
+
+    public static function getInformations(Request $request, Response $response)
+    {
+        $connection = ConfigurationModel::getConnection();
+        $encryptKey = CoreConfigModel::getEncryptKey();
+
+        return $response->withJson(['connection' => $connection, 'changeKey' => $encryptKey == 'Security Key Maarch Parapheur #2008']);
+    }
 
     public static function authentication($authorizationHeaders = [])
     {
@@ -156,12 +169,35 @@ class AuthenticationController
         return $response->withStatus(204);
     }
 
-    public static function getInformations(Request $request, Response $response)
+    public static function getRefreshedToken(Request $request, Response $response)
     {
-        $connection = ConfigurationModel::getConnection();
-        $encryptKey = CoreConfigModel::getEncryptKey();
+        $queryParams = $request->getQueryParams();
 
-        return $response->withJson(['connection' => $connection, 'changeKey' => $encryptKey == 'Security Key Maarch Parapheur #2008']);
+        if (!Validator::stringType()->notEmpty()->validate($queryParams['refreshToken'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Refresh Token is empty']);
+        }
+
+        try {
+            $jwt = JWT::decode($queryParams['refreshToken'], CoreConfigModel::getEncryptKey(), ['HS256']);
+        } catch (\Exception $e) {
+            return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
+        }
+
+        $user = UserModel::getById(['select' => ['id', 'refresh_token'], 'id' => $jwt->user->id]);
+        if (empty($user['refresh_token'])) {
+            return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
+        }
+
+        $user['refresh_token'] = json_decode($user['refresh_token'], true);
+        if (!in_array($queryParams['refreshToken'], $user['refresh_token'])) {
+            return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
+        }
+
+        $GLOBALS['id'] = $user['id'];
+
+        $response = $response->withHeader('Token', AuthenticationController::getJWT());
+
+        return $response->withStatus(204);
     }
 
     public static function getJWT()
