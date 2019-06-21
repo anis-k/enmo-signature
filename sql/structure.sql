@@ -201,7 +201,7 @@ CREATE TABLE users
   preferences jsonb NOT NULL DEFAULT '{"lang" : "fr", "writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
   substitute INTEGER DEFAULT NULL,
   refresh_token jsonb NOT NULL DEFAULT '[]',
-  reset_token jsonb NOT NULL DEFAULT '{"token" : "", "until" : ""}',
+  reset_token text DEFAULT NULL,
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   failed_authentication INTEGER DEFAULT 0,
   locked_until TIMESTAMP without time zone,

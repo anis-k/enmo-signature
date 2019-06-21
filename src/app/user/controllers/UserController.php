@@ -15,12 +15,14 @@
 namespace User\controllers;
 
 use Email\controllers\EmailController;
+use Firebase\JWT\JWT;
 use Group\controllers\PrivilegeController;
 use Group\models\GroupModel;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\AuthenticationController;
 use SrcCore\controllers\LanguageController;
 use SrcCore\controllers\PasswordController;
 use SrcCore\controllers\UrlController;
@@ -354,17 +356,18 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         }
 
+        if ($GLOBALS['id'] != $args['id']) {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+        }
+
         $body = $request->getParsedBody();
         if (!Validator::stringType()->notEmpty()->validate($body['newPassword'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
         $user = UserModel::getById(['select' => ['login', 'mode'], 'id' => $args['id']]);
-        if ($GLOBALS['id'] != $args['id']) {
-            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-            }
-        }
 
         if ($user['mode'] == 'standard') {
             if (empty($body['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $body['currentPassword']])) {
@@ -376,6 +379,20 @@ class UserController
         }
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $body['newPassword']]);
+
+        $refreshToken = [];
+        if ($GLOBALS['id'] == $args['id']) {
+            $refreshJWT = AuthenticationController::getRefreshJWT();
+            $refreshToken[] = $refreshJWT;
+            $response = $response->withHeader('Token', AuthenticationController::getJWT());
+            $response = $response->withHeader('Refresh-Token', $refreshJWT);
+        }
+
+        UserModel::update([
+            'set'   => ['refresh_token' => json_encode($refreshToken)],
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
 
         HistoryController::add([
             'code'          => 'OK',
@@ -403,20 +420,13 @@ class UserController
 
         $GLOBALS['id'] = $user['id'];
 
-        $token = CoreConfigModel::getUniqueId();
-        $token = hash('sha256', $token);
-        $tokenTime = time() + 3600;
-        $resetToken = ['token' => $token, 'until' => date('Y-m-d H:i:s', $tokenTime)];
-
-        UserModel::update(['set' => ['reset_token' => json_encode($resetToken)], 'where' => ['id = ?'], 'data' => [$user['id']]]);
+        $resetToken = AuthenticationController::getResetJWT();
+        UserModel::update(['set' => ['reset_token' => $resetToken], 'where' => ['id = ?'], 'data' => [$user['id']]]);
 
         $user['preferences'] = json_decode($user['preferences'], true);
-
         $lang = LanguageController::get(['lang' => $user['preferences']['lang']]);
-        $emailToken = json_encode(['login' => $body['login'], 'token' => $token]);
-        $emailToken = base64_encode($emailToken);
 
-        $url = UrlController::getCoreUrl() . 'dist/index.html#/update-password?token=' . $emailToken;
+        $url = UrlController::getCoreUrl() . 'dist/index.html#/update-password?token=' . $resetToken;
         EmailController::createEmail([
             'userId'    => $user['id'],
             'data'      => [
@@ -449,25 +459,18 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
-        $token = base64_decode($body['token']);
-        $token = json_decode($token, true);
-        if (empty($token['login']) || empty($token['token'])) {
+        try {
+            $jwt = JWT::decode($body['token'], CoreConfigModel::getEncryptKey(), ['HS256']);
+        } catch (\Exception $e) {
             return $response->withStatus(403)->withJson(['errors' => 'Invalid token', 'lang' => 'invalidToken']);
         }
 
-        $user = UserModel::getByLogin(['login' => $token['login'], 'select' => ['id', 'reset_token']]);
+        $user = UserModel::getById(['id' => $jwt->user->id, 'select' => ['id', 'reset_token']]);
         if (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
         }
 
-        $resetToken = json_decode($user['reset_token'], true);
-        if (empty($resetToken['token']) || empty($resetToken['until'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Invalid token', 'lang' => 'invalidToken']);
-        }
-
-        $tokenValidDate = new \DateTime($resetToken['until']);
-        $nowDate = new \DateTime();
-        if ($token['token'] != $resetToken['token'] || $tokenValidDate < $nowDate) {
+        if ($body['token'] != $user['reset_token']) {
             return $response->withStatus(403)->withJson(['errors' => 'Invalid token', 'lang' => 'invalidToken']);
         }
 
@@ -479,10 +482,11 @@ class UserController
             'set' => [
                 'password'                      => AuthenticationModel::getPasswordHash($body['password']),
                 'password_modification_date'    => 'CURRENT_TIMESTAMP',
-                'reset_token'                   => json_encode(['token' => null, 'until' => null])
+                'reset_token'                   => null,
+                'refresh_token'                 => '[]'
             ],
             'where' => ['id = ?'],
-            'data' => [$user['id']]
+            'data'  => [$user['id']]
         ]);
 
         $GLOBALS['id'] = $user['id'];

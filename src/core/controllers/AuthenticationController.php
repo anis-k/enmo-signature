@@ -150,7 +150,7 @@ class AuthenticationController
         $refreshToken = AuthenticationController::getRefreshJWT();
         $user['refresh_token'][] = $refreshToken;
         UserModel::update([
-            'set'   => ['reset_token' => json_encode(['token' => null, 'until' => null]), 'refresh_token' => json_encode($user['refresh_token'])],
+            'set'   => ['reset_token' => null, 'refresh_token' => json_encode($user['refresh_token'])],
             'where' => ['id = ?'],
             'data'  => [$user['id']]
         ]);
