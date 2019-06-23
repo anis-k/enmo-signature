@@ -55,7 +55,7 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
 // ADMINISTRATION
 import { AdminSidebarComponent } from './sidebar/administration/admin-sidebar.component';
 
-import { AdministrationComponent } from './administration/administration.component';
+import { AdministrationComponent } from './administration/home/administration.component';
 import { UsersListComponent } from './administration/user/users-list.component';
 import { UserComponent } from './administration/user/user.component';
 import { LdapListComponent } from './administration/ldap/ldap-list.component';

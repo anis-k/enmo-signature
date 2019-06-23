@@ -18,7 +18,7 @@ export interface Ldap {
 @Component({
     selector: 'app-administration-ldap',
     templateUrl: 'ldap.component.html',
-    styleUrls: ['ldap.component.scss'],
+    styleUrls: ['../administration.scss', 'ldap.component.scss'],
 })
 
 export class LdapComponent implements OnInit {

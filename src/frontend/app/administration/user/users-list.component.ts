@@ -21,7 +21,7 @@ export interface User {
 @Component({
     selector: 'app-administration-users-list',
     templateUrl: 'users-list.component.html',
-    styleUrls: ['users-list.component.scss'],
+    styleUrls: ['../administration.scss', 'users-list.component.scss'],
 })
 
 export class UsersListComponent implements OnInit {

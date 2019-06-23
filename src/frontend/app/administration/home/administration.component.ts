@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { SignaturesContentService } from '../service/signatures.service';
-import { NotificationService } from '../service/notification.service';
+import { SignaturesContentService } from '../../service/signatures.service';
+import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { map, tap, finalize } from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ export interface Privilege {
 @Component({
     selector: 'app-administration',
     templateUrl: 'administration.component.html',
-    styleUrls: ['administration.component.scss'],
+    styleUrls: ['../administration.scss', 'administration.component.scss'],
 })
 
 export class AdministrationComponent implements OnInit {
