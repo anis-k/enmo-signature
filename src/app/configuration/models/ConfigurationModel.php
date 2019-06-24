@@ -57,8 +57,8 @@ class ConfigurationModel
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['identifier', 'value']);
-        ValidatorModel::stringType($args, ['identifier', 'value']);
+        ValidatorModel::notEmpty($args, ['identifier', 'label', 'value']);
+        ValidatorModel::stringType($args, ['identifier', 'label', 'value']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'users_id_seq']);
 
@@ -67,6 +67,7 @@ class ConfigurationModel
             'columnsValues' => [
                 'id'            => $nextSequenceId,
                 'identifier'    => $args['identifier'],
+                'label'         => $args['label'],
                 'value'         => $args['value']
             ]
         ]);

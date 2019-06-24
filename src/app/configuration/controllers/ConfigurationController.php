@@ -40,7 +40,12 @@ class ConfigurationController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $configurations = ConfigurationModel::getByIdentifier(['identifier' => $queryParams['identifier']]);
+        $configurations = ConfigurationModel::getByIdentifier(['identifier' => $queryParams['identifier'], 'select' => ['id', 'label']]);
+        if ($queryParams['identifier'] == 'connection') {
+            $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
+            $configurations = $configurations[0];
+            $configurations['availableConnections'] = [['id' => 'default', 'allowed' => true], ['id' => 'ldap', 'allowed' => !empty($ldapConfigurations)]];
+        }
 
         return $response->withJson(['configurations' => $configurations]);
     }
@@ -59,6 +64,8 @@ class ConfigurationController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
+        $configuration['value'] = json_decode($configuration['value'], true);
+
         return $response->withJson(['configuration' => $configuration]);
     }
 
@@ -70,6 +77,8 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
         } elseif (!Validator::stringType()->notEmpty()->length(1, 64)->validate($body['identifier'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body identifier is empty, not a string or longer than 64']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['label'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body label is empty or not a string']);
         } elseif (!Validator::arrayType()->notEmpty()->validate($body['value'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body value is empty or not an array']);
         }
@@ -124,14 +133,14 @@ class ConfigurationController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $id = ConfigurationModel::create(['identifier' => $body['identifier'], 'value' => $data]);
+        $id = ConfigurationModel::create(['identifier' => $body['identifier'], 'label' => $body['label'], 'value' => $data]);
 
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'configurations',
             'objectId'      => $id,
             'type'          => 'CREATION',
-            'message'       => '{configurationAdded}',
+            'message'       => "{configurationAdded} : {$body['label']}",
             'data'          => ['identifier' => $body['identifier']]
         ]);
 
@@ -146,6 +155,8 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         } elseif (empty($body)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($body['label'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body label is empty or not a string']);
         } elseif (!Validator::arrayType()->notEmpty()->validate($body['value'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body value is empty or not an array']);
         }
@@ -231,14 +242,14 @@ class ConfigurationController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['id = ?'], 'data' => [$args['id']]]);
+        ConfigurationModel::update(['set' => ['label' => $body['label'], 'value' => $data], 'where' => ['id = ?'], 'data' => [$args['id']]]);
 
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'configurations',
             'objectId'      => $args['id'],
             'type'          => 'MODIFICATION',
-            'message'       => '{configurationUpdated}',
+            'message'       => "{configurationUpdated} : {$body['label']}",
             'data'          => ['identifier' => $configuration['identifier']]
         ]);
 
@@ -271,7 +282,7 @@ class ConfigurationController
             'objectType'    => 'configurations',
             'objectId'      => $args['id'],
             'type'          => 'SUPPRESSION',
-            'message'       => '{configurationDeleted}',
+            'message'       => "{configurationDeleted} : {$configuration['label']}",
             'data'          => ['identifier' => $configuration['identifier']]
         ]);
 

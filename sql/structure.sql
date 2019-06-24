@@ -56,6 +56,7 @@ CREATE TABLE configurations
 (
 id serial NOT NULL,
 identifier CHARACTER VARYING (64) NOT NULL,
+label text NOT NULL,
 value jsonb DEFAULT '{}' NOT NULL,
 CONSTRAINT configuration_pkey PRIMARY KEY (id)
 )
