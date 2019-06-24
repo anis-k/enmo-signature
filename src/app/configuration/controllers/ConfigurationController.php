@@ -34,13 +34,16 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'QueryParams identifier is empty or not a string']);
         }
 
+        $select = ['id', 'label', 'value'];
         if ($queryParams['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         } elseif ($queryParams['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        } elseif ($queryParams['identifier'] == 'connection') {
+            $select[] = 'value';
         }
 
-        $configurations = ConfigurationModel::getByIdentifier(['identifier' => $queryParams['identifier'], 'select' => ['id', 'label']]);
+        $configurations = ConfigurationModel::getByIdentifier(['identifier' => $queryParams['identifier'], 'select' => $select]);
         if ($queryParams['identifier'] == 'connection') {
             $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
             $configurations = $configurations[0];

@@ -90,7 +90,7 @@ class EmailController
         $email['cci']           = json_decode($email['cci']);
 
         $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'emailServer', 'select' => ['value']]);
-        $configuration = json_decode($configuration['value'], true);
+        $configuration = json_decode($configuration[0]['value'], true);
         if (empty($configuration)) {
             return ['errors' => 'Configuration is missing'];
         }

@@ -91,8 +91,8 @@ class AuthenticationController
             if (empty($ldapConfigurations)) {
                 return $response->withStatus(400)->withJson(['errors' => 'Ldap configuration is missing']);
             }
-            $ldapConfigurations = json_decode($ldapConfigurations['value'], true);
             foreach ($ldapConfigurations as $ldapConfiguration) {
+                $ldapConfiguration = json_decode($ldapConfiguration['value'], true);
                 $uri = ($ldapConfiguration['ssl'] === true ? "LDAPS://{$ldapConfiguration['uri']}" : $ldapConfiguration['uri']);
                 $ldap = @ldap_connect($uri);
                 if ($ldap === false) {
@@ -107,7 +107,7 @@ class AuthenticationController
                 if (!empty($ldapConfiguration['baseDN'])) { //OpenLDAP
                     $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
                     if ($search === false) {
-                        $error = ldap_error($ldap);
+                        $error = 'Ldap search failed : baseDN is maybe wrong => ' . ldap_error($ldap);
                         continue;
                     }
                     $entries = ldap_get_entries($ldap, $search);
