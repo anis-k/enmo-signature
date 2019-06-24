@@ -171,7 +171,8 @@
 		"substitutedSignature": "Substituted signature",
 		"substituteMsg": "You act as",
 		"substitutionWarn": "You choose a substitution, you will not be able to make any action.",
-		"manage_users": "User(s)",
+		"manage_users": "Users",
+		"manage_usersAlt": "User(s)",
 		"manage_usersDesc": "Add / Update / Delete users in application.",
 		"manage_email_configuration": "Email server",
 		"manage_email_configurationDesc": "Configure email server for users notifications.",
@@ -191,6 +192,9 @@
 		"ok": "Ok",
 		"groupAdded" : "Group added",
 		"groupdeleted" : "Group deleted",
-		"groupUpdated" : "Group updated"
+		"groupUpdated" : "Group updated",
+		"privilegeUpdated" : "Privilege added",
+		"removedFromGroup" : "User removed from group",
+		"manage_groups" : "Groups"
 	}
 }

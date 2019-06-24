@@ -179,7 +179,7 @@ class GroupController
     public function getById(Request $request, Response $response, array $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
@@ -202,7 +202,7 @@ class GroupController
     public function addUser(Request $request, Response $response, array $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups']) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
@@ -232,7 +232,7 @@ class GroupController
             'objectType'    => 'groups',
             'objectId'      => $aArgs['id'],
             'type'          => 'UPDATE',
-            'message'       => "{useradded} : {$user['firstname']} {$user['lastname']}"
+            'message'       => "{userAdded} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         HistoryController::add([
@@ -249,7 +249,7 @@ class GroupController
     public function removeUser(Request $request, Response $response, array $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups']) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
@@ -277,7 +277,7 @@ class GroupController
             'objectType'    => 'groups',
             'objectId'      => $aArgs['id'],
             'type'          => 'UPDATE',
-            'message'       => "{userRemoved} : {$user['firstname']} {$user['lastname']}"
+            'message'       => "{removedFromGroup} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         HistoryController::add([
@@ -285,7 +285,7 @@ class GroupController
             'objectType'    => 'users',
             'objectId'      => $aArgs['userId'],
             'type'          => 'UPDATE',
-            'message'       => "{groupRemoved} : {$group['label']}"
+            'message'       => "{removedFromGroup} : {$group['label']}"
         ]);
 
         return $response->withStatus(204);

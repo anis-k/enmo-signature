@@ -193,7 +193,10 @@
 		"ok": "J'ai compris",
 		"groupAdded" : "Groupe ajouté",
 		"groupdeleted" : "Groupe supprimé",
-		"groupUpdated" : "Groupe mis à jour"
+		"groupUpdated" : "Groupe mis à jour",
+		"privilegeUpdated" : "Privilège Ajouté",
+		"removedFromGroup" : "User removed from group",
+		"manage_groups" : "Groupes"
 
 	}
 }
