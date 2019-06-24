@@ -19,17 +19,17 @@ use SrcCore\models\ValidatorModel;
 
 class ConfigurationModel
 {
-    public static function getByIdentifier(array $aArgs)
+    public static function getById(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['identifier']);
-        ValidatorModel::stringType($aArgs, ['identifier']);
-        ValidatorModel::arrayType($aArgs, ['select']);
+        ValidatorModel::notEmpty($args, ['id']);
+        ValidatorModel::intVal($args, ['id']);
+        ValidatorModel::arrayType($args, ['select']);
 
         $configuration = DatabaseModel::select([
-            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'select'    => empty($args['select']) ? ['*'] : $args['select'],
             'table'     => ['configurations'],
-            'where'     => ['identifier = ?'],
-            'data'      => [$aArgs['identifier']],
+            'where'     => ['id = ?'],
+            'data'      => [$args['id']],
         ]);
 
         if (empty($configuration[0])) {
@@ -39,32 +39,65 @@ class ConfigurationModel
         return $configuration[0];
     }
 
+    public static function getByIdentifier(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['identifier']);
+        ValidatorModel::stringType($args, ['identifier']);
+        ValidatorModel::arrayType($args, ['select']);
+
+        $configurations = DatabaseModel::select([
+            'select'    => empty($args['select']) ? ['*'] : $args['select'],
+            'table'     => ['configurations'],
+            'where'     => ['identifier = ?'],
+            'data'      => [$args['identifier']],
+        ]);
+
+        return $configurations;
+    }
+
     public static function create(array $args)
     {
         ValidatorModel::notEmpty($args, ['identifier', 'value']);
         ValidatorModel::stringType($args, ['identifier', 'value']);
 
+        $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'users_id_seq']);
+
         DatabaseModel::insert([
             'table'         => 'configurations',
             'columnsValues' => [
+                'id'            => $nextSequenceId,
                 'identifier'    => $args['identifier'],
                 'value'         => $args['value']
             ]
         ]);
 
-        return true;
+        return $nextSequenceId;
     }
 
-    public static function update(array $aArgs)
+    public static function update(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['set', 'where', 'data']);
-        ValidatorModel::arrayType($aArgs, ['set', 'where', 'data']);
+        ValidatorModel::notEmpty($args, ['set', 'where', 'data']);
+        ValidatorModel::arrayType($args, ['set', 'where', 'data']);
 
         DatabaseModel::update([
             'table' => 'configurations',
-            'set'   => $aArgs['set'],
-            'where' => $aArgs['where'],
-            'data'  => $aArgs['data']
+            'set'   => $args['set'],
+            'where' => $args['where'],
+            'data'  => $args['data']
+        ]);
+
+        return true;
+    }
+
+    public static function delete(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['id']);
+        ValidatorModel::intVal($args, ['id']);
+
+        DatabaseModel::delete([
+            'table' => 'configurations',
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
         ]);
 
         return true;

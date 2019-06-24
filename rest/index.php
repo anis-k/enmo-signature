@@ -59,7 +59,11 @@ $app->get('/attachments/{id}/thumbnails/{page}', \Attachment\controllers\Attachm
 $app->get('/autocomplete/users', \SrcCore\controllers\AutoCompleteController::class . ':getUsers');
 
 //Configurations
-$app->put('/configurations/{identifier}', \Configuration\controllers\ConfigurationController::class . ':update');
+$app->get('/configurations', \Configuration\controllers\ConfigurationController::class . ':get');
+$app->post('/configurations', \Configuration\controllers\ConfigurationController::class . ':create');
+$app->get('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':getById');
+$app->patch('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':update');
+$app->delete('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':delete');
 
 //Documents
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');

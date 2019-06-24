@@ -32,7 +32,7 @@ class GroupController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
-        $groups = GroupModel::get([]);
+        $groups = GroupModel::get();
 
         return $response->withJson(['groups' => $groups]);
     }

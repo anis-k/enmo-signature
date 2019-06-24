@@ -25,10 +25,10 @@ ALTER SEQUENCE groups_privileges_id_seq RESTART WITH 1;
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_documents');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_email_configuration');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_connections');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_groups');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_documents');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_email_configuration');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_groups');
 
 TRUNCATE TABLE users_groups;
@@ -67,5 +67,5 @@ INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 -----
 TRUNCATE TABLE configurations;
 INSERT INTO configurations (identifier, value) VALUES ('emailServer', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
-INSERT INTO configurations (identifier, value) VALUES ('ldapServer', '[{"uri" : "10.2.95.60", "prefix" : "MAARCH", "suffix" : "", "ssl" : false, "baseDN" : ""}]');
+INSERT INTO configurations (identifier, value) VALUES ('ldapServer', '{"uri" : "10.2.95.60", "prefix" : "MAARCH", "suffix" : "", "ssl" : false, "baseDN" : ""}');
 INSERT INTO configurations (identifier, value) VALUES ('connection', '"default"');

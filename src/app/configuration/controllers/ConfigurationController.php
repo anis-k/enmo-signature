@@ -24,39 +24,138 @@ use SrcCore\models\AuthenticationModel;
 
 class ConfigurationController
 {
-    public function getByIdentifier(Request $request, Response $response, array $args)
-    {
-        $configuration = ConfigurationModel::getByIdentifier(['identifier' => $args['identifier']]);
+    const CONNECTION_MODES  = ['default', 'ldap'];
 
-        if ($args['identifier'] == 'emailServer') {
+    public function get(Request $request, Response $response)
+    {
+        $queryParams = $request->getQueryParams();
+
+        if (!Validator::stringType()->notEmpty()->validate($queryParams['identifier'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'QueryParams identifier is empty or not a string']);
+        }
+
+        if ($queryParams['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        } elseif ($queryParams['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $configurations = ConfigurationModel::getByIdentifier(['identifier' => $queryParams['identifier']]);
+
+        return $response->withJson(['configurations' => $configurations]);
+    }
+
+    public function getById(Request $request, Response $response, array $args)
+    {
+        $configuration = ConfigurationModel::getById(['id' => $args['id']]);
+
+        if (empty($configuration)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
+        }
+
+        if ($configuration['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        } elseif ($configuration['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        return $response->withJson(['configuration' => $configuration]);
+    }
+
+    public function create(Request $request, Response $response)
+    {
+        $body = $request->getParsedBody();
+
+        if (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 64)->validate($body['identifier'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body identifier is empty, not a string or longer than 64']);
+        } elseif (!Validator::arrayType()->notEmpty()->validate($body['value'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body value is empty or not an array']);
+        }
+
+        if ($body['identifier'] == 'emailServer') {
             if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
 
-        } elseif ($args['identifier'] == 'ldapServer') {
-            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_ldap_configurations'])) {
+            $check = ConfigurationController::checkMailer($body['value']);
+            if (!empty($check['errors'])) {
+                return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
+            }
+
+            if ($body['value']['auth'] && !empty($body['value']['password'])) {
+                $body['value']['password'] = AuthenticationModel::encrypt(['password' => $body['value']['password']]);
+            } elseif (!$body['value']['auth']) {
+                $body['value']['user'] = null;
+                $body['value']['password'] = null;
+            }
+            $data = json_encode([
+                'type'      => $body['value']['type'],
+                'host'      => $body['value']['host'],
+                'port'      => $body['value']['port'],
+                'user'      => empty($body['value']['user']) ? null : $body['value']['user'],
+                'password'  => empty($body['value']['password']) ? null : $body['value']['password'],
+                'auth'      => $body['value']['auth'],
+                'secure'    => $body['value']['secure'],
+                'from'      => $body['value']['from'],
+                'charset'   => empty($body['value']['charset']) ? 'utf-8' : $body['value']['charset']
+            ]);
+        } elseif ($body['identifier'] == 'ldapServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
-        }
 
-        if (!empty($data)) {
-            if (empty($configuration)) {
-                ConfigurationModel::create(['identifier' => $args['identifier'], 'value' => $data]);
-            } else {
-                ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['identifier = ?'], 'data' => [$args['identifier']]]);
+            $check = ConfigurationController::checkLdapConfiguration($body['value']);
+            if (!empty($check['errors'])) {
+                return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
             }
+
+            $data = json_encode([
+                'uri'       => $body['value']['uri'],
+                'ssl'       => $body['value']['ssl'],
+                'prefix'    => empty($body['value']['prefix']) ? null : $body['value']['prefix'],
+                'suffix'    => empty($body['value']['suffix']) ? null : $body['value']['suffix'],
+                'baseDN'    => empty($body['value']['baseDN']) ? null : $body['value']['baseDN']
+            ]);
         }
 
-        return $response->withJson(['errors' => 'Privilege forbidden']);
+        if (empty($data)) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $id = ConfigurationModel::create(['identifier' => $body['identifier'], 'value' => $data]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'configurations',
+            'objectId'      => $id,
+            'type'          => 'CREATION',
+            'message'       => '{configurationAdded}',
+            'data'          => ['identifier' => $body['identifier']]
+        ]);
+
+        return $response->withStatus(204);
     }
 
     public function update(Request $request, Response $response, array $args)
     {
         $body = $request->getParsedBody();
 
-        $configuration = ConfigurationModel::getByIdentifier(['identifier' => $args['identifier']]);
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        } elseif (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        } elseif (!Validator::arrayType()->notEmpty()->validate($body['value'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body value is empty or not an array']);
+        }
 
-        if ($args['identifier'] == 'emailServer') {
+        $configuration = ConfigurationModel::getById(['id' => $args['id']]);
+        if (empty($configuration)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
+        }
+
+        if ($configuration['identifier'] == 'emailServer') {
             if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
@@ -77,44 +176,103 @@ class ConfigurationController
                 $body['user'] = null;
                 $body['password'] = null;
             }
+
+            if ($body['auth'] && empty($body['value']['password'])) {
+                $configuration['value'] = json_decode($configuration['value'], true);
+                if (!empty($configuration['value']['password'])) {
+                    $body['value']['password'] = $configuration['value']['password'];
+                }
+            } elseif ($body['value']['auth'] && !empty($body['value']['password'])) {
+                $body['value']['password'] = AuthenticationModel::encrypt(['password' => $body['value']['password']]);
+            } elseif (!$body['value']['auth']) {
+                $body['value']['user'] = null;
+                $body['value']['password'] = null;
+            }
             $data = json_encode([
-                'type'      => $body['type'],
-                'host'      => $body['host'],
-                'port'      => $body['port'],
-                'user'      => empty($body['user']) ? null : $body['user'],
-                'password'  => empty($body['password']) ? null : $body['password'],
-                'auth'      => $body['auth'],
-                'secure'    => $body['secure'],
-                'from'      => $body['from'],
-                'charset'   => empty($body['charset']) ? 'utf-8' : $body['charset']
+                'type'      => $body['value']['type'],
+                'host'      => $body['value']['host'],
+                'port'      => $body['value']['port'],
+                'user'      => empty($body['value']['user']) ? null : $body['value']['user'],
+                'password'  => empty($body['value']['password']) ? null : $body['value']['password'],
+                'auth'      => $body['value']['auth'],
+                'secure'    => $body['value']['secure'],
+                'from'      => $body['value']['from'],
+                'charset'   => empty($body['value']['charset']) ? 'utf-8' : $body['value']['charset']
             ]);
-        } elseif ($args['identifier'] == 'ldapServer') {
-            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_ldap_configurations'])) {
+
+        } elseif ($configuration['identifier'] == 'ldapServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
-
-            $check = ConfigurationController::checkLdapConfigurations($body);
+            $check = ConfigurationController::checkLdapConfiguration($body['value']);
             if (!empty($check['errors'])) {
                 return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
             }
 
-            $data = json_encode($body);
+            $data = json_encode([
+                'uri'       => $body['value']['uri'],
+                'ssl'       => $body['value']['ssl'],
+                'prefix'    => empty($body['value']['prefix']) ? null : $body['value']['prefix'],
+                'suffix'    => empty($body['value']['suffix']) ? null : $body['value']['suffix'],
+                'baseDN'    => empty($body['value']['baseDN']) ? null : $body['value']['baseDN']
+            ]);
+        } elseif ($configuration['identifier'] == 'connection') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            if (!in_array($body['value'], ConfigurationController::CONNECTION_MODES)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Connection forbidden']);
+            }
+
+            $data = $body['value'];
         }
 
-        if (!empty($data)) {
-            if (empty($configuration)) {
-                ConfigurationModel::create(['identifier' => $args['identifier'], 'value' => $data]);
-            } else {
-                ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['identifier = ?'], 'data' => [$args['identifier']]]);
-            }
+        if (empty($data)) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
+
+        ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['id = ?'], 'data' => [$args['id']]]);
 
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'configurations',
-            'objectId'      => $args['identifier'],
+            'objectId'      => $args['id'],
             'type'          => 'MODIFICATION',
-            'message'       => '{configurationUpdated}'
+            'message'       => '{configurationUpdated}',
+            'data'          => ['identifier' => $configuration['identifier']]
+        ]);
+
+        return $response->withStatus(204);
+    }
+
+    public function delete(Request $request, Response $response, array $args)
+    {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
+        $configuration = ConfigurationModel::getById(['id' => $args['id']]);
+        if (empty($configuration)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
+        }
+
+        if ($configuration['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        } elseif ($configuration['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        } elseif ($configuration['identifier'] == 'connection') {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        ConfigurationModel::delete(['id' => $args['id']]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'configurations',
+            'objectId'      => $args['id'],
+            'type'          => 'SUPPRESSION',
+            'message'       => '{configurationDeleted}',
+            'data'          => ['identifier' => $configuration['identifier']]
         ]);
 
         return $response->withStatus(204);
@@ -128,19 +286,19 @@ class ConfigurationController
         
         if ($args['type'] == 'smtp') {
             if (!Validator::stringType()->notEmpty()->validate($args['host'])) {
-                return ['errors' => 'Body host is empty or not a string'];
+                return ['errors' => 'Body[\'value\'] host is empty or not a string'];
             } elseif (!Validator::intVal()->notEmpty()->validate($args['port'])) {
-                return ['errors' => 'Body port is empty or not an integer'];
+                return ['errors' => 'Body[\'value\'] port is empty or not an integer'];
             } elseif (!Validator::boolType()->validate($args['auth'])) {
-                return ['errors' => 'Body auth is empty or not a boolean'];
+                return ['errors' => 'Body[\'value\'] auth is empty or not a boolean'];
             } elseif (!Validator::stringType()->notEmpty()->validate($args['secure'])) {
-                return ['errors' => 'Body secure is empty or not a string'];
+                return ['errors' => 'Body[\'value\'] secure is empty or not a string'];
             } elseif (!Validator::stringType()->notEmpty()->validate($args['from'])) {
-                return ['errors' => 'Body from is empty or not a string'];
+                return ['errors' => 'Body[\'value\'] from is empty or not a string'];
             }
             if ($args['auth']) {
                 if (!Validator::stringType()->notEmpty()->validate($args['user'])) {
-                    return ['errors' => 'Body user is empty or not a string'];
+                    return ['errors' => 'Body[\'value\'] user is empty or not a string'];
                 }
             }
         }
@@ -148,18 +306,12 @@ class ConfigurationController
         return ['success' => 'success'];
     }
 
-    private static function checkLdapConfigurations(array $configurations)
+    private static function checkLdapConfiguration(array $configuration)
     {
-        if (!Validator::arrayType()->notEmpty()->validate($configurations)) {
-            return ['errors' => 'Body is empty or not an array'];
-        }
-
-        foreach ($configurations as $key => $configuration) {
-            if (!Validator::stringType()->notEmpty()->validate($configuration['uri'])) {
-                return ['errors' => "Body[{$key}] uri is empty or not a string"];
-            } elseif (!Validator::boolType()->validate($configuration['ssl'])) {
-                return ['errors' => "Body[{$key}] ssl is empty or not a boolean"];
-            }
+        if (!Validator::stringType()->notEmpty()->validate($configuration['uri'])) {
+            return ['errors' => "Body['value'] uri is empty or not a string"];
+        } elseif (!Validator::boolType()->validate($configuration['ssl'])) {
+            return ['errors' => "Body['value'] ssl is empty or not a boolean"];
         }
 
         return ['success' => 'success'];

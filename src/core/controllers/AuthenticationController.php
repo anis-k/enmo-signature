@@ -143,6 +143,7 @@ class AuthenticationController
                 unset($user['refresh_token'][$key]);
             }
         }
+        $user['refresh_token'] = array_values($user['refresh_token']);
         if (count($user['refresh_token']) > 10) {
             array_shift($user['refresh_token']);
         }
