@@ -238,6 +238,12 @@ class ConfigurationController
             if (!in_array($body['value'], ConfigurationController::CONNECTION_MODES)) {
                 return $response->withStatus(400)->withJson(['errors' => 'Connection forbidden']);
             }
+            if ($body['value'] == 'ldap') {
+                $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
+                if (empty($ldapConfigurations)) {
+                    return $response->withStatus(400)->withJson(['errors' => 'No LDAP connections available']);
+                }
+            }
 
             $data = json_encode($body['value']);
         }
