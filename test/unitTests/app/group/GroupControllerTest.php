@@ -73,6 +73,25 @@ class GroupControllerTest extends TestCase
         $this->assertSame('Body label is empty or not a string or longer than 128 caracteres', $responseBody->errors);
     }
 
+    public function testAddUser()
+    {
+        $groupController = new \Group\controllers\GroupController();
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $response     = $groupController->addUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 1]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertEmpty($responseBody);
+
+        //Fail
+        $response     = $groupController->addUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 12456789]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('User not found', $responseBody->errors);
+    }
+
     public function testGetById()
     {
         $groupController = new \Group\controllers\GroupController();
@@ -87,7 +106,29 @@ class GroupControllerTest extends TestCase
         $this->assertSame(self::$groupId, $responseBody->group->id);
         $this->assertSame('Test TU 2', $responseBody->group->label);
         $this->assertInternalType('array', $responseBody->group->users);
-        // $this->assertNotEmpty($responseBody->group->users);
+        $this->assertNotEmpty($responseBody->group->users);
+        $this->assertSame(1, $responseBody->group->users[0]->id);
+        $this->assertNotEmpty($responseBody->group->users[0]->firstname);
+        $this->assertNotEmpty($responseBody->group->users[0]->lastname);
+    }
+
+    public function testRemoveUser()
+    {
+        $groupController = new \Group\controllers\GroupController();
+
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'DELETE']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $response     = $groupController->removeUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 1]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertEmpty($responseBody);
+
+        //Fail
+        $response     = $groupController->addUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 12456789]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('User not found', $responseBody->errors);
     }
 
     public function testGet()
