@@ -68,4 +68,53 @@ class UserGroupModel
 
         return true;
     }
+
+    public static function hasGroup(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['groupId', 'userId']);
+        ValidatorModel::intVal($aArgs, ['groupId', 'userId']);
+
+        $usersGroups = DatabaseModel::select([
+            'select' => [1],
+            'table'  => ['users_groups'],
+            'where'  => ['group_id = ?', 'user_id = ?'],
+            'data'   => [$aArgs['groupId'], $aArgs['userId']]
+        ]);
+
+        if (!empty($usersGroups)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function addUser(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['userId', 'groupId']);
+        ValidatorModel::intVal($aArgs, ['userId', 'groupId']);
+
+        DatabaseModel::insert([
+            'table'         => 'users_groups',
+            'columnsValues' => [
+                'user_id'  => $aArgs['userId'],
+                'group_id' => $aArgs['groupId']
+            ]
+        ]);
+
+        return true;
+    }
+
+    public static function removeUser(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['userId', 'groupId']);
+        ValidatorModel::intVal($aArgs, ['userId', 'groupId']);
+
+        DatabaseModel::delete([
+            'table' => 'users_groups',
+            'where' => ['user_id = ?', 'group_id = ?'],
+            'data'  => [$aArgs['userId'], $aArgs['groupId']]
+        ]);
+
+        return true;
+    }
 }

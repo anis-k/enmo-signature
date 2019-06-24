@@ -87,6 +87,8 @@ $app->get('/groups/{id}', \Group\controllers\GroupController::class . ':getById'
 $app->delete('/groups/{id}', \Group\controllers\GroupController::class . ':delete');
 $app->put('/groups/{id}', \Group\controllers\GroupController::class . ':update');
 $app->put('/groups/{id}/privilege/{privilegeId}', \Group\controllers\GroupController::class . ':updateGroupPrivilege');
+$app->post('/groups/{id}/addUser/{userId}', \Group\controllers\GroupController::class . ':addUser');
+$app->delete('/groups/{id}/addUser/{userId}', \Group\controllers\GroupController::class . ':removeUser');
 
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');
