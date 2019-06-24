@@ -238,7 +238,7 @@ class ConfigurationController
                 return $response->withStatus(400)->withJson(['errors' => 'Connection forbidden']);
             }
 
-            $data = $body['value'];
+            $data = json_encode($body['value']);
         }
 
         if (empty($data)) {
