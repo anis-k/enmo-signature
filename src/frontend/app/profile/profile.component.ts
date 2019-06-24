@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry, MatSidenav, MatExpansionPanel, MatTabGroup } from '@angular/material';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
@@ -237,7 +237,11 @@ export class ProfileComponent implements OnInit {
 
                         $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
                         if (this.showPassword) {
-                            this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password, { observe: 'response' })
+                            const headers = new HttpHeaders({
+                                  'Authorization': 'Bearer ' + this.authService.getToken()
+                                });
+
+                            this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password, { observe: 'response', headers: headers })
                                 .subscribe((dataPass: any) => {
                                     this.authService.saveTokens(dataPass.headers.get('Token'), dataPass.headers.get('Refresh-Token'));
 
