@@ -22,6 +22,7 @@ class UserControllerTest extends TestCase
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
+            'login'     => 'emailLogin',
             'firstname' => 'Prénom',
             'lastname'  => 'Nom',
             'email'     => 'email@test.fr'
@@ -31,15 +32,12 @@ class UserControllerTest extends TestCase
         $response     = $userController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
         
-        $this->assertNotEmpty($responseBody->user);
-        $this->assertInternalType('int', $responseBody->user->id);
-        $this->assertSame('email@test.fr', $responseBody->user->email);
-        $this->assertSame('Prénom', $responseBody->user->firstname);
-        $this->assertSame('Nom', $responseBody->user->lastname);
-        self::$userId = $responseBody->user->id;
+        $this->assertInternalType('int', $responseBody->id);
+        self::$userId = $responseBody->id;
 
         //Mail missing
         $aArgs = [
+            'login'     => 'failLogin',
             'firstname' => 'Prénom',
             'lastname'  => 'Nom'
         ];
@@ -48,10 +46,11 @@ class UserControllerTest extends TestCase
         $response     = $userController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('L\'email est vide ou le format n\'est pas correct', $responseBody->errors);
+        $this->assertSame('Body email is empty or not a valid email', $responseBody->errors);
 
         //Mail wrong format
         $aArgs = [
+            'login'     => 'failLogin',
             'firstname' => 'Prénom',
             'lastname'  => 'Nom',
             'email'     => 'emailtest.fr'
@@ -61,15 +60,15 @@ class UserControllerTest extends TestCase
         $response     = $userController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertSame('L\'email est vide ou le format n\'est pas correct', $responseBody->errors);
+        $this->assertSame('Body email is empty or not a valid email', $responseBody->errors);
     }
 
     public function testUpdatePassword()
     {
         $userController = new \User\controllers\UserController();
 
-        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
-        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+        $environment = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
+        $request     = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
             'currentPassword'          => 'maarch',
@@ -81,7 +80,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
         
-        $this->assertSame('success', $responseBody->success);
+        $this->assertEmpty($responseBody);
 
         //Error
         $aArgs = [
@@ -120,7 +119,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
         
-        $this->assertSame('New password does not match password confirmation', $responseBody->errors);
+        $this->assertSame('newPassword and passwordConfirmation must be identical', $responseBody->errors);
     }
 
     public function testGet()
@@ -162,17 +161,34 @@ class UserControllerTest extends TestCase
     {
         $userController = new \User\controllers\UserController();
 
+        // UPDATE PREFERENCE
+
+        $previousUserId = $GLOBALS['id'];
+        $GLOBALS['id']  = self::$userId;
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $aArgs = [
+            'writingMode'   => 'stylus',
+            'writingSize'   => 2,
+            'writingColor'  => '#F1F1F1',
+            'lang'          => 'fr',
+            'notifications' => false
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $userController->updatePreferences($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
+        $responseBodyPreferences = json_decode((string)$response->getBody());
+        $GLOBALS['id'] = $previousUserId;
+        $this->assertEmpty($responseBodyPreferences);
+
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
             'firstname'     => 'Jolly',
             'lastname'      => 'Jumper',
-            'preferences'   => [
-                'writingMode'   => 'stylus',
-                'writingSize'   => 2,
-                'writingColor'  => '#F1F1F1',
-            ]
+            'email'         => 'email@test.fr'
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
@@ -187,39 +203,19 @@ class UserControllerTest extends TestCase
 
         $this->assertSame('Jolly', $responseBody->user->firstname);
         $this->assertSame('Jumper', $responseBody->user->lastname);
-        $this->assertSame('stylus', $responseBody->user->preferences->writingMode);
-        $this->assertSame(2, $responseBody->user->preferences->writingSize);
-        $this->assertSame('#F1F1F1', $responseBody->user->preferences->writingColor);
 
-        $aArgs = [
-            'firstname'     => 'Jenny',
-            'lastname'      => 'JANE',
-            'preferences'   => [
-                'writingMode'   => 'direct',
-                'writingSize'   => 1,
-                'writingColor'  => '#000000',
-            ]
-        ];
-
-        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertInternalType('object', $responseBody->user);
-        $this->assertNotEmpty($responseBody->user);
-
-        $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertSame('Jenny', $responseBody->user->firstname);
-        $this->assertSame('JANE', $responseBody->user->lastname);
-        $this->assertSame('direct', $responseBody->user->preferences->writingMode);
-        $this->assertSame(1, $responseBody->user->preferences->writingSize);
-        $this->assertSame('#000000', $responseBody->user->preferences->writingColor);
+        $preferences = json_decode($responseBody->user->preferences, true);
+        $this->assertSame('stylus', $preferences['writingMode']);
+        $this->assertSame(2, $preferences['writingSize']);
+        $this->assertSame('#F1F1F1', $preferences['writingColor']);
+        $this->assertSame('fr', $preferences['lang']);
+        $this->assertSame(false, $preferences['notifications']);
     }
 
     public function testCreateSignature()
     {
+        $previousUserId = $GLOBALS['id'];
+        $GLOBALS['id']  = self::$userId;
         $signatureController = new \User\controllers\SignatureController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
@@ -236,10 +232,13 @@ class UserControllerTest extends TestCase
 
         $this->assertInternalType('int', $responseBody->signatureId);
         self::$signatureId = $responseBody->signatureId;
+        $GLOBALS['id'] = $previousUserId;
     }
 
     public function testGetSignatures()
     {
+        $previousUserId = $GLOBALS['id'];
+        $GLOBALS['id']  = self::$userId;
         $signatureController = new \User\controllers\SignatureController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
@@ -250,10 +249,13 @@ class UserControllerTest extends TestCase
 
         $this->assertInternalType('array', $responseBody->signatures);
         $this->assertNotEmpty($responseBody->signatures);
+        $GLOBALS['id'] = $previousUserId;
     }
 
     public function testDeleteSignature()
     {
+        $previousUserId = $GLOBALS['id'];
+        $GLOBALS['id']  = self::$userId;
         $signatureController = new \User\controllers\SignatureController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
@@ -269,5 +271,6 @@ class UserControllerTest extends TestCase
             'where' => ['id = ?'],
             'data'  => [self::$userId]
         ]);
+        $GLOBALS['id'] = $previousUserId;
     }
 }
