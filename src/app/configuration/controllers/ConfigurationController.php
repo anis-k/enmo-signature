@@ -47,6 +47,7 @@ class ConfigurationController
         if ($queryParams['identifier'] == 'connection') {
             $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
             $configurations = $configurations[0];
+            $configurations['value'] = json_decode($configurations['value']);
             $configurations['availableConnections'] = [['id' => 'default', 'allowed' => true], ['id' => 'ldap', 'allowed' => !empty($ldapConfigurations)]];
         }
 
