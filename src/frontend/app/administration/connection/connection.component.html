@@ -1,0 +1,41 @@
+<mat-sidenav-container autosize>
+  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
+    [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
+    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
+    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content class="mainView">
+    <header class="header">
+      <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
+        <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
+      </button> {{'lang.manage_connections' | translate}}
+    </header>
+    <div class="container">
+      <div *ngIf="loading" class="loader">
+        <mat-spinner></mat-spinner>
+      </div>
+      <div *ngIf="currentConnection" class="connectionType">
+        <button mat-stroked-button [matMenuTriggerFor]="menu">{{'lang.connectionMode' | translate}} :
+          <b>{{'lang.' + currentConnection.id + 'Connection' | translate}}</b><i class="fa fa-caret-down"></i></button>
+        <mat-menu #menu="matMenu" [class]="'listMenu'">
+          <ng-container *ngFor="let connection of connectionList">
+              <button mat-menu-item *ngIf="connection.id !== currentConnection.id" (click)="changeConnection(connection)"
+              [disabled]="!connection.allowed">{{'lang.' + connection.id + 'Connection' | translate}}</button>
+          </ng-container>
+        </mat-menu>
+      </div>
+      <div class="admin-item" *ngFor="let privilege of privileges">
+        <button mat-stroked-button color="primary" [routerLink]="privilege.route">
+          <mat-icon color="primary" [class]="privilege.icon"></mat-icon>
+          <span>{{'lang.' + privilege.id | translate}}</span>
+          <span class="admin-desc">
+            {{'lang.' + privilege.id + 'Desc' | translate}}
+          </span>
+        </button>
+      </div>
+    </div>
+  </mat-sidenav-content>
+  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
+    fixedInViewport="true" position='end'>
+  </mat-sidenav>
+</mat-sidenav-container>

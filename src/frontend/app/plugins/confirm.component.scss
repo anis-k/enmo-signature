@@ -1,8 +1,11 @@
+@import '../../css/vars.scss';
+
 .modalContent {
     position: relative;
 }
 .mat-dialog-content, .mat-dialog-title {
     text-align:center !important;
+    color: #666;
 }
 .mat-dialog-title {
     font-weight: bold;
@@ -19,4 +22,10 @@
     height: 40px;
     font-size: 20px;
     color: #666;
+}
+
+.warning {
+    .mat-dialog-title {
+        color : $warn;
+    }
 }

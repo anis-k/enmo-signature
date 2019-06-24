@@ -10,9 +10,15 @@ import { TranslateService } from '@ngx-translate/core';
 
 
 export interface Ldap {
-    id: string;
+    id: number;
     label: string;
-    description: string;
+    value: {
+        uri: string,
+        ssl: boolean,
+        prefix: string,
+        suffix: string,
+        baseDN: string,
+    };
 }
 
 @Component({
@@ -38,23 +44,29 @@ export class LdapComponent implements OnInit {
                 this.creationMode = true;
                 this.title = this.translate.instant('lang.ldapCreation');
                 this.ldap = {
-                    id: '',
+                    id: 0,
                     label: '',
-                    description: ''
+                    value: {
+                        uri: '',
+                        ssl: false,
+                        prefix: '',
+                        suffix: '',
+                        baseDN: '',
+                    }
                 };
                 this.loading = false;
             } else {
                 this.creationMode = false;
-                this.http.get('../rest/ldaps/' + params['id'])
+                this.http.get('../rest/configurations/' + params['id'])
                     .pipe(
-                        map((data: any) => data.ldap),
+                        map((data: any) => data.configuration),
                         finalize(() => this.loading = false)
                     )
                     .subscribe({
-                        next: data => {
+                        next: (data: any) => {
                             this.ldap = data;
-                            this.ldapClone = JSON.parse(JSON.stringify(this.ldap));
                             this.title = this.ldap.label;
+                            // console.log(data.configurations);
                         },
                     });
             }
@@ -106,7 +118,7 @@ export class LdapComponent implements OnInit {
     }
 
     delete() {
-        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false });
+        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: '', title: 'lang.confirmMsg', msg: '' } });
 
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'yes') {

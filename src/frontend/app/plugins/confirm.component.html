@@ -1,7 +1,6 @@
-<div class="modalContent">
-  <div mat-dialog-content>
-      {{'lang.confirmMsg' | translate}} ?
-  </div>
+<div class="modalContent {{data.mode}}">
+  <h1 mat-dialog-title>{{data.title | translate}} ?</h1>
+  <div mat-dialog-content *ngIf="data.msg !== null" [innerHTML]="data.msg | translate"></div>
   <div mat-dialog-actions>
     <button class="actions btn blue" mat-button (click)="this.dialogRef.close('yes');">{{'lang.yes' | translate}}</button>
     <button class="actions btn red" mat-button (click)="this.dialogRef.close('no');">{{'lang.no' | translate}}</button>

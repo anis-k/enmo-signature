@@ -8,5 +8,10 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class ConfirmComponent {
 
-    constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmComponent>) { }
+    constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<ConfirmComponent>) {
+
+        if (this.data.msg === null) {
+            this.data.msg = '';
+        }
+    }
 }

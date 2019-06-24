@@ -25,7 +25,7 @@ class PrivilegeController
     const PRIVILEGES = [
         ['id' => 'manage_users',                'type' => 'admin', 'icon' => 'fa fa-user',          'route' => '/administration/users'],
         ['id' => 'manage_groups',               'type' => 'admin', 'icon' => 'fa fa-users',         'route' => '/administration/groups'],
-        ['id' => 'manage_connections',          'type' => 'admin', 'icon' => 'fas fa-database',     'route' => '/administration/ldaps'],
+        ['id' => 'manage_connections',          'type' => 'admin', 'icon' => 'fas fa-database',     'route' => '/administration/connections'],
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'fa fa-paper-plane',   'route' => '/administration/configuration'],
         ['id' => 'manage_documents',            'type' => 'simple']
     ];

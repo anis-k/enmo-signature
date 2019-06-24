@@ -10,9 +10,8 @@ import { LatinisePipe } from 'ngx-pipes';
 
 
 export interface Ldap {
-    id: string;
+    id: number;
     label: string;
-    description: string;
 }
 
 @Component({
@@ -33,7 +32,7 @@ export class LdapListComponent implements OnInit {
 
     constructor(public http: HttpClient, private translate: TranslateService, private latinisePipe: LatinisePipe, public dialog: MatDialog, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
 
-        this.displayedColumns = ['label', 'description', 'actions'];
+        this.displayedColumns = ['label', 'actions'];
 
         this.dataSource = new MatTableDataSource(this.ldapList);
         this.dataSource.filterPredicate = (data, filter) => {
@@ -66,42 +65,39 @@ export class LdapListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.ldapList = [
-            {
-                id: '1',
-                label: 'ldap service courrier',
-                description: 'ldap principal'
+        this.http.get('../rest/configurations',
+        {
+            params: {
+                identifier: 'ldapServer'
             }
-        ];
+        })
+        .pipe(
+            finalize(() => this.loading = false)
+        )
+        .subscribe({
+            next: (data: any) => {
+                this.ldapList = data.configurations;
+                // console.log(data.configurations);
+            },
+        });
         this.updateDataTable();
         this.loading = false;
-        /*this.http.get('../rest/ldap')
-            .pipe(
-                map((data: any) => data.users),
-                finalize(() => this.loading = false)
-            )
-            .subscribe({
-                next: data => {
-                    this.ldapList = data;
-                    this.updateDataTable();
-                },
-            });*/
     }
 
 
     delete(ldapToDelete: Ldap) {
-        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false });
+        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: '', title: 'lang.confirmMsg', msg: '' } });
 
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'yes') {
                 this.loading = true;
-                this.http.delete('../rest/ldap/' + ldapToDelete.id)
+                this.http.delete('../rest/configurations/' + ldapToDelete.id)
                     .pipe(
                         finalize(() => this.loading = false)
                     )
                     .subscribe({
-                        next: data => {
-                            const indexToDelete = this.ldapList.findIndex(user => user.id === ldapToDelete.id);
+                        next: () => {
+                            const indexToDelete = this.ldapList.findIndex(ldap => ldap.id === ldapToDelete.id);
 
                             this.ldapList.splice(indexToDelete, 1);
 

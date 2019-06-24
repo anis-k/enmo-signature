@@ -1,0 +1,82 @@
+@import '../../../css/vars.scss';
+
+
+.container {
+  flex: 1;
+  overflow: auto;
+  .admin-item {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+    width: 100%;
+    @media (min-width: 768px) { 
+      width: 50%;
+    }
+    @media (min-width: 992px) { 
+      width: 33%;
+    }
+    display: inline-block;
+
+    .mat-stroked-button {
+      border-color: #F99830;
+      padding: 10px;
+      width: 90%;
+      height: 160px;
+
+      mat-icon {
+        height: auto;
+        width: auto;
+        // position: absolute;
+        font-size: 50px;
+        // top: 10px;
+        // left: 50%;
+        // transform: translate(-50%);
+      }
+
+      ::ng-deep.mat-button-wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
+
+.admin-desc {
+  white-space: normal;
+  font-size: 10px;
+  line-height: 15px;
+  text-align: justify;
+  color: gray;
+  height: 60px;
+  overflow: auto;
+}
+
+.connectionType {
+  text-align: center;
+  padding: 10px;
+
+  .mat-stroked-button {
+    border-color: #F99830;
+    width: 300px;
+  }
+
+  b {
+    color: $primary;
+  }
+
+  i {
+    margin-left: 10px;
+  }
+}
+
+::ng-deep.listMenu {
+  width: 300px !important;
+  max-width: 300px !important;
+  .mat-menu-content {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      .mat-menu-item {
+        text-align: center !important;
+      }
+  }
+}

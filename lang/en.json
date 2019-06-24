@@ -195,6 +195,13 @@
 		"groupUpdated" : "Group updated",
 		"privilegeUpdated" : "Privilege added",
 		"removedFromGroup" : "User removed from group",
-		"manage_groups" : "Groups"
+		"manage_groups" : "Groups",
+		"manage_connections" : "Connections",
+		"manage_connectionsDesc" : "Manage all available connections modes in application.",
+		"defaultConnection" : "Default",
+		"ldapConnection" : "Ldap",
+		"connectionMode" : "Connection mode",
+		"connectionModeUpdated" : "Connection mode updated",
+		"changeConnectionWarn" : "This cause a change in login mechanics for users !"
 	}
 }

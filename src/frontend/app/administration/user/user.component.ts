@@ -112,7 +112,7 @@ export class UserComponent implements OnInit {
     }
 
     delete() {
-        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false });
+        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: '', title: 'lang.confirmMsg', msg: '' } });
 
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'yes') {

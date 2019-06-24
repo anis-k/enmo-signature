@@ -188,7 +188,7 @@
 		"ldapCreation": "Ajouter une entrée ldap",
 		"label": "Label",
 		"sessionExpired": "La session a expirée, veuillez vous reconnecter",
-		"warnPrivateKeyTitle": "La clé privée de chiffrement n'a pas été modifié !",
+		"warnPrivateKeyTitle": "La clé privée de chiffrement n'a pas été modifiée !",
 		"warnPrivateKey": "Cela compromet la sécurité de l'application.",
 		"ok": "J'ai compris",
 		"groupAdded" : "Groupe ajouté",
@@ -196,7 +196,13 @@
 		"groupUpdated" : "Groupe mis à jour",
 		"privilegeUpdated" : "Privilège Ajouté",
 		"removedFromGroup" : "User removed from group",
-		"manage_groups" : "Groupes"
-
+		"manage_groups" : "Groupes",
+		"manage_connections" : "Connexions",
+		"manage_connectionsDesc" : "Administrer les différents modes de connexion disponibles de l'application.",
+		"defaultConnection" : "Standard",
+		"ldapConnection" : "Ldap",
+		"connectionMode" : "Mode de connexion",
+		"connectionModeUpdated" : "Mode de connexion mise à jour",
+		"changeConnectionWarn" : "Cela entraine un changement de mécanique de connexion à l'application !"
 	}
 }

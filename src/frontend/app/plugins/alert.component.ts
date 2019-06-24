@@ -8,5 +8,12 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class AlertComponent {
 
-    constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AlertComponent>) { }
+    constructor(private translate: TranslateService, @Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AlertComponent>) {
+        if (this.data.mode === null) {
+            this.data.mode = '';
+        }
+        if (this.data.msg === null) {
+            this.data.msg = '';
+        }
+    }
 }
