@@ -160,7 +160,7 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['label'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body label is empty or not a string']);
-        } elseif (!Validator::arrayType()->notEmpty()->validate($body['value'])) {
+        } elseif (!Validator::notEmpty()->validate($body['value'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body value is empty or not an array']);
         }
 
