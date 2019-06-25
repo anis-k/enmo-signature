@@ -125,6 +125,7 @@ CREATE TABLE history
   object_type CHARACTER VARYING(128) NOT NULL,
   object_id  CHARACTER VARYING(32) NOT NULL,
   type CHARACTER VARYING(64) NOT NULL,
+  user_id INTEGER NOT NULL,
   "user" text NOT NULL,
   date TIMESTAMP without TIME ZONE NOT NULL,
   message text NOT NULL,
