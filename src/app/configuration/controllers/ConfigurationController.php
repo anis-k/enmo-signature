@@ -95,7 +95,34 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'Body value is empty or not an array']);
         }
 
-        if ($body['identifier'] == 'ldapServer') {
+        if ($body['identifier'] == 'emailServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+
+            $check = ConfigurationController::checkMailer($body['value']);
+            if (!empty($check['errors'])) {
+                return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
+            }
+
+            if ($body['value']['auth'] && !empty($body['value']['password'])) {
+                $body['value']['password'] = AuthenticationModel::encrypt(['password' => $body['value']['password']]);
+            } elseif (!$body['value']['auth']) {
+                $body['value']['user'] = null;
+                $body['value']['password'] = null;
+            }
+            $data = json_encode([
+                'type'      => $body['value']['type'],
+                'host'      => $body['value']['host'],
+                'port'      => $body['value']['port'],
+                'user'      => empty($body['value']['user']) ? null : $body['value']['user'],
+                'password'  => empty($body['value']['password']) ? null : $body['value']['password'],
+                'auth'      => $body['value']['auth'],
+                'secure'    => $body['value']['secure'],
+                'from'      => $body['value']['from'],
+                'charset'   => empty($body['value']['charset']) ? 'utf-8' : $body['value']['charset']
+            ]);
+        } elseif ($body['identifier'] == 'ldapServer') {
             if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }

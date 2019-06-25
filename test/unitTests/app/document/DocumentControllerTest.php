@@ -29,10 +29,10 @@ class DocumentControllerTest extends TestCase
             'sender'                => 'Oliver Queen',
             'deadline'              => '2018-12-25',
             'workflow'              => [[
-                "processingUser" => "ccornillac@maarch.com",
+                "processingUser" => "jjane@maarch.com",
                 "mode" => "visa"
             ], [
-                "processingUser" => "jjane@maarch.com",
+                "processingUser" => "ccornillac@maarch.com",
                 "mode" => "visa"
             ]],
             'metadata'              => ['Entité' => 'QE', 'Destinataire' => 'Barry Allen', 'priorité' => 'Urgent'],
@@ -63,7 +63,10 @@ class DocumentControllerTest extends TestCase
 
         $this->assertInternalType('array', $responseBody->documents);
         $this->assertNotEmpty($responseBody->documents);
-        $this->assertInternalType('int', $responseBody->count);
+        $this->assertInternalType('int', $responseBody->count->visa);
+        $this->assertInternalType('int', $responseBody->count->sign);
+        $this->assertInternalType('int', $responseBody->count->note);
+        $this->assertInternalType('int', $responseBody->count->current);
         $this->assertNotEmpty($responseBody->count);
 
         $fullRequest = $request->withQueryParams(['mode' => 'SIGN']);
@@ -94,7 +97,7 @@ class DocumentControllerTest extends TestCase
         $this->assertNotEmpty($responseBody->document->metadata);
         $this->assertInternalType('array', $responseBody->document->workflow);
         $this->assertInternalType('int', $responseBody->document->workflow[0]->userId);
-        $this->assertSame(2, $responseBody->document->workflow[0]->userId);
+        $this->assertSame(1, $responseBody->document->workflow[0]->userId);
         $this->assertSame('visa', $responseBody->document->workflow[0]->mode);
         $this->assertNotEmpty($responseBody->document->workflow);
         $this->assertInternalType('array', $responseBody->document->attachments);
@@ -202,6 +205,11 @@ class DocumentControllerTest extends TestCase
         \Docserver\models\AdrModel::deleteAttachmentAdr([
             'where' => ['attachment_id = ?'],
             'data'  => [self::$attachmentId]
+        ]);
+
+        \Workflow\models\WorkflowModel::delete([
+            'where' => ['main_document_id = ?'],
+            'data'  => [self::$id]
         ]);
 
         $documentController = new \Document\controllers\DocumentController();
