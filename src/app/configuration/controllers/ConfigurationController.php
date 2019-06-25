@@ -68,6 +68,9 @@ class ConfigurationController
         }
 
         $configuration['value'] = json_decode($configuration['value'], true);
+        if ($configuration['identifier'] == 'emailServer') {
+            unset($configuration['value']['password']);
+        }
 
         return $response->withJson(['configuration' => $configuration]);
     }
@@ -174,24 +177,12 @@ class ConfigurationController
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
 
-            $check = ConfigurationController::checkMailer($body);
+            $check = ConfigurationController::checkMailer($body['value']);
             if (!empty($check['errors'])) {
                 return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
             }
 
-            if ($body['auth'] && empty($body['password']) && !empty($configuration)) {
-                $configuration['value'] = json_decode($configuration['value'], true);
-                if (!empty($configuration['value']['password'])) {
-                    $body['password'] = $configuration['value']['password'];
-                }
-            } elseif ($body['auth'] && !empty($body['password'])) {
-                $body['password'] = AuthenticationModel::encrypt(['password' => $body['password']]);
-            } elseif (!$body['auth']) {
-                $body['user'] = null;
-                $body['password'] = null;
-            }
-
-            if ($body['auth'] && empty($body['value']['password'])) {
+            if ($body['value']['auth'] && empty($body['value']['password'])) {
                 $configuration['value'] = json_decode($configuration['value'], true);
                 if (!empty($configuration['value']['password'])) {
                     $body['value']['password'] = $configuration['value']['password'];
@@ -306,6 +297,8 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'QueryParams login is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($queryParams['password'])) {
             return $response->withStatus(400)->withJson(['errors' => 'QueryParams password is empty or not a string']);
+        } elseif (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         }
 
         $configuration = ConfigurationModel::getById(['id' => $args['id']]);
@@ -322,7 +315,7 @@ class ConfigurationController
         $ldap = @ldap_connect($uri);
         if ($ldap === false) {
             $error = 'Ldap connect failed : uri is maybe wrong';
-            return $response->withJson(['errors' => $error, 'connection' => false]);
+            return $response->withJson(['connection' => false, 'informations' => $error]);
         }
         ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
@@ -333,7 +326,7 @@ class ConfigurationController
             $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
             if ($search === false) {
                 $error = 'Ldap search failed : baseDN is maybe wrong => ' . ldap_error($ldap);
-                return $response->withJson(['errors' => $error, 'connection' => false]);
+                return $response->withJson(['connection' => false, 'informations' => $error]);
             }
             $entries = ldap_get_entries($ldap, $search);
             $login = $entries[0]['dn'];
@@ -341,10 +334,10 @@ class ConfigurationController
         $authenticated = @ldap_bind($ldap, $login, $queryParams['password']);
         if (!$authenticated) {
             $error = ldap_error($ldap);
-            return $response->withJson(['errors' => $error, 'connection' => false]);
+            return $response->withJson(['connection' => false, 'informations' => $error]);
         }
 
-        return $response->withJson(['connection' => true]);
+        return $response->withJson(['connection' => true, 'informations' => 'success']);
     }
 
     private static function checkMailer(array $args)
