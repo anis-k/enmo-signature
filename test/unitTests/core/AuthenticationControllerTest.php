@@ -11,48 +11,56 @@ use PHPUnit\Framework\TestCase;
 
 class AuthenticationControllerTest extends TestCase
 {
-    public function testLog()
+    public function testGetInformations()
     {
-        date_default_timezone_set(\SrcCore\models\CoreConfigModel::getTimezone());
+        $authenticationController = new \SrcCore\controllers\AuthenticationController();
 
+        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
+        $request        = \Slim\Http\Request::createFromEnvironment($environment);
+
+        $response     = $authenticationController->getInformations($request, new \Slim\Http\Response());
+        $this->assertSame(200, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertInternalType('string', $responseBody->connection);
+        $this->assertInternalType('boolean', $responseBody->changeKey);
+        $this->assertNotEmpty($responseBody->connection);
+    }
+
+    public function testAuthenticate()
+    {
         $authenticationController = new \SrcCore\controllers\AuthenticationController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
-            'email'     => 'jjane@maarch.com',
+            'login'     => 'jjane@maarch.com',
             'password'  => 'maarch'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $authenticationController->log($fullRequest, new \Slim\Http\Response());
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertNotEmpty($responseBody->user);
-        $this->assertNotEmpty($responseBody->user->id);
-        $this->assertNotEmpty($responseBody->user->firstname);
-        $this->assertNotEmpty($responseBody->user->lastname);
-        $this->assertNotEmpty($responseBody->user->email);
-        $GLOBALS['id'] = 2;
+        $response     = $authenticationController->authenticate($fullRequest, new \Slim\Http\Response());
+        $this->assertSame(204, $response->getStatusCode());
 
         //  ERRORS
         $aArgs = [
-            'email'     => 'jjane@maarch.com',
+            'login'     => 'jjane@maarch.com',
             'password'  => 'maarche'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $authenticationController->log($fullRequest, new \Slim\Http\Response());
+        $response     = $authenticationController->authenticate($fullRequest, new \Slim\Http\Response());
+        $this->assertSame(401, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('Authentication Failed', $responseBody->errors);
 
-        //  ERRORS
         $aArgs = [
             'logi'     => 'jjane@maarch.com',
             'password'  => 'maarche'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $authenticationController->log($fullRequest, new \Slim\Http\Response());
+        $response     = $authenticationController->authenticate($fullRequest, new \Slim\Http\Response());
+        $this->assertSame(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('Bad Request', $responseBody->errors);
@@ -67,18 +75,5 @@ class AuthenticationControllerTest extends TestCase
 
         $this->assertNotEmpty($response);
         $this->assertInternalType('int', $response);
-    }
-
-    public function testLogout()
-    {
-        $authenticationController = new \SrcCore\controllers\AuthenticationController();
-
-        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
-        $request        = \Slim\Http\Request::createFromEnvironment($environment);
-
-        $response     = $authenticationController->logout($request, new \Slim\Http\Response());
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertSame('success', $responseBody->success);
     }
 }
