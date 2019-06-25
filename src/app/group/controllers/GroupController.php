@@ -14,7 +14,6 @@
 
 namespace Group\controllers;
 
-use Group\controllers\PrivilegeController;
 use Group\models\GroupModel;
 use Group\models\GroupPrivilegeModel;
 use History\controllers\HistoryController;
@@ -35,6 +34,29 @@ class GroupController
         $groups = GroupModel::get();
 
         return $response->withJson(['groups' => $groups]);
+    }
+
+    public function getById(Request $request, Response $response, array $args)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id must be an integer']);
+        }
+
+        $group = GroupModel::getById(['id' => $args['id']]);
+        if (empty($group)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
+        }
+
+        $group['users'] = UserGroupModel::getByGroupId([
+            'id'     => $group['id'],
+            'select' => ['users.id', 'users.firstname', 'users.lastname']
+        ]);
+
+        return $response->withJson(['group' => $group]);
     }
 
     public function create(Request $request, Response $response)
@@ -64,7 +86,7 @@ class GroupController
         return $response->withJson(['id' => $id]);
     }
 
-    public function update(Request $request, Response $response, $aArgs)
+    public function update(Request $request, Response $response, array $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
@@ -95,14 +117,44 @@ class GroupController
             'code'       => 'OK',
             'objectType' => 'groups',
             'objectId'   => $aArgs['id'],
-            'type'       => 'UPDATE',
+            'type'       => 'MODIFICATION',
             'message'    => "{groupUpdated} : {$body['label']}"
         ]);
 
         return $response->withStatus(204);
     }
 
-    public function updateGroupPrivilege(Request $request, Response $response, $aArgs)
+    public function delete(Request $request, Response $response, array $aArgs)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Id must be an integer']);
+        }
+
+        $group = GroupModel::getById(['id' => $aArgs['id']]);
+        if (empty($group)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
+        }
+
+        UserGroupModel::delete(['where' => ['group_id = ?'], 'data' => [$aArgs['id']]]);
+        GroupPrivilegeModel::delete(['where' => ['group_id = ?'], 'data' => [$aArgs['id']]]);
+        GroupModel::delete(['where' => ['id = ?'], 'data' => [$aArgs['id']]]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'groups',
+            'objectId'      => $aArgs['id'],
+            'type'          => 'SUPPRESSION',
+            'message'       => "{groupdeleted} : {$group['label']}"
+        ]);
+
+        return $response->withStatus(204);
+    }
+
+    public function updateGroupPrivilege(Request $request, Response $response, array $aArgs)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
@@ -139,64 +191,11 @@ class GroupController
             'code'       => 'OK',
             'objectType' => 'groups',
             'objectId'   => $aArgs['id'],
-            'type'       => 'UPDATE',
+            'type'       => 'MODIFICATION',
             'message'    => "{privilegeUpdated} : {$aArgs['privilegeId']}"
         ]);
 
         return $response->withStatus(204);
-    }
-
-    public function delete(Request $request, Response $response, $aArgs)
-    {
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
-        if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Id must be an integer']);
-        }
-
-        $group = GroupModel::getById(['id' => $aArgs['id']]);
-        if (empty($group)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
-        }
-
-        UserGroupModel::delete(['where' => ['group_id = ?'], 'data' => [$aArgs['id']]]);
-        GroupPrivilegeModel::delete(['where' => ['group_id = ?'], 'data' => [$aArgs['id']]]);
-        GroupModel::delete(['where' => ['id = ?'], 'data' => [$aArgs['id']]]);
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'groups',
-            'objectId'      => $aArgs['id'],
-            'type'          => 'DELETE',
-            'message'       => "{groupdeleted} : {$group['label']}"
-        ]);
-
-        return $response->withStatus(204);
-    }
-
-    public function getById(Request $request, Response $response, array $aArgs)
-    {
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_groups'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
-        if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Id must be an integer']);
-        }
-
-        $group = GroupModel::getById(['id' => $aArgs['id']]);
-        if (empty($group)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
-        }
-
-        $group['users'] = UserGroupModel::getByGroupId([
-            'id'     => $group['id'],
-            'select' => ['users.id', 'users.firstname', 'users.lastname']
-        ]);
-
-        return $response->withJson(['group' => $group]);
     }
 
     public function addUser(Request $request, Response $response, array $aArgs)
@@ -231,7 +230,7 @@ class GroupController
             'code'          => 'OK',
             'objectType'    => 'groups',
             'objectId'      => $aArgs['id'],
-            'type'          => 'UPDATE',
+            'type'          => 'MODIFICATION',
             'message'       => "{userAdded} : {$user['firstname']} {$user['lastname']}"
         ]);
 
@@ -239,7 +238,7 @@ class GroupController
             'code'          => 'OK',
             'objectType'    => 'users',
             'objectId'      => $aArgs['userId'],
-            'type'          => 'UPDATE',
+            'type'          => 'MODIFICATION',
             'message'       => "{groupAdded} : {$group['label']}"
         ]);
 
@@ -276,7 +275,7 @@ class GroupController
             'code'          => 'OK',
             'objectType'    => 'groups',
             'objectId'      => $aArgs['id'],
-            'type'          => 'UPDATE',
+            'type'          => 'MODIFICATION',
             'message'       => "{removedFromGroup} : {$user['firstname']} {$user['lastname']}"
         ]);
 
@@ -284,7 +283,7 @@ class GroupController
             'code'          => 'OK',
             'objectType'    => 'users',
             'objectId'      => $aArgs['userId'],
-            'type'          => 'UPDATE',
+            'type'          => 'MODIFICATION',
             'message'       => "{removedFromGroup} : {$group['label']}"
         ]);
 

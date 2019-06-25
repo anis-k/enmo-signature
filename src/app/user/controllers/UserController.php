@@ -167,7 +167,7 @@ class UserController
             'firstname'     => $body['firstname'],
             'lastname'      => $body['lastname'],
             'email'         => $body['email'],
-            'substitute'    => null,
+            'substitute'    => null
         ];
 
         if ($GLOBALS['id'] == $args['id'] && !empty($body['picture'])) {
