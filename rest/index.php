@@ -64,6 +64,7 @@ $app->post('/configurations', \Configuration\controllers\ConfigurationController
 $app->get('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':getById');
 $app->patch('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':update');
 $app->delete('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':delete');
+$app->get('/configurations/{id}/connection', \Configuration\controllers\ConfigurationController::class . ':testConnection');
 
 //Documents
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');

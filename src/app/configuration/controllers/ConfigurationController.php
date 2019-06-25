@@ -34,7 +34,7 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'QueryParams identifier is empty or not a string']);
         }
 
-        $select = ['id', 'label', 'value'];
+        $select = ['id', 'label'];
         if ($queryParams['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         } elseif ($queryParams['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
@@ -57,7 +57,6 @@ class ConfigurationController
     public function getById(Request $request, Response $response, array $args)
     {
         $configuration = ConfigurationModel::getById(['id' => $args['id']]);
-
         if (empty($configuration)) {
             return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
         }
@@ -297,6 +296,55 @@ class ConfigurationController
         ]);
 
         return $response->withStatus(204);
+    }
+
+    public function testConnection(Request $request, Response $response, array $args)
+    {
+        $queryParams = $request->getQueryParams();
+
+        if (!Validator::stringType()->notEmpty()->validate($queryParams['login'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'QueryParams login is empty or not a string']);
+        } elseif (!Validator::stringType()->notEmpty()->validate($queryParams['password'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'QueryParams password is empty or not a string']);
+        }
+
+        $configuration = ConfigurationModel::getById(['id' => $args['id']]);
+        if (empty($configuration)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
+        }
+
+        if ($configuration['identifier'] != 'ldapServer' || !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $ldapConfiguration = json_decode($configuration['value'], true);
+        $uri = ($ldapConfiguration['ssl'] === true ? "LDAPS://{$ldapConfiguration['uri']}" : $ldapConfiguration['uri']);
+        $ldap = @ldap_connect($uri);
+        if ($ldap === false) {
+            $error = 'Ldap connect failed : uri is maybe wrong';
+            return $response->withJson(['errors' => $error, 'connection' => false]);
+        }
+        ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
+        ldap_set_option($ldap, LDAP_OPT_NETWORK_TIMEOUT, 10);
+        $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $queryParams['login'] : $queryParams['login']);
+        $login = (!empty($ldapConfiguration['suffix']) ? $login . $ldapConfiguration['suffix'] : $login);
+        if (!empty($ldapConfiguration['baseDN'])) { //OpenLDAP
+            $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
+            if ($search === false) {
+                $error = 'Ldap search failed : baseDN is maybe wrong => ' . ldap_error($ldap);
+                return $response->withJson(['errors' => $error, 'connection' => false]);
+            }
+            $entries = ldap_get_entries($ldap, $search);
+            $login = $entries[0]['dn'];
+        }
+        $authenticated = @ldap_bind($ldap, $login, $queryParams['password']);
+        if (!$authenticated) {
+            $error = ldap_error($ldap);
+            return $response->withJson(['errors' => $error, 'connection' => false]);
+        }
+
+        return $response->withJson(['connection' => true]);
     }
 
     private static function checkMailer(array $args)
