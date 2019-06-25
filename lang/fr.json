@@ -216,6 +216,20 @@
 		"ldapInformations" : "Informations utilisées par le ldap",
 		"ldapAdded" : "Connexion ldap ajoutée",
 		"ldapUpdated" : "Connexion ldap modifiée",
-		"ldapDeleted" : "Connexion ldap supprimée"
+		"ldapDeleted" : "Connexion ldap supprimée",
+		"configurationType" : "Type de configuration",
+		"smtpAuth" : "Méthode d'authentification",
+		"host" : "Hôte",
+		"port" : "Port",
+		"enableAuth" : "Activer l'authentification",
+		"id" : "Identification",
+		"mailFrom" : "Adresse d'envoi",
+		"passwordModification" : "Changement de mot de passe",
+		"none" : "Aucune",
+		"phpmail"    : "Fonction php (mail)",
+		"qmail"      : "Serveur mail local (Qmail)",
+		"smtprelay"  : "Relais smtp (sendmail)",
+		"smtpclient" : "Client smtp (smtp)",
+		"emailConfigurationUpdated" : "Configuration du serveur mise à jour"
 	}
 }

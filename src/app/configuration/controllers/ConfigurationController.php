@@ -69,6 +69,15 @@ class ConfigurationController
 
         $configuration['value'] = json_decode($configuration['value'], true);
 
+        if ($configuration['identifier'] == 'emailServer') {
+            if (!empty($configuration['value']['password'])) {
+                $configuration['value']['password'] = '';
+                $configuration['value']['passwordAlreadyExists'] = true;
+            } else {
+                $configuration['value']['passwordAlreadyExists'] = false;
+            }
+        }
+
         return $response->withJson(['configuration' => $configuration]);
     }
 
@@ -174,24 +183,24 @@ class ConfigurationController
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
 
-            $check = ConfigurationController::checkMailer($body);
+            $check = ConfigurationController::checkMailer($body['value']);
             if (!empty($check['errors'])) {
                 return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
             }
 
-            if ($body['auth'] && empty($body['password']) && !empty($configuration)) {
+            if ($body['value']['auth'] && empty($body['value']['password']) && !empty($configuration)) {
                 $configuration['value'] = json_decode($configuration['value'], true);
                 if (!empty($configuration['value']['password'])) {
-                    $body['password'] = $configuration['value']['password'];
+                    $body['value']['password'] = $configuration['value']['password'];
                 }
-            } elseif ($body['auth'] && !empty($body['password'])) {
-                $body['password'] = AuthenticationModel::encrypt(['password' => $body['password']]);
-            } elseif (!$body['auth']) {
-                $body['user'] = null;
-                $body['password'] = null;
+            } elseif ($body['value']['auth'] && !empty($body['value']['password'])) {
+                $body['value']['password'] = AuthenticationModel::encrypt(['password' => $body['value']['password']]);
+            } elseif (!$body['value']['auth']) {
+                $body['value']['user'] = null;
+                $body['value']['password'] = null;
             }
 
-            if ($body['auth'] && empty($body['value']['password'])) {
+            if ($body['value']['auth'] && empty($body['value']['password'])) {
                 $configuration['value'] = json_decode($configuration['value'], true);
                 if (!empty($configuration['value']['password'])) {
                     $body['value']['password'] = $configuration['value']['password'];

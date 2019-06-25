@@ -61,6 +61,7 @@ import { UserComponent } from './administration/user/user.component';
 import { ConnectionComponent } from './administration/connection/connection.component';
 import { LdapListComponent } from './administration/connection/ldap/ldap-list.component';
 import { LdapComponent } from './administration/connection/ldap/ldap.component';
+import { SendmailComponent } from './administration/sendmail/sendmail.component';
 
 
 // SERVICES
@@ -107,7 +108,8 @@ import { AlertComponent } from './plugins/alert.component';
     AdminSidebarComponent,
     ConnectionComponent,
     LdapListComponent,
-    LdapComponent
+    LdapComponent,
+    SendmailComponent
   ],
   imports: [
     FormsModule,
@@ -138,6 +140,7 @@ import { AlertComponent } from './plugins/alert.component';
       { path: 'administration/connections/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
       { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },
       { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
+      { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
       { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'login', component: LoginComponent },
