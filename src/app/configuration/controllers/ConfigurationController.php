@@ -173,17 +173,6 @@ class ConfigurationController
                 $body['value']['password'] = null;
             }
 
-            if ($body['value']['auth'] && empty($body['value']['password'])) {
-                $configuration['value'] = json_decode($configuration['value'], true);
-                if (!empty($configuration['value']['password'])) {
-                    $body['value']['password'] = $configuration['value']['password'];
-                }
-            } elseif ($body['value']['auth'] && !empty($body['value']['password'])) {
-                $body['value']['password'] = AuthenticationModel::encrypt(['password' => $body['value']['password']]);
-            } elseif (!$body['value']['auth']) {
-                $body['value']['user'] = null;
-                $body['value']['password'] = null;
-            }
             $data = json_encode([
                 'type'      => $body['value']['type'],
                 'host'      => $body['value']['host'],
@@ -288,6 +277,8 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'QueryParams login is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($queryParams['password'])) {
             return $response->withStatus(400)->withJson(['errors' => 'QueryParams password is empty or not a string']);
+        } elseif (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         }
 
         $configuration = ConfigurationModel::getById(['id' => $args['id']]);
@@ -304,7 +295,7 @@ class ConfigurationController
         $ldap = @ldap_connect($uri);
         if ($ldap === false) {
             $error = 'Ldap connect failed : uri is maybe wrong';
-            return $response->withJson(['errors' => $error, 'connection' => false]);
+            return $response->withJson(['connection' => false, 'informations' => $error]);
         }
         ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
@@ -315,7 +306,7 @@ class ConfigurationController
             $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
             if ($search === false) {
                 $error = 'Ldap search failed : baseDN is maybe wrong => ' . ldap_error($ldap);
-                return $response->withJson(['errors' => $error, 'connection' => false]);
+                return $response->withJson(['connection' => false, 'informations' => $error]);
             }
             $entries = ldap_get_entries($ldap, $search);
             $login = $entries[0]['dn'];
@@ -323,10 +314,10 @@ class ConfigurationController
         $authenticated = @ldap_bind($ldap, $login, $queryParams['password']);
         if (!$authenticated) {
             $error = ldap_error($ldap);
-            return $response->withJson(['errors' => $error, 'connection' => false]);
+            return $response->withJson(['connection' => false, 'informations' => $error]);
         }
 
-        return $response->withJson(['connection' => true]);
+        return $response->withJson(['connection' => true, 'informations' => 'success']);
     }
 
     private static function checkMailer(array $args)

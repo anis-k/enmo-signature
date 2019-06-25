@@ -54,7 +54,7 @@ export class SidebarComponent implements OnInit {
     }
 
     handleScroll(event: ScrollEvent) {
-        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount) {
+        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount.current) {
 
             this.loadingList = true;
             this.listContent.nativeElement.style.overflowY = 'hidden';

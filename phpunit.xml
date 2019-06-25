@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit colors="true" bootstrap="test/unitTests/define.php">
     <testsuites>
-        <testsuite name="Maarch Test Suite">
+        <testsuite name="Maarch Parapheur Test Suite">
             <!-- <file>test/unitTests/core/AuthenticationControllerTest.php</file> -->
             <file>test/unitTests/core/PasswordControllerTest.php</file>
             <file>test/unitTests/app/user/UserControllerTest.php</file>
+            <file>test/unitTests/app/configuration/ConfigurationControllerTest.php</file>
             <file>test/unitTests/app/document/DocumentControllerTest.php</file>
             <file>test/unitTests/app/group/GroupControllerTest.php</file>
         </testsuite>
