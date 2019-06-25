@@ -22,7 +22,7 @@
     <header class="sidebar-header">
       <div *ngIf="!searchMode" (click)="search();" style="cursor: pointer;">
         <span
-          [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span
+          [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount.current}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span
           class="primary"
           *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
       </div>

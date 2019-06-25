@@ -61,8 +61,8 @@ export class ConfirmModalComponent {
                 .subscribe(() => {
                     if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                         this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                        if (this.signaturesService.documentsListCount > 0) {
-                            this.signaturesService.documentsListCount--;
+                        if (this.signaturesService.documentsListCount.current > 0) {
+                            this.signaturesService.documentsListCount.current--;
                         }
                     }
                     this.dialogRef.close('sucess');

@@ -22,7 +22,7 @@ class WorkflowModel
     public static function get(array $args)
     {
         ValidatorModel::notEmpty($args, ['select']);
-        ValidatorModel::arrayType($args, ['select', 'where', 'data', 'orderBy']);
+        ValidatorModel::arrayType($args, ['select', 'where', 'data', 'orderBy', 'groupBy']);
         ValidatorModel::intType($args, ['limit', 'offset']);
 
         $workflows = DatabaseModel::select([
@@ -31,6 +31,7 @@ class WorkflowModel
             'where'     => empty($args['where']) ? [] : $args['where'],
             'data'      => empty($args['data']) ? [] : $args['data'],
             'orderBy'   => empty($args['orderBy']) ? [] : $args['orderBy'],
+            'groupBy'   => empty($args['groupBy']) ? [] : $args['groupBy'],
             'offset'    => empty($args['offset']) ? 0 : $args['offset'],
             'limit'     => empty($args['limit']) ? 0 : $args['limit'],
         ]);

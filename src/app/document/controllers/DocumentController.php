@@ -55,6 +55,13 @@ class DocumentController
         $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
         $where = ['user_id in (?)', "(id) in ({$workflowSelect})"];
         $data = [$users];
+        $countWorkflows = WorkflowModel::get([
+            'select'    => ['count(mode)', 'mode'],
+            'where'     => $where,
+            'data'      => $data,
+            'groupBy'   => ['mode']
+        ]);
+
         if (!empty($queryParams['mode']) && in_array($queryParams['mode'], DocumentController::MODES)) {
             $where[] = 'mode = ?';
             $data[] = $queryParams['mode'];
@@ -92,11 +99,15 @@ class DocumentController
             ]);
         }
 
-        $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+        $count = ['visa' => 0, 'sign' => 0, 'note' => 0, 'current' => empty($documents[0]['count']) ? 0 : $documents[0]['count']];
         foreach ($documents as $key => $document) {
             unset($documents[$key]['count']);
             $documents[$key]['mode'] = $workflowsShortcut[$document['id']]['mode'];
             $documents[$key]['owner'] = $workflowsShortcut[$document['id']]['user_id'] == $GLOBALS['id'];
+        }
+        
+        foreach ($countWorkflows as $mode) {
+            $count[$mode['mode']] = $mode['count'];
         }
 
         return $response->withJson(['documents' => $documents, 'count' => $count]);
