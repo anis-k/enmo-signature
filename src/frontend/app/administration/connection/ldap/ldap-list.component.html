@@ -38,11 +38,11 @@
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/ldaps/{{row.id}}"
+        <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/connections/ldaps/{{row.id}}"
           style="cursor:pointer;"></mat-row>
       </mat-table>
       <div class="addButton">
-        <button mat-stroked-button type="button" class="btn blue" routerLink="/administration/ldaps/new">{{'lang.ldapCreation' | translate}}</button>
+        <button mat-stroked-button type="button" class="btn blue" routerLink="/administration/connections/ldaps/new">{{'lang.ldapCreation' | translate}}</button>
       </div>
       <div class="noResult" *ngIf="dataSource.filteredData.length === 0">
           {{'lang.noResult' | translate}}

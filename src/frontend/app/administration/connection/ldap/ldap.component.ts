@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { SignaturesContentService } from '../../service/signatures.service';
-import { NotificationService } from '../../service/notification.service';
+import { Component, OnInit, Input } from '@angular/core';
+import { SignaturesContentService } from '../../../service/signatures.service';
+import { NotificationService } from '../../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSidenav } from '@angular/material';
 import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmComponent } from '../../plugins/confirm.component';
+import { ConfirmComponent } from '../../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 
 
 export interface Ldap {
     id: number;
     label: string;
+    identifier: string;
     value: {
         uri: string,
         ssl: boolean,
@@ -24,21 +25,32 @@ export interface Ldap {
 @Component({
     selector: 'app-administration-ldap',
     templateUrl: 'ldap.component.html',
-    styleUrls: ['../administration.scss', 'ldap.component.scss'],
+    styleUrls: ['../../administration.scss', 'ldap.component.scss'],
 })
 
 export class LdapComponent implements OnInit {
 
     creationMode: boolean = true;
     loading: boolean = true;
+    loadingTest: boolean = false;
+    ldapTest: any = {
+        login: '',
+        password: '',
+        result: ''
+    };
     ldap: Ldap;
     ldapClone: Ldap;
     title: string = '';
+
+    // tslint:disable-next-line:no-input-rename
+    @Input('snavRight') snavRight: MatSidenav;
 
     constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
     }
 
     ngOnInit(): void {
+        this.ldapTest.login = this.signaturesService.userLogged.login;
+
         this.route.params.subscribe((params: any) => {
             if (params['id'] === undefined) {
                 this.creationMode = true;
@@ -46,6 +58,7 @@ export class LdapComponent implements OnInit {
                 this.ldap = {
                     id: 0,
                     label: '',
+                    identifier: 'ldapServer',
                     value: {
                         uri: '',
                         ssl: false,
@@ -66,7 +79,6 @@ export class LdapComponent implements OnInit {
                         next: (data: any) => {
                             this.ldap = data;
                             this.title = this.ldap.label;
-                            // console.log(data.configurations);
                         },
                     });
             }
@@ -91,13 +103,13 @@ export class LdapComponent implements OnInit {
 
     modifyLdap() {
         this.loading = true;
-        this.http.put('../rest/ldaps/' + this.ldap.id, this.ldap)
+        this.http.patch('../rest/configurations/' + this.ldap.id, this.ldap)
             .pipe(
                 finalize(() => this.loading = false)
             )
             .subscribe({
                 next: () => {
-                    this.router.navigate(['/administration/ldaps']);
+                    this.router.navigate(['/administration/connections/ldaps']);
                     this.notificationService.success('lang.ldapUpdated');
                 },
             });
@@ -105,13 +117,13 @@ export class LdapComponent implements OnInit {
 
     createLdap() {
         this.loading = true;
-        this.http.post('../rest/ldaps', this.ldap)
+        this.http.post('../rest/configurations', this.ldap)
             .pipe(
                 finalize(() => this.loading = false)
             )
             .subscribe({
                 next: () => {
-                    this.router.navigate(['/administration/ldaps']);
+                    this.router.navigate(['/administration/connections/ldaps']);
                     this.notificationService.success('lang.ldapAdded');
                 },
             });
@@ -123,14 +135,15 @@ export class LdapComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'yes') {
                 this.loading = true;
-                this.http.delete('../rest/ldaps/' + this.ldap.id)
+                this.http.delete('../rest/configurations/' + this.ldap.id)
                     .pipe(
                         finalize(() => this.loading = false)
                     )
                     .subscribe({
                         next: () => {
-                            this.router.navigate(['/administration/ldaps']);
+                            this.router.navigate(['/administration/connections/ldaps']);
                             this.notificationService.success('lang.ldapDeleted');
+
                         },
                     });
             }
@@ -138,6 +151,29 @@ export class LdapComponent implements OnInit {
     }
 
     cancel() {
-        this.router.navigate(['/administration/ldaps']);
+        this.router.navigate(['/administration/connections/ldaps']);
+    }
+
+    testLdap() {
+        this.ldapTest.result = '';
+        this.loadingTest = true;
+        this.http.get('../rest/configurations/' + this.ldap.id + '/connection', {
+            params: {
+                login: this.ldapTest.login,
+                password: this.ldapTest.password
+            }
+        })
+            .pipe(
+                finalize(() => this.loadingTest = false)
+            )
+            .subscribe({
+                next: (data: any) => {
+                    this.ldapTest.result = data.info;
+                    if (data.connection) {
+                        this.snavRight.close();
+                        this.notificationService.success('ldapConnectionSucceeded');
+                    }
+                },
+            });
     }
 }

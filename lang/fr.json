@@ -204,6 +204,18 @@
 		"ldapConnection" : "Ldap",
 		"connectionMode" : "Mode de connexion",
 		"connectionModeUpdated" : "Mode de connexion mise à jour",
-		"changeConnectionWarn" : "Cela entraine un changement de mécanique de connexion à l'application !"
+		"changeConnectionWarn" : "Cela entraine un changement de mécanique de connexion à l'application !",
+		"uri" : "IP / Alias",
+		"baseDN" : "Base DN",
+		"prefix" : "Prefix de connexion",
+		"suffix" : "Suffix de connexion",
+		"connectionTest" : "Tester la connexion",
+		"testAlt" : "Tester",
+		"connectionInProgress" : "Connexion en cours",
+		"ldapConnectionSucceeded" : "La connexion au serveur a réussi",
+		"ldapInformations" : "Informations utilisées par le ldap",
+		"ldapAdded" : "Connexion ldap ajoutée",
+		"ldapUpdated" : "Connexion ldap modifiée",
+		"ldapDeleted" : "Connexion ldap supprimée"
 	}
 }

@@ -1,0 +1,63 @@
+@import '../../../../css/vars.scss';
+
+.input-row {
+  padding-bottom: 15px;
+}
+.connTest {
+  width: auto !important;
+}
+
+fieldset {
+  border: solid 1px #F1F4F4;
+  align-items: center;
+}
+
+legend {
+  color: #F99830;
+}
+
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.panel-header {
+  box-shadow: 0px 0px 10px 0px #656565;
+  color: white;
+  background: $primary;
+  height: 95px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  font-size: 25px;
+  align-items: center;
+}
+
+.panel-content {
+  flex: 1;
+  overflow: auto;
+}
+
+.bash {
+  background : #34495e; 
+  height : 310px ; 
+  border-radius : 5px ;
+  top: 40px;
+  display : absolute; 
+  color : #fff ;
+  padding: 10px;
+  margin: 10px;
+}
+
+.cancel {
+  position: absolute;
+  top: 10px;
+  left: 0px; 
+  height: 65px;
+  width: 65px;
+  font-size: 35px;
+  color: white;
+}

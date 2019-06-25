@@ -59,8 +59,8 @@ import { AdministrationComponent } from './administration/home/administration.co
 import { UsersListComponent } from './administration/user/users-list.component';
 import { UserComponent } from './administration/user/user.component';
 import { ConnectionComponent } from './administration/connection/connection.component';
-import { LdapListComponent } from './administration/ldap/ldap-list.component';
-import { LdapComponent } from './administration/ldap/ldap.component';
+import { LdapListComponent } from './administration/connection/ldap/ldap-list.component';
+import { LdapComponent } from './administration/connection/ldap/ldap.component';
 
 
 // SERVICES
@@ -135,8 +135,9 @@ import { AlertComponent } from './plugins/alert.component';
       { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
       { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
       { path: 'administration/connections', canActivate: [AuthGuard], component: ConnectionComponent },
-      { path: 'administration/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
-      { path: 'administration/ldaps/:id', canActivate: [AuthGuard], component: LdapListComponent },
+      { path: 'administration/connections/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
+      { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },
+      { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
       { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
       { path: 'login', component: LoginComponent },

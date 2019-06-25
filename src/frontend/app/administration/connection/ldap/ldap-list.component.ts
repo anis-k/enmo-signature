@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { SignaturesContentService } from '../../service/signatures.service';
-import { NotificationService } from '../../service/notification.service';
+import { SignaturesContentService } from '../../../service/signatures.service';
+import { NotificationService } from '../../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
-import { ConfirmComponent } from '../../plugins/confirm.component';
+import { ConfirmComponent } from '../../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { map, tap, finalize } from 'rxjs/operators';
 import { LatinisePipe } from 'ngx-pipes';
@@ -17,7 +17,7 @@ export interface Ldap {
 @Component({
     selector: 'app-administration-ldap-list',
     templateUrl: 'ldap-list.component.html',
-    styleUrls: ['../administration.scss', 'ldap-list.component.scss'],
+    styleUrls: ['../../administration.scss', 'ldap-list.component.scss'],
 })
 
 export class LdapListComponent implements OnInit {
@@ -77,10 +77,9 @@ export class LdapListComponent implements OnInit {
         .subscribe({
             next: (data: any) => {
                 this.ldapList = data.configurations;
-                // console.log(data.configurations);
+                this.updateDataTable();
             },
         });
-        this.updateDataTable();
         this.loading = false;
     }
 

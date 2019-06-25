@@ -32,7 +32,7 @@ export class ConnectionComponent implements OnInit {
         {
             id: 'manage_ldap_configurations',
             icon: 'fas fa-database',
-            route: '/administration/ldaps'
+            route: '/administration/connections/ldaps'
         }
     ];
     id: number = 0;

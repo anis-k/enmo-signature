@@ -203,6 +203,18 @@
 		"ldapConnection" : "Ldap",
 		"connectionMode" : "Connection mode",
 		"connectionModeUpdated" : "Connection mode updated",
-		"changeConnectionWarn" : "This cause a change in login mechanics for users !"
+		"changeConnectionWarn" : "This cause a change in login mechanics for users !",
+		"uri" : "IP / Alias",
+		"baseDN" : "DN base",
+		"prefix" : "Connection prefix",
+		"suffix" : "Connection suffix",
+		"connectionTest" : "Test connection",
+		"testAlt" : "Test",
+		"connectionInProgress" : "Connecting",
+		"ldapConnectionSucceeded" : "Server connection succeeded",
+		"ldapInformations" : "Ldap informations",
+		"ldapAdded" : "Ldap Connection added",
+		"ldapUpdated" : "Ldap Connection updated",
+		"ldapDeleted" : "Ldap Connection deleted"
 	}
 }
