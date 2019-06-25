@@ -83,6 +83,14 @@ class SignatureController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
+        $signature  = base64_decode($body['encodedSignature']);
+        $finfo      = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType   = $finfo->buffer($signature);
+        $type       = explode('/', $mimeType);
+        if ($type[0] != 'image') {
+            return $response->withStatus(400)->withJson(['errors' => 'Signature is not an image']);
+        }
+
         $storeInfos = DocserverController::storeResourceOnDocServer([
             'encodedFile'       => $body['encodedSignature'],
             'format'            => $body['format'],
