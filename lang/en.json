@@ -230,6 +230,13 @@
 		"qmail"      : "Local mail server (Qmail)",
 		"smtprelay"  : "Smtp relay (sendmail)",
 		"smtpclient" : "Smtp client (smtp)",
-		"emailConfigurationUpdated" : "Email configuration updated"
+		"emailConfigurationUpdated" : "Email configuration updated",
+		"doNotReply" : "Do not reply",
+		"emailSendTest" : "Email send test",
+		"mailTo" : "Recipient",
+		"beginSendTest" : "Begin send test",
+		"emailSendFailed" : "Email send failed",
+		"emailSendInProgress" : "Email send in progress",
+		"emailSendSuccess" : "Email send success"
 	}
 }

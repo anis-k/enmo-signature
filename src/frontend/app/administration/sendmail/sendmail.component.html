@@ -65,12 +65,37 @@
         </mat-form-field>
 
         <div class="actions-form">
-          <button mat-stroked-button type="submit" class="btn blue" [disabled]="!sendmailForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
-          <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+            <button mat-stroked-button type="submit" class="btn blue" [disabled]="!sendmailForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
+            <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+            <button mat-stroked-button type="button" class="btn" (click)="snavRight.toggle()">{{'lang.connectionTest' | translate}}</button>
       </div>
       </form>
     </div>
   </mat-sidenav-content>
-  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false" fixedInViewport="true" position='end'>
-  </mat-sidenav>
+    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false" fixedInViewport="true" 
+            position='end' (opened)="onSubmit();initEmailSend()" style="overflow-x:hidden;width:500px;">
+        <div style="display: flex;flex-direction: column;">
+            <header class="header">
+                <div class="header-title">
+                    <span *ngIf="!loading">{{'lang.emailSendTest' | translate}}</span>
+                </div>
+            </header>
+            <form #testSendmailForm="ngForm">
+                <mat-form-field class="testSendTo">
+                    <input name="recipientTest" matInput placeholder="{{'lang.mailTo' | translate}}" [(ngModel)]="recipientTest" [disabled]="emailSendLoading"
+                        pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
+                    <mat-icon *ngIf="!emailSendLoading && testSendmailForm.valid" title="{{'lang.beginSendTest' | translate}}" (click)="testEmailSend()"
+                        color="primary" style="cursor: pointer;" matSuffix class="fa fa-paper-plane fa-2x"></mat-icon>
+                </mat-form-field>
+            </form>
+
+            <mat-list-item *ngIf="emailSendResult.msg != ''" style="margin-left:10px">
+                <mat-icon mat-list-icon class="fas {{emailSendResult.icon}} fa-2x"></mat-icon>
+                <p mat-line> {{emailSendResult.msg | translate}} </p>
+            </mat-list-item>
+        </div>
+        <div class="bash" *ngIf="emailSendResult.error">
+            {{this.emailSendResult.debug}}
+        </div>
+    </mat-sidenav>
 </mat-sidenav-container>

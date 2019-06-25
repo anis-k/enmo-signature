@@ -36,6 +36,15 @@ export class SendmailComponent implements OnInit {
     passwordLanguage: string = '';
     hidePassword: boolean = true;
     sendmailLabel: string;
+    emailSendResult = {
+        icon: '',
+        msg: '',
+        debug: '',
+        error: false
+    };
+    recipientTest: string;
+    emailSendLoading: boolean;
+    profileInfo: any;
 
     smtpTypeList = [
         {
@@ -112,12 +121,60 @@ export class SendmailComponent implements OnInit {
             )
             .subscribe({
                 next: () => {
-                    this.router.navigate(['/administration']);
                     this.notificationService.success('lang.emailConfigurationUpdated');
                 },
             });
     }
 
+    initEmailSend() {
+        this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
+        this.recipientTest = this.profileInfo.email;
+    }
+
+    testEmailSend() {
+        if (JSON.stringify(this.sendmailClone) !== JSON.stringify(this.sendmail)) {
+            this.onSubmit();
+        }
+        this.emailSendResult = {
+            icon: 'fa-paper-plane primary',
+            msg: 'lang.emailSendInProgress',
+            debug: '',
+            error: false
+        };
+        let email = {
+            "sender": this.sendmail.from,
+            "recipients": [this.recipientTest],
+            "subject": "[" + this.translate.instant('lang.doNotReply') +"] " + this.translate.instant('lang.emailSendTest'),
+            "status": "EXPRESS",
+            "body": this.translate.instant('lang.emailSendTest'),
+            "isHtml": false
+        };
+        this.emailSendLoading = true;
+
+        this.http.post('../rest/emails', email)
+            .pipe(
+                finalize(() => this.emailSendLoading = false)
+            )
+            .subscribe({
+                next: () => {
+                    this.emailSendResult = {
+                        icon: 'fa-check green',
+                        msg: 'lang.emailSendSuccess',
+                        debug: '',
+                        error: false
+                    };
+                },
+                error: err => {
+                    this.emailSendResult = {
+                        icon: 'fa-times red',
+                        msg: 'lang.emailSendFailed',
+                        debug: err.error.errors,
+                        error: true
+                    };
+                }
+            });
+    }
+ 
     cancel() {
         this.router.navigate(['/administration']);
     }

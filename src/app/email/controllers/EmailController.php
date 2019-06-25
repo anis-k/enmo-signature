@@ -26,9 +26,30 @@ use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Group\controllers\PrivilegeController;
 
 class EmailController
 {
+    public static function send(Request $request, Response $response)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        $isSent = EmailController::createEmail(['userId' => $GLOBALS['id'], 'data' => $body]);
+
+        if (!empty($isSent['errors'])) {
+            $httpCode = empty($isSent['code']) ? 400 : $isSent['code'];
+            return $response->withStatus($httpCode)->withJson(['errors' => $isSent['errors']]);
+        }
+
+        return $response->withStatus(204);
+    }
+
     public static function createEmail(array $args)
     {
         ValidatorModel::notEmpty($args, ['userId', 'data']);
@@ -161,9 +182,31 @@ class EmailController
 
         $phpmailer->Timeout = 30;
         $phpmailer->SMTPDebug = 1;
+        $phpmailer->Debugoutput = function ($str) {
+            if (strpos($str, 'SMTP ERROR') !== false) {
+                // HistoryController::add([
+                //     'tableName'    => 'emails',
+                //     'recordId'     => 'email',
+                //     'eventType'    => 'ERROR',
+                //     'eventId'      => 'sendEmail',
+                //     'info'         => $str
+                // ]);
+            }
+        };
 
         $isSent = $phpmailer->send();
         if (!$isSent) {
+            // $history = HistoryModel::get([
+            //     'select'    => ['info'],
+            //     'where'     => ['user_id = ?', 'event_id = ?', 'event_type = ?'],
+            //     'data'      => [$user['user_id'], 'sendEmail', 'ERROR'],
+            //     'orderBy'   => ['event_date DESC'],
+            //     'limit'     => 1
+            // ]);
+            if (!empty($history[0]['info'])) {
+                return ['errors' => $history[0]['info']];
+            }
+
             return ['errors' => $phpmailer->ErrorInfo];
         }
 

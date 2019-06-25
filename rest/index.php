@@ -115,4 +115,7 @@ $app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\Signature
 $app->put('/users/{id}/externalSignatures', \User\controllers\SignatureController::class . ':updateExternalSignatures');
 $app->patch('/users/{id}/signatures/substituted', \User\controllers\SignatureController::class . ':updateSubstituted');
 
+//Emails
+$app->post('/emails', \Email\controllers\EmailController::class . ':send');
+
 $app->run();

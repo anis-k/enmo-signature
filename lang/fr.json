@@ -231,6 +231,13 @@
 		"qmail"      : "Serveur mail local (Qmail)",
 		"smtprelay"  : "Relais smtp (sendmail)",
 		"smtpclient" : "Client smtp (smtp)",
-		"emailConfigurationUpdated" : "Configuration du serveur mise à jour"
+		"emailConfigurationUpdated" : "Configuration du serveur mise à jour",
+		"doNotReply" : "Ne pas répondre",
+		"emailSendTest" : "Test d'envoi",
+		"mailTo" : "Adresse de réception",
+		"beginSendTest" : "Commencer le test",
+		"emailSendFailed" : "Échec d'envoi",
+		"emailSendInProgress" : "En cours d'envoi",
+		"emailSendSuccess" : "Envoi réussi"
 	}
 }
