@@ -25,12 +25,17 @@ class DocumentControllerTest extends TestCase
             'title'                 => 'Mon Courrier',
             'reference'             => '2018/CR/7',
             'description'           => 'Mon premier courrier parapheur',
-            'mode'                  => 'SIGN',
-            'processingUser'        => 'jjane@maarch.com',
+            'encodedDocument'       => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
             'sender'                => 'Oliver Queen',
             'deadline'              => '2018-12-25',
+            'workflow'              => [[
+                "processingUser" => "ccornillac@maarch.com",
+                "mode" => "visa"
+            ], [
+                "processingUser" => "jjane@maarch.com",
+                "mode" => "visa"
+            ]],
             'metadata'              => ['Entité' => 'QE', 'Destinataire' => 'Barry Allen', 'priorité' => 'Urgent'],
-            'encodedDocument'       => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
             'attachments'           => [[
                 'encodedDocument'       => base64_encode(file_get_contents('test/unitTests/samples/testPdf.zip')),
                 'title'                 => 'Ma pj de mon courrier',
@@ -58,7 +63,8 @@ class DocumentControllerTest extends TestCase
 
         $this->assertInternalType('array', $responseBody->documents);
         $this->assertNotEmpty($responseBody->documents);
-
+        $this->assertInternalType('int', $responseBody->count);
+        $this->assertNotEmpty($responseBody->count);
 
         $fullRequest = $request->withQueryParams(['mode' => 'SIGN']);
         $response     = $documentController->get($fullRequest, new \Slim\Http\Response());
@@ -70,6 +76,9 @@ class DocumentControllerTest extends TestCase
 
     public function testGetById()
     {
+        // Wait thumbnail generation
+        sleep(10);
+
         $documentController = new \Document\controllers\DocumentController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
@@ -80,11 +89,14 @@ class DocumentControllerTest extends TestCase
 
         $this->assertSame('2018/CR/7', $responseBody->document->reference);
         $this->assertSame('Mon Courrier', $responseBody->document->title);
-        $this->assertSame('SIGN', $responseBody->document->mode);
-        $this->assertSame(1, $responseBody->document->status);
         $this->assertSame('Oliver Queen', $responseBody->document->sender);
-        $this->assertSame('jjane@maarch.com', $responseBody->document->processingUser);
-        $this->assertInternalType('string', $responseBody->document->encodedDocument);
+        $this->assertInternalType('array', $responseBody->document->metadata);
+        $this->assertNotEmpty($responseBody->document->metadata);
+        $this->assertInternalType('array', $responseBody->document->workflow);
+        $this->assertInternalType('int', $responseBody->document->workflow[0]->userId);
+        $this->assertSame(2, $responseBody->document->workflow[0]->userId);
+        $this->assertSame('visa', $responseBody->document->workflow[0]->mode);
+        $this->assertNotEmpty($responseBody->document->workflow);
         $this->assertInternalType('array', $responseBody->document->attachments);
         $this->assertNotEmpty($responseBody->document->attachments);
         $this->assertNotEmpty($responseBody->document->attachments[0]->id);
@@ -108,27 +120,13 @@ class DocumentControllerTest extends TestCase
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('2018/ZZ/10', $responseBody->attachment->reference);
-        $this->assertSame('Ma pj de mon courrier', $responseBody->attachment->subject);
+        $this->assertSame('Ma pj de mon courrier', $responseBody->attachment->title);
         $this->assertInternalType('string', $responseBody->attachment->encodedDocument);
 
         $response     = $attachmentController->getById($request, new \Slim\Http\Response(), ['id' => -1]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('Attachment does not exist', $responseBody->errors);
-    }
-
-    public function testGetStatusById()
-    {
-        $documentController = new \Document\controllers\DocumentController();
-
-        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
-        $request        = \Slim\Http\Request::createFromEnvironment($environment);
-
-        $response     = $documentController->getStatusById($request, new \Slim\Http\Response(), ['id' => self::$id]);
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertSame('NEW', $responseBody->status->reference);
-        $this->assertSame('SIGN', $responseBody->status->mode);
     }
 
     public function testSetAction()
@@ -160,35 +158,28 @@ class DocumentControllerTest extends TestCase
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
-        $response     = $documentController->setAction($fullRequest, new \Slim\Http\Response(), ['id' => self::$id, 'actionId' => 5]);
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertSame('success', $responseBody->success);
-
-        $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
-        $request        = \Slim\Http\Request::createFromEnvironment($environment);
-
-        $response     = $documentController->getStatusById($request, new \Slim\Http\Response(), ['id' => self::$id]);
-        $responseBody = json_decode((string)$response->getBody());
-
-        $this->assertSame('VAL', $responseBody->status->reference);
-        $this->assertSame('SIGN', $responseBody->status->mode);
 
         // Error action
         $response     = $documentController->setAction($fullRequest, new \Slim\Http\Response(), ['id' => self::$id, 'actionId' => 203]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('Action does not exist', $responseBody->errors);
+
+        // Success action
+        $response     = $documentController->setAction($fullRequest, new \Slim\Http\Response(), ['id' => self::$id, 'actionId' => 1]);
+        $responseBody = json_decode((string)$response->getBody());
+
+        $this->assertSame('success', $responseBody->success);
     }
 
-    public function testGetProcessedDocumentById()
+    public function testGetContent()
     {
         $documentController = new \Document\controllers\DocumentController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'GET']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $documentController->getProcessedDocumentById($request, new \Slim\Http\Response(), ['id' => self::$id]);
+        $response     = $documentController->getContent($request, new \Slim\Http\Response(), ['id' => self::$id]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertNotEmpty($responseBody->encodedDocument);

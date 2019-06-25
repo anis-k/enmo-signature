@@ -196,6 +196,7 @@
 		"privilegeUpdated" : "Privilege added",
 		"removedFromGroup" : "User removed from group",
 		"manage_groups" : "Groups",
+		"manage_groupsDesc": "Add / Update / Delete groups in application.",
 		"manage_connections" : "Connections",
 		"manage_connectionsDesc" : "Manage all available connections modes in application.",
 		"defaultConnection" : "Default",

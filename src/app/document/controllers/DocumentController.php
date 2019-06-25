@@ -29,7 +29,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
-use User\controllers\UserController;
 use User\models\UserModel;
 use History\controllers\HistoryController;
 use Workflow\models\WorkflowModel;

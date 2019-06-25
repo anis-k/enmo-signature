@@ -5,7 +5,7 @@
             <!-- <file>test/unitTests/core/AuthenticationControllerTest.php</file> -->
             <file>test/unitTests/core/PasswordControllerTest.php</file>
             <file>test/unitTests/app/user/UserControllerTest.php</file>
-            <!-- <file>test/unitTests/app/document/DocumentControllerTest.php</file> -->
+            <file>test/unitTests/app/document/DocumentControllerTest.php</file>
             <file>test/unitTests/app/group/GroupControllerTest.php</file>
         </testsuite>
     </testsuites>
