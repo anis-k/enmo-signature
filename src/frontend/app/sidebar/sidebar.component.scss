@@ -187,15 +187,10 @@
   background: $primary;
 }
 
-.badgeNbDocument {
-  min-width: 10px;
-  color: #fff;
-  padding: 3px 7px;
-  font-size: 12px;
-  line-height: 1;
-  background-color: #F99830;
-  border-radius: 10px;
-  margin-left: 5px;
+.mat-badge-content {
+  right: 0px !important;
+  top: -8px !important;
+  background: #F99830;
 }
 
 .noResult {
@@ -204,4 +199,8 @@
   text-align: center;
   width: 100%;
   opacity: 0.5;
+}
+
+.noDoc .mat-badge-content {
+  background: #ddd;
 }
