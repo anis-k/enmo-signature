@@ -35,10 +35,10 @@ class AutoCompleteController
 
         $requestData = AutoCompleteController::getDataForRequest([
             'search'        => $queryParams['search'],
-            'fields'        => '(firstname ilike ? OR lastname ilike ?)',
+            'fields'        => '(firstname ilike ? OR lastname ilike ? OR email ilike ?)',
             'where'         => ['mode = ?'],
             'data'          => ['standard'],
-            'fieldsNumber'  => 2
+            'fieldsNumber'  => 3
         ]);
 
         if (!empty($queryParams['excludeId'])) {
