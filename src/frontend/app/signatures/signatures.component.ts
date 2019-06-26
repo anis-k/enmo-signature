@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
-// TEMP : A effacer une fois l'api en place
 import { DomSanitizer } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { HttpClient } from '@angular/common/http';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { NotificationService } from '../service/notification.service';
-import { CookieService } from 'ngx-cookie-service';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -33,7 +31,7 @@ export class SignaturesComponent implements OnInit {
     count = 0;
 
     constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
-        private sanitization: DomSanitizer, public notificationService: NotificationService, private cookieService: CookieService) {
+        private sanitization: DomSanitizer, public notificationService: NotificationService) {
     }
 
     ngOnInit() {
@@ -81,8 +79,7 @@ export class SignaturesComponent implements OnInit {
         const r = confirm(this.translate.instant('lang.wantDeleteSignature'));
 
         if (r) {
-            const cookieInfo = JSON.parse(atob(this.cookieService.get('maarchParapheurAuth')));
-            this.http.delete('../rest/users/ ' + cookieInfo.id + '/signatures/' + signature.id)
+            this.http.delete('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/' + signature.id)
                 .subscribe(() => {
                     this.signaturesService.signaturesList.splice(i, 1);
                     this.notificationService.success('lang.signatureDeleted');
