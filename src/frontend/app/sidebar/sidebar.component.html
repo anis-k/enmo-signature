@@ -39,11 +39,11 @@
       </mat-form-field>
     </header>
     <section class="sidebar-btn">
-      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.sign === 0"  [matBadge]="signaturesService.mode == 'sign' ? '' : signaturesService.documentsListCount.sign" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']"
+      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.sign === 0"  [matBadge]="signaturesService.documentsListCount.sign" [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']"
         (click)="filter('sign')">{{'lang.signLabel' | translate | titlecase}}</button>
-      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.visa === 0" [matBadge]="signaturesService.mode == 'visa' ? '' : signaturesService.documentsListCount.visa" [ngClass]="[signaturesService.mode == 'visa' ? 'active' : '']"
+      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.visa === 0" [matBadge]="signaturesService.documentsListCount.visa" [ngClass]="[signaturesService.mode == 'visa' ? 'active' : '']"
         (click)="filter('visa')">{{'lang.visaLabel' | translate | titlecase}}</button>
-      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.note === 0" [matBadge]="signaturesService.mode == 'note' ? '' : signaturesService.documentsListCount.note" [ngClass]="[signaturesService.mode == 'note' ? 'active' : '']"
+      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.note === 0" [matBadge]="signaturesService.documentsListCount.note" [ngClass]="[signaturesService.mode == 'note' ? 'active' : '']"
         (click)="filter('note')">{{'lang.noteLabel' | translate | titlecase}}</button>
     </section>
   </div>
