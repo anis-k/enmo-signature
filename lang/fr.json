@@ -207,9 +207,9 @@
 		"connectionModeUpdated" : "Mode de connexion mise à jour",
 		"changeConnectionWarn" : "Cela entraine un changement de mécanique de connexion à l'application !",
 		"uri" : "IP / Alias",
-		"baseDN" : "Base DN",
-		"prefix" : "Prefix de connexion",
-		"suffix" : "Suffix de connexion",
+		"baseDN" : "Base DN (obligatoire pour open ldap)",
+		"prefix" : "Préfixe de connexion",
+		"suffix" : "Suffixe de connexion",
 		"connectionTest" : "Tester la connexion",
 		"testAlt" : "Tester",
 		"connectionInProgress" : "Connexion en cours",
@@ -238,6 +238,9 @@
 		"beginSendTest" : "Commencer le test",
 		"emailSendFailed" : "Échec d'envoi",
 		"emailSendInProgress" : "En cours d'envoi",
-		"emailSendSuccess" : "Envoi réussi"
+		"emailSendSuccess" : "Envoi réussi",
+		"manage_groupsAlt" : "Groupe(s)",
+		"groupCreation" : "Ajouter un groupe"
+
 	}
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../../service/signatures.service';
 import { NotificationService } from '../../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
@@ -43,7 +43,7 @@ export class LdapComponent implements OnInit {
     title: string = '';
 
     // tslint:disable-next-line:no-input-rename
-    @Input('snavRight') snavRight: MatSidenav;
+    @ViewChild('snavRight') snavRight: MatSidenav;
 
     constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
     }
@@ -168,10 +168,10 @@ export class LdapComponent implements OnInit {
             )
             .subscribe({
                 next: (data: any) => {
-                    this.ldapTest.result = data.info;
+                    this.ldapTest.result = data.informations;
                     if (data.connection) {
                         this.snavRight.close();
-                        this.notificationService.success('ldapConnectionSucceeded');
+                        this.notificationService.success('lang.ldapConnectionSucceeded');
                     }
                 },
             });

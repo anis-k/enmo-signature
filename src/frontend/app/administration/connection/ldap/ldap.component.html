@@ -33,16 +33,19 @@
         </mat-form-field>
         <mat-form-field class="input-row">
           <input name="dn" matInput placeholder="{{'lang.baseDN' | translate}}" [(ngModel)]="ldap.value.baseDN">
-          <mat-hint>
+          <mat-hint align="end">
             ex: dc=maarch,dc=com
           </mat-hint>
         </mat-form-field>
         <mat-form-field class="input-row">
           <input name="prefix" matInput placeholder="{{'lang.prefix' | translate}}" [(ngModel)]="ldap.value.prefix">
+          <mat-hint align="end">
+            ex: MAARCH
+          </mat-hint>
         </mat-form-field>
         <mat-form-field class="input-row">
           <input name="suffix" matInput placeholder="{{'lang.suffix' | translate}}" [(ngModel)]="ldap.value.suffix">
-          <mat-hint>
+          <mat-hint align="end">
             ex: @maarch.com
           </mat-hint>
         </mat-form-field>

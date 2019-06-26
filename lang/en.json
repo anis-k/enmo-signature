@@ -206,7 +206,7 @@
 		"connectionModeUpdated" : "Connection mode updated",
 		"changeConnectionWarn" : "This cause a change in login mechanics for users !",
 		"uri" : "IP / Alias",
-		"baseDN" : "DN base",
+		"baseDN" : "DN base (required for open ldap)",
 		"prefix" : "Connection prefix",
 		"suffix" : "Connection suffix",
 		"connectionTest" : "Test connection",
@@ -237,6 +237,8 @@
 		"beginSendTest" : "Begin send test",
 		"emailSendFailed" : "Email send failed",
 		"emailSendInProgress" : "Email send in progress",
-		"emailSendSuccess" : "Email send success"
+		"emailSendSuccess" : "Email send success",
+		"manage_groupsAlt" : "Group(s)",
+		"groupCreation" : "Add a group"
 	}
 }
