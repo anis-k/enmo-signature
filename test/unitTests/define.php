@@ -10,7 +10,15 @@
 require_once 'vendor/autoload.php';
 
 $id = 1;
-$_SERVER['CONFIG_DIR'] = "/var/www/html/MaarchParapheur/config/";
+if (is_file("/var/www/html/MaarchParapheur/config/config.xml")) {
+    $_SERVER['CONFIG_DIR'] = "/var/www/html/MaarchParapheur/config/";
+} else {
+    if (is_file("{$_SERVER['PWD']}/config/config.xml")) {
+        $_SERVER['CONFIG_DIR'] = "{$_SERVER['PWD']}/config/";
+    } else {
+        exit("No configuration file found\n");
+    }
+}
 
 class httpRequestCustom
 {

@@ -369,9 +369,9 @@ class UserController
 
         $body = $request->getParsedBody();
         if (!Validator::stringType()->notEmpty()->validate($body['newPassword'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'New password is empty']);
+            return $response->withStatus(400)->withJson(['errors' => 'Body newPassword is empty or not a string']);
         } elseif ($body['newPassword'] != $body['passwordConfirmation']) {
-            return $response->withStatus(400)->withJson(['errors' => 'newPassword and passwordConfirmation must be identical']);
+            return $response->withStatus(400)->withJson(['errors' => 'Body newPassword and passwordConfirmation must be identical']);
         }
 
         $user = UserModel::getById(['select' => ['login', 'mode'], 'id' => $args['id']]);
