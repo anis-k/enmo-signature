@@ -156,13 +156,22 @@ export class SendmailComponent implements OnInit {
                 finalize(() => this.emailSendLoading = false)
             )
             .subscribe({
-                next: () => {
-                    this.emailSendResult = {
-                        icon: 'fa-check green',
-                        msg: 'lang.emailSendSuccess',
-                        debug: '',
-                        error: false
-                    };
+                next: (data : any) => {
+                    if (data.isSent) {
+                        this.emailSendResult = {
+                            icon: 'fa-check green',
+                            msg: 'lang.emailSendSuccess',
+                            debug: '',
+                            error: false
+                        };
+                    } else {
+                        this.emailSendResult = {
+                            icon: 'fa-times red',
+                            msg: 'lang.emailSendFailed',
+                            debug: data.informations,
+                            error: true
+                        };
+                    }
                 },
                 error: err => {
                     this.emailSendResult = {

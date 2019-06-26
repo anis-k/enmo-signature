@@ -43,11 +43,13 @@ class EmailController
         $isSent = EmailController::createEmail(['userId' => $GLOBALS['id'], 'data' => $body]);
 
         if (!empty($isSent['errors'])) {
-            $httpCode = empty($isSent['code']) ? 400 : $isSent['code'];
-            return $response->withStatus($httpCode)->withJson(['errors' => $isSent['errors']]);
+            if (!empty($isSent['code'])) {
+                return $response->withStatus($isSent['code'])->withJson(['errors' => $isSent['errors']]);
+            }
+            return $response->withJson(['isSent' => false, 'informations' => $isSent['errors']]);
         }
 
-        return $response->withStatus(204);
+        return $response->withJson(['isSent' => true, 'informations' => 'success']);
     }
 
     public static function createEmail(array $args)
@@ -92,7 +94,7 @@ class EmailController
                 HistoryController::add([
                     'code'          => 'KO',
                     'objectType'    => 'emails',
-                    'objectId'      => $args['emailId'],
+                    'objectId'      => $id,
                     'type'          => 'EMAIL',
                     'message'       => '{emailFailed}',
                     'data'          => ['errors' => $isSent['errors']]
@@ -190,17 +192,7 @@ class EmailController
 
         $phpmailer->Timeout = 30;
         $phpmailer->SMTPDebug = 1;
-        $phpmailer->Debugoutput = function ($str) {
-            if (strpos($str, 'SMTP ERROR') !== false) {
-                // HistoryController::add([
-                //     'tableName'    => 'emails',
-                //     'recordId'     => 'email',
-                //     'eventType'    => 'ERROR',
-                //     'eventId'      => 'sendEmail',
-                //     'info'         => $str
-                // ]);
-            }
-        };
+        $phpmailer->Debugoutput = function ($str) {};
 
         $isSent = $phpmailer->send();
         if (!$isSent) {
