@@ -1,0 +1,89 @@
+<mat-sidenav-container autosize>
+  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
+    [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
+    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
+    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
+  </mat-sidenav>
+  <mat-sidenav-content class="mainView">
+    <header class="header">
+      <div class="header-title">
+        <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
+          <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
+        </button>
+        <span *ngIf="!loading">{{title}}</span>
+      </div>
+      <div *ngIf="!creationMode" style="width: 70px;text-align: center;">
+        <button mat-icon-button (click)="deleteGroup()">
+          <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
+        </button>
+      </div>
+    </header>
+    <div class="container">
+      <div *ngIf="loading" class="loader">
+        <mat-spinner></mat-spinner>
+      </div>
+      <form class="admin-form" *ngIf="!loading" (ngSubmit)="onSubmit()" #adminForm="ngForm">
+        <mat-form-field class="input-row">
+          <input name="label" matInput placeholder="{{'lang.label' | translate}}" type="text" [(ngModel)]="group.label"
+           required>
+        </mat-form-field>
+        <fieldset *ngIf="!creationMode">
+          <legend align="left">{{'lang.privileges' | translate}} :</legend>
+          <div class="form-container">
+            <div class="privilegesList" *ngFor="let privilege of group.privileges">
+              <mat-slide-toggle [name]="privilege.id" color="primary" [(ngModel)]="privilege.checked" (change)="togglePrivilege(privilege)">{{'lang.' + privilege.id + 'Admin' | translate}}</mat-slide-toggle>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset *ngIf="!creationMode">
+          <legend align="left">{{'lang.linkedUsers' | translate}} :</legend>
+          <div class="form-container">
+            <mat-table #table class="dataTable" [dataSource]="dataSource" matSort matSortActive="lastname"
+              matSortDirection="asc" [class.emptyTable]="dataSource.filteredData.length === 0">
+              <ng-container matColumnDef="firstname">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.firstname' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.firstname}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="lastname">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.lastname' | translate}}</mat-header-cell>
+                <mat-cell *matCellDef="let element"> {{element.lastname}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef style="justify-content: end;">
+                  <mat-paginator #paginator [length]="100" [pageSize]="10"></mat-paginator>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" style="justify-content: flex-end;">
+                  <button mat-icon-button color="warn" type="button" (click)="$event.stopPropagation();unlinkUser(element)">
+                    <mat-icon class="fa fa-unlink fa-2x"></mat-icon>
+                  </button>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/users/{{row.id}}"
+                style="cursor:pointer;"></mat-row>
+            </mat-table>
+            <div class="noResult" *ngIf="dataSource.filteredData.length === 0">
+                {{'lang.noResult' | translate}}
+            </div>
+            <div class="addButton">
+                <button mat-raised-button type="button" color="primary" [matMenuTriggerFor]="menu" [disabled]="usersList.length === group.users.length">{{'lang.addUser' | translate}}</button>
+                <mat-menu #menu="matMenu">
+                  <ng-container *ngFor="let user of usersList">
+                      <button mat-menu-item *ngIf="!isInGroup(user);" (click)="linkUser(user)">{{user.firstname}} {{user.lastname}}</button>
+                  </ng-container>
+                </mat-menu>
+            </div>
+          </div>
+        </fieldset>
+        <div class="actions-form">
+          <button mat-stroked-button type="submit" class="btn blue"
+            [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
+          <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+        </div>
+      </form>
+    </div>
+  </mat-sidenav-content>
+  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
+    fixedInViewport="true" position='end'>
+  </mat-sidenav>
+</mat-sidenav-container>

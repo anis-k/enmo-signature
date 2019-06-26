@@ -1,0 +1,24 @@
+@import '../../../css/vars.scss';
+
+.privilegesList {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: inline-block;
+  width: 100%;
+  @media (min-width: 768px) { 
+    width: 50%;
+  }
+  @media (min-width: 992px) { 
+    width: 33%;
+  }
+}
+
+fieldset {
+  border: solid 1px #F1F4F4;
+  align-items: center;
+  margin-top: 30px;
+}
+
+legend {
+  color: #F99830;
+}

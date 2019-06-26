@@ -62,6 +62,8 @@ import { ConnectionComponent } from './administration/connection/connection.comp
 import { LdapListComponent } from './administration/connection/ldap/ldap-list.component';
 import { LdapComponent } from './administration/connection/ldap/ldap.component';
 import { SendmailComponent } from './administration/sendmail/sendmail.component';
+import { GroupsListComponent } from './administration/group/groups-list.component';
+import { GroupComponent } from './administration/group/group.component';
 
 
 // SERVICES
@@ -109,7 +111,9 @@ import { AlertComponent } from './plugins/alert.component';
     ConnectionComponent,
     LdapListComponent,
     LdapComponent,
-    SendmailComponent
+    SendmailComponent,
+    GroupsListComponent,
+    GroupComponent
   ],
   imports: [
     FormsModule,
@@ -136,6 +140,9 @@ import { AlertComponent } from './plugins/alert.component';
       { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
       { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
       { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
+      { path: 'administration/groups', canActivate: [AuthGuard], component: GroupsListComponent },
+      { path: 'administration/groups/new', canActivate: [AuthGuard], component: GroupComponent },
+      { path: 'administration/groups/:id', canActivate: [AuthGuard], component: GroupComponent },
       { path: 'administration/connections', canActivate: [AuthGuard], component: ConnectionComponent },
       { path: 'administration/connections/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
       { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },

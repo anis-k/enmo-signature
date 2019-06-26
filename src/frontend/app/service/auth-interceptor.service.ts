@@ -12,6 +12,8 @@ import { AuthService } from './auth.service';
 export class AuthInterceptor implements HttpInterceptor {
 
   excludeUrls: string[] = ['../rest/authenticate', '../rest/authenticate/token', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
+  frontUrl: string[] = ['../rest/documents/', '../rest/users/', '../rest/groups/', '../rest/configurations/'];
+
   constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService, public signaturesService: SignaturesContentService, public authService: AuthService) { }
 
   addAuthHeader(request: HttpRequest<any>) {
@@ -31,7 +33,6 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-
     // We don't want to intercept some routes
     if (this.excludeUrls.indexOf(request.url) > -1 || request.url.indexOf('/password') > -1) {
       return next.handle(request);
@@ -82,9 +83,16 @@ export class AuthInterceptor implements HttpInterceptor {
               })
             );
           } else {
-            if (request.url.indexOf('../rest/documents/') > -1) {
-              this.router.navigate(['/documents']);
-              this.signaturesService.mainDocumentId = null;
+            if (request.method === 'GET') {
+                this.frontUrl.forEach(element => {
+                  if (request.url.indexOf(element) > -1) {
+                    if (element === '../rest/documents/') {
+                      this.signaturesService.mainDocumentId = null;
+                    }
+                    this.router.navigate(['/documents']);
+                    return empty();
+                  }
+                });
             }
             this.notificationService.handleErrors(error);
             return empty();

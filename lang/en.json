@@ -239,6 +239,16 @@
 		"emailSendInProgress" : "Email send in progress",
 		"emailSendSuccess" : "Email send success",
 		"manage_groupsAlt" : "Group(s)",
-		"groupCreation" : "Add a group"
+		"groupCreation" : "Add a group",
+		"manage_usersAdmin" : "Manage users",
+		"manage_groupsAdmin" : "Manage groups",
+		"manage_connectionsAdmin" : "Manage connections",
+		"manage_email_configurationAdmin" : "Manage email server",
+		"manage_documentsAdmin" : "All access of documents",
+		"linkedUsers" : "Linked users",
+		"addUser" : "Add user",
+		"privileges" : "Privileges",
+		"groupWarnMsg" : "You may no longer be able to access this page!",
+		"groupDeleted" : "Group deleted"
 	}
 }

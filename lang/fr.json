@@ -240,7 +240,16 @@
 		"emailSendInProgress" : "En cours d'envoi",
 		"emailSendSuccess" : "Envoi réussi",
 		"manage_groupsAlt" : "Groupe(s)",
-		"groupCreation" : "Ajouter un groupe"
-
+		"groupCreation" : "Ajouter un groupe",
+		"manage_usersAdmin" : "Administrer les utilisateurs",
+		"manage_groupsAdmin" : "Administrer les groupes",
+		"manage_connectionsAdmin" : "Administrer les connexions",
+		"manage_email_configurationAdmin" : "Administrer le serveur courriel",
+		"manage_documentsAdmin" : "Accéder à tous les documents",
+		"linkedUsers" : "Utilisateur(s) associé(s)",
+		"addUser" : "Ajouter un utilisateur",
+		"privileges" : "Privilèges",
+		"groupWarnMsg" : "Vous risquez de ne plus pouvoir accéder à cette page !",
+		"groupDeleted" : "Groupe supprimé"
 	}
 }
