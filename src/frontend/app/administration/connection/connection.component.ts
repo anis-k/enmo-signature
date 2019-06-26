@@ -82,6 +82,7 @@ export class ConnectionComponent implements OnInit {
                     )
                     .subscribe({
                         next: () => {
+                            this.signaturesService.authMode = connection.id;
                             this.currentConnection = connection;
                             this.notificationService.success('lang.connectionModeUpdated');
                         },
