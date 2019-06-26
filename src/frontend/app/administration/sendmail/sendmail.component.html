@@ -67,7 +67,7 @@
         <div class="actions-form">
             <button mat-stroked-button type="submit" class="btn blue" [disabled]="!sendmailForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
             <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
-            <button mat-stroked-button type="button" class="btn" (click)="snavRight.toggle()">{{'lang.connectionTest' | translate}}</button>
+            <button mat-stroked-button type="button" class="btn" (click)="snavRight.toggle()" style="width:auto">{{'lang.connectionTest' | translate}}</button>
       </div>
       </form>
     </div>
