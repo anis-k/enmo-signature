@@ -61,21 +61,20 @@ class ConfigurationController
             return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
         }
 
-        if ($configuration['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        } elseif ($configuration['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
         $configuration['value'] = json_decode($configuration['value'], true);
 
         if ($configuration['identifier'] == 'emailServer') {
-            if (!empty($configuration['value']['password'])) {
-                $configuration['value']['password'] = '';
-                $configuration['value']['passwordAlreadyExists'] = true;
-            } else {
-                $configuration['value']['passwordAlreadyExists'] = false;
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
             }
+            $configuration['value']['passwordAlreadyExists'] = !empty($configuration['value']['password']);
+            $configuration['value']['password'] = '';
+        } elseif ($configuration['identifier'] == 'ldapServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
+            $configuration['count'] = count($ldapConfigurations);
         }
 
         return $response->withJson(['configuration' => $configuration]);
@@ -276,8 +275,17 @@ class ConfigurationController
 
         if ($configuration['identifier'] == 'emailServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_email_configuration'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        } elseif ($configuration['identifier'] == 'ldapServer' && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        } elseif ($configuration['identifier'] == 'ldapServer') {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
+            if (count($ldapConfigurations) == 1) {
+                $connectionConfiguration = ConfigurationModel::getByIdentifier(['identifier' => 'connection', 'select' => ['value']]);
+                if ($connectionConfiguration[0]['value'] == '"ldap"') {
+                    return $response->withStatus(400)->withJson(['errors' => 'Ldap connection is activated']);
+                }
+            }
         } elseif ($configuration['identifier'] == 'connection') {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
