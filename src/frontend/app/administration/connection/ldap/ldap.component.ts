@@ -78,6 +78,7 @@ export class LdapComponent implements OnInit {
                     .subscribe({
                         next: (data: any) => {
                             this.ldap = data;
+                            this.ldapClone = JSON.parse(JSON.stringify(this.ldap));
                             this.title = this.ldap.label;
                         },
                     });
@@ -155,25 +156,53 @@ export class LdapComponent implements OnInit {
     }
 
     testLdap() {
-        this.ldapTest.result = '';
         this.loadingTest = true;
-        this.http.get('../rest/configurations/' + this.ldap.id + '/connection', {
-            params: {
-                login: this.ldapTest.login,
-                password: this.ldapTest.password
-            }
-        })
-            .pipe(
-                finalize(() => this.loadingTest = false)
-            )
+        this.ldapTest.result = '';
+        if (this.canValidate()) {
+            this.http.patch('../rest/configurations/' + this.ldap.id, this.ldap)
             .subscribe({
-                next: (data: any) => {
-                    this.ldapTest.result = data.informations;
-                    if (data.connection) {
-                        this.snavRight.close();
-                        this.notificationService.success('lang.ldapConnectionSucceeded');
-                    }
+                next: () => {
+                    this.ldapClone = JSON.parse(JSON.stringify(this.ldap));
+                    this.notificationService.success('lang.ldapUpdated');
+                    this.http.get('../rest/configurations/' + this.ldap.id + '/connection', {
+                        params: {
+                            login: this.ldapTest.login,
+                            password: this.ldapTest.password
+                        }
+                    })
+                        .pipe(
+                            finalize(() => this.loadingTest = false)
+                        )
+                        .subscribe({
+                            next: (data: any) => {
+                                this.ldapTest.result = data.informations;
+                                if (data.connection) {
+                                    this.snavRight.close();
+                                    this.notificationService.success('lang.ldapConnectionSucceeded');
+                                }
+                            },
+                        });
                 },
             });
+        } else {
+            this.http.get('../rest/configurations/' + this.ldap.id + '/connection', {
+                params: {
+                    login: this.ldapTest.login,
+                    password: this.ldapTest.password
+                }
+            })
+                .pipe(
+                    finalize(() => this.loadingTest = false)
+                )
+                .subscribe({
+                    next: (data: any) => {
+                        this.ldapTest.result = data.informations;
+                        if (data.connection) {
+                            this.snavRight.close();
+                            this.notificationService.success('lang.ldapConnectionSucceeded');
+                        }
+                    },
+                });
+        }
     }
 }
