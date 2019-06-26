@@ -80,13 +80,25 @@ class GroupControllerTest extends TestCase
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
-        $response     = $groupController->addUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 1]);
+        $aArgs = [
+            'userId' => 1
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+
+        $response     = $groupController->addUser($fullRequest, new \Slim\Http\Response(), ['id' => self::$groupId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertEmpty($responseBody);
 
         //Fail
-        $response     = $groupController->addUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 12456789]);
+
+        $aArgs = [
+            'userId' => 12456789
+        ];
+
+        $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
+        $response     = $groupController->addUser($fullRequest, new \Slim\Http\Response(), ['id' => self::$groupId]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('User not found', $responseBody->errors);
@@ -125,7 +137,7 @@ class GroupControllerTest extends TestCase
         $this->assertEmpty($responseBody);
 
         //Fail
-        $response     = $groupController->addUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 12456789]);
+        $response     = $groupController->removeUser($request, new \Slim\Http\Response(), ['id' => self::$groupId, 'userId' => 12456789]);
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertSame('User not found', $responseBody->errors);

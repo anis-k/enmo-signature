@@ -211,26 +211,27 @@ class GroupController
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
+        $body = $request->getParsedBody();
         if (!Validator::intVal()->notEmpty()->validate($aArgs['id'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Id must be an integer']);
-        } elseif (!Validator::intVal()->notEmpty()->validate($aArgs['userId'])) {
+        } elseif (!Validator::intVal()->notEmpty()->validate($body['userId'])) {
             return $response->withStatus(400)->withJson(['errors' => 'userId must be an integer']);
         }
 
         $group = GroupModel::getById(['id' => $aArgs['id']]);
-        $user  = UserModel::getById(['id' => $aArgs['userId'], 'select' => ['firstname', 'lastname']]);
+        $user  = UserModel::getById(['id' => $body['userId'], 'select' => ['firstname', 'lastname']]);
         
         if (empty($group)) {
             return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
         } elseif (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User not found']);
-        } elseif (UserGroupModel::hasGroup(['groupId' => $aArgs['id'], 'userId' => $aArgs['userId']])) {
+        } elseif (UserGroupModel::hasGroup(['groupId' => $aArgs['id'], 'userId' => $body['userId']])) {
             return $response->withStatus(400)->withJson(['errors' => 'This user already has this group']);
         }
 
         UserGroupModel::addUser([
             'groupId' => $aArgs['id'],
-            'userId'  => $aArgs['userId']
+            'userId'  => $body['userId']
         ]);
 
         HistoryController::add([
@@ -244,7 +245,7 @@ class GroupController
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'users',
-            'objectId'      => $aArgs['userId'],
+            'objectId'      => $body['userId'],
             'type'          => 'MODIFICATION',
             'message'       => "{groupAdded} : {$group['label']}"
         ]);
