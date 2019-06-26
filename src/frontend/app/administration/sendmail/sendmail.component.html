@@ -45,7 +45,7 @@
         </mat-form-field>
 
         <mat-slide-toggle color="primary" name="SMTPAuth" [(ngModel)]="sendmail.auth" 
-          [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"(change)="cleanAuthInfo($event)">{{'lang.enableAuth' | translate}}</mat-slide-toggle>
+          [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"(change)="cleanAuthInfo()">{{'lang.enableAuth' | translate}}</mat-slide-toggle>
 
         <mat-form-field class="input-row">
             <input name="user" [(ngModel)]="sendmail.user" [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1"

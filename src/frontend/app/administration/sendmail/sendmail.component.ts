@@ -175,6 +175,12 @@ export class SendmailComponent implements OnInit {
                 }
             });
     }
+
+    cleanAuthInfo() {
+        this.sendmail.passwordAlreadyExists = false;
+        this.sendmail.user = '';
+        this.sendmail.password = '';
+    }
  
     cancel() {
         this.router.navigate(['/administration']);
