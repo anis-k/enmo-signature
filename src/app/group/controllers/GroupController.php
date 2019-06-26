@@ -56,6 +56,8 @@ class GroupController
             'select' => ['users.id', 'users.firstname', 'users.lastname']
         ]);
 
+        $group['privileges'] = PrivilegeController::PRIVILEGES;
+
         return $response->withJson(['group' => $group]);
     }
 
@@ -137,6 +139,11 @@ class GroupController
         $group = GroupModel::getById(['id' => $aArgs['id']]);
         if (empty($group)) {
             return $response->withStatus(400)->withJson(['errors' => 'Group not found']);
+        }
+
+        $groupCount = GroupModel::get(['select' => ['count(*) as nb']]);
+        if ($groupCount[0]['nb'] == 0) {
+            return $response->withStatus(400)->withJson(['errors' => 'This is the last group']);
         }
 
         UserGroupModel::delete(['where' => ['group_id = ?'], 'data' => [$aArgs['id']]]);

@@ -18,7 +18,6 @@ use Document\controllers\DocumentController;
 use Group\controllers\PrivilegeController;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use User\controllers\UserController;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
 
