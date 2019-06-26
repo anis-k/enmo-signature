@@ -87,8 +87,11 @@ class SignatureController
         $finfo      = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType   = $finfo->buffer($signature);
         $type       = explode('/', $mimeType);
+        $size       = strlen($signature);
         if ($type[0] != 'image') {
             return $response->withStatus(400)->withJson(['errors' => 'Signature is not an image']);
+        } elseif ($size > 2000000) {
+            return $response->withStatus(400)->withJson(['errors' => 'Max file size reached (2 MB)']);
         }
 
         $storeInfos = DocserverController::storeResourceOnDocServer([
