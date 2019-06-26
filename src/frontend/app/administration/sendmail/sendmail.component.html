@@ -73,7 +73,7 @@
     </div>
   </mat-sidenav-content>
     <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false" fixedInViewport="true" 
-            position='end' (opened)="onSubmit();initEmailSend()" style="overflow-x:hidden;width:500px;">
+            position='end' (opened)="initEmailSend()" style="overflow-x:hidden;width:500px;">
         <div style="display: flex;flex-direction: column;">
             <header class="header">
                 <div class="header-title">
