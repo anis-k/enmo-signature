@@ -45,7 +45,7 @@
         </mat-form-field>
 
         <mat-slide-toggle color="primary" name="SMTPAuth" [(ngModel)]="sendmail.auth" 
-          [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"(change)="cleanAuthInfo()">{{'lang.enableAuth' | translate}}</mat-slide-toggle>
+          [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" (change)="cleanAuthInfo()" style="margin-bottom:15px">{{'lang.enableAuth' | translate}}</mat-slide-toggle>
 
         <mat-form-field class="input-row">
             <input name="user" [(ngModel)]="sendmail.user" [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1"
@@ -72,30 +72,36 @@
       </form>
     </div>
   </mat-sidenav-content>
-    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false" fixedInViewport="true" 
-            position='end' (opened)="initEmailSend()" style="overflow-x:hidden;width:500px;">
-        <div style="display: flex;flex-direction: column;">
-            <header class="header">
-                <div class="header-title">
-                    <span *ngIf="!loading">{{'lang.emailSendTest' | translate}}</span>
+    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false" 
+        [style.width]="'650px'" fixedInViewport="true" position='end' (opened)="initEmailSend()">
+        <div class="panel-container">
+            <div class="panel-header">
+                <span *ngIf="!loading">{{'lang.emailSendTest' | translate}}</span>
+            </div>
+            <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button"
+                (click)="snavRight.toggle();">
+                <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
+            </button>
+            <div class="panel-content">
+                <form #testSendmailForm="ngForm">
+                    <mat-form-field class="testSendTo">
+                        <input name="recipientTest" matInput placeholder="{{'lang.mailTo' | translate}}" [(ngModel)]="recipientTest" [disabled]="emailSendLoading"
+                            pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
+                        <mat-icon *ngIf="!emailSendLoading && testSendmailForm.valid" title="{{'lang.beginSendTest' | translate}}" (click)="testEmailSend()"
+                            color="primary" style="cursor: pointer;" matSuffix class="fa fa-paper-plane fa-2x"></mat-icon>
+                    </mat-form-field>
+                </form>
+            
+                <div style="margin-left:15px">
+                    <mat-list-item *ngIf="emailSendResult.msg != ''">
+                        <mat-icon mat-list-icon class="fas {{emailSendResult.icon}} fa-2x"></mat-icon>
+                        <p mat-line> {{emailSendResult.msg | translate}} </p>
+                    </mat-list-item>
+                    <div class="bash" *ngIf="emailSendResult.error">
+                        {{this.emailSendResult.debug}}
+                    </div>
                 </div>
-            </header>
-            <form #testSendmailForm="ngForm">
-                <mat-form-field class="testSendTo">
-                    <input name="recipientTest" matInput placeholder="{{'lang.mailTo' | translate}}" [(ngModel)]="recipientTest" [disabled]="emailSendLoading"
-                        pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
-                    <mat-icon *ngIf="!emailSendLoading && testSendmailForm.valid" title="{{'lang.beginSendTest' | translate}}" (click)="testEmailSend()"
-                        color="primary" style="cursor: pointer;" matSuffix class="fa fa-paper-plane fa-2x"></mat-icon>
-                </mat-form-field>
-            </form>
-
-            <mat-list-item *ngIf="emailSendResult.msg != ''" style="margin-left:10px">
-                <mat-icon mat-list-icon class="fas {{emailSendResult.icon}} fa-2x"></mat-icon>
-                <p mat-line> {{emailSendResult.msg | translate}} </p>
-            </mat-list-item>
-        </div>
-        <div class="bash" *ngIf="emailSendResult.error">
-            {{this.emailSendResult.debug}}
+            </div>
         </div>
     </mat-sidenav>
 </mat-sidenav-container>
