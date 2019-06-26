@@ -172,14 +172,6 @@ export class SendmailComponent implements OnInit {
                             error: true
                         };
                     }
-                },
-                error: err => {
-                    this.emailSendResult = {
-                        icon: 'fa-times red',
-                        msg: 'lang.emailSendFailed',
-                        debug: err.error.errors,
-                        error: true
-                    };
                 }
             });
     }

@@ -2,12 +2,13 @@
 <phpunit colors="true" bootstrap="test/unitTests/define.php">
     <testsuites>
         <testsuite name="Maarch Parapheur Test Suite">
-            <!-- <file>test/unitTests/core/AuthenticationControllerTest.php</file> -->
+            <file>test/unitTests/core/AuthenticationControllerTest.php</file>
             <file>test/unitTests/core/PasswordControllerTest.php</file>
             <file>test/unitTests/app/user/UserControllerTest.php</file>
             <file>test/unitTests/app/configuration/ConfigurationControllerTest.php</file>
             <file>test/unitTests/app/document/DocumentControllerTest.php</file>
             <file>test/unitTests/app/group/GroupControllerTest.php</file>
+            <file>test/unitTests/app/history/HistoryControllerTest.php</file>
         </testsuite>
     </testsuites>
     <filter>

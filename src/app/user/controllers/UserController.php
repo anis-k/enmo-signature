@@ -322,6 +322,11 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body notifications is empty or not a boolean']);
         }
 
+        $user = UserModel::getById(['id' => $args['id'], 'select' => ['firstname', 'lastname']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
         $preferences = json_encode([
             'lang'          => $body['lang'],
             'writingMode'   => $body['writingMode'],
@@ -344,7 +349,7 @@ class UserController
             'objectType'    => 'users',
             'objectId'      => $args['id'],
             'type'          => 'MODIFICATION',
-            'message'       => "{userUpdated} : {$body['firstname']} {$body['lastname']}"
+            'message'       => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         return $response->withStatus(204);

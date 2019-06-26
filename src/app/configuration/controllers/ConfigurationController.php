@@ -188,7 +188,7 @@ class ConfigurationController
                 return $response->withStatus(400)->withJson(['errors' => $check['errors']]);
             }
 
-            if ($body['value']['auth'] && empty($body['value']['password']) && !empty($configuration)) {
+            if ($body['value']['auth'] && empty($body['value']['password'])) {
                 $configuration['value'] = json_decode($configuration['value'], true);
                 if (!empty($configuration['value']['password'])) {
                     $body['value']['password'] = $configuration['value']['password'];
