@@ -74,20 +74,6 @@ class EmailController
             'status'                => 'WAITING'
         ]);
 
-        if (!empty($args['data']['status']) && $args['data']['status'] == 'EXPRESS') {
-            $isSent = EmailController::sendEmail(['emailId' => $id]);
-            if (!empty($isSent['success'])) {
-                EmailModel::update(['set' => ['status' => 'SENT', 'send_date' => 'CURRENT_TIMESTAMP'], 'where' => ['id = ?'], 'data' => [$id]]);
-            } else {
-                EmailModel::update(['set' => ['status' => 'ERROR'], 'where' => ['id = ?'], 'data' => [$id]]);
-            }
-        } else {
-            $configPath = CoreConfigModel::getConfigPath();
-            $encryptKey = CoreConfigModel::getEncryptKey();
-            exec("php src/app/email/scripts/sendEmail.php '{$configPath}' {$id} {$args['userId']} '{$encryptKey}' > /dev/null &");
-            $isSent = ['success' => 'success'];
-        }
-
         $subject = empty($args['data']['subject']) ? '{emailNoSubject}' : $args['data']['subject'];
         HistoryController::add([
             'code'          => 'OK',
@@ -96,6 +82,28 @@ class EmailController
             'type'          => 'CREATION',
             'message'       => "{emailAdded} : {$subject}"
         ]);
+
+        if (!empty($args['data']['status']) && $args['data']['status'] == 'EXPRESS') {
+            $isSent = EmailController::sendEmail(['emailId' => $id]);
+            if (!empty($isSent['success'])) {
+                EmailModel::update(['set' => ['status' => 'SENT', 'send_date' => 'CURRENT_TIMESTAMP'], 'where' => ['id = ?'], 'data' => [$id]]);
+            } else {
+                EmailModel::update(['set' => ['status' => 'ERROR'], 'where' => ['id = ?'], 'data' => [$id]]);
+                HistoryController::add([
+                    'code'          => 'KO',
+                    'objectType'    => 'emails',
+                    'objectId'      => $args['emailId'],
+                    'type'          => 'EMAIL',
+                    'message'       => '{emailFailed}',
+                    'data'          => ['errors' => $isSent['errors']]
+                ]);
+            }
+        } else {
+            $configPath = CoreConfigModel::getConfigPath();
+            $encryptKey = CoreConfigModel::getEncryptKey();
+            exec("php src/app/email/scripts/sendEmail.php '{$configPath}' {$id} {$args['userId']} '{$encryptKey}' > /dev/null &");
+            $isSent = ['success' => 'success'];
+        }
 
         return $isSent;
     }
@@ -196,17 +204,6 @@ class EmailController
 
         $isSent = $phpmailer->send();
         if (!$isSent) {
-            // $history = HistoryModel::get([
-            //     'select'    => ['info'],
-            //     'where'     => ['user_id = ?', 'event_id = ?', 'event_type = ?'],
-            //     'data'      => [$user['user_id'], 'sendEmail', 'ERROR'],
-            //     'orderBy'   => ['event_date DESC'],
-            //     'limit'     => 1
-            // ]);
-            if (!empty($history[0]['info'])) {
-                return ['errors' => $history[0]['info']];
-            }
-
             return ['errors' => $phpmailer->ErrorInfo];
         }
 
