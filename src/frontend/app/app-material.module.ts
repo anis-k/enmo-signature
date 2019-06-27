@@ -22,7 +22,8 @@ import {
   MatPaginatorModule,
   MatSortModule,
   MatPaginatorIntl,
-  MatAutocompleteModule
+  MatAutocompleteModule,
+  MatCheckboxModule
 } from '@angular/material';
 
 import { MatMenuModule } from '@angular/material/menu';
@@ -55,7 +56,8 @@ import { getFrenchPaginatorIntl } from './plugins/paginator-fr-intl';
       MatTableModule,
       MatPaginatorModule,
       MatSortModule,
-      MatAutocompleteModule
+      MatAutocompleteModule,
+      MatCheckboxModule
   ],
   exports: [
       MatSidenavModule,
@@ -80,7 +82,8 @@ import { getFrenchPaginatorIntl } from './plugins/paginator-fr-intl';
       MatTableModule,
       MatPaginatorModule,
       MatSortModule,
-      MatAutocompleteModule
+      MatAutocompleteModule,
+      MatCheckboxModule
   ],
   providers: [
       { provide: MatPaginatorIntl, useValue: getFrenchPaginatorIntl() },

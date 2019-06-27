@@ -53,9 +53,7 @@ export class ProfileComponent implements OnInit {
         errorMsg: ''
     };
 
-    usersRest: any = [];
-    currentUserRest: any = {};
-    currentUserRestPassword = '';
+    usersList: any = [];
 
     ruleText = '';
     otherRuleText = '';
@@ -361,20 +359,10 @@ export class ProfileComponent implements OnInit {
     }
 
     swithToAdmin() {
-        /*if (this.usersRest.length === 0) {
-            this.getPassRules();
-            this.http.get('../rest/users?mode=rest')
-                .subscribe((data: any) => {
-                    this.usersRest = data.users;
-                    this.currentUserRest = data.users[0];
-
-                });
-        }*/
-
-        if (this.usersRest.length === 0) {
+        if (this.usersList.length === 0) {
             this.http.get('../rest/users')
                 .subscribe((data: any) => {
-                    this.usersRest = data.users;
+                    this.usersList = data.users;
                 });
         }
 
@@ -384,18 +372,6 @@ export class ProfileComponent implements OnInit {
                     this.signaturesService.signaturesList = data.signatures;
                 });
         }
-    }
-
-    updateRestUser() {
-        this.http.put('../rest/users/' + this.currentUserRest.id + '/password', { 'newPassword': this.currentUserRestPassword })
-            .subscribe(() => {
-                this.currentUserRestPassword = '';
-                this.translate.get('lang.passwordOfUserUpdated', { user: this.currentUserRest.firstname + ' ' + this.currentUserRest.lastname }).subscribe((res: string) => {
-                    this.notificationService.success(res);
-                });
-            }, (err) => {
-                this.notificationService.handleErrors(err);
-            });
     }
 
     setLang(lang: any) {

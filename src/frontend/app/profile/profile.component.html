@@ -198,39 +198,6 @@
                 </mat-tab>
                 <mat-tab label="{{'lang.substitution' | translate}}">
                     <div class="profile-content">
-                        <div class="input-row" *ngIf="signaturesService.userLogged.canManageRestUsers">
-                            <fieldset>
-                                <legend align="left">{{'lang.wsUser' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-col" style="width:35%;">
-                                        <mat-form-field>
-                                            <mat-select name="usersRest" [(ngModel)]="currentUserRest">
-                                                <mat-option *ngFor="let userRest of usersRest" [value]="userRest">
-                                                    {{userRest.firstname}}
-                                                    {{userRest.lastname}}</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="form-col" style="width:35%;">
-                                        <mat-form-field class="input-row">
-                                            <input name="newPasswordRest" matInput [(ngModel)]="currentUserRestPassword"
-                                                placeholder="{{'lang.newPassword' | translate}}"
-                                                [type]="hideNewPassword ? 'password' : 'text'"
-                                                (keyup)="checkPasswordValidity(currentUserRestPassword)">
-                                            <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
-                                                class="fa fa-2x"
-                                                [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
-                                            <mat-hint style="color:red;">{{handlePassword.errorMsg}}</mat-hint>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="form-col" style="width:29%;">
-                                        <button mat-raised-button type="button" color="primary"
-                                            [disabled]="handlePassword.error || currentUserRestPassword.length === 0"
-                                            (click)="updateRestUser()">{{'lang.update' | translate}}</button>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
                         <div class="input-row">
                             <fieldset>
                                 <legend align="left">{{'lang.substitution' | translate}}</legend>
@@ -240,9 +207,9 @@
                                     </div>
                                     <div class="form-2-col">
                                         <mat-form-field style="width:100%">
-                                            <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersRest"
+                                            <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersList"
                                                 [(ngModel)]="profileInfo.substitute">
-                                                <ng-container *ngFor="let userRest of usersRest">
+                                                <ng-container *ngFor="let userRest of usersList">
                                                     <mat-option *ngIf="userRest.id !== profileInfo.id && !userRest.substitute"
                                                         [value]="userRest.id">
                                                         {{userRest.firstname}}
