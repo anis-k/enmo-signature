@@ -71,7 +71,7 @@ export class UsersListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.http.get('../rest/users')
+        this.http.get('../rest/users' + '?mode=all')
             .pipe(
                 map((data: any) => data.users),
                 finalize(() => this.loading = false)

@@ -81,7 +81,7 @@ export class GroupComponent implements OnInit {
                         },
                     });
 
-                this.http.get('../rest/users')
+                this.http.get('../rest/users?mode=all')
                     .pipe(
                         map((data: any) => data.users)
                     )
