@@ -11,6 +11,7 @@ import { SignaturesContentService } from './signatures.service';
 export class AuthService {
 
     authMode: string = '';
+    changeKey: boolean = false;
     user: any = {};
     loadingConnection: boolean = false;
     loadingForm: boolean = false;
@@ -85,6 +86,6 @@ export class AuthService {
     }
 
     updateUserInfo(token: string) {
-        this.signaturesService.userLogged = JSON.parse(atob(token.split('.')[1])).user;
+        this.user = JSON.parse(atob(token.split('.')[1])).user;
     }
 }

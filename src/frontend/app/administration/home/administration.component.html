@@ -10,7 +10,7 @@
       </button> {{'lang.administration' | translate}}
     </header>
     <div class="container">
-        <div class="admin-item" *ngFor="let privilege of signaturesService.userLogged.administrativePrivileges">
+        <div class="admin-item" *ngFor="let privilege of authService.user.administrativePrivileges">
             <button mat-stroked-button color="primary" [routerLink]="privilege.route">
               <mat-icon color="primary" [class]="privilege.icon"></mat-icon>
               <span>{{'lang.' + privilege.id | translate}}</span>

@@ -7,6 +7,7 @@ import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { map, tap, finalize } from 'rxjs/operators';
 import { LatinisePipe } from 'ngx-pipes';
+import { AuthService } from '../../service/auth.service';
 
 
 export interface User {
@@ -34,7 +35,7 @@ export class UsersListComponent implements OnInit {
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(public http: HttpClient, private translate: TranslateService, private latinisePipe: LatinisePipe, public dialog: MatDialog, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
+    constructor(public http: HttpClient, private translate: TranslateService, private latinisePipe: LatinisePipe, public dialog: MatDialog, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public authService: AuthService) {
         if (this.signaturesService.smartphoneMode) {
             this.displayedColumns = ['firstname', 'lastname', 'actions'];
         } else {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
+import { AuthService } from '../../service/auth.service';
 
 export interface Privilege {
     id: string;
@@ -15,7 +16,7 @@ export interface Privilege {
 
 export class AdministrationComponent implements OnInit {
 
-    constructor(public signaturesService: SignaturesContentService) { }
+    constructor(public signaturesService: SignaturesContentService, public authService: AuthService) { }
 
     ngOnInit(): void { }
 }

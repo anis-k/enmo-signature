@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 import { ConfirmComponent } from '../../plugins/confirm.component';
+import { AuthService } from '../../service/auth.service';
 
 
 export interface Privilege {
@@ -41,7 +42,7 @@ export class ConnectionComponent implements OnInit {
 
     currentConnection: Connection;
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
+    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
     }
 
     ngOnInit(): void {
@@ -82,7 +83,7 @@ export class ConnectionComponent implements OnInit {
                     )
                     .subscribe({
                         next: () => {
-                            this.signaturesService.authMode = connection.id;
+                            this.authService.authMode = connection.id;
                             this.currentConnection = connection;
                             this.notificationService.success('lang.connectionModeUpdated');
                         },

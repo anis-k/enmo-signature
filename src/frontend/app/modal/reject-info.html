@@ -2,6 +2,6 @@
   <h1><i class="fa fa-thumbs-down fa-4x"></i></h1>
   <p>{{'lang.documentRefusedAs' | translate}}</p>
 
-  <p style="font-weight:bold;font-size: 30px;">{{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}</p>
+  <p style="font-weight:bold;font-size: 30px;">{{authService.user.firstname}} {{authService.user.lastname}}</p>
   <p style="font-weight:bold;font-size: 15px;">{{'lang.onRange' | translate}} {{date | date:'dd/MM/yyyy'}} {{'lang.atRange' | translate}} {{date | date:'HH:mm'}}</p>
 </div>

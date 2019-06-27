@@ -125,10 +125,10 @@ export class UserComponent implements OnInit {
             )
             .subscribe({
                 next: () => {
-                    if (this.signaturesService.userLogged.id === this.user.id) {
-                        this.signaturesService.userLogged.firstname = this.user.firstname;
-                        this.signaturesService.userLogged.lastname = this.user.lastname;
-                        this.signaturesService.userLogged.email = this.user.email;
+                    if (this.authService.user.id === this.user.id) {
+                        this.authService.user.firstname = this.user.firstname;
+                        this.authService.user.lastname = this.user.lastname;
+                        this.authService.user.email = this.user.email;
                     }
                     if (this.passwordRest.newPassword !== '') {
                         this.updateRestUser();

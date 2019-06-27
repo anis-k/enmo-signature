@@ -7,6 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialog, MatIconRegistry } from '@angular/material';
 import { AlertComponent } from './plugins/alert.component';
+import { AuthService } from './service/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -17,14 +18,14 @@ import { AlertComponent } from './plugins/alert.component';
 
 export class AppComponent {
 
-  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService, public dialog: MatDialog, iconReg: MatIconRegistry) {
+  constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public sanitizer: DomSanitizer, private cookieService: CookieService, public notificationService: NotificationService, public dialog: MatDialog, iconReg: MatIconRegistry, public authService: AuthService) {
     iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
 
     this.http.get('../rest/authenticationInformations')
       .subscribe((data: any) => {
-        this.signaturesService.authMode = data.connection;
-        this.signaturesService.changeKey = data.changeKey;
-        if (this.signaturesService.changeKey) {
+        this.authService.authMode = data.connection;
+        this.authService.changeKey = data.changeKey;
+        if (this.authService.changeKey) {
           this.dialog.open(AlertComponent, { autoFocus: false, disableClose: true, data: { mode: 'warning', title: 'lang.warnPrivateKeyTitle', msg: 'lang.warnPrivateKey' } });
         }
       });

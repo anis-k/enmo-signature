@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
+import { AuthService } from '../service/auth.service';
 
 interface AfterViewInit {
     ngAfterViewInit(): void;
@@ -40,7 +41,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
         canvasHeight: 315
     };
 
-    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public authService: AuthService) { }
 
     ngAfterViewInit() {
         const signPointsData = localStorage.getItem('signature');
@@ -87,7 +88,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
             'format': 'png'
         };
 
-        this.http.post('../rest/users/' + this.signaturesService.userLogged.id + '/signatures', newSign)
+        this.http.post('../rest/users/' + this.authService.user.id + '/signatures', newSign)
             .pipe(
                 finalize(() => {
                     this.disableState = false;

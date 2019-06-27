@@ -67,13 +67,13 @@ export class ProfileComponent implements OnInit {
     constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, public authService: AuthService, private cookieService: CookieService, public filtersService: FiltersService) { }
 
     ngOnInit(): void {
-        this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
+        this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
     }
 
     closeProfile() {
         $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
         $('.avatarProfile').css({ 'content': '' });
-        this.profileInfo = JSON.parse(JSON.stringify(this.signaturesService.userLogged));
+        this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
         this.passwordContent.close();
 
         if (this.signaturesService.mobileMode) {
@@ -197,23 +197,23 @@ export class ProfileComponent implements OnInit {
             alert(this.translate.instant('lang.substitutionWarn'));
         }
 
-        if (this.profileInfo.picture === this.signaturesService.userLogged.picture) {
+        if (this.profileInfo.picture === this.authService.user.picture) {
             profileToSend.picture = '';
         } else {
             const orientation = $('.avatarProfile').css('content');
             profileToSend['pictureOrientation'] = orientation.replace(/\"/g, '');
         }
 
-        this.http.put('../rest/users/' + this.signaturesService.userLogged.id, profileToSend)
+        this.http.put('../rest/users/' + this.authService.user.id, profileToSend)
             .subscribe((data: any) => {
-                this.signaturesService.userLogged.email = this.profileInfo.email;
-                this.signaturesService.userLogged.firstname = this.profileInfo.firstname;
-                this.signaturesService.userLogged.lastname = this.profileInfo.lastname;
-                this.signaturesService.userLogged.picture = data.user.picture;
-                this.signaturesService.userLogged.substitute = data.user.substitute;
+                this.authService.user.email = this.profileInfo.email;
+                this.authService.user.firstname = this.profileInfo.firstname;
+                this.authService.user.lastname = this.profileInfo.lastname;
+                this.authService.user.picture = data.user.picture;
+                this.authService.user.substitute = data.user.substitute;
                 this.profileInfo.picture = data.user.picture;
 
-                this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/preferences', profileToSend.preferences)
+                this.http.put('../rest/users/' + this.authService.user.id + '/preferences', profileToSend.preferences)
                     .pipe(
                         finalize(() => {
                             this.disableState = false;
@@ -222,9 +222,9 @@ export class ProfileComponent implements OnInit {
                         })
                     )
                     .subscribe(() => {
-                        this.signaturesService.userLogged.preferences = this.profileInfo.preferences;
-                        this.setLang(this.signaturesService.userLogged.preferences.lang);
-                        this.cookieService.set('maarchParapheurLang', this.signaturesService.userLogged.preferences.lang);
+                        this.authService.user.preferences = this.profileInfo.preferences;
+                        this.setLang(this.authService.user.preferences.lang);
+                        this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
 
                         if (this.profileInfo.substitute !== null) {
                             this.filtersService.resfreshDocuments();
@@ -239,7 +239,7 @@ export class ProfileComponent implements OnInit {
                                   'Authorization': 'Bearer ' + this.authService.getToken()
                                 });
 
-                            this.http.put('../rest/users/' + this.signaturesService.userLogged.id + '/password', this.password, { observe: 'response', headers: headers })
+                            this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers })
                                 .subscribe((dataPass: any) => {
                                     this.authService.saveTokens(dataPass.headers.get('Token'), dataPass.headers.get('Refresh-Token'));
 
@@ -261,7 +261,7 @@ export class ProfileComponent implements OnInit {
                         }
 
                         if (this.profileInfo.substitute !== null && this.signaturesService.signaturesList.length > 0) {
-                            this.http.patch('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
+                            this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
                                 .subscribe();
                         }
 

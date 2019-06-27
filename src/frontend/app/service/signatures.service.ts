@@ -3,9 +3,6 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class SignaturesContentService {
 
-    authMode: string = '';
-    changeKey: boolean = false;
-    userLogged: any = {};
     mainDocumentId = 0;
     signaturesContent: any[] = [];
     notesContent: any[] = [];
@@ -59,7 +56,6 @@ export class SignaturesContentService {
     }
 
     reset() {
-        this.userLogged = {};
         this.mainDocumentId = 0;
         this.signaturesContent = [];
         this.notesContent = [];

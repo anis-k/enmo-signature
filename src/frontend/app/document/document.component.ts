@@ -16,6 +16,7 @@ import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-vali
 import { TranslateService } from '@ngx-translate/core';
 import { CdkDragEnd, DragRef, CdkDrag } from '@angular/cdk/drag-drop';
 import { DocumentListComponent } from './document-list/document-list.component';
+import { AuthService } from '../service/auth.service';
 
 
 @Component({
@@ -141,7 +142,7 @@ export class DocumentComponent implements OnInit {
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         private cookieService: CookieService,
-        private sanitizer: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet) {
+        private sanitizer: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet, public authService: AuthService) {
         this.draggable = false;
     }
 
@@ -165,7 +166,7 @@ export class DocumentComponent implements OnInit {
 
                         const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
 
-                        if (realUserWorkflow.userId !== this.signaturesService.userLogged.id) {
+                        if (realUserWorkflow.userId !== this.authService.user.id) {
                             this.http.get('../rest/users/' + realUserWorkflow.userId + '/signatures')
                                 .subscribe((dataSign: any) => {
                                     this.signaturesService.signaturesListSubstituted = dataSign.signatures;
@@ -320,7 +321,7 @@ export class DocumentComponent implements OnInit {
 
     addAnnotation(e: any) {
 
-        if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.signaturesService.userLogged.substitute === null) {
+        if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.authService.user.substitute === null) {
 
             this.backToDetails();
 
@@ -506,12 +507,12 @@ export class DocumentComponent implements OnInit {
         const r = confirm(this.translate.instant('lang.deleteSubstitution') + ' ?');
 
         if (r) {
-            const userUpdated = this.signaturesService.userLogged;
+            const userUpdated = this.authService.user;
             userUpdated.substitute = null;
 
-            this.http.put('../rest/users/' + this.signaturesService.userLogged.id, userUpdated)
+            this.http.put('../rest/users/' + this.authService.user.id, userUpdated)
             .subscribe(() => {
-                this.signaturesService.userLogged = userUpdated;
+                this.authService.user = userUpdated;
                 this.notificationService.success('lang.substitutionDeleted');
             });
         }

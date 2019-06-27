@@ -11,10 +11,10 @@
         <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
       </button>
       <div class="user" style="color: #F99830">
-        {{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}
+        {{authService.user.firstname}} {{authService.user.lastname}}
       </div>
-      <div *ngIf="signaturesService.userLogged.picture" class="avatar"
-        [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}">
+      <div *ngIf="authService.user.picture" class="avatar"
+        [ngStyle]="{'background': 'url(' + authService.user.picture + ') no-repeat scroll center center / cover'}">
       </div>
     </header>
     <header class="sidebar-header">
@@ -24,7 +24,7 @@
     </header>
   </div>
   <mat-nav-list class="admin-list">
-    <mat-list-item *ngFor="let privilege of signaturesService.userLogged.administrativePrivileges" [routerLink]="privilege.route" [class.item-active]="('/' + route.routeConfig.path).indexOf(privilege.route) !== -1">
+    <mat-list-item *ngFor="let privilege of authService.user.administrativePrivileges" [routerLink]="privilege.route" [class.item-active]="('/' + route.routeConfig.path).indexOf(privilege.route) !== -1">
       <mat-icon matListIcon [class]="privilege.icon" color="primary"></mat-icon>
       <p matLine>
         {{'lang.' + privilege.id | translate}}

@@ -53,7 +53,7 @@
                     <button mat-stroked-button type="submit" class="btn blue"
                             [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
                     <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
-                    <button mat-stroked-button type="button" *ngIf="!creationMode" [disabled]="signaturesService.authMode==='ldap' && ldap.count === 1" class="btn red"
+                    <button mat-stroked-button type="button" *ngIf="!creationMode" [disabled]="authService.authMode==='ldap' && ldap.count === 1" class="btn red"
                             (click)="delete()">{{'lang.delete' | translate}}</button>
                 </div>
             </form>

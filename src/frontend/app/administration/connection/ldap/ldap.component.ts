@@ -7,6 +7,7 @@ import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../../../service/auth.service';
 
 
 export interface Ldap {
@@ -45,11 +46,11 @@ export class LdapComponent implements OnInit {
     // tslint:disable-next-line:no-input-rename
     @ViewChild('snavRight') snavRight: MatSidenav;
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
+    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
     }
 
     ngOnInit(): void {
-        this.ldapTest.login = this.signaturesService.userLogged.login;
+        this.ldapTest.login = this.authService.user.login;
 
         this.route.params.subscribe((params: any) => {
             if (params['id'] === undefined) {

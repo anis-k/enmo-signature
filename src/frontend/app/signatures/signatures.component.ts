@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../service/auth.service';
 
 @Component({
     selector: 'app-signatures',
@@ -31,7 +32,7 @@ export class SignaturesComponent implements OnInit {
     count = 0;
 
     constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
-        private sanitization: DomSanitizer, public notificationService: NotificationService) {
+        private sanitization: DomSanitizer, public notificationService: NotificationService, public authService: AuthService) {
     }
 
     ngOnInit() {
@@ -79,7 +80,7 @@ export class SignaturesComponent implements OnInit {
         const r = confirm(this.translate.instant('lang.wantDeleteSignature'));
 
         if (r) {
-            this.http.delete('../rest/users/' + this.signaturesService.userLogged.id + '/signatures/' + signature.id)
+            this.http.delete('../rest/users/' + this.authService.user.id + '/signatures/' + signature.id)
                 .subscribe(() => {
                     this.signaturesService.signaturesList.splice(i, 1);
                     this.notificationService.success('lang.signatureDeleted');
@@ -135,7 +136,7 @@ export class SignaturesComponent implements OnInit {
                         'encodedSignature': newEncodedSign,
                         'format': 'png'
                     };
-                    this.http.post('../rest/users/' + this.signaturesService.userLogged.id + '/signatures', newSign)
+                    this.http.post('../rest/users/' + this.authService.user.id + '/signatures', newSign)
                     .subscribe((data: any) => {
                         newSign.id = data.signatureId;
                         this.signaturesService.newSign = newSign;

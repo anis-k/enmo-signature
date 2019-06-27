@@ -9,6 +9,7 @@ import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
 
 
 export interface Group {
@@ -39,7 +40,7 @@ export class GroupComponent implements OnInit {
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
+    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
         this.displayedColumns = ['firstname', 'lastname', 'actions'];
         this.group = {
             id: '',
@@ -122,7 +123,7 @@ export class GroupComponent implements OnInit {
     }
 
     unlinkUser(userToDelete: any) {
-        if (userToDelete.id === this.signaturesService.userLogged.id) {
+        if (userToDelete.id === this.authService.user.id) {
             const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: 'warning', title: 'lang.confirmMsg', msg: 'lang.groupWarnMsg' } });
 
             dialogRef.afterClosed().subscribe(result => {

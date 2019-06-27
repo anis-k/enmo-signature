@@ -37,7 +37,7 @@
                             <input name="nom" matInput placeholder="{{'lang.lastname' | translate}}"
                                 [(ngModel)]="profileInfo.lastname" required>
                         </mat-form-field>
-                        <mat-accordion *ngIf="signaturesService.authMode === 'default'">
+                        <mat-accordion *ngIf="authService.authMode === 'default'">
                             <mat-expansion-panel (closed)="showPassword=false" (opened)="changePasswd()"
                                 #passwordContent>
                                 <mat-expansion-panel-header>

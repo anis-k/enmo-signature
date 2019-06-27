@@ -4,7 +4,7 @@
       <button class="logout-button" mat-icon-button (click)="authService.logout()">
         <mat-icon fontSet="fas" fontIcon="fa-power-off"></mat-icon>
       </button>
-      <button *ngIf="signaturesService.userLogged.administrativePrivileges.length > 0" class="admin-button" mat-icon-button (click)="openAdmin()">
+      <button *ngIf="authService.user.administrativePrivileges.length > 0" class="admin-button" mat-icon-button (click)="openAdmin()">
         <mat-icon fontSet="fas" fontIcon="fa-tools"></mat-icon>
       </button>
       <button *ngIf="checkClose()" class="closePanel"
@@ -12,10 +12,10 @@
         <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
       </button>
       <div class="user" style="color: #F99830">
-        {{signaturesService.userLogged.firstname}} {{signaturesService.userLogged.lastname}}
+        {{authService.user.firstname}} {{authService.user.lastname}}
       </div>
-      <div *ngIf="signaturesService.userLogged.picture" class="avatar"
-        [ngStyle]="{'background': 'url(' + signaturesService.userLogged.picture + ') no-repeat scroll center center / cover'}"
+      <div *ngIf="authService.user.picture" class="avatar"
+        [ngStyle]="{'background': 'url(' + authService.user.picture + ') no-repeat scroll center center / cover'}"
         (click)="openProfile()">
       </div>
     </header>

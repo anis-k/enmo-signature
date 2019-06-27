@@ -3,6 +3,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
+import { AuthService } from '../service/auth.service';
 
 @Component({
     selector: 'app-document-note-pad',
@@ -16,15 +17,15 @@ export class DocumentNotePadComponent implements OnInit {
     @Output() triggerEvent = new EventEmitter<string>();
     @ViewChild('canvas') canvas: ElementRef;
 
-    constructor(private translate: TranslateService, private sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService, private sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public authService: AuthService) { }
 
     ngOnInit(): void { }
 
     initPad() {
         setTimeout(() => {
             ($('#myCanvas') as any).sign({
-                mode: this.signaturesService.userLogged.preferences.writingMode, // direct or stylus
-                lineWidth: this.signaturesService.userLogged.preferences.writingSize,
+                mode: this.authService.user.preferences.writingMode, // direct or stylus
+                lineWidth: this.authService.user.preferences.writingSize,
                 changeColor: $('.radio'),
                 undo: $('.undo'),
                 height: this.signaturesService.workingAreaHeight * 2,
@@ -33,7 +34,7 @@ export class DocumentNotePadComponent implements OnInit {
                 fixWidth: this.signaturesService.x,
                 mobileMode: this.signaturesService.mobileMode
             });
-            $('input[value=\'' + this.signaturesService.userLogged.preferences.writingColor + '\']').trigger('click');
+            $('input[value=\'' + this.authService.user.preferences.writingColor + '\']').trigger('click');
         }, 200);
     }
 

@@ -16,7 +16,7 @@
                 <div *ngIf="diffusion.userPicture === undefined && diffusion.userDisplay !== ''" mat-list-icon class="avatar">
                     <mat-spinner diameter="50"></mat-spinner>
                 </div>
-                <p class="userSubstitute" mat-line *ngIf="diffusion.current && diffusion.userId !== signaturesService.userLogged.id">
+                <p class="userSubstitute" mat-line *ngIf="diffusion.current && diffusion.userId !== authService.user.id">
                     {{'lang.substituteMsg' | translate}}
                 </p>
                 <h4 mat-line *ngIf="diffusion.userDisplay != ''" class="userDisplay primary">
