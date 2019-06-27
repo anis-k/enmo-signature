@@ -30,6 +30,7 @@ export class AuthService {
                 next: (data: any) => {
                     this.loadingForm = true;
                     this.saveTokens(data.headers.get('Token'), data.headers.get('Refresh-Token'));
+                    this.user = {};
 
                     $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
                     setTimeout(() => {
