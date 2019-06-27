@@ -4,10 +4,17 @@
               'pdf-page-canvas':!signaturesService.renderingDoc,
               'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
             }">
-    <button (tap)="openMenu(menuTrigger)" mat-icon-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"
+
+    <!-- FIX ISSUE IN DEVICE TOUCH -->
+    <button *ngIf="!signaturesService.mobileMode" mat-icon-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu" style="right: 0;position: absolute;color:#F99830;">
+      <mat-icon fontSet="fas" fontIcon="fa-ellipsis-v"></mat-icon>
+    </button>
+    <button *ngIf="signaturesService.mobileMode" (tap)="openMenu(menuTrigger)" mat-icon-button #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu"
       style="right: 0;position: absolute;color:#F99830;">
       <mat-icon fontSet="fas" fontIcon="fa-ellipsis-v"></mat-icon>
     </button>
+    <!---->
+
     <mat-menu #menu="matMenu">
       <button mat-menu-item (click)="$event.stopPropagation();deleteSignature(i);">
         <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
