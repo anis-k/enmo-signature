@@ -533,7 +533,6 @@ class UserController
             $user['preferences']                = json_decode($user['preferences'], true);
             $user['availableLanguages']         = LanguageController::getAvailableLanguages();
             $user['administrativePrivileges']   = PrivilegeController::getAdministrativePrivilegesByUserId(['userId' => $args['id']]);
-            $user['hasAdmin']                   = !empty($user['administrativePrivileges']);
         }
 
         return $user;

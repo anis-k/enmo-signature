@@ -30,30 +30,6 @@ class PrivilegeController
         ['id' => 'manage_documents',            'type' => 'simple']
     ];
 
-    //TODO remove after token
-    public function getAdministrativePrivilegesByUser(Request $request, Response $response)
-    {
-        $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$GLOBALS['id']]]);
-
-        $allGroups = array_column($groups, 'group_id');
-
-        $administrativePrivileges = [];
-        if (!empty($allGroups)) {
-            $privileges = GroupPrivilegeModel::getPrivileges(['select' => ['privilege'], 'where' => ['group_id in (?)'], 'data' => [$allGroups]]);
-            $privileges = array_column($privileges, 'privilege');
-
-            if (!empty($privileges)) {
-                foreach (PrivilegeController::PRIVILEGES as $value) {
-                    if ($value['type'] == 'admin' && in_array($value['id'], $privileges)) {
-                        $administrativePrivileges[] = $value;
-                    }
-                }
-            }
-        }
-
-        return $response->withJson(['privileges' => $administrativePrivileges]);
-    }
-
     public static function getAdministrativePrivilegesByUserId(array $args)
     {
         ValidatorModel::notEmpty($args, ['userId']);

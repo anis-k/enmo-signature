@@ -82,9 +82,6 @@ $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . 
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
 
-//Privileges
-$app->get('/administrativePrivileges', \Group\controllers\PrivilegeController::class . ':getAdministrativePrivilegesByUser');
-
 //Groups
 $app->post('/groups', \Group\controllers\GroupController::class . ':create');
 $app->get('/groups', \Group\controllers\GroupController::class . ':get');
