@@ -123,10 +123,8 @@ export class SignaturesComponent implements OnInit {
 
         if (fileToUpload.size <= 2000000) {
             if (['image/png', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
-                console.log(fileToUpload.type);
                 const myReader: FileReader = new FileReader();
                 myReader.onloadend = (e) => {
-                    console.log(myReader.result.toString());
 
                     const newEncodedSign = myReader.result.toString().replace('data:' + fileToUpload.type + ';base64,', '');
                     localStorage.setItem('signature', JSON.stringify(newEncodedSign));
