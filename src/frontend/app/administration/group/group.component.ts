@@ -69,12 +69,6 @@ export class GroupComponent implements OnInit {
                     .subscribe({
                         next: data => {
                             this.group = data;
-
-                            // FOR TESTS
-                            this.group.privileges.forEach(element => {
-                                element.checked = true;
-                            });
-
                             this.groupClone = JSON.parse(JSON.stringify(this.group));
                             this.title = this.group.label;
                             this.updateDataTable();
