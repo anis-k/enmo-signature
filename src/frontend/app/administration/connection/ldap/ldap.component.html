@@ -1,112 +1,112 @@
 <mat-sidenav-container autosize>
-  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
-    [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
-    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
-    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
-  </mat-sidenav>
-  <mat-sidenav-content class="mainView">
-    <header class="header">
-      <div class="header-title">
-        <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
-          <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
-        </button>
-        <span *ngIf="!loading">{{title}}</span>
-      </div>
-      <div *ngIf="!creationMode" style="width: 70px;text-align: center;">
-        <button mat-icon-button (click)="delete()" [disabled]="signaturesService.authMode==='ldap' && ldap.count === 1">
-          <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
-        </button>
-      </div>
-    </header>
-    <div class="container">
-      <div *ngIf="loading" class="loader">
-        <mat-spinner></mat-spinner>
-      </div>
-      <form class="admin-form" *ngIf="!loading" (ngSubmit)="onSubmit()" #adminForm="ngForm">
-        <mat-form-field class="input-row">
-          <input name="label" matInput placeholder="{{'lang.label' | translate}}" type="text" [(ngModel)]="ldap.label"
-            required>
-        </mat-form-field>
-        <mat-form-field class="input-row">
-          <input name="uri" matInput placeholder="{{'lang.uri' | translate}}" type="text" [(ngModel)]="ldap.value.uri"
-            required>
-        </mat-form-field>
-        <mat-form-field class="input-row">
-          <input name="dn" matInput placeholder="{{'lang.baseDN' | translate}}" [(ngModel)]="ldap.value.baseDN">
-          <mat-hint align="end">
-            ex: dc=maarch,dc=com
-          </mat-hint>
-        </mat-form-field>
-        <mat-form-field class="input-row">
-          <input name="prefix" matInput placeholder="{{'lang.prefix' | translate}}" [(ngModel)]="ldap.value.prefix">
-          <mat-hint align="end">
-            ex: MAARCH
-          </mat-hint>
-        </mat-form-field>
-        <mat-form-field class="input-row">
-          <input name="suffix" matInput placeholder="{{'lang.suffix' | translate}}" [(ngModel)]="ldap.value.suffix">
-          <mat-hint align="end">
-            ex: @maarch.com
-          </mat-hint>
-        </mat-form-field>
-        <div class="actions-form">
-          <button mat-stroked-button type="submit" class="btn blue"
-            [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
-          <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
-          <button mat-stroked-button type="button" *ngIf="!creationMode" class="btn connTest"
-            (click)="snavRight.toggle()">{{'lang.connectionTest' | translate}}</button>
+    <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
+                 [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
+                 [opened]="!signaturesService.mobileMode" [style.width.px]="350">
+        <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
+    </mat-sidenav>
+    <mat-sidenav-content class="mainView">
+        <header class="header">
+            <div class="header-title">
+                <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
+                    <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
+                </button>
+                <span *ngIf="!loading">{{title}}</span>
+            </div>
+            <div *ngIf="!creationMode" style="width: 70px;text-align: center;">
+                <button mat-icon-button (click)="snavRight.toggle()" title="{{'lang.connectionTest' | translate}}">
+                    <mat-icon class="fa fa-broadcast-tower fa-2x"></mat-icon>
+                </button>
+            </div>
+        </header>
+        <div class="container">
+            <div *ngIf="loading" class="loader">
+                <mat-spinner></mat-spinner>
+            </div>
+            <form class="admin-form" *ngIf="!loading" (ngSubmit)="onSubmit()" #adminForm="ngForm">
+                <mat-form-field class="input-row">
+                    <input name="label" matInput placeholder="{{'lang.label' | translate}}" type="text" [(ngModel)]="ldap.label"
+                           required>
+                </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="uri" matInput placeholder="{{'lang.uri' | translate}}" type="text" [(ngModel)]="ldap.value.uri"
+                           required>
+                </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="dn" matInput placeholder="{{'lang.baseDN' | translate}}" [(ngModel)]="ldap.value.baseDN">
+                    <mat-hint align="end">
+                        ex: dc=maarch,dc=com
+                    </mat-hint>
+                </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="prefix" matInput placeholder="{{'lang.prefix' | translate}}" [(ngModel)]="ldap.value.prefix">
+                    <mat-hint align="end">
+                        ex: MAARCH
+                    </mat-hint>
+                </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="suffix" matInput placeholder="{{'lang.suffix' | translate}}" [(ngModel)]="ldap.value.suffix">
+                    <mat-hint align="end">
+                        ex: @maarch.com
+                    </mat-hint>
+                </mat-form-field>
+                <div class="actions-form">
+                    <button mat-stroked-button type="submit" class="btn blue"
+                            [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
+                    <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+                    <button mat-stroked-button type="button" *ngIf="!creationMode" [disabled]="signaturesService.authMode==='ldap' && ldap.count === 1" class="btn red"
+                            (click)="delete()">{{'lang.delete' | translate}}</button>
+                </div>
+            </form>
         </div>
-      </form>
-    </div>
-  </mat-sidenav-content>
-  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
-    [style.width]="'650px'" fixedInViewport="true" position='end'>
-    <div class="panel-container">
-      <div class="panel-header">
-        {{'lang.connectionTest' | translate}}
-      </div>
-      <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button"
-        (click)="snavRight.toggle();">
-        <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
-      </button>
-      <div class="panel-content">
-        <form class="admin-form" *ngIf="!loading" (ngSubmit)="testLdap()" #adminTestForm="ngForm">
-          <mat-form-field class="input-row">
-            <input name="login" matInput placeholder="{{'lang.login' | translate}}" type="text"
-              [(ngModel)]="ldapTest.login" required>
-          </mat-form-field>
-          <mat-form-field class="input-row">
-            <input name="password" matInput type="password" placeholder="{{'lang.password' | translate}}"
-              [(ngModel)]="ldapTest.password" required>
-          </mat-form-field>
-          <fieldset>
-            <legend align="left">{{'lang.ldapInformations' | translate}} :</legend>
-            <div class="form-container">
-              <mat-list role="list">
-                <mat-list-item role="listitem"><b class="primary">{{'lang.uri' | translate}}</b>&nbsp;: {{ldap.value.uri}}</mat-list-item>
-                <mat-list-item role="listitem"><b class="primary">{{'lang.login' | translate}}</b>&nbsp;:&nbsp;
-                  <span *ngIf="ldap.value.prefix !== ''">
+    </mat-sidenav-content>
+    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
+                 [style.width]="'650px'" fixedInViewport="true" position='end'>
+        <div class="panel-container">
+            <div class="panel-header">
+                {{'lang.connectionTest' | translate}}
+            </div>
+            <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button"
+                    (click)="snavRight.toggle();">
+                <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
+            </button>
+            <div class="panel-content">
+                <form class="admin-form" *ngIf="!loading" (ngSubmit)="testLdap()" #adminTestForm="ngForm">
+                    <mat-form-field class="input-row">
+                        <input name="login" matInput placeholder="{{'lang.login' | translate}}" type="text"
+                               [(ngModel)]="ldapTest.login" required>
+                    </mat-form-field>
+                    <mat-form-field class="input-row">
+                        <input name="password" matInput type="password" placeholder="{{'lang.password' | translate}}"
+                               [(ngModel)]="ldapTest.password" required>
+                    </mat-form-field>
+                    <fieldset>
+                        <legend align="left">{{'lang.ldapInformations' | translate}} :</legend>
+                        <div class="form-container">
+                            <mat-list role="list">
+                                <mat-list-item role="listitem"><b class="primary">{{'lang.uri' | translate}}</b>&nbsp;: {{ldap.value.uri}}</mat-list-item>
+                                <mat-list-item role="listitem"><b class="primary">{{'lang.login' | translate}}</b>&nbsp;:&nbsp;
+                                    <span *ngIf="ldap.value.prefix !== ''">
                     {{ldap.value.prefix}}\
                   </span>
-                  {{ldapTest.login}}{{ldap.value.suffix}}
-                </mat-list-item>
-              </mat-list>
+                                    {{ldapTest.login}}{{ldap.value.suffix}}
+                                </mat-list-item>
+                            </mat-list>
+                        </div>
+                    </fieldset>
+                    <div class="actions-form">
+                        <button mat-stroked-button type="submit" class="btn blue connTest"
+                                [disabled]="!adminTestForm.form.valid || loadingTest">{{'lang.connectionTest' | translate}}</button>
+                    </div>
+                </form>
+                <div *ngIf="ldapTest.result !== '' || loadingTest" class="bash">
+                    <ng-container *ngIf="loadingTest">
+                        {{'lang.connectionInProgress' | translate}}...
+                    </ng-container>
+                    <ng-container *ngIf="ldapTest.result !== ''">
+                        {{ldapTest.result}}
+                    </ng-container>
+                </div>
             </div>
-          </fieldset>
-          <div class="actions-form">
-            <button mat-stroked-button type="submit" class="btn blue connTest"
-              [disabled]="!adminTestForm.form.valid || loadingTest">{{'lang.connectionTest' | translate}}</button>
-          </div>
-        </form>
-        <div *ngIf="ldapTest.result !== '' || loadingTest" class="bash">
-          <ng-container *ngIf="loadingTest">
-            {{'lang.connectionInProgress' | translate}}...
-          </ng-container>
-          <ng-container *ngIf="ldapTest.result !== ''">
-            {{ldapTest.result}}
-          </ng-container>
         </div>
-      </div>
-    </div>
-  </mat-sidenav>
+    </mat-sidenav>
 </mat-sidenav-container>

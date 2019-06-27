@@ -1,97 +1,101 @@
 <mat-sidenav-container autosize>
-  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode" [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
-    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
-    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
-  </mat-sidenav>
-  <mat-sidenav-content class="mainView">
-    <header class="header">
-      <div class="header-title">
-        <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
-          <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
-        </button>
-        <span *ngIf="!loading">{{title}}</span>
-      </div>
-    </header>
-    <div class="container">
-      <div *ngIf="loading" class="loader">
-        <mat-spinner></mat-spinner>
-      </div>
-      <form class="admin-form" *ngIf="!loading" (ngSubmit)="onSubmit()" #sendmailForm="ngForm">
-        <mat-form-field class="input-row">
-            <mat-select #smtpType name="smtpType" placeholder="{{'lang.configurationType' | translate}}" [(ngModel)]="sendmail.type" required>
-                <mat-option *ngFor="let type of smtpTypeList" [value]="type.id">
-                    {{type.label | translate}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+    <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode" [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
+                 [opened]="!signaturesService.mobileMode" [style.width.px]="350">
+        <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
+    </mat-sidenav>
+    <mat-sidenav-content class="mainView">
+        <header class="header">
+            <div class="header-title">
+                <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
+                    <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
+                </button>
+                <span *ngIf="!loading">{{title}}</span>
+            </div>
+            <div style="width: 70px;text-align: center;">
+                <button mat-icon-button (click)="snavRight.toggle()" title="{{'lang.connectionTest' | translate}}">
+                    <mat-icon class="fa fa-broadcast-tower fa-2x"></mat-icon>
+                </button>
+            </div>
+        </header>
+        <div class="container">
+            <div *ngIf="loading" class="loader">
+                <mat-spinner></mat-spinner>
+            </div>
+            <form class="admin-form" *ngIf="!loading" (ngSubmit)="onSubmit()" #sendmailForm="ngForm">
+                <mat-form-field class="input-row">
+                    <mat-select #smtpType name="smtpType" placeholder="{{'lang.configurationType' | translate}}" [(ngModel)]="sendmail.type" required>
+                        <mat-option *ngFor="let type of smtpTypeList" [value]="type.id">
+                            {{type.label | translate}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
 
-        <mat-form-field>
-            <mat-select name="SMTPSecure" placeholder="{{'lang.smtpAuth' | translate}}" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
-                [(ngModel)]="sendmail.secure">
-                <mat-option *ngFor="let security of smtpSecList" [value]="security.id">
-                    {{security.label| translate}}
-                </mat-option>
-            </mat-select>
-        </mat-form-field>
+                <mat-form-field>
+                    <mat-select name="SMTPSecure" placeholder="{{'lang.smtpAuth' | translate}}" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                                [(ngModel)]="sendmail.secure">
+                        <mat-option *ngFor="let security of smtpSecList" [value]="security.id">
+                            {{security.label| translate}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
 
-        <mat-form-field >
-            <input matInput name="host" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" [(ngModel)]="sendmail.host"
-                placeholder="{{'lang.host' | translate}}" required>
-        </mat-form-field>
+                <mat-form-field >
+                    <input matInput name="host" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" [(ngModel)]="sendmail.host"
+                           placeholder="{{'lang.host' | translate}}" required>
+                </mat-form-field>
 
-        <mat-form-field class="input-row col-md-1">
-            <input name="port" type="number" matInput [(ngModel)]="sendmail.port"
-                [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" placeholder="{{'lang.port' | translate}}" required>
-        </mat-form-field>
+                <mat-form-field class="input-row col-md-1">
+                    <input name="port" type="number" matInput [(ngModel)]="sendmail.port"
+                           [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" placeholder="{{'lang.port' | translate}}" required>
+                </mat-form-field>
 
-        <mat-slide-toggle color="primary" name="SMTPAuth" [(ngModel)]="sendmail.auth" 
-          [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" (change)="cleanAuthInfo()" style="margin-bottom:15px">{{'lang.enableAuth' | translate}}</mat-slide-toggle>
+                <mat-slide-toggle color="primary" name="SMTPAuth" [(ngModel)]="sendmail.auth"
+                                  [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" (change)="cleanAuthInfo()" style="margin-bottom:15px">{{'lang.enableAuth' | translate}}</mat-slide-toggle>
 
-        <mat-form-field class="input-row">
-            <input name="user" [(ngModel)]="sendmail.user" [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1"
-                matInput placeholder="{{'lang.id' | translate}}" required>
-        </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="user" [(ngModel)]="sendmail.user" [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                           matInput placeholder="{{'lang.id' | translate}}" required>
+                </mat-form-field>
 
-        <mat-form-field class="input-row">
-            <input name="password" [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="sendmail.password"
-                [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1" matInput placeholder="{{passwordLanguage}}" [required]="!sendmail.passwordAlreadyExists">
-            <mat-icon color="primary" style="cursor: pointer;" matSuffix (click)="hidePassword = !hidePassword"
-                class="fa fa-2x" [ngClass]="[hidePassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
-        </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="password" [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="sendmail.password"
+                           [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1" matInput placeholder="{{passwordLanguage}}" [required]="!sendmail.passwordAlreadyExists">
+                    <mat-icon color="primary" style="cursor: pointer;" matSuffix (click)="hidePassword = !hidePassword"
+                              class="fa fa-2x" [ngClass]="[hidePassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
+                </mat-form-field>
 
-        <mat-form-field class="input-row">
-            <input name="mailFrom" [(ngModel)]="sendmail.from" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
-                matInput placeholder="{{'lang.mailFrom' | translate}}" pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
-        </mat-form-field>
+                <mat-form-field class="input-row">
+                    <input name="mailFrom" [(ngModel)]="sendmail.from" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                           matInput placeholder="{{'lang.mailFrom' | translate}}" pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
+                </mat-form-field>
 
-        <div class="actions-form">
-            <button mat-stroked-button type="submit" class="btn blue" [disabled]="!sendmailForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
-            <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
-            <button mat-stroked-button type="button" class="btn" (click)="snavRight.toggle()" style="width:auto">{{'lang.connectionTest' | translate}}</button>
-      </div>
-      </form>
-    </div>
-  </mat-sidenav-content>
-    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false" 
-        [style.width]="'650px'" fixedInViewport="true" position='end' (opened)="initEmailSend()">
+                <div class="actions-form">
+                    <button mat-stroked-button type="submit" class="btn blue" [disabled]="!sendmailForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
+                    <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+                </div>
+            </form>
+        </div>
+    </mat-sidenav-content>
+    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
+                 [style.width]="'650px'" fixedInViewport="true" position='end' (opened)="initEmailSend()">
         <div class="panel-container">
             <div class="panel-header">
                 <span *ngIf="!loading">{{'lang.emailSendTest' | translate}}</span>
             </div>
             <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button"
-                (click)="snavRight.toggle();">
+                    (click)="snavRight.toggle();">
                 <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
             </button>
             <div class="panel-content">
                 <form #testSendmailForm="ngForm">
                     <mat-form-field class="testSendTo">
                         <input name="recipientTest" matInput placeholder="{{'lang.mailTo' | translate}}" [(ngModel)]="recipientTest" [disabled]="emailSendLoading"
-                            pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
+                               pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
                         <mat-icon *ngIf="!emailSendLoading && testSendmailForm.valid" title="{{'lang.beginSendTest' | translate}}" (click)="testEmailSend()"
-                            color="primary" style="cursor: pointer;" matSuffix class="fa fa-paper-plane fa-2x"></mat-icon>
+                                  color="primary" style="cursor: pointer;" matSuffix class="fa fa-paper-plane fa-2x"></mat-icon>
                     </mat-form-field>
                 </form>
-            
+
                 <div style="margin-left:15px">
                     <mat-list-item *ngIf="emailSendResult.msg != ''">
                         <mat-icon mat-list-icon class="fas {{emailSendResult.icon}} fa-2x"></mat-icon>

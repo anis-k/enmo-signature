@@ -520,7 +520,7 @@ class UserController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', 'mode'], 'id' => $args['id']]);
         if (empty($user)) {
             return [];
         }
