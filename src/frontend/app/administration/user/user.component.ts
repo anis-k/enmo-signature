@@ -75,7 +75,7 @@ export class UserComponent implements OnInit {
                     login: '',
                     email: '',
                     picture: '',
-                    isRest: true
+                    isRest: false
                 };
                 this.loading = false;
             } else {
@@ -88,9 +88,6 @@ export class UserComponent implements OnInit {
                     .subscribe({
                         next: data => {
                             this.user = data;
-
-                            // FOR TEST
-                            this.user.isRest = true;
                             this.userClone = JSON.parse(JSON.stringify(this.user));
                             this.title = this.user.firstname + ' ' + this.user.lastname;
                             if (this.user.isRest) {
@@ -128,6 +125,11 @@ export class UserComponent implements OnInit {
             )
             .subscribe({
                 next: () => {
+                    if (this.signaturesService.userLogged.id === this.user.id) {
+                        this.signaturesService.userLogged.firstname = this.user.firstname;
+                        this.signaturesService.userLogged.lastname = this.user.lastname;
+                        this.signaturesService.userLogged.email = this.user.email;
+                    }
                     if (this.passwordRest.newPassword !== '') {
                         this.updateRestUser();
                     }
