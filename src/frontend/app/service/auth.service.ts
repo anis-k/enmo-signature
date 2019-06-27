@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
+import { SignaturesContentService } from './signatures.service';
 
 @Injectable({
     providedIn: 'root'
@@ -14,7 +15,7 @@ export class AuthService {
     loadingConnection: boolean = false;
     loadingForm: boolean = false;
 
-    constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService) { }
+    constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService, public signaturesService: SignaturesContentService) { }
 
     login(login: string, password: string) {
         this.loadingConnection = true;
@@ -81,5 +82,9 @@ export class AuthService {
         } else {
             return false;
         }
+    }
+
+    updateUserInfo(token: string) {
+        this.signaturesService.userLogged = JSON.parse(atob(token.split('.')[1])).user;
     }
 }

@@ -59,6 +59,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
                 // Update stored token
                 this.authService.setToken(data.token);
+
+                // Update user info
+                this.authService.updateUserInfo(data.token);
+
                 // Clone our request with token updated ant try to resend it
                 request = this.addAuthHeader(request);
 

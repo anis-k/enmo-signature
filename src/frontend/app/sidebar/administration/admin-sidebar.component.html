@@ -24,7 +24,7 @@
     </header>
   </div>
   <mat-nav-list class="admin-list">
-    <mat-list-item *ngFor="let privilege of privileges" [routerLink]="privilege.route" [class.item-active]="('/' + route.routeConfig.path).indexOf(privilege.route) !== -1">
+    <mat-list-item *ngFor="let privilege of signaturesService.userLogged.administrativePrivileges" [routerLink]="privilege.route" [class.item-active]="('/' + route.routeConfig.path).indexOf(privilege.route) !== -1">
       <mat-icon matListIcon [class]="privilege.icon" color="primary"></mat-icon>
       <p matLine>
         {{'lang.' + privilege.id | translate}}

@@ -1,11 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSidenav } from '@angular/material';
 import { SignaturesContentService } from '../../service/signatures.service';
-import { NotificationService } from '../../service/notification.service';
-import { TranslateService } from '@ngx-translate/core';
-import { tap, map, finalize } from 'rxjs/operators';
 import { AuthService } from '../../service/auth.service';
 
 export interface Privilege {
@@ -29,19 +25,11 @@ export class AdminSidebarComponent implements OnInit {
     loading: boolean = true;
     privileges: Privilege[] = [];
 
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService, public authService: AuthService) {
+    constructor(public signaturesService: SignaturesContentService, private route: ActivatedRoute, private router: Router, public authService: AuthService) {
     }
 
     ngOnInit() {
         $('.avatar').css({'background': 'url(data:image/png;base64,' + this.signaturesService.userLogged.picture + ') no-repeat #135F7F'}).css({'background-size': 'cover'}).css({'background-position': 'center'});
-        this.http.get('../rest/administrativePrivileges')
-        .pipe(
-            map((data: any) => data.privileges),
-            finalize(() => this.loading = false)
-        )
-        .subscribe({
-            next: data => this.privileges = data,
-        });
     }
 
     openHome() {
