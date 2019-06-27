@@ -36,8 +36,8 @@ class AutoCompleteController
         $requestData = AutoCompleteController::getDataForRequest([
             'search'        => $queryParams['search'],
             'fields'        => '(firstname ilike ? OR lastname ilike ? OR email ilike ?)',
-            'where'         => ['mode = ?'],
-            'data'          => ['standard'],
+            'where'         => ['"isRest" = ?'],
+            'data'          => ['false'],
             'fieldsNumber'  => 3
         ]);
 
