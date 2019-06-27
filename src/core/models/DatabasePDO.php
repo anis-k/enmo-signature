@@ -127,6 +127,7 @@ class DatabasePDO
         }
 
         try {
+            self::$pdo->setAttribute(\PDO::ATTR_CASE, \PDO::CASE_NATURAL);
             if (empty(self::$preparedQueries[$queryString])) {
                 $query = self::$pdo->prepare($queryString);
                 self::$preparedQueries[$queryString] = $query;

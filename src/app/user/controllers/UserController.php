@@ -35,17 +35,16 @@ use Workflow\models\WorkflowModel;
 
 class UserController
 {
-    const LOGING_MODES  = ['standard', 'rest'];
-
     public function get(Request $request, Response $response)
     {
         $queryParams = $request->getQueryParams();
 
         $select = ['id', 'firstname', 'lastname', 'substitute'];
-        $where = ['mode in (?)'];
-        $queryData = [['standard']];
-        if (!empty($queryParams['mode']) && $queryParams['mode'] == 'all') {
-            $queryData[0][] = 'rest';
+        $where = [];
+        $queryData = [];
+        if (empty($queryParams['mode'])) {
+            $where = ['"isRest" = ?'];
+            $queryData = ['false'];
         }
         if (PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             $select[] = 'login';
@@ -126,8 +125,8 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Login already exists', 'lang' => 'userLoginAlreadyExists']);
         }
 
-        if (empty($body['mode']) || !in_array($body['mode'], UserController::LOGING_MODES)) {
-            $body['mode'] = 'standard';
+        if (!empty($body['isRest'])) {
+            $body['"isRest"'] = 'true';
         }
         if (empty($body['picture'])) {
             $body['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
@@ -220,8 +219,8 @@ class UserController
             $set['substitute'] = $body['substitute'];
         }
 
-        if (!empty($body['mode']) && in_array($body['mode'], UserController::LOGING_MODES)) {
-            $set['mode'] = $body['mode'];
+        if (isset($body['isRest'])) {
+            $set['"isRest"'] = $body['isRest'];
         }
 
         UserModel::update([
@@ -381,9 +380,9 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body newPassword and passwordConfirmation must be identical']);
         }
 
-        $user = UserModel::getById(['select' => ['login', 'mode'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['login', '"isRest"'], 'id' => $args['id']]);
 
-        if ($user['mode'] == 'standard') {
+        if ($user['isRest'] == false) {
             if (empty($body['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $body['currentPassword']])) {
                 return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
             }
@@ -520,7 +519,7 @@ class UserController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', 'mode'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', '"isRest"'], 'id' => $args['id']]);
         if (empty($user)) {
             return [];
         }

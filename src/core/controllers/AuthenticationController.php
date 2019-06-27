@@ -128,8 +128,8 @@ class AuthenticationController
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', 'mode', 'refresh_token']]);
-        if (empty($user) || $user['mode'] != 'standard') {
+        $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', '"isRest"', 'refresh_token']]);
+        if (empty($user) || $user['isRest']) {
             return $response->withStatus(403)->withJson(['errors' => 'Authentication unauthorized']);
         }
 
