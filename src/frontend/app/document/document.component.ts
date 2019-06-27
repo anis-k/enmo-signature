@@ -229,9 +229,9 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
 
-        let notesContent = localStorage.getItem(this.mainDocument.id.toString());
+        const notesContent = localStorage.getItem(this.mainDocument.id.toString());
         if (notesContent) {
-            let storageContent = JSON.parse(notesContent);
+            const storageContent = JSON.parse(notesContent);
             this.signaturesService.notesContent = storageContent['note'];
             this.signaturesService.signaturesContent = storageContent['sign'];
         }

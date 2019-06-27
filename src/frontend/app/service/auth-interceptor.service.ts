@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { catchError, switchMap } from 'rxjs/operators';
 import { NotificationService } from './notification.service';
-import { empty } from 'rxjs';
+import { EMPTY } from 'rxjs';
 import { SignaturesContentService } from './signatures.service';
 import { AuthService } from './auth.service';
 
@@ -67,7 +67,7 @@ export class AuthInterceptor implements HttpInterceptor {
                     // Disconnect user if bad token process
                     if (err.status === 401) {
                       this.logout();
-                      return empty();
+                      return EMPTY;
                     }
                   })
                 );
@@ -79,7 +79,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 if (err.status === 401) {
                   this.logout();
                 }
-                return empty();
+                return EMPTY;
               })
             );
           } else {
@@ -90,12 +90,12 @@ export class AuthInterceptor implements HttpInterceptor {
                       this.signaturesService.mainDocumentId = null;
                     }
                     this.router.navigate(['/documents']);
-                    return empty();
+                    return EMPTY;
                   }
                 });
             }
             this.notificationService.handleErrors(error);
-            return empty();
+            return EMPTY;
           }
         })
       );

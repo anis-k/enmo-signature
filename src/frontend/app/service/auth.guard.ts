@@ -19,8 +19,7 @@ export class AuthGuard implements CanActivate {
         const tokenInfo = this.authService.getToken();
         if (tokenInfo !== null) {
             if (this.signaturesService.userLogged.id === undefined) {
-                const userInfo = JSON.parse(atob(tokenInfo.split('.')[1])).user;
-                this.signaturesService.userLogged = userInfo;
+                this.signaturesService.userLogged = JSON.parse(atob(tokenInfo.split('.')[1])).user;
 
                 this.translate.use(this.signaturesService.userLogged.preferences.lang);
                 this.cookieService.set('maarchParapheurLang', this.signaturesService.userLogged.preferences.lang);

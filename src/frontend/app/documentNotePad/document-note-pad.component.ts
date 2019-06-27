@@ -33,7 +33,7 @@ export class DocumentNotePadComponent implements OnInit {
                 fixWidth: this.signaturesService.x,
                 mobileMode: this.signaturesService.mobileMode
             });
-            $('input[value=\'' + this.signaturesService.userLogged.preferences.writingColor + '\']').click();
+            $('input[value=\'' + this.signaturesService.userLogged.preferences.writingColor + '\']').trigger('click');
         }, 200);
     }
 

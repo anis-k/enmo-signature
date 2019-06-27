@@ -184,11 +184,6 @@ import { AlertComponent } from './plugins/alert.component';
 })
 export class AppModule { }
 
-// For traductions
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateBackendHttpLoader(http);
-}
-
 export class TranslateBackendHttpLoader implements TranslateLoader {
 
   constructor(private http: HttpClient) { }
@@ -202,4 +197,9 @@ export class TranslateBackendHttpLoader implements TranslateLoader {
 
     return this.http.get(`../rest/languages/` + lang);
   }
+}
+
+// For traductions
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateBackendHttpLoader(http);
 }

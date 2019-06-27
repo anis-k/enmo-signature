@@ -79,7 +79,7 @@ class UserModel
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['login', 'email', 'firstname', 'lastname', 'mode', 'picture']);
+        ValidatorModel::notEmpty($args, ['login', 'email', 'firstname', 'lastname', 'picture']);
         ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'users_id_seq']);
@@ -93,7 +93,7 @@ class UserModel
                 'password'                      => AuthenticationModel::getPasswordHash('maarch'),
                 'firstname'                     => $args['firstname'],
                 'lastname'                      => $args['lastname'],
-                'mode'                          => $args['mode'],
+                '"isRest"'                      => empty($args['isRest']) ? 'false' : 'true',
                 'picture'                       => $args['picture'],
                 'password_modification_date'    => 'CURRENT_TIMESTAMP'
             ]

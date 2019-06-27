@@ -184,7 +184,7 @@ export class ProfileComponent implements OnInit {
     submitProfile() {
         this.disableState = true;
         this.msgButton = 'lang.sending';
-        let profileToSend = {
+        const profileToSend = {
             'firstname': this.profileInfo.firstname,
             'lastname': this.profileInfo.lastname,
             'email': this.profileInfo.email,

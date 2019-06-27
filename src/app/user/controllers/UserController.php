@@ -126,7 +126,7 @@ class UserController
         }
 
         if (!empty($body['isRest'])) {
-            $body['"isRest"'] = 'true';
+            $body['"isRest"'] = true;
         }
         if (empty($body['picture'])) {
             $body['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
@@ -220,7 +220,7 @@ class UserController
         }
 
         if (isset($body['isRest'])) {
-            $set['"isRest"'] = $body['isRest'];
+            $set['"isRest"'] = $body['isRest'] ? 'true' : 'false';
         }
 
         UserModel::update([

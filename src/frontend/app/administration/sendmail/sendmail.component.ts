@@ -9,16 +9,17 @@ import { TranslateService } from '@ngx-translate/core';
 
 
 export interface Sendmail {
-    auth: boolean,
-    from: string,
-    host: string,
-    port: number,
-    type: string,
-    user: string,
-    secure: string,
-    charset: string,
-    password: string,
-    passwordAlreadyExists: boolean
+
+    auth:                   boolean;
+    from:                   string;
+    host:                   string;
+    port:                   number;
+    type:                   string;
+    user:                   string;
+    secure:                 string;
+    charset:                string;
+    password:               string;
+    passwordAlreadyExists:  boolean;
 }
 
 @Component({
@@ -106,11 +107,7 @@ export class SendmailComponent implements OnInit {
     }
 
     canValidate() {
-        if (JSON.stringify(this.sendmail) === JSON.stringify(this.sendmailClone)) {
-            return false;
-        } else {
-            return true;
-        }
+        return JSON.stringify(this.sendmail) !== JSON.stringify(this.sendmailClone);
     }
 
     onSubmit() {
@@ -141,13 +138,13 @@ export class SendmailComponent implements OnInit {
             debug: '',
             error: false
         };
-        let email = {
-            "sender": this.sendmail.from,
-            "recipients": [this.recipientTest],
-            "subject": "[" + this.translate.instant('lang.doNotReply') +"] " + this.translate.instant('lang.emailSendTest'),
-            "status": "EXPRESS",
-            "body": this.translate.instant('lang.emailSendTest'),
-            "isHtml": false
+        const email = {
+            'sender'        : this.sendmail.from,
+            'recipients'    : [this.recipientTest],
+            'subject'       : '[' + this.translate.instant('lang.doNotReply') + '] ' + this.translate.instant('lang.emailSendTest'),
+            'status'        : 'EXPRESS',
+            'body'          : this.translate.instant('lang.emailSendTest'),
+            'isHtml'        : false
         };
         this.emailSendLoading = true;
 
@@ -156,7 +153,7 @@ export class SendmailComponent implements OnInit {
                 finalize(() => this.emailSendLoading = false)
             )
             .subscribe({
-                next: (data : any) => {
+                next: (data: any) => {
                     if (data.isSent) {
                         this.emailSendResult = {
                             icon: 'fa-check green',
@@ -181,7 +178,7 @@ export class SendmailComponent implements OnInit {
         this.sendmail.user = '';
         this.sendmail.password = '';
     }
- 
+
     cancel() {
         this.router.navigate(['/administration']);
     }
