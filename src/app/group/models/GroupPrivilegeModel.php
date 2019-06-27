@@ -50,6 +50,21 @@ class GroupPrivilegeModel
         return $groupsPrivileges;
     }
 
+    public static function getPrivilegesByGroupId(array $aArgs)
+    {
+        ValidatorModel::arrayType($aArgs, ['select']);
+        ValidatorModel::intVal($aArgs, ['groupId']);
+
+        $groupsPrivileges = DatabaseModel::select([
+            'select'    => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'     => ['groups_privileges'],
+            'where'     => ['group_id = ?'],
+            'data'      => [$aArgs['groupId']]
+        ]);
+
+        return $groupsPrivileges;
+    }
+
     public static function addPrivilege(array $aArgs)
     {
         ValidatorModel::notEmpty($aArgs, ['groupId', 'privilegeId']);

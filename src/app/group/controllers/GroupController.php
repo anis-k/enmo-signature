@@ -56,7 +56,18 @@ class GroupController
             'select' => ['users.id', 'users.firstname', 'users.lastname']
         ]);
 
-        $group['privileges'] = PrivilegeController::PRIVILEGES;
+        $groupPrivileges = GroupPrivilegeModel::getPrivilegesByGroupId(['groupId' => $args['id']]);
+        $groupPrivileges = array_column($groupPrivileges, 'privilege');
+
+        $aPrivileges = PrivilegeController::PRIVILEGES;
+        foreach ($aPrivileges as $key => $value) {
+            if (in_array($value['id'], $groupPrivileges)) {
+                $aPrivileges[$key]['checked'] = true;
+            } else {
+                $aPrivileges[$key]['checked'] = false;
+            }
+        }
+        $group['privileges'] = $aPrivileges;
 
         return $response->withJson(['group' => $group]);
     }
