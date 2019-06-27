@@ -161,6 +161,8 @@ export class DocumentComponent implements OnInit {
                         this.signaturesService.mainDocumentId = this.mainDocument.id;
                         this.signaturesService.totalPage = this.mainDocument.pages;
 
+                        this.initDoc();
+
                         const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
 
                         if (realUserWorkflow.userId !== this.signaturesService.userLogged.id) {
