@@ -20,7 +20,7 @@
         <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
         <span>{{'lang.delete' | translate}}</span>
       </button>
-      <button [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);" title="{{'lang.replicateSignatureAllPage' | translate}}">
+      <button *ngIf="signaturesService.totalPage > 1" [disabled]="signature.inAllPage" mat-menu-item (click)="$event.stopPropagation();cloneSign(i);" title="{{'lang.replicateSignatureAllPage' | translate}}">
         <mat-icon fontSet="fas" fontIcon="fa-clone"></mat-icon>
         <span>{{'lang.replicate' | translate}}</span>
       </button>
