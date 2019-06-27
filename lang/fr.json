@@ -250,6 +250,7 @@
 		"addUser" : "Ajouter un utilisateur",
 		"privileges" : "Privilèges",
 		"groupWarnMsg" : "Vous risquez de ne plus pouvoir accéder à cette page !",
-		"groupDeleted" : "Groupe supprimé"
+		"groupDeleted" : "Groupe supprimé",
+		"importNewSignature" : "Importer une signature"
 	}
 }

@@ -3,6 +3,11 @@
     {{'lang.doubletapSignatureToAddDocument' | translate}}
   </div>
   <section class="list">
+    <div class="list-item create" (click)="uploadFile.click()">
+      <i class="fas fa-upload fa-2x"></i>
+      {{'lang.importNewSignature' | translate}}
+    </div>
+    <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
     <div class="list-item create" (click)="openPad()">
       <i class="fas fa-pen-nib fa-2x"></i>
       {{'lang.createNewSignature' | translate}}

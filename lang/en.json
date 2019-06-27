@@ -249,6 +249,7 @@
 		"addUser" : "Add user",
 		"privileges" : "Privileges",
 		"groupWarnMsg" : "You may no longer be able to access this page!",
-		"groupDeleted" : "Group deleted"
+		"groupDeleted" : "Group deleted",
+		"importNewSignature" : "Import a new signature"
 	}
 }

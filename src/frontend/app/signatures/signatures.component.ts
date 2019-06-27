@@ -117,4 +117,46 @@ export class SignaturesComponent implements OnInit {
             }
         }, 250);
     }
+
+    handleFileInput(files: FileList) {
+        const fileToUpload = files.item(0);
+
+        if (fileToUpload.size <= 2000000) {
+            if (['image/png', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
+                console.log(fileToUpload.type);
+                const myReader: FileReader = new FileReader();
+                myReader.onloadend = (e) => {
+                    console.log(myReader.result.toString());
+
+                    const newEncodedSign = myReader.result.toString().replace('data:' + fileToUpload.type + ';base64,', '');
+                    localStorage.setItem('signature', JSON.stringify(newEncodedSign));
+
+                    // Save signature in BDD
+                    const newSign = {
+                        'id': 0,
+                        'encodedSignature': newEncodedSign,
+                        'format': 'png'
+                    };
+                    this.http.post('../rest/users/' + this.signaturesService.userLogged.id + '/signatures', newSign)
+                    .subscribe((data: any) => {
+                        newSign.id = data.signatureId;
+                        this.signaturesService.newSign = newSign;
+                        this.reloadSignatures();
+                        this.notificationService.success('lang.signatureRegistered');
+                        this.bottomSheetRef.dismiss();
+                        const config: MatBottomSheetConfig = {
+                            disableClose: false,
+                            direction: 'ltr'
+                        };
+                        this.bottomSheetRef.open(SignaturesComponent, config);
+                    });
+                };
+                myReader.readAsDataURL(fileToUpload);
+            } else {
+                this.notificationService.error('lang.notAnImage');
+            }
+        } else {
+            this.notificationService.error('lang.imageTooBig');
+        }
+    }
 }
