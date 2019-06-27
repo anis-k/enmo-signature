@@ -13,7 +13,7 @@
         <span *ngIf="!loading">{{title}}</span>
       </div>
       <div *ngIf="!creationMode" style="width: 70px;text-align: center;">
-        <button mat-icon-button (click)="delete()">
+        <button mat-icon-button (click)="delete()" [disabled]="signaturesService.authMode==='ldap' && ldap.count === 1">
           <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
         </button>
       </div>
