@@ -157,7 +157,11 @@ export class UserComponent implements OnInit {
                 finalize(() => this.loading = false)
             )
             .subscribe({
-                next: () => {
+                next: (data: any) => {
+                    if (this.user.isRest) {
+                        this.user.id = data.id;
+                        this.updateRestUser();
+                    }
                     this.router.navigate(['/administration/users']);
                     this.notificationService.success('lang.userAdded');
                 },
