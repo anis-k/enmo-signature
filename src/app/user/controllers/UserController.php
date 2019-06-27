@@ -531,9 +531,10 @@ class UserController
         }
 
         if ($GLOBALS['id'] == $args['id']) {
-            $user['preferences']        = json_decode($user['preferences'], true);
-            $user['availableLanguages'] = LanguageController::getAvailableLanguages();
-            $user['hasAdmin']           = PrivilegeController::hasAdmin(['userId' => $args['id']]);
+            $user['preferences']                = json_decode($user['preferences'], true);
+            $user['availableLanguages']         = LanguageController::getAvailableLanguages();
+            $user['administrativePrivileges']   = PrivilegeController::getAdministrativePrivilegesByUserId(['userId' => $args['id']]);
+            $user['hasAdmin']                   = !empty($user['administrativePrivileges']);
         }
 
         return $user;
