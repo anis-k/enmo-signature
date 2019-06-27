@@ -77,24 +77,26 @@ class UserController
         }
 
         $user = UserController::getUserInformationsById(['id' => $args['id']]);
-        if (!empty($user)) {
-            $user['groups'] = [];
-    
-            $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
-            $groupsIds = array_column($userGroups, 'group_id');
-            if (!empty($groupsIds)) {
-                $groups = GroupModel::get(['select' => ['label'], 'where' => ['id in (?)'], 'data' => [$groupsIds]]);
-                $user['groups'] = $groups;
-            }
-    
-            HistoryController::add([
-                'code'          => 'OK',
-                'objectType'    => 'users',
-                'objectId'      => $args['id'],
-                'type'          => 'VIEW',
-                'message'       => "{userViewed} : {$user['firstname']} {$user['lastname']}"
-            ]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
         }
+
+        $user['groups'] = [];
+
+        $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
+        $groupsIds = array_column($userGroups, 'group_id');
+        if (!empty($groupsIds)) {
+            $groups = GroupModel::get(['select' => ['label'], 'where' => ['id in (?)'], 'data' => [$groupsIds]]);
+            $user['groups'] = $groups;
+        }
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'VIEW',
+            'message'       => "{userViewed} : {$user['firstname']} {$user['lastname']}"
+        ]);
 
         return $response->withJson(['user' => $user]);
     }
@@ -161,6 +163,11 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
         } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
+        }
+
+        $user = UserModel::getById(['id' => $args['id'], 'select' => [1]]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
         }
 
         $set = [
@@ -514,8 +521,11 @@ class UserController
         ValidatorModel::intVal($args, ['id']);
 
         $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute'], 'id' => $args['id']]);
+        if (empty($user)) {
+            return [];
+        }
 
-        if (!empty($user) && empty($user['picture'])) {
+        if (empty($user['picture'])) {
             $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
             $user['picture'] = 'data:image/png;base64,' . $user['picture'];
         }
