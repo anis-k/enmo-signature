@@ -45,9 +45,17 @@ class DocumentController
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
         $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
-        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$GLOBALS['id']]]);
+        $userId = $GLOBALS['id'];
+        if (!empty($queryParams['userId'])) {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents']) || !Validator::intVal()->notEmpty()->validate($queryParams['userId'])) {
+                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            $userId = $queryParams['userId'];
+        }
 
-        $users = [$GLOBALS['id']];
+        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$userId]]);
+
+        $users = [$userId];
         foreach ($substitutedUsers as $value) {
             $users[] = $value['id'];
         }
@@ -103,7 +111,7 @@ class DocumentController
         foreach ($documents as $key => $document) {
             unset($documents[$key]['count']);
             $documents[$key]['mode'] = $workflowsShortcut[$document['id']]['mode'];
-            $documents[$key]['owner'] = $workflowsShortcut[$document['id']]['user_id'] == $GLOBALS['id'];
+            $documents[$key]['owner'] = $workflowsShortcut[$document['id']]['user_id'] == $userId;
         }
         
         foreach ($countWorkflows as $mode) {
