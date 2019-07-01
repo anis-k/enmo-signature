@@ -27,6 +27,11 @@
           <input name="label" matInput placeholder="{{'lang.label' | translate}}" type="text" [(ngModel)]="group.label"
            required>
         </mat-form-field>
+        <div class="actions-form">
+          <button mat-stroked-button type="submit" class="btn blue"
+            [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
+          <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
+        </div>
         <fieldset *ngIf="!creationMode">
           <legend align="left">{{'lang.privileges' | translate}} :</legend>
           <div class="form-container">
@@ -75,11 +80,6 @@
             </div>
           </div>
         </fieldset>
-        <div class="actions-form">
-          <button mat-stroked-button type="submit" class="btn blue"
-            [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
-          <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
-        </div>
       </form>
     </div>
   </mat-sidenav-content>
