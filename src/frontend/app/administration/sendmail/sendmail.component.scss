@@ -52,3 +52,41 @@
     font-size: 35px;
     color: white;
 }
+
+.auth-container {
+    display:flex;
+
+    .auth-1 {
+        width:100px;
+        padding-right: 10px;
+    }
+    .auth-2 {
+        flex:1;
+    }
+    .auth-3 {
+        width:50px;
+        padding-left: 10px;
+    }
+}
+
+@media (max-width: 360px) { 
+    .auth-container {
+        display:flex;
+        flex-direction: column;
+
+        .auth-1 {
+            width:100%;
+            padding-right: 0px;
+        }
+        .auth-2 {
+            width:100%;
+            flex:1;
+        }
+        .auth-3 {
+            width:100%;
+            padding-left: 0px;
+        }
+    }
+}
+
+
