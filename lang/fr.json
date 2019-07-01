@@ -251,6 +251,7 @@
 		"privileges" : "Privilèges",
 		"groupWarnMsg" : "Vous risquez de ne plus pouvoir accéder à cette page !",
 		"groupDeleted" : "Groupe supprimé",
-		"importNewSignature" : "Importer une signature"
+		"importNewSignature" : "Importer une signature",
+		"restUser" : "Utilisateur webservice"
 	}
 }

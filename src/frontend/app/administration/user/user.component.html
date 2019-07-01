@@ -38,7 +38,7 @@
           <input name="email" matInput placeholder="{{'lang.email' | translate}}" type="mail" [(ngModel)]="user.email"
             pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required>
         </mat-form-field>
-        <mat-checkbox [disabled]="!creationMode" name="isRest" color="primary" [(ngModel)]="user.isRest" [checked]="user.isRest" (change)="getPassRules($event)">Utilisateur REST</mat-checkbox>
+        <mat-checkbox [disabled]="!creationMode" name="isRest" color="primary" [(ngModel)]="user.isRest" [checked]="user.isRest" (change)="getPassRules($event)">{{'lang.restUser' | translate}}</mat-checkbox>
         <mat-form-field class="input-row" *ngIf="user.isRest">
           <input name="newPasswordRest" matInput [(ngModel)]="passwordRest.newPassword"
             placeholder="{{'lang.newPassword' | translate}}" [type]="hideNewPassword ? 'password' : 'text'"

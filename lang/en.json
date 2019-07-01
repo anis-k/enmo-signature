@@ -250,6 +250,7 @@
 		"privileges" : "Privileges",
 		"groupWarnMsg" : "You may no longer be able to access this page!",
 		"groupDeleted" : "Group deleted",
-		"importNewSignature" : "Import a new signature"
+		"importNewSignature" : "Import a new signature",
+		"restUser" : "Webservice user"
 	}
 }
