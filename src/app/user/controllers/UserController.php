@@ -218,11 +218,7 @@ class UserController
             }
             $set['substitute'] = $body['substitute'];
         }
-
-        if (isset($body['isRest'])) {
-            $set['"isRest"'] = $body['isRest'] ? 'true' : 'false';
-        }
-
+        
         UserModel::update([
             'set'   => $set,
             'where' => ['id = ?'],
