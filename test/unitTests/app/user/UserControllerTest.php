@@ -119,7 +119,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->updatePassword($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
         
-        $this->assertSame('newPassword and passwordConfirmation must be identical', $responseBody->errors);
+        $this->assertSame('Body newPassword and passwordConfirmation must be identical', $responseBody->errors);
     }
 
     public function testGet()

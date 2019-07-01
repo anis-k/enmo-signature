@@ -26,7 +26,7 @@
                     <button mat-stroked-button type="submit" class="btn blue"
                             [disabled]="!adminForm.form.valid || !canValidate()">{{'lang.validate' | translate}}</button>
                     <button mat-stroked-button type="button" class="btn" (click)="cancel()">{{'lang.cancel' | translate}}</button>
-                    <button mat-stroked-button type="button" *ngIf="!creationMode" class="btn red" (click)="delete()">{{'lang.delete' | translate}}</button>
+                    <button mat-stroked-button type="button" *ngIf="!creationMode" class="btn red" (click)="deleteGroup()">{{'lang.delete' | translate}}</button>
                 </div>
                 <fieldset *ngIf="!creationMode">
                     <legend align="left">{{'lang.privileges' | translate}} :</legend>

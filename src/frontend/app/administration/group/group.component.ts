@@ -164,8 +164,8 @@ export class GroupComponent implements OnInit {
         this.loading = true;
         this.http.post('../rest/groups', this.group)
             .subscribe({
-                next: () => {
-                    this.router.navigate(['/administration/groups']);
+                next: (data: any) => {
+                    this.router.navigate(['/administration/groups/' + data.id]);
                     this.notificationService.success('lang.groupAdded');
                 },
             });
