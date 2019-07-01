@@ -47,8 +47,11 @@ class DocumentController
 
         $userId = $GLOBALS['id'];
         if (!empty($queryParams['userId'])) {
-            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents']) || !Validator::intVal()->notEmpty()->validate($queryParams['userId'])) {
+            if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+            }
+            if (!Validator::intVal()->notEmpty()->validate($queryParams['userId'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'QueryParams userId is not an integer']);
             }
             $userId = $queryParams['userId'];
         }
