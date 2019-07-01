@@ -251,6 +251,7 @@
 		"groupWarnMsg" : "You may no longer be able to access this page!",
 		"groupDeleted" : "Group deleted",
 		"importNewSignature" : "Import a new signature",
-		"restUser" : "Webservice user"
+		"restUser" : "Webservice user",
+		"unlinkUser" : "Unlink user"
 	}
 }

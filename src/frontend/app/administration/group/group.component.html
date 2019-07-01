@@ -58,7 +58,7 @@
                   <mat-paginator #paginator [length]="100" [pageSize]="10"></mat-paginator>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element" style="justify-content: flex-end;">
-                  <button mat-icon-button color="warn" type="button" (click)="$event.stopPropagation();unlinkUser(element)">
+                  <button mat-icon-button color="warn" type="button" title="{{'lang.unlinkUser' | translate}}" (click)="$event.stopPropagation();unlinkUser(element)">
                     <mat-icon class="fa fa-unlink fa-2x"></mat-icon>
                   </button>
                 </mat-cell>

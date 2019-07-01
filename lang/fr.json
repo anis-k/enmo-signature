@@ -252,6 +252,7 @@
 		"groupWarnMsg" : "Vous risquez de ne plus pouvoir accéder à cette page !",
 		"groupDeleted" : "Groupe supprimé",
 		"importNewSignature" : "Importer une signature",
-		"restUser" : "Utilisateur webservice"
+		"restUser" : "Utilisateur webservice",
+		"unlinkUser" : "Dissocier l'utilisateur"
 	}
 }
