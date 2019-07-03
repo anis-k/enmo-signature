@@ -128,6 +128,8 @@ export class DocumentComponent implements OnInit {
 
     @HostListener('window:resize', ['$event'])
     onResize(event: any) {
+        this.signaturesService.annotationMode = false;
+        this.widthDoc = '100%';
         this.resetDragPos = true;
         setTimeout(() => {
             this.resetDragPos = false;
@@ -135,6 +137,7 @@ export class DocumentComponent implements OnInit {
         setTimeout(() => {
             this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
             this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
+            this.signaturesService.scale = 1;
         }, 400);
     }
 
