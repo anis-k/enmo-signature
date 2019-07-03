@@ -14,8 +14,6 @@ export class FiltersService {
                 this.signaturesService.mode = '';
                 this.signaturesService.documentsList = data.documents;
                 this.signaturesService.documentsListCount = data.count;
-            }, (err: any) => {
-                console.log(err.error.errors);
             });
     }
 }

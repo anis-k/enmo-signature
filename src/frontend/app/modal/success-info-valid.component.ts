@@ -4,6 +4,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 import { MatBottomSheetRef } from '@angular/material';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
+import { FiltersService } from '../service/filters.service';
 
 @Component({
     templateUrl: 'success-info-valid.html',
@@ -11,7 +12,7 @@ import { AuthService } from '../service/auth.service';
 })
 export class SuccessInfoValidBottomSheetComponent implements OnInit {
     date: Date = new Date();
-    constructor(private translate: TranslateService, private router: Router, public signaturesService: SignaturesContentService, public authService: AuthService, private bottomSheetRef: MatBottomSheetRef<SuccessInfoValidBottomSheetComponent>) { }
+    constructor(private translate: TranslateService, private router: Router, public signaturesService: SignaturesContentService, public filtersService: FiltersService, public authService: AuthService, private bottomSheetRef: MatBottomSheetRef<SuccessInfoValidBottomSheetComponent>) { }
      ngOnInit(): void {
         setTimeout(() => {
             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
@@ -20,6 +21,7 @@ export class SuccessInfoValidBottomSheetComponent implements OnInit {
                     width : '450px',
                     locked : false,
                 };
+                this.filtersService.resfreshDocuments();
                 this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
             } else {
                 this.signaturesService.sideNavRigtDatas = {
