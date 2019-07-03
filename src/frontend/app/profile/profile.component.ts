@@ -255,22 +255,39 @@ export class ProfileComponent implements OnInit {
             });
     }
 
-    toggleSubstitute(ev: any) {
+    selectSubstitute(ev: any) {
         if (this.profileInfo.substitute !== null) {
             alert(this.translate.instant('lang.substitutionWarn'));
         }
         const newUserSubtituted = ev.value;
 
-        // TO DO : ROUTE IS FAKE
-        this.http.put('../rest/users/' + this.authService.user.id + '/substitute', newUserSubtituted)
+        this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: newUserSubtituted })
             .subscribe(() => {
                 this.authService.updateUserInfoWithTokenRefresh();
                 this.filtersService.resfreshDocuments();
                 if (this.signaturesService.documentsList.length > 0 && this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].owner === false) {
                     this.router.navigate(['/documents']);
                 }
-                this.notificationService.success('lang.userSubstituted');
+                this.notificationService.success('lang.substituteEnabled');
             });
+    }
+
+    deleteSubstitute() {
+        const r = confirm(this.translate.instant('lang.deleteSubstitution') + ' ?');
+
+        if (r) {
+            this.profileInfo.substitute = null;
+
+            this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: this.profileInfo.substitute })
+                .subscribe(() => {
+                    this.authService.updateUserInfoWithTokenRefresh();
+                    this.filtersService.resfreshDocuments();
+                    if (this.signaturesService.documentsList.length > 0 && this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].owner === false) {
+                        this.router.navigate(['/documents']);
+                    }
+                    this.notificationService.success('lang.substitutionDeleted');
+                });
+        }
     }
 
     handleFileInput(files: FileList) {

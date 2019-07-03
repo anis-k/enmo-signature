@@ -254,6 +254,7 @@
 		"groupDeleted" : "Groupe supprimé",
 		"importNewSignature" : "Importer une signature",
 		"restUser" : "Utilisateur webservice",
-		"unlinkUser" : "Dissocier l'utilisateur"
+		"unlinkUser" : "Dissocier l'utilisateur",
+		"substituteEnabled" : "Délégation activée"
 	}
 }

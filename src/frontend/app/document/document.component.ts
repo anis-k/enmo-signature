@@ -507,10 +507,7 @@ export class DocumentComponent implements OnInit {
         const r = confirm(this.translate.instant('lang.deleteSubstitution') + ' ?');
 
         if (r) {
-            const userUpdated = this.authService.user;
-            userUpdated.substitute = null;
-
-            this.http.put('../rest/users/' + this.authService.user.id, userUpdated)
+            this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: null })
             .subscribe(() => {
                 this.authService.updateUserInfoWithTokenRefresh();
                 this.notificationService.success('lang.substitutionDeleted');

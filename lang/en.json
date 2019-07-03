@@ -253,6 +253,7 @@
 		"groupDeleted" : "Group deleted",
 		"importNewSignature" : "Import a new signature",
 		"restUser" : "Webservice user",
-		"unlinkUser" : "Unlink user"
+		"unlinkUser" : "Unlink user",
+		"substituteEnabled" : "Substitute enabled"
 	}
 }

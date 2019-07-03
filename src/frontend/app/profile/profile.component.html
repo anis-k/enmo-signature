@@ -208,7 +208,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field style="width:100%">
                                             <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersList"
-                                                [(ngModel)]="profileInfo.substitute" (selectionChange)="toggleSubstitute($event)">
+                                                [(ngModel)]="profileInfo.substitute" (selectionChange)="selectSubstitute($event)">
                                                 <ng-container *ngFor="let userRest of usersList">
                                                     <mat-option *ngIf="userRest.id !== profileInfo.id && !userRest.substitute"
                                                         [value]="userRest.id">
@@ -217,7 +217,7 @@
                                                 </ng-container>
                                             </mat-select>
                                             <button matSuffix *ngIf="profileInfo.substitute != null" mat-icon-button type="button"
-                                                (tap)="profileInfo.substitute = null" color="warn" title="{{'lang.deleteSubstitution' | translate}}">
+                                                (tap)="deleteSubstitute()" color="warn" title="{{'lang.deleteSubstitution' | translate}}">
                                                 <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
                                             </button>
                                         </mat-form-field>
