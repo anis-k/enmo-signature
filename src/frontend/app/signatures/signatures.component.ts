@@ -122,7 +122,7 @@ export class SignaturesComponent implements OnInit {
     handleFileInput(files: FileList) {
         const fileToUpload = files.item(0);
 
-        if (fileToUpload.size <= 2000000) {
+        if (fileToUpload.size <= 1000000) {
             if (['image/png', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
                 const myReader: FileReader = new FileReader();
                 myReader.onloadend = (e) => {
@@ -155,7 +155,7 @@ export class SignaturesComponent implements OnInit {
                 this.notificationService.error('lang.notAnImage');
             }
         } else {
-            this.notificationService.error('lang.imageTooBig');
+            this.notificationService.error('lang.maxFileSizeReached');
         }
     }
 }

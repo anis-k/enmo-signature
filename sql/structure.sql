@@ -197,7 +197,6 @@ CREATE TABLE users
   firstname character varying(128) NOT NULL,
   lastname character varying(128) NOT NULL,
   picture text,
-  enabled boolean DEFAULT TRUE NOT NULL,
   "isRest" boolean DEFAULT FALSE NOT NULL,
   preferences jsonb NOT NULL DEFAULT '{"lang" : "fr", "writingMode" : "direct", "writingSize" : 1, "writingColor" : "#000000", "notifications" : true}',
   substitute INTEGER DEFAULT NULL,

@@ -172,8 +172,7 @@ class UserController
         $set = [
             'firstname'     => $body['firstname'],
             'lastname'      => $body['lastname'],
-            'email'         => $body['email'],
-            'substitute'    => null
+            'email'         => $body['email']
         ];
 
         if ($GLOBALS['id'] == $args['id'] && !empty($body['picture'])) {
@@ -200,25 +199,6 @@ class UserController
             $set['picture'] = $infoContent . $body['picture'];
         }
 
-        if (!empty($body['substitute']) && $args['id'] != $body['substitute']) {
-            $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => ['substitute']]);
-            if (empty($existingUser)) {
-                return $response->withStatus(400)->withJson(['errors' => 'Substitute user does not exist']);
-            } elseif (!empty($existingUser['substitute'])) {
-                return $response->withStatus(400)->withJson(['errors' => 'Substitute user has already substituted']);
-            }
-
-            $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
-            foreach ($substitutedUsers as $user) {
-                UserModel::update([
-                    'set'   => ['substitute' => $body['substitute']],
-                    'where' => ['id = ?'],
-                    'data'  => [$user['id']]
-                ]);
-            }
-            $set['substitute'] = $body['substitute'];
-        }
-        
         UserModel::update([
             'set'   => $set,
             'where' => ['id = ?'],
@@ -342,6 +322,59 @@ class UserController
 
         UserModel::update([
             'set'   => ['preferences' => $preferences],
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
+        ]);
+
+        return $response->withStatus(204);
+    }
+
+    public function updateSubstitute(Request $request, Response $response, array $args)
+    {
+        if ($GLOBALS['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        $user = UserModel::getById(['id' => $args['id'], 'select' => ['firstname', 'lastname']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        $set = [
+            'substitute' => null
+        ];
+
+        if (!empty($body['substitute']) && $args['id'] != $body['substitute']) {
+            $existingUser = UserModel::getById(['id' => $body['substitute'], 'select' => ['substitute']]);
+            if (empty($existingUser)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Substitute user does not exist']);
+            } elseif (!empty($existingUser['substitute'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Substitute user has already substituted']);
+            }
+
+            $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
+            foreach ($substitutedUsers as $user) {
+                UserModel::update([
+                    'set'   => ['substitute' => $body['substitute']],
+                    'where' => ['id = ?'],
+                    'data'  => [$user['id']]
+                ]);
+            }
+            $set['substitute'] = $body['substitute'];
+        }
+
+        UserModel::update([
+            'set'   => $set,
             'where' => ['id = ?'],
             'data'  => [$args['id']]
         ]);

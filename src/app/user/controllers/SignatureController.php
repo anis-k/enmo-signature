@@ -91,7 +91,7 @@ class SignatureController
         if ($type[0] != 'image') {
             return $response->withStatus(400)->withJson(['errors' => 'Signature is not an image']);
         } elseif ($size > 1000000) {
-            return $response->withStatus(400)->withJson(['errors' => 'Max file size reached (1 MB)', 'lang' => 'maxFileSizeReached']);
+            return $response->withStatus(400)->withJson(['errors' => 'Max file size reached (1 MB)']);
         }
 
         $storeInfos = DocserverController::storeResourceOnDocServer([
