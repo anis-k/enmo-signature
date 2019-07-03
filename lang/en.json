@@ -61,6 +61,7 @@
 		"logAgain"                           : "Please log in again",
 		"login"                              : "Login",
 		"logInOncePasswordChanged"           : "You will be asked to log in once the password has been changed.",
+		"maxFileSizeReached"                 : "Max file size reached (1 MB)",
 		"minLengthChar"                      : "{{charLength}} minimum character(s) required",
 		"myProfil"                           : "My profile",
 		"newPassword"                        : "New password",
