@@ -512,7 +512,7 @@ export class DocumentComponent implements OnInit {
 
             this.http.put('../rest/users/' + this.authService.user.id, userUpdated)
             .subscribe(() => {
-                this.authService.user = userUpdated;
+                this.authService.updateUserInfoWithTokenRefresh();
                 this.notificationService.success('lang.substitutionDeleted');
             });
         }

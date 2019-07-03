@@ -73,7 +73,9 @@ export class ProfileComponent implements OnInit {
     closeProfile() {
         $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
         $('.avatarProfile').css({ 'content': '' });
-        this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
+        setTimeout(() => {
+            this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
+        }, 200);
         this.passwordContent.close();
 
         if (this.signaturesService.mobileMode) {
@@ -193,10 +195,6 @@ export class ProfileComponent implements OnInit {
             'substitute': this.profileInfo.substitute,
         };
 
-        if (this.profileInfo.substitute !== null) {
-            alert(this.translate.instant('lang.substitutionWarn'));
-        }
-
         if (this.profileInfo.picture === this.authService.user.picture) {
             profileToSend.picture = '';
         } else {
@@ -206,11 +204,9 @@ export class ProfileComponent implements OnInit {
 
         this.http.put('../rest/users/' + this.authService.user.id, profileToSend)
             .subscribe((data: any) => {
-                this.authService.user.email = this.profileInfo.email;
-                this.authService.user.firstname = this.profileInfo.firstname;
-                this.authService.user.lastname = this.profileInfo.lastname;
+
                 this.authService.user.picture = data.user.picture;
-                this.authService.user.substitute = data.user.substitute;
+
                 this.profileInfo.picture = data.user.picture;
 
                 this.http.put('../rest/users/' + this.authService.user.id + '/preferences', profileToSend.preferences)
@@ -222,22 +218,14 @@ export class ProfileComponent implements OnInit {
                         })
                     )
                     .subscribe(() => {
-                        this.authService.user.preferences = this.profileInfo.preferences;
                         this.setLang(this.authService.user.preferences.lang);
                         this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
-
-                        if (this.profileInfo.substitute !== null) {
-                            this.filtersService.resfreshDocuments();
-                            if (this.signaturesService.documentsList.length > 0 && this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].owner === false) {
-                                this.router.navigate(['/documents']);
-                            }
-                        }
 
                         $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
                         if (this.showPassword) {
                             const headers = new HttpHeaders({
-                                  'Authorization': 'Bearer ' + this.authService.getToken()
-                                });
+                                'Authorization': 'Bearer ' + this.authService.getToken()
+                            });
 
                             this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers })
                                 .subscribe((dataPass: any) => {
@@ -260,13 +248,28 @@ export class ProfileComponent implements OnInit {
                             this.notificationService.success('lang.profileUpdated');
                         }
 
-                        if (this.profileInfo.substitute !== null && this.signaturesService.signaturesList.length > 0) {
-                            this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
-                                .subscribe();
-                        }
+                        this.authService.updateUserInfoWithTokenRefresh();
 
                     });
 
+            });
+    }
+
+    toggleSubstitute(ev: any) {
+        if (this.profileInfo.substitute !== null) {
+            alert(this.translate.instant('lang.substitutionWarn'));
+        }
+        const newUserSubtituted = ev.value;
+
+        // TO DO : ROUTE IS FAKE
+        this.http.put('../rest/users/' + this.authService.user.id + '/substitute', newUserSubtituted)
+            .subscribe(() => {
+                this.authService.updateUserInfoWithTokenRefresh();
+                this.filtersService.resfreshDocuments();
+                if (this.signaturesService.documentsList.length > 0 && this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].owner === false) {
+                    this.router.navigate(['/documents']);
+                }
+                this.notificationService.success('lang.userSubstituted');
             });
     }
 
@@ -340,7 +343,7 @@ export class ProfileComponent implements OnInit {
         return new Array(i);
     }
 
-    siwtchToleft(tab: MatTabGroup) {
+    switchToleft(tab: MatTabGroup) {
         tab.selectedIndex++;
 
         if (tab.selectedIndex === 2) {
@@ -348,7 +351,7 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    siwtchToRight(tab: MatTabGroup) {
+    switchToRight(tab: MatTabGroup) {
         if (tab.selectedIndex > 0) {
             tab.selectedIndex--;
 
@@ -380,5 +383,8 @@ export class ProfileComponent implements OnInit {
 
     toggleSignature(i: number) {
         this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
+
+        this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
+            .subscribe();
     }
 }

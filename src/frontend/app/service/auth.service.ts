@@ -87,6 +87,27 @@ export class AuthService {
     }
 
     updateUserInfo(token: string) {
+        const currentPicture  = this.user.picture;
+
         this.user = JSON.parse(atob(token.split('.')[1])).user;
+
+        this.user.picture = currentPicture;
+    }
+
+    updateUserInfoWithTokenRefresh() {
+        this.http.get('../rest/authenticate/token', {
+            params: {
+              refreshToken: this.getRefreshToken()
+            }
+          }).subscribe({
+            next: (data: any) => {
+                this.setToken(data.token);
+
+                this.updateUserInfo(this.getToken());
+            },
+            error: err => {
+                this.notificationService.handleErrors(err);
+            }
+        });
     }
 }

@@ -16,7 +16,7 @@
     <div class="panel-content">
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
             <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);"
-                (swipeleft)="siwtchToleft(tabProfile)" (swiperight)="siwtchToRight(tabProfile)">
+                (swipeleft)="switchToleft(tabProfile)" (swiperight)="switchToRight(tabProfile)">
                 <mat-tab label="{{'lang.informations' | translate}}">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
@@ -208,7 +208,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field style="width:100%">
                                             <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersList"
-                                                [(ngModel)]="profileInfo.substitute">
+                                                [(ngModel)]="profileInfo.substitute" (selectionChange)="toggleSubstitute($event)">
                                                 <ng-container *ngFor="let userRest of usersList">
                                                     <mat-option *ngIf="userRest.id !== profileInfo.id && !userRest.substitute"
                                                         [value]="userRest.id">

@@ -126,9 +126,7 @@ export class UserComponent implements OnInit {
             .subscribe({
                 next: () => {
                     if (this.authService.user.id === this.user.id) {
-                        this.authService.user.firstname = this.user.firstname;
-                        this.authService.user.lastname = this.user.lastname;
-                        this.authService.user.email = this.user.email;
+                        this.authService.updateUserInfoWithTokenRefresh();
                     }
                     if (this.passwordRest.newPassword !== '') {
                         this.updateRestUser();
