@@ -178,7 +178,6 @@ export class LdapComponent implements OnInit {
                             next: (data: any) => {
                                 this.ldapTest.result = data.informations;
                                 if (data.connection) {
-                                    this.snavRight.close();
                                     this.notificationService.success('lang.ldapConnectionSucceeded');
                                 }
                             },
@@ -199,7 +198,6 @@ export class LdapComponent implements OnInit {
                     next: (data: any) => {
                         this.ldapTest.result = data.informations;
                         if (data.connection) {
-                            this.snavRight.close();
                             this.notificationService.success('lang.ldapConnectionSucceeded');
                         }
                     },
