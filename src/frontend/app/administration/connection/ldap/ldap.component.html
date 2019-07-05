@@ -85,7 +85,7 @@
                             <mat-list role="list">
                                 <mat-list-item role="listitem"><b class="primary">{{'lang.uri' | translate}}</b>&nbsp;: {{ldap.value.uri}}</mat-list-item>
                                 <mat-list-item role="listitem"><b class="primary">{{'lang.login' | translate}}</b>&nbsp;:&nbsp;
-                                    <span *ngIf="ldap.value.prefix !== ''">
+                                    <span *ngIf="ldap.value.prefix">
                     {{ldap.value.prefix}}\
                   </span>
                                     {{ldapTest.login}}{{ldap.value.suffix}}
