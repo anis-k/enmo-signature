@@ -75,30 +75,29 @@ export class DocumentComponent implements OnInit {
     signaturesContent: any = [];
     totalPages: number;
     draggable: boolean;
-    loadingDoc: boolean = true;
     currentDoc: number = 0;
     docList: any = [];
     actionsList: any = [
         {
-            id : 2,
-            label : 'lang.reject',
-            color : '#e74c3c',
-            logo : 'fas fa-backspace',
-            event : 'refuseDocument'
+            id: 2,
+            label: 'lang.reject',
+            color: '#e74c3c',
+            logo: 'fas fa-backspace',
+            event: 'refuseDocument'
         },
         {
-            id : 3,
-            label : 'lang.signatures',
-            color : '#135F7F',
-            logo : '',
-            event : 'openDrawer'
+            id: 3,
+            label: 'lang.signatures',
+            color: '#135F7F',
+            logo: '',
+            event: 'openDrawer'
         },
         {
-            id : 1,
-            label : 'lang.validate',
-            color : '#2ecc71',
-            logo : 'fas fa-check-circle',
-            event : 'validateDocument'
+            id: 1,
+            label: 'lang.validate',
+            color: '#2ecc71',
+            logo: 'fas fa-check-circle',
+            event: 'validateDocument'
         },
     ];
     pdfDataArr: any;
@@ -110,8 +109,8 @@ export class DocumentComponent implements OnInit {
 
     mainDocument: any = {
         id: 0,
-        attachments : [],
-        workflow : [],
+        attachments: [],
+        workflow: [],
     };
 
     loadingUI: any = false;
@@ -157,7 +156,7 @@ export class DocumentComponent implements OnInit {
         }, 500);
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
-                this.loadingDoc = true;
+                this.signaturesService.mainLoading = true;
                 this.signaturesService.renderingDoc = true;
                 this.http.get('../rest/documents/' + params['id'])
                     .subscribe((data: any) => {
@@ -194,13 +193,14 @@ export class DocumentComponent implements OnInit {
                 this.snav.open();
                 this.signaturesService.mainDocumentId = null;
                 this.freezeSidenavClose = true;
-                this.loadingDoc = false;
+                this.signaturesService.mainLoading = false;
             }
         });
     }
 
     /*ngDoCheck() {
         if (this.signaturesService.workingAreaHeight !== $('#snapshotPdf').height() || this.signaturesService.workingAreaWidth !== $('#snapshotPdf').width()) {
+            console.log('fuuu :' + this.signaturesService.workingAreaWidth);
             this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
             this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
         }
@@ -208,26 +208,26 @@ export class DocumentComponent implements OnInit {
 
     renderImage() {
         if (this.docList[this.currentDoc].imgContent[this.pageNum] === undefined) {
-            this.loadingDoc = true;
+            this.signaturesService.mainLoading = true;
             this.loadingUI = true;
             if (this.currentDoc === 0) {
                 this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum)
-                .subscribe((data: any) => {
-                    this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
-                    this.loadingDoc = false;
-                    setTimeout(() => {
-                        this.loadingUI = false;
-                    }, 400);
-                });
+                    .subscribe((data: any) => {
+                        this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
+                        this.signaturesService.mainLoading = false;
+                        setTimeout(() => {
+                            this.loadingUI = false;
+                        }, 400);
+                    });
             } else {
                 this.http.get('../rest/attachments/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum)
-                .subscribe((data: any) => {
-                    this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
-                    this.loadingDoc = false;
-                    setTimeout(() => {
-                        this.loadingUI = false;
-                    }, 400);
-                });
+                    .subscribe((data: any) => {
+                        this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
+                        this.signaturesService.mainLoading = false;
+                        setTimeout(() => {
+                            this.loadingUI = false;
+                        }, 400);
+                    });
             }
         }
     }
@@ -282,6 +282,7 @@ export class DocumentComponent implements OnInit {
     }
 
     zoomForView() {
+        this.signaturesService.mainLoading = true;
         // this.resetDragPosition();
         this.resetDragPos = true;
         this.widthDoc = '100%';
@@ -291,6 +292,7 @@ export class DocumentComponent implements OnInit {
         setTimeout(() => {
             this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
             this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
+            this.signaturesService.mainLoading = false;
         }, 400);
         this.signaturesService.scale = 1;
 
@@ -324,6 +326,14 @@ export class DocumentComponent implements OnInit {
         this.renderImage();
     }
 
+    initWorkingArea() {
+        if ((typeof this.signaturesService.workingAreaHeight !== 'number' || this.signaturesService.workingAreaHeight === 0) && (typeof this.signaturesService.workingAreaWidth !== 'number' || this.signaturesService.workingAreaWidth === 0)) {
+            this.img = document.querySelector('img.zoom');
+            const rect = this.img.getBoundingClientRect();
+            this.signaturesService.workingAreaHeight = rect.height;
+            this.signaturesService.workingAreaWidth = rect.width;
+        }
+    }
     addAnnotation(e: any) {
         e.preventDefault();
 
@@ -341,7 +351,6 @@ export class DocumentComponent implements OnInit {
 
             const posX = offsetX - this.signaturesService.x;
             const posY = offsetY - this.signaturesService.y;
-
 
             if (this.signaturesService.mobileMode) {
                 this.signaturesService.x = -posX;
@@ -485,35 +494,35 @@ export class DocumentComponent implements OnInit {
     openVisaWorkflow() {
         this.snavRight.open();
         this.signaturesService.sideNavRigtDatas = {
-            mode : 'visaWorkflow',
-            width : '450px',
-            locked : false,
+            mode: 'visaWorkflow',
+            width: '450px',
+            locked: false,
         };
     }
 
     openDocumentList() {
         this.snavRight.open();
         this.signaturesService.sideNavRigtDatas = {
-            mode : 'documentList',
-            width : '450px',
-            locked : false,
+            mode: 'documentList',
+            width: '450px',
+            locked: false,
         };
     }
 
     openMainDocumentDetail() {
         this.snavRight.open();
         this.signaturesService.sideNavRigtDatas = {
-            mode : 'mainDocumentDetail',
-            width : '450px',
-            locked : false,
+            mode: 'mainDocumentDetail',
+            width: '450px',
+            locked: false,
         };
     }
 
     backToDetails() {
         this.signaturesService.sideNavRigtDatas = {
-            mode : 'mainDocumentDetail',
-            width : '450px',
-            locked : false,
+            mode: 'mainDocumentDetail',
+            width: '450px',
+            locked: false,
         };
     }
 
@@ -522,10 +531,10 @@ export class DocumentComponent implements OnInit {
 
         if (r) {
             this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: null })
-            .subscribe(() => {
-                this.authService.updateUserInfoWithTokenRefresh();
-                this.notificationService.success('lang.substitutionDeleted');
-            });
+                .subscribe(() => {
+                    this.authService.updateUserInfoWithTokenRefresh();
+                    this.notificationService.success('lang.substitutionDeleted');
+                });
         }
     }
 }

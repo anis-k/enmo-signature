@@ -37,13 +37,8 @@ jQuery(document).ready(function (e) {
 
         var fixFingerPosition = 15;
 
-        if (params.mobileMode === true) {
-            canvas.attr("width", params.width / 2);
-            canvas.attr("height", params.height / 2);
-        } else {
-            canvas.attr("width", params.width);
-            canvas.attr("height", params.height);
-        }
+        canvas.attr("width", params.width);
+        canvas.attr("height", params.height);
 
         var points = [];
         var last = {

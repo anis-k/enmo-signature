@@ -35,7 +35,8 @@ export class SignaturesContentService {
     mode = '';
     scale = 1;
     x = 0;
-    y = 0;
+    y = 90;
+    mainLoading = true;
 
     constructor() {
         if (window.screen.width <= 360) {

@@ -8,7 +8,7 @@
     <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
   </mat-sidenav>
   <mat-sidenav-content class="mainView">
-    <div *ngIf="loadingDoc"
+    <div *ngIf="signaturesService.mainLoading"
       style="position: absolute;z-index: 2;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
       <mat-spinner></mat-spinner>
     </div>
@@ -63,9 +63,9 @@
         <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0">
         </app-document-note-list>
         <app-document-sign-list *ngIf="currentDoc == 0"></app-document-sign-list>
-        <img *ngIf="!loadingDoc && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf"
+        <img *ngIf="!signaturesService.mainLoading && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf"
           [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+docList[currentDoc].imgContent[pageNum])"
-          style="width:100%;" class="zoom" />
+          style="width:100%;" class="zoom" (load)="initWorkingArea()"/>
         <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
         </app-document-note-pad>
       </div>

@@ -22,14 +22,16 @@ export class DocumentNotePadComponent implements OnInit {
     ngOnInit(): void { }
 
     initPad() {
+        console.log(this.signaturesService.workingAreaHeight);
+        console.log(this.signaturesService.workingAreaWidth);
         setTimeout(() => {
             ($('#myCanvas') as any).sign({
                 mode: this.authService.user.preferences.writingMode, // direct or stylus
                 lineWidth: this.authService.user.preferences.writingSize,
                 changeColor: $('.radio'),
                 undo: $('.undo'),
-                height: this.signaturesService.workingAreaHeight * 2,
-                width: this.signaturesService.workingAreaWidth * 2,
+                height: this.signaturesService.workingAreaHeight,
+                width: this.signaturesService.workingAreaWidth,
                 fixHeight: this.signaturesService.y,
                 fixWidth: this.signaturesService.x,
                 mobileMode: this.signaturesService.mobileMode
@@ -39,15 +41,18 @@ export class DocumentNotePadComponent implements OnInit {
     }
 
     cancelAnnotation() {
+        this.signaturesService.mainLoading = true;
         setTimeout(() => {
             this.triggerEvent.emit();
             this.signaturesService.x = 0;
             this.signaturesService.y = 90;
             this.signaturesService.annotationMode = false;
+            this.signaturesService.mainLoading = false;
         }, 200);
     }
 
     validateAnnotation() {
+        this.signaturesService.mainLoading = true;
         if (!this.signaturesService.notesContent[this.signaturesService.currentPage]) {
             this.signaturesService.notesContent[this.signaturesService.currentPage] = [];
         }
