@@ -116,15 +116,17 @@ export class DocumentComponent implements OnInit {
 
     loadingUI: any = false;
 
+    img: any;
+
     @ViewChild('snav') snav: MatSidenav;
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
 
-    @HostListener('mousedown', ['$event']) protected onPMouseDown(event: any) {
+    /*@HostListener('mousedown', ['$event']) protected onPMouseDown(event: any) {
         event.preventDefault();
-    }
+    }*/
 
     @HostListener('window:resize', ['$event'])
     onResize(event: any) {
@@ -197,12 +199,12 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    ngDoCheck() {
+    /*ngDoCheck() {
         if (this.signaturesService.workingAreaHeight !== $('#snapshotPdf').height() || this.signaturesService.workingAreaWidth !== $('#snapshotPdf').width()) {
             this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
             this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
         }
-    }
+    }*/
 
     renderImage() {
         if (this.docList[this.currentDoc].imgContent[this.pageNum] === undefined) {
@@ -323,13 +325,22 @@ export class DocumentComponent implements OnInit {
     }
 
     addAnnotation(e: any) {
+        e.preventDefault();
+
+        e = e.srcEvent;
 
         if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.authService.user.substitute === null) {
 
             this.backToDetails();
 
-            const posX = e.srcEvent.layerX - this.signaturesService.x;
-            const posY = e.srcEvent.layerY - this.signaturesService.y;
+            this.img = document.querySelector('img.zoom');
+
+            const rect = this.img.getBoundingClientRect();
+            const offsetX = e.pageX - rect.left - window.pageXOffset;
+            const offsetY = e.pageY - rect.top - window.pageYOffset;
+
+            const posX = offsetX - this.signaturesService.x;
+            const posY = offsetY - this.signaturesService.y;
 
 
             if (this.signaturesService.mobileMode) {
