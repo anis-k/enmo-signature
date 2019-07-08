@@ -352,6 +352,7 @@ export class ProfileComponent implements OnInit {
             this.drawSample();
         }
         if (e.index === 2) {
+            this.refreshInfoSubstitute();
             this.swithToAdmin();
         }
     }
@@ -403,5 +404,21 @@ export class ProfileComponent implements OnInit {
 
         this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
             .subscribe();
+    }
+
+    refreshUserList(opened: any) {
+        if (opened) {
+            this.http.get('../rest/users')
+                .subscribe((data: any) => {
+                    this.usersList = data.users;
+                });
+        }
+    }
+
+    refreshInfoSubstitute() {
+        this.http.get('../rest/users/' + this.authService.user.id + '/substitute')
+            .subscribe((data: any) => {
+                this.authService.user.substitute = data.substitute;
+            });
     }
 }
