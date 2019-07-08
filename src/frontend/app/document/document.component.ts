@@ -123,9 +123,6 @@ export class DocumentComponent implements OnInit {
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
 
-    /*@HostListener('mousedown', ['$event']) protected onPMouseDown(event: any) {
-        event.preventDefault();
-    }*/
 
     @HostListener('window:resize', ['$event'])
     onResize(event: any) {
@@ -198,14 +195,6 @@ export class DocumentComponent implements OnInit {
         });
     }
 
-    /*ngDoCheck() {
-        if (this.signaturesService.workingAreaHeight !== $('#snapshotPdf').height() || this.signaturesService.workingAreaWidth !== $('#snapshotPdf').width()) {
-            console.log('fuuu :' + this.signaturesService.workingAreaWidth);
-            this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
-            this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
-        }
-    }*/
-
     renderImage() {
         if (this.docList[this.currentDoc].imgContent[this.pageNum] === undefined) {
             this.signaturesService.mainLoading = true;
@@ -216,6 +205,7 @@ export class DocumentComponent implements OnInit {
                         this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
                         this.signaturesService.mainLoading = false;
                         setTimeout(() => {
+                            this.initWorkingArea();
                             this.loadingUI = false;
                         }, 400);
                     });
@@ -286,12 +276,12 @@ export class DocumentComponent implements OnInit {
         // this.resetDragPosition();
         this.resetDragPos = true;
         this.widthDoc = '100%';
+        this.signaturesService.workingAreaHeight = this.signaturesService.workingAreaHeight / 2;
+        this.signaturesService.workingAreaWidth = this.signaturesService.workingAreaWidth / 2;
         setTimeout(() => {
             this.resetDragPos = false;
         }, 200);
         setTimeout(() => {
-            this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
-            this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
             this.signaturesService.mainLoading = false;
         }, 400);
         this.signaturesService.scale = 1;
@@ -334,6 +324,7 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.workingAreaWidth = rect.width;
         }
     }
+
     addAnnotation(e: any) {
         e.preventDefault();
 

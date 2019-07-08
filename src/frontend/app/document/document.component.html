@@ -65,7 +65,7 @@
         <app-document-sign-list *ngIf="currentDoc == 0"></app-document-sign-list>
         <img *ngIf="!signaturesService.mainLoading && !freezeSidenavClose" (tap)="addAnnotation($event)" id="snapshotPdf"
           [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+docList[currentDoc].imgContent[pageNum])"
-          style="width:100%;" class="zoom" (load)="initWorkingArea()"/>
+          style="width:100%;" class="zoom"/>
         <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
         </app-document-note-pad>
       </div>
