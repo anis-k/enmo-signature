@@ -288,6 +288,10 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         }
 
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users']) && $GLOBALS['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
         $user = UserModel::getById(['select' => ['substitute'], 'id' => $args['id']]);
         if (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
