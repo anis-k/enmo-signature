@@ -22,8 +22,6 @@ export class DocumentNotePadComponent implements OnInit {
     ngOnInit(): void { }
 
     initPad() {
-        console.log(this.signaturesService.workingAreaHeight);
-        console.log(this.signaturesService.workingAreaWidth);
         setTimeout(() => {
             ($('#myCanvas') as any).sign({
                 mode: this.authService.user.preferences.writingMode, // direct or stylus
