@@ -419,6 +419,7 @@ export class ProfileComponent implements OnInit {
         this.http.get('../rest/users/' + this.authService.user.id + '/substitute')
             .subscribe((data: any) => {
                 this.authService.user.substitute = data.substitute;
+                this.profileInfo.substitute = data.substitute;
             });
     }
 }
