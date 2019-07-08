@@ -11,7 +11,8 @@
             true,
             "element",
             "app",
-            "kebab-case"
-        ]
+            "no-case"
+        ],
+        "no-input-rename": false
     }
 }

@@ -282,6 +282,20 @@ class UserController
         return $response->withJson(['picture' => $user['picture']]);
     }
 
+    public function getSubstituteById(Request $request, Response $response, array $args)
+    {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
+        $user = UserModel::getById(['select' => ['substitute'], 'id' => $args['id']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        return $response->withJson(['substitute' => $user['substitute']]);
+    }
+
     public function updatePreferences(Request $request, Response $response, array $args)
     {
         if ($GLOBALS['id'] != $args['id']) {
