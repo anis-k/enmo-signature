@@ -380,7 +380,7 @@ export class ProfileComponent implements OnInit {
     }
 
     swithToAdmin() {
-        if (this.usersList.length === 0) {
+        if (this.authService.user.substitute || this.usersList.length === 0) {
             this.http.get('../rest/users')
                 .subscribe((data: any) => {
                     this.usersList = data.users;
