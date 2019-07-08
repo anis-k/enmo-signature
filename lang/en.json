@@ -63,6 +63,7 @@
 		"logInOncePasswordChanged"           : "You will be asked to log in once the password has been changed.",
 		"maxFileSizeReached"                 : "Max file size reached (1 MB)",
 		"minLengthChar"                      : "{{charLength}} minimum character(s) required",
+		"modificationSaved"                		: "Modification saved",
 		"myProfil"                           : "My profile",
 		"newPassword"                        : "New password",
 		"notAnImage"                         : "This is not an image",

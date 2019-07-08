@@ -403,7 +403,9 @@ export class ProfileComponent implements OnInit {
         this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
 
         this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
-            .subscribe();
+            .subscribe((data: any) => {
+                this.notificationService.success('lang.modificationSaved');
+            });
     }
 
     refreshUserList(opened: any) {

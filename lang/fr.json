@@ -63,6 +63,7 @@
 		"logInOncePasswordChanged"           : "Vous serez amené à vous connecter une fois la modification du mot de passe effectuée.",
 		"maxFileSizeReached"                 : "Taille maximale du fichier atteinte (1 MB)",
 		"minLengthChar"                      : "{{charLength}} caractère(s) au minimum requis",
+		"modificationSaved"                 	: "Modification enregistrée",
 		"myProfil"                           : "Mon profil",
 		"newPassword"                        : "Nouveau mot de passe",
 		"notAnImage"                         : "Ceci n'est pas une image",
