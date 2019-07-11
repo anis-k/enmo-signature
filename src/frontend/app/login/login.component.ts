@@ -1,14 +1,15 @@
 import { Component, AfterViewInit, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { DomSanitizer } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { environment } from '../../core/environments/environment';
-import { Validators, FormControl } from '@angular/forms';
+import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { AuthService } from '../service/auth.service';
+import { tap, catchError } from 'rxjs/operators';
+import {EMPTY} from 'rxjs';
 
 @Component({
     templateUrl: 'login.component.html',
@@ -34,27 +35,27 @@ import { AuthService } from '../service/auth.service';
 })
 export class LoginComponent implements OnInit, AfterViewInit {
 
-    newLogin: any = {
-        login: '',
-        password: ''
-    };
-    labelButton: string = 'lang.connect';
-    appVersion: string = '';
-    appAuthor: string = '';
+    loginForm   : FormGroup;
 
-    idMail = new FormControl('', [Validators.required]);
-    password = new FormControl('', [Validators.required]);
+    loading     : boolean = false;
+    showForm    : boolean = false;
+    environment : any;
 
-    constructor(public http: HttpClient, private router: Router, sanitizer: DomSanitizer, public authService: AuthService, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog) {
-        if (this.authService.isAuth) {
-            this.router.navigate(['/documents']);
-        }
+
+    constructor(private http: HttpClient, private router: Router, public authService: AuthService, private signaturesService: SignaturesContentService, private notificationService: NotificationService, public dialog: MatDialog, private formBuilder: FormBuilder) {
     }
 
     ngOnInit(): void {
-        this.authService.loadingForm = true;
-        this.appVersion = environment.VERSION;
-        this.appAuthor = environment.AUTHOR;
+        if (this.authService.isAuth) {
+            this.router.navigate(['/documents']);
+        }
+
+        this.loginForm = this.formBuilder.group({
+            login:      [ null, Validators.required ],
+            password:   [ null, Validators.required ]
+        });
+
+        this.environment = environment;
         this.signaturesService.reset();
     }
 
@@ -63,15 +64,43 @@ export class LoginComponent implements OnInit, AfterViewInit {
             $('.maarchLogo').css({ 'transform': 'translateY(-200px)' });
         }, 200);
         setTimeout(() => {
-            this.authService.loadingForm = false;
+            this.showForm = true;
             this.fixAutoFill();
         }, 500);
     }
 
     fixAutoFill() {
         setTimeout(() => {
-            this.newLogin.login = $('#login').val();
-            this.newLogin.password = $('#password').val();
+            this.loginForm.get('login').setValue($('#login').val());
+            this.loginForm.get('password').setValue($('#password').val());
         }, 100);
+    }
+
+    onSubmit() {
+        this.loading = true;
+        this.http.post('../rest/authenticate', { 'login': this.loginForm.get('login').value, 'password': this.loginForm.get('password').value }, { observe: 'response' })
+            .pipe(
+                tap((data: any) => {
+                    this.loading = false;
+                    this.showForm = false;
+                    this.authService.saveTokens(data.headers.get('Token'), data.headers.get('Refresh-Token'));
+                    this.authService.setUser({});
+                    $('.maarchLogo').css({ 'transform': 'translateY(0px)' });
+                    setTimeout(() => {
+                        this.router.navigate(['/documents']);
+                    }, 700);
+                }),
+                catchError((err: any) => {
+                    this.loading = false;
+                    if (err.status === 401) {
+                        this.notificationService.error('lang.wrongLoginPassword');
+                    } else {
+                        this.notificationService.handleErrors(err);
+                    }
+
+                    return EMPTY;
+                })
+            )
+            .subscribe();
     }
 }

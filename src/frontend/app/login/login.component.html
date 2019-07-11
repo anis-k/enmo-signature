@@ -1,19 +1,19 @@
 <div class="login-content">
     <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
-    <mat-card class="login-form" *ngIf="!authService.loadingForm" [@myAnimation]>
-        <form (ngSubmit)="authService.login(newLogin.login, newLogin.password)">
+    <mat-card class="login-form" *ngIf="showForm" [@myAnimation]>
+        <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
             <mat-form-field class="input-row">
-                <input id="login"  name="login" matInput placeholder="{{'lang.login' | translate}}" [(ngModel)]="newLogin.login" type="text" oninput="this.value = this.value.toLowerCase()" (click)="fixAutoFill()">
+                <input id="login"  name="login" matInput placeholder="{{'lang.login' | translate}}" formControlName="login" type="text">
             </mat-form-field>
             <mat-form-field class="input-row">
-                <input id="password" name="password" matInput placeholder="{{'lang.password' | translate}}" type="password" [(ngModel)]="newLogin.password">
+                <input id="password" name="password" matInput placeholder="{{'lang.password' | translate}}" type="password" formControlName="password">
                 <mat-hint align="end" *ngIf="authService.authMode === 'default'"><a routerLink="/forgot-password" class="infoLogin">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
                 <mat-hint align="end" *ngIf="authService.authMode === 'ldap'"><span class="infoLogin">{{'lang.ldapEnabled' | translate}}</span></mat-hint>
             </mat-form-field>
-            <button type="submit" mat-button [disabled]="newLogin.id == '' || newLogin.password == '' || authService.loadingConnection">{{labelButton | translate}}</button>
+            <button type="submit" mat-button [disabled]="loginForm.invalid || loading">{{'lang.connect' | translate}}</button>
         </form>
     </mat-card>
     <footer>
-        Maarch parapheur {{appVersion}} Powered by {{appAuthor}}
+        Maarch parapheur {{environment.VERSION}} Powered by {{environment.AUTHOR}}
     </footer>
 </div>
