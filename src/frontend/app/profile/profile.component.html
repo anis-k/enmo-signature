@@ -7,8 +7,8 @@
         <div class="user">
             {{'lang.myProfil' | translate}}
         </div>
-        <div class="avatarProfile"
-            [ngStyle]="{'background': 'url(' + this.profileInfo.picture + ') no-repeat scroll center center / cover'}"
+        <div #avatarProfile class="avatarProfile"
+            [ngStyle]="{'background': 'url(' + this.avatarInfo.picture + ') no-repeat scroll center center / cover'}"
             (tap)="uploadFile.click();">
         </div>
         <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
@@ -93,8 +93,8 @@
                                 <legend align="left">{{'lang.notifications' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-2-col">
-                                        <mat-slide-toggle [checked]="this.profileInfo.preferences.notifications"
-                                            (change)="this.profileInfo.preferences.notifications=!this.profileInfo.preferences.notifications"
+                                        <mat-slide-toggle [checked]="this.preferenceInfo.notifications"
+                                            (change)="this.preferenceInfo.notifications=!this.preferenceInfo.notifications"
                                             color="primary">{{'lang.receiveNotif' | translate}}</mat-slide-toggle>
                                     </div>
                                     <div class="form-2-col" style="text-align: justify;font-size: 12px;">
@@ -110,7 +110,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select #langSelect name="langUser"
-                                                [(ngModel)]="this.profileInfo.preferences.lang">
+                                                [(ngModel)]="this.preferenceInfo.lang">
                                                 <mat-option *ngFor="let lang of this.profileInfo['availableLanguages']"
                                                     [value]="lang">{{'lang.'+lang | translate }}</mat-option>
                                             </mat-select>
@@ -129,7 +129,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select name="writingMode"
-                                                [(ngModel)]="this.profileInfo.preferences.writingMode">
+                                                [(ngModel)]="this.preferenceInfo.writingMode">
                                                 <mat-option value="direct">{{'lang.free' | translate}}</mat-option>
                                                 <mat-option value="stylus">{{'lang.appleStylus' | translate}} <i
                                                         class="fab fa-apple"></i>
@@ -137,11 +137,11 @@
                                             </mat-select>
                                         </mat-form-field>
                                     </div>
-                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'stylus'" class="form-2-col"
+                                    <div *ngIf="this.preferenceInfo.writingMode == 'stylus'" class="form-2-col"
                                         style="text-align: justify;font-size: 12px;"
                                         [innerHTML]="'lang.freeModeInfo' | translate">
                                     </div>
-                                    <div *ngIf="this.profileInfo.preferences.writingMode == 'direct'" class="form-2-col"
+                                    <div *ngIf="this.preferenceInfo.writingMode == 'direct'" class="form-2-col"
                                         style="text-align: justify;font-size: 12px;"
                                         [innerHTML]="'lang.standardModeInfo' | translate">
                                     </div>
@@ -156,7 +156,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select name="writingSize"
-                                                [(ngModel)]="this.profileInfo.preferences.writingSize"
+                                                [(ngModel)]="this.preferenceInfo.writingSize"
                                                 (selectionChange)="drawSample();">
                                                 <mat-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">
                                                     {{i+1}}</mat-option>
@@ -176,7 +176,7 @@
                                     <div class="form-2-col">
                                         <mat-form-field>
                                             <mat-select name="writingColor"
-                                                [(ngModel)]="this.profileInfo.preferences.writingColor">
+                                                [(ngModel)]="this.preferenceInfo.writingColor">
                                                 <mat-option style="color:#000000" value="#000000">
                                                     {{'lang.black' | translate}}</mat-option>
                                                 <mat-option style="color:#1a75ff" value="#1a75ff">
@@ -188,7 +188,7 @@
                                     </div>
                                     <div class="form-2-col">
                                         <div style="height:50px;width:100px;margin:auto;"
-                                            [style.backgroundColor]="this.profileInfo.preferences.writingColor">
+                                            [style.backgroundColor]="this.preferenceInfo.writingColor">
                                         </div>
                                     </div>
                                 </div>
