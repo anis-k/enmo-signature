@@ -120,6 +120,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
+        $body['login'] = strtolower($body['login']);
         $existingUser = UserModel::getByLogin(['login' => $body['login'], 'select' => [1]]);
         if (!empty($existingUser)) {
             return $response->withStatus(400)->withJson(['errors' => 'Login already exists', 'lang' => 'userLoginAlreadyExists']);
@@ -473,7 +474,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Bad request']);
         }
 
-        $user = UserModel::getByLogin(['select' => ['id', 'email', 'preferences'], 'login' => $body['login']]);
+        $user = UserModel::getByLogin(['select' => ['id', 'email', 'preferences'], 'login' => strtolower($body['login'])]);
         if (empty($user)) {
             return $response->withStatus(204);
         }

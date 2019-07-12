@@ -46,8 +46,9 @@ class AuthenticationController
     {
         $id = null;
         if (!empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
-            if (AuthenticationModel::authentication(['login' => $_SERVER['PHP_AUTH_USER'], 'password' => $_SERVER['PHP_AUTH_PW']])) {
-                $user = UserModel::getByLogin(['select' => ['id'], 'login' => $_SERVER['PHP_AUTH_USER']]);
+            $login = strtolower($_SERVER['PHP_AUTH_USER']);
+            if (AuthenticationModel::authentication(['login' => $login, 'password' => $_SERVER['PHP_AUTH_PW']])) {
+                $user = UserModel::getByLogin(['select' => ['id'], 'login' => $login]);
                 $id = $user['id'];
             }
         } else {
@@ -75,7 +76,7 @@ class AuthenticationController
         return $id;
     }
 
-    public static function authenticate(Request $request, Response $response)
+    public function authenticate(Request $request, Response $response)
     {
         $body = $request->getParsedBody();
 
@@ -85,6 +86,7 @@ class AuthenticationController
             return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
         }
 
+        $login = strtolower($body['login']);
         $connection = ConfigurationModel::getConnection();
         if ($connection == 'ldap') {
             $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => ['value']]);
@@ -122,13 +124,13 @@ class AuthenticationController
                 return $response->withStatus(400)->withJson(['errors' => $error]);
             }
         } else {
-            $authenticated = AuthenticationModel::authentication(['login' => $body['login'], 'password' => $body['password']]);
+            $authenticated = AuthenticationModel::authentication(['login' => $login, 'password' => $body['password']]);
         }
         if (empty($authenticated)) {
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
-        $user = UserModel::getByLogin(['login' => $body['login'], 'select' => ['id', '"isRest"', 'refresh_token']]);
+        $user = UserModel::getByLogin(['login' => $login, 'select' => ['id', '"isRest"', 'refresh_token']]);
         if (empty($user) || $user['isRest']) {
             return $response->withStatus(403)->withJson(['errors' => 'Authentication unauthorized']);
         }
@@ -169,7 +171,7 @@ class AuthenticationController
         return $response->withStatus(204);
     }
 
-    public static function getRefreshedToken(Request $request, Response $response)
+    public function getRefreshedToken(Request $request, Response $response)
     {
         $queryParams = $request->getQueryParams();
 

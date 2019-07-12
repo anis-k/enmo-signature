@@ -291,7 +291,7 @@ class DocumentController
 
         foreach ($body['workflow'] as $key => $workflow) {
             if (!empty($workflow['processingUser'])) {
-                $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => $workflow['processingUser']]);
+                $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => strtolower($workflow['processingUser'])]);
             } elseif (!empty($workflow['userId'])) {
                 $processingUser = UserModel::getById(['select' => ['id'], 'id' => $workflow['userId']]);
             }
