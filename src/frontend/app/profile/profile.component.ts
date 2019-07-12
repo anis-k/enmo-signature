@@ -9,8 +9,9 @@ import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
 import { FiltersService } from '../service/filters.service';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { finalize, tap, exhaustMap, filter, catchError } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
+import { of } from 'rxjs';
 
 @Component({
     selector: 'app-my-profile',
@@ -202,57 +203,49 @@ export class ProfileComponent implements OnInit {
             profileToSend['pictureOrientation'] = orientation.replace(/\"/g, '');
         }
 
-        this.http.put('../rest/users/' + this.authService.user.id, profileToSend)
-            .subscribe((data: any) => {
-
+        this.http.put('../rest/users/' + this.authService.user.id, profileToSend).pipe(
+            tap((data: any) => {
                 this.authService.user.picture = data.user.picture;
-
                 this.profileInfo.picture = data.user.picture;
-
-                this.http.put('../rest/users/' + this.authService.user.id + '/preferences', profileToSend.preferences)
-                    .pipe(
-                        finalize(() => {
-                            this.disableState = false;
-                            this.msgButton = 'lang.validate';
-                            this.closeProfile();
-                        })
-                    )
-                    .subscribe(() => {
-                        this.setLang(this.authService.user.preferences.lang);
-                        this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
-
-                        $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
-                        if (this.showPassword) {
-                            const headers = new HttpHeaders({
-                                'Authorization': 'Bearer ' + this.authService.getToken()
-                            });
-
-                            this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers })
-                                .subscribe((dataPass: any) => {
-                                    this.authService.saveTokens(dataPass.headers.get('Token'), dataPass.headers.get('Refresh-Token'));
-
-                                    this.password.newPassword = '';
-                                    this.password.passwordConfirmation = '';
-                                    this.password.currentPassword = '';
-                                    this.notificationService.success('lang.profileUpdated');
-                                }, (err) => {
-                                    if (err.status === 401) {
-                                        this.notificationService.error('lang.wrongPassword');
-                                    } else {
-                                        this.notificationService.handleErrors(err);
-                                    }
-                                });
-                        }
-
-                        if (!this.showPassword) {
-                            this.notificationService.success('lang.profileUpdated');
-                        }
-
-                        this.authService.updateUserInfoWithTokenRefresh();
-
+            }),
+            exhaustMap(() => this.http.put('../rest/users/' + this.authService.user.id + '/preferences', profileToSend.preferences)),
+            tap(() => {
+                this.disableState = false;
+                this.msgButton = 'lang.validate';
+                this.setLang(this.authService.user.preferences.lang);
+                this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
+                $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
+                this.authService.updateUserInfoWithTokenRefresh();
+            }),
+            exhaustMap(() => {
+                if (!this.showPassword) {
+                    this.closeProfile();
+                    this.notificationService.success('lang.profileUpdated');
+                    return of(false);
+                } else {
+                    const headers = new HttpHeaders({
+                        'Authorization': 'Bearer ' + this.authService.getToken()
                     });
-
-            });
+                    return this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers });
+                }
+            }),
+            filter(data => !!data),
+            tap((dataPass: any) => {
+                this.authService.saveTokens(dataPass.headers.get('Token'), dataPass.headers.get('Refresh-Token'));
+                this.password.newPassword = '';
+                this.password.passwordConfirmation = '';
+                this.password.currentPassword = '';
+                this.notificationService.success('lang.profileUpdated');
+            }),
+            catchError(err => {
+                if (err.status === 401) {
+                    this.notificationService.error('lang.wrongPassword');
+                } else {
+                    this.notificationService.handleErrors(err);
+                }
+                return of(false);
+            })
+        ).subscribe();
     }
 
     selectSubstitute(ev: any) {

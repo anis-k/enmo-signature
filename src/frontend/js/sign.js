@@ -122,16 +122,18 @@ jQuery(document).ready(function (e) {
                     y: mousePosition.y,
                     break: false
                 });
+
+                canvas.on('touchmove mousemove', function (e) {
+
+                    if (holdClick) {
+                        var mousePosition = getMousePosition(canvas, e);
+                        draw(context, mousePosition.x, mousePosition.y);
+                    }
+    
+                    return false;
+                });
             }
             
-            return false;
-        }).on('touchmove mousemove', function (e) {
-            if (detectMode(params.mode, e)) {
-                if (holdClick) {
-                    var mousePosition = getMousePosition(canvas, e);
-                    draw(context, mousePosition.x, mousePosition.y);
-                }
-            }
             return false;
         }).on('touchend mouseup', function (e) {
             e.preventDefault();
@@ -139,6 +141,8 @@ jQuery(document).ready(function (e) {
             if (points.length > 0) {
                 points[points.length - 1].break = true;
             }
+            canvas.unbind('mousemove');
+            canvas.unbind('touchmove');
             return false;
         });
 
