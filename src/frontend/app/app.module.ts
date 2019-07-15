@@ -154,7 +154,7 @@ import { AlertComponent } from './plugins/alert.component';
       { path: 'forgot-password', component: ForgotPasswordComponent },
       { path: 'update-password', component: UpdatePasswordComponent },
       { path: '**', redirectTo: 'login', pathMatch: 'full' },
-    ], { useHash: true }),
+    ]),
   ],
   entryComponents: [
     CustomSnackbarComponent,

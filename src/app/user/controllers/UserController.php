@@ -249,7 +249,7 @@ class UserController
             'message'       => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
         ]);
 
-        return $response->withJson(['success']);
+        return $response->withStatus(204);
     }
 
     public function delete(Request $request, Response $response, array $args)
