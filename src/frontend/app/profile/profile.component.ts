@@ -1,6 +1,6 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatSidenav, MatExpansionPanel, MatTabGroup } from '@angular/material';
+import { MatSidenav, MatExpansionPanel, MatTabGroup } from '@angular/material';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
@@ -9,9 +9,9 @@ import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
 import { FiltersService } from '../service/filters.service';
 import { Router } from '@angular/router';
-import { finalize, tap, exhaustMap, filter, catchError } from 'rxjs/operators';
+import { tap, exhaustMap, filter, catchError, takeUntil, finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 @Component({
     selector: 'app-my-profile',
@@ -26,10 +26,16 @@ export class ProfileComponent implements OnInit {
 
 
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
+    @ViewChild('avatarProfile') avatarProfile: ElementRef;
 
     profileInfo: any = {
         substitute: null,
         preferences: []
+    };
+    preferenceInfo: any = {};
+    avatarInfo: any = {
+        picture: '',
+        pictureOrientation : ''
     };
     hideCurrentPassword: Boolean = true;
     hideNewPassword: Boolean = true;
@@ -65,17 +71,34 @@ export class ProfileComponent implements OnInit {
     msgButton = 'lang.validate';
     loading: boolean = false;
 
-    constructor(private translate: TranslateService, public http: HttpClient, private router: Router, public sanitizer: DomSanitizer, public notificationService: NotificationService, public signaturesService: SignaturesContentService, public authService: AuthService, private cookieService: CookieService, public filtersService: FiltersService) { }
+    constructor(private translate: TranslateService,
+        public http: HttpClient,
+        private router: Router,
+        public sanitizer: DomSanitizer,
+        public notificationService: NotificationService,
+        public signaturesService: SignaturesContentService,
+        public authService: AuthService,
+        private cookieService: CookieService,
+        public filtersService: FiltersService,
+        private renderer: Renderer2) { }
 
     ngOnInit(): void {
+        this.initProfileInfo();
+    }
+
+    initProfileInfo() {
         this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
+        this.preferenceInfo = this.profileInfo.preferences;
+        this.avatarInfo.picture = this.profileInfo.picture;
+        delete this.profileInfo.picture;
+        delete this.profileInfo.preferences;
     }
 
     closeProfile() {
-        $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
-        $('.avatarProfile').css({ 'content': '' });
+        this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
+        this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
         setTimeout(() => {
-            this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
+            this.initProfileInfo();
         }, 200);
         this.passwordContent.close();
 
@@ -187,34 +210,15 @@ export class ProfileComponent implements OnInit {
     submitProfile() {
         this.disableState = true;
         this.msgButton = 'lang.sending';
-        const profileToSend = {
-            'firstname': this.profileInfo.firstname,
-            'lastname': this.profileInfo.lastname,
-            'email': this.profileInfo.email,
-            'picture': this.profileInfo.picture,
-            'preferences': this.profileInfo.preferences,
-            'substitute': this.profileInfo.substitute,
-        };
 
-        if (this.profileInfo.picture === this.authService.user.picture) {
-            profileToSend.picture = '';
-        } else {
-            const orientation = $('.avatarProfile').css('content');
-            profileToSend['pictureOrientation'] = orientation.replace(/\"/g, '');
-        }
-
-        this.http.put('../rest/users/' + this.authService.user.id, profileToSend).pipe(
-            tap((data: any) => {
-                this.authService.user.picture = data.user.picture;
-                this.profileInfo.picture = data.user.picture;
-            }),
-            exhaustMap(() => this.http.put('../rest/users/' + this.authService.user.id + '/preferences', profileToSend.preferences)),
+        this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo).pipe(
+            exhaustMap(() => this.http.put('../rest/users/' + this.authService.user.id + '/preferences', this.preferenceInfo)),
             tap(() => {
                 this.disableState = false;
                 this.msgButton = 'lang.validate';
-                this.setLang(this.authService.user.preferences.lang);
-                this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
-                $('.avatarProfile').css({ 'transform': 'rotate(0deg)' });
+                this.setLang(this.preferenceInfo.lang);
+                this.cookieService.set('maarchParapheurLang', this.preferenceInfo.lang);
+                // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
                 this.authService.updateUserInfoWithTokenRefresh();
             }),
             exhaustMap(() => {
@@ -244,6 +248,25 @@ export class ProfileComponent implements OnInit {
                     this.notificationService.handleErrors(err);
                 }
                 return of(false);
+            })
+        ).subscribe();
+    }
+
+    changePicture() {
+        this.msgButton = 'lang.sending';
+        this.disableState = true;
+        this.http.put('../rest/users/' + this.authService.user.id + '/picture', this.avatarInfo).pipe(
+            tap(() => {
+                this.authService.user.picture = this.avatarInfo.picture;
+                this.renderer.setStyle(this.avatarProfile.nativeElement, 'background-size', 'cover');
+                this.renderer.setStyle(this.avatarProfile.nativeElement, 'background-position', 'center');
+                this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(' + this.avatarInfo.pictureOrientation + 'deg)');
+                this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '\'' + this.avatarInfo.pictureOrientation + '\'');
+                this.notificationService.success('lang.profileUpdated');
+            }),
+            finalize(() => {
+                this.msgButton = 'lang.validate';
+                this.disableState = false;
             })
         ).subscribe();
     }
@@ -286,37 +309,16 @@ export class ProfileComponent implements OnInit {
     handleFileInput(files: FileList) {
         this.passwordContent.close();
         const fileToUpload = files.item(0);
-        $('.avatarProfile').css({ 'content': '' });
+        this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
 
         if (fileToUpload.size <= 5000000) {
-            if (['image/png', 'image/svg+xml', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
+            if (['image/png', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
                 const myReader: FileReader = new FileReader();
                 myReader.onloadend = (e) => {
-                    this.profileInfo.picture = myReader.result;
                     const image = new Image();
-
                     image.src = myReader.result.toString();
-                    image.onload = function () {
-                        EXIF.getData((image as any), () => {
-                            let deg = 0;
-                            const orientation = EXIF.getTag(this, 'Orientation');
-                            switch (orientation) {
-                                case 3:
-                                    deg = 180;
-                                    break;
-                                case 6:
-                                    deg = 90;
-                                    break;
-                                case 8:
-                                    deg = -90;
-                                    break;
-                            }
-                            $('.avatarProfile').css({ 'background-size': 'cover' });
-                            $('.avatarProfile').css({ 'background-position': 'center' });
-                            $('.avatarProfile').css({ 'transform': 'rotate(' + deg + 'deg)' });
-                            $('.avatarProfile').css({ 'content': '\'' + deg + '\'' });
-                        });
-                    };
+                    this.avatarInfo.picture = myReader.result;
+                    image.onload = () => this.fixImgOrientation(image);
                 };
                 myReader.readAsDataURL(fileToUpload);
             } else {
@@ -327,12 +329,32 @@ export class ProfileComponent implements OnInit {
         }
     }
 
+    fixImgOrientation(image: any) {
+        EXIF.getData((image as any), () => {
+            let deg = 0;
+            const orientation = EXIF.getTag(image, 'Orientation');
+            switch (orientation) {
+                case 3:
+                    deg = 180;
+                    break;
+                case 6:
+                    deg = 90;
+                    break;
+                case 8:
+                    deg = -90;
+                    break;
+            }
+            this.avatarInfo.pictureOrientation = deg;
+            this.changePicture();
+        });
+    }
+
     drawSample() {
         const c = document.getElementById('sampleNote');
         const ctx = (<HTMLCanvasElement>c).getContext('2d');
         ctx.clearRect(0, 0, 150, 150);
         ctx.beginPath();
-        ctx.lineWidth = this.profileInfo.preferences.writingSize;
+        ctx.lineWidth = this.preferenceInfo.writingSize;
         ctx.moveTo(0, 0);
         ctx.lineTo(150, 150);
         ctx.moveTo(150, 0);

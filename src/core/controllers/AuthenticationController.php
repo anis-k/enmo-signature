@@ -34,7 +34,7 @@ class AuthenticationController
     ];
 
 
-    public static function getInformations(Request $request, Response $response)
+    public function getInformations(Request $request, Response $response)
     {
         $connection = ConfigurationModel::getConnection();
         $encryptKey = CoreConfigModel::getEncryptKey();

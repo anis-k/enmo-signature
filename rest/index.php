@@ -99,6 +99,7 @@ $app->get('/users/{id}', \User\controllers\UserController::class . ':getById');
 $app->put('/users/{id}', \User\controllers\UserController::class . ':update');
 $app->delete('/users/{id}', \User\controllers\UserController::class . ':delete');
 $app->get('/users/{id}/picture', \User\controllers\UserController::class . ':getPictureById');
+$app->put('/users/{id}/picture', \User\controllers\UserController::class . ':updatePicture');
 $app->get('/users/{id}/substitute', \User\controllers\UserController::class . ':getSubstituteById');
 $app->put('/users/{id}/preferences', \User\controllers\UserController::class . ':updatePreferences');
 $app->put('/users/{id}/substitute', \User\controllers\UserController::class . ':updateSubstitute');

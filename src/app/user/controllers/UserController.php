@@ -176,30 +176,6 @@ class UserController
             'email'         => $body['email']
         ];
 
-        if ($GLOBALS['id'] == $args['id'] && !empty($body['picture'])) {
-            $infoContent = '';
-            if (preg_match('/^data:image\/(\w+);base64,/', $body['picture'])) {
-                $infoContent = substr($body['picture'], 0, strpos($body['picture'], ',') + 1);
-                $body['picture'] = substr($body['picture'], strpos($body['picture'], ',') + 1);
-            }
-            $picture    = base64_decode($body['picture']);
-            $finfo      = new \finfo(FILEINFO_MIME_TYPE);
-            $mimeType   = $finfo->buffer($picture);
-            $type       = explode('/', $mimeType);
-
-            if ($type[0] != 'image') {
-                return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
-            }
-
-            if (!empty($body['pictureOrientation'])) {
-                $imagick = new \Imagick();
-                $imagick->readImageBlob(base64_decode($body['picture']));
-                $imagick->rotateImage(new \ImagickPixel(), $body['pictureOrientation']);
-                $body['picture'] = base64_encode($imagick->getImageBlob());
-            }
-            $set['picture'] = $infoContent . $body['picture'];
-        }
-
         UserModel::update([
             'set'   => $set,
             'where' => ['id = ?'],
@@ -215,6 +191,65 @@ class UserController
         ]);
 
         return $response->withJson(['user' => UserController::getUserInformationsById(['id' => $args['id']])]);
+    }
+
+    public function updatePicture(Request $request, Response $response, array $args)
+    {
+        if ($GLOBALS['id'] != $args['id']) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        if (!Validator::stringType()->notEmpty()->validate($body['picture'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body picture is empty']);
+        }
+
+        $user = UserModel::getById(['id' => $args['id'], 'select' => ['firstname', 'lastname']]);
+        if (empty($user)) {
+            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
+        }
+
+        $infoContent = '';
+        if (preg_match('/^data:image\/(\w+);base64,/', $body['picture'])) {
+            $infoContent = substr($body['picture'], 0, strpos($body['picture'], ',') + 1);
+            $body['picture'] = substr($body['picture'], strpos($body['picture'], ',') + 1);
+        }
+        $picture    = base64_decode($body['picture']);
+        $finfo      = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType   = $finfo->buffer($picture);
+        $type       = explode('/', $mimeType);
+
+        if ($type[0] != 'image') {
+            return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
+        }
+
+        if (!empty($body['pictureOrientation'])) {
+            $imagick = new \Imagick();
+            $imagick->readImageBlob(base64_decode($body['picture']));
+            $imagick->rotateImage(new \ImagickPixel(), $body['pictureOrientation']);
+            $body['picture'] = base64_encode($imagick->getImageBlob());
+        }
+
+        $set = [
+            'picture'     => $infoContent . $body['picture']
+        ];
+
+        UserModel::update([
+            'set'   => $set,
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $args['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
+        ]);
+
+        return $response->withStatus(204);
     }
 
     public function delete(Request $request, Response $response, array $args)
