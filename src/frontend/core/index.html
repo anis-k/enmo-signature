@@ -1,9 +1,14 @@
 <!doctype html>
 <html lang="fr">
 <head>
-    <base href="/" id="baseHref">
+    <base id="baseHref">
     <script type="text/javascript">
-        document.getElementById('baseHref').href = '/' + window.location.pathname.split('/')[1] + '/dist/';
+        let splitedUrl = window.location.pathname.split('/')[1];
+        if (typeof splitedUrl === 'undefined' || splitedUrl === '') {
+            document.getElementById('baseHref').href = '/dist/';
+        } else {
+            document.getElementById('baseHref').href = '/' + window.location.pathname.split('/')[1] + '/dist/';
+        }
     </script>
     <meta charset="utf-8">
     <title>Maarch Parapheur</title>
