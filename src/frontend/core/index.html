@@ -3,11 +3,17 @@
 <head>
     <base id="baseHref">
     <script type="text/javascript">
-        let splitedUrl = window.location.pathname.split('/')[1];
-        if (typeof splitedUrl === 'undefined' || splitedUrl === '') {
+        let fullPath = window.location.pathname;
+        let before = fullPath.split('/')[0];
+        let splitedUrl = fullPath.split('/')[1];
+        let after = fullPath.split('/')[2];
+
+        if (typeof splitedUrl === 'undefined' || splitedUrl === '' || splitedUrl === 'dist') {
             document.getElementById('baseHref').href = '/dist/';
+        } else if (before == '' && (after == 'dist' || after == '')) {
+            document.getElementById('baseHref').href = '/' + splitedUrl + '/dist/';
         } else {
-            document.getElementById('baseHref').href = '/' + window.location.pathname.split('/')[1] + '/dist/';
+            document.getElementById('baseHref').href = '/' + splitedUrl;
         }
     </script>
     <meta charset="utf-8">
