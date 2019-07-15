@@ -2,11 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
-import { AuthGuard } from './service/auth.guard';
 import { AuthInterceptor } from './service/auth-interceptor.service';
 
 // import ngx-translate and the http loader
@@ -27,6 +25,7 @@ import { NgPipesModule } from 'ngx-pipes';
 import { LatinisePipe } from 'ngx-pipes';
 
 import { AppMaterialModule } from './app-material.module';
+import { AppRoutingModule } from './app-routing.module';
 
 // COMPONENTS
 import { AppComponent } from './app.component';
@@ -121,7 +120,6 @@ import { AlertComponent } from './plugins/alert.component';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    RouterModule,
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -135,26 +133,7 @@ import { AlertComponent } from './plugins/alert.component';
     NgPipesModule,
     AngularDraggableModule,
     AppMaterialModule,
-    RouterModule.forRoot([
-      { path: 'administration', canActivate: [AuthGuard], component: AdministrationComponent },
-      { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
-      { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
-      { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
-      { path: 'administration/groups', canActivate: [AuthGuard], component: GroupsListComponent },
-      { path: 'administration/groups/new', canActivate: [AuthGuard], component: GroupComponent },
-      { path: 'administration/groups/:id', canActivate: [AuthGuard], component: GroupComponent },
-      { path: 'administration/connections', canActivate: [AuthGuard], component: ConnectionComponent },
-      { path: 'administration/connections/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
-      { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },
-      { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
-      { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
-      { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
-      { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
-      { path: 'login', component: LoginComponent },
-      { path: 'forgot-password', component: ForgotPasswordComponent },
-      { path: 'update-password', component: UpdatePasswordComponent },
-      { path: '**', redirectTo: 'login', pathMatch: 'full' },
-    ], { useHash: true }),
+    AppRoutingModule,
   ],
   entryComponents: [
     CustomSnackbarComponent,
@@ -176,9 +155,7 @@ import { AlertComponent } from './plugins/alert.component';
       useClass: CustomHammerConfig
     },
     CookieService,
-    LatinisePipe],
-  exports: [
-    RouterModule
+    LatinisePipe
   ],
   bootstrap: [AppComponent]
 })
