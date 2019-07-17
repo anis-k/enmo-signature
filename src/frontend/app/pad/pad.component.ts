@@ -7,6 +7,7 @@ import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
+import { LocalStorageService } from '../service/local-storage.service';
 
 interface AfterViewInit {
     ngAfterViewInit(): void;
@@ -41,10 +42,15 @@ export class SignaturePadPageComponent implements AfterViewInit {
         canvasHeight: 315
     };
 
-    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public authService: AuthService) { }
+    constructor(private translate: TranslateService,
+        public http: HttpClient,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public authService: AuthService,
+        private localStorage: LocalStorageService) { }
 
     ngAfterViewInit() {
-        const signPointsData = localStorage.getItem('signature');
+        const signPointsData = this.localStorage.get('signature');
         if (signPointsData) {
             // this.signaturePad.fromData( signPointsData );
         }
@@ -61,7 +67,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
     }
 
     drawComplete() {
-        localStorage.setItem('signature', JSON.stringify(this.signaturePad.toData()));
+        this.localStorage.save('signature', JSON.stringify(this.signaturePad.toData()));
         this.haveSigned = true;
     }
 
@@ -79,7 +85,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
         this.disableState = true;
         this.haveSigned = true;
         const newEncodedSign = this.signaturePad.toDataURL('image/png').replace('data:image/png;base64,', '');
-        localStorage.setItem('signature', JSON.stringify(newEncodedSign));
+        this.localStorage.save('signature', JSON.stringify(newEncodedSign));
 
         // Save signature in BDD
         const newSign = {
@@ -99,13 +105,12 @@ export class SignaturePadPageComponent implements AfterViewInit {
                 this.signaturesService.newSign = newSign;
                 this.closePad();
                 this.reloaded.emit('reload');
-                // this.store.dispatch({ type: HIDE_DRAWER });
                 this.signaturePad.clear();
                 this.notificationService.success('lang.signatureRegistered');
             });
 
         // BUG IMAGE CROPPED
-        // localStorage.setItem('signature', JSON.stringify(this.signaturePad.toDataURL('image/svg+xml')));
+        // this.localStorage.save('signature', JSON.stringify(this.signaturePad.toDataURL('image/svg+xml')));
     }
 
 }

@@ -8,6 +8,7 @@ import { trigger, transition, style, animate, stagger, query } from '@angular/an
 import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
+import { LocalStorageService } from '../service/local-storage.service';
 
 @Component({
     selector: 'app-signatures',
@@ -31,8 +32,14 @@ export class SignaturesComponent implements OnInit {
     inAllPage = false;
     count = 0;
 
-    constructor(private translate: TranslateService, public http: HttpClient, public signaturesService: SignaturesContentService, private bottomSheetRef: MatBottomSheet,
-        private sanitization: DomSanitizer, public notificationService: NotificationService, public authService: AuthService) {
+    constructor(private translate: TranslateService,
+        public http: HttpClient,
+        public signaturesService: SignaturesContentService,
+        private bottomSheetRef: MatBottomSheet,
+        private sanitization: DomSanitizer,
+        public notificationService: NotificationService,
+        public authService: AuthService,
+        private localStorage: LocalStorageService) {
     }
 
     ngOnInit() {
@@ -71,7 +78,7 @@ export class SignaturesComponent implements OnInit {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
         }
         this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
 
         this.bottomSheetRef.dismiss();
     }
@@ -128,7 +135,7 @@ export class SignaturesComponent implements OnInit {
                 myReader.onloadend = (e) => {
 
                     const newEncodedSign = myReader.result.toString().replace('data:' + fileToUpload.type + ';base64,', '');
-                    localStorage.setItem('signature', JSON.stringify(newEncodedSign));
+                    this.localStorage.save('signature', JSON.stringify(newEncodedSign));
 
                     // Save signature in BDD
                     const newSign = {

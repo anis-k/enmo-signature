@@ -4,6 +4,7 @@ import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
+import { LocalStorageService } from '../service/local-storage.service';
 
 @Component({
     selector: 'app-document-note-pad',
@@ -17,7 +18,12 @@ export class DocumentNotePadComponent implements OnInit {
     @Output() triggerEvent = new EventEmitter<string>();
     @ViewChild('canvas') canvas: ElementRef;
 
-    constructor(private translate: TranslateService, private sanitizer: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public authService: AuthService) { }
+    constructor(private translate: TranslateService,
+        private sanitizer: DomSanitizer,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public authService: AuthService,
+        private localStorage: LocalStorageService) { }
 
     ngOnInit(): void { }
 
@@ -64,7 +70,7 @@ export class DocumentNotePadComponent implements OnInit {
                 'width': this.signaturesService.workingAreaWidth,
             }
         );
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         this.triggerEvent.emit();
         this.signaturesService.x = 0;
         this.signaturesService.y = 90;

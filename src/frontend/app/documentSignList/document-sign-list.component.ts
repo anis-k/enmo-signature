@@ -6,6 +6,7 @@ import {
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
+import { LocalStorageService } from '../service/local-storage.service';
 
 
 @Component({
@@ -16,7 +17,12 @@ export class DocumentSignListComponent implements OnInit {
 
     @ViewChild('menuTrigger') menuSign: MatMenuTrigger;
 
-    constructor(private translate: TranslateService, private sanitization: DomSanitizer, public signaturesService: SignaturesContentService, public notificationService: NotificationService) { }
+    constructor(private translate: TranslateService,
+        private sanitization: DomSanitizer,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        private localStorage: LocalStorageService
+        ) { }
 
     ngOnInit(): void { }
 
@@ -29,7 +35,7 @@ export class DocumentSignListComponent implements OnInit {
 
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = percentx;
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = percenty;
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         this.signaturesService.documentFreeze = false;
     }
 
@@ -48,7 +54,7 @@ export class DocumentSignListComponent implements OnInit {
                     this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i])));
                 }
             }
-            localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+            this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
         }
         this.menuSign.closeMenu();
     }
@@ -79,7 +85,7 @@ export class DocumentSignListComponent implements OnInit {
         } else {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
         }
-        localStorage.setItem(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
     }
 
     // USE TO PREVENT ISSUE IN MOBILE

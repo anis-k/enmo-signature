@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
 import { SignaturesContentService } from './signatures.service';
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
     providedIn: 'root'
@@ -13,27 +14,31 @@ export class AuthService {
     changeKey: boolean = false;
     user: any = {};
 
-    constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService, public signaturesService: SignaturesContentService) { }
+    constructor(public http: HttpClient,
+        private router: Router,
+        public notificationService: NotificationService,
+        public signaturesService: SignaturesContentService,
+        private localStorage: LocalStorageService) { }
 
     getToken() {
-        return localStorage.getItem('MaarchParapheurToken');
+        return this.localStorage.get('MaarchParapheurToken');
     }
 
     setToken(token: string) {
-        localStorage.setItem('MaarchParapheurToken', token);
+        this.localStorage.save('MaarchParapheurToken', token);
     }
 
     getRefreshToken() {
-        return localStorage.getItem('MaarchParapheurRefreshToken');
+        return this.localStorage.get('MaarchParapheurRefreshToken');
     }
 
     setRefreshToken(refreshToken: string) {
-        localStorage.setItem('MaarchParapheurRefreshToken', refreshToken);
+        this.localStorage.save('MaarchParapheurRefreshToken', refreshToken);
     }
 
     clearTokens() {
-        localStorage.removeItem('MaarchParapheurToken');
-        localStorage.removeItem('MaarchParapheurRefreshToken');
+        this.localStorage.remove('MaarchParapheurToken');
+        this.localStorage.remove('MaarchParapheurRefreshToken');
     }
 
     logout() {
@@ -47,7 +52,7 @@ export class AuthService {
     }
 
     isAuth(): boolean {
-        return this.getToken() !== null
+        return this.getToken() !== null;
     }
 
     updateUserInfo(token: string) {

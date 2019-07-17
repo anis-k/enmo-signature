@@ -17,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CdkDragEnd, DragRef, CdkDrag } from '@angular/cdk/drag-drop';
 import { DocumentListComponent } from './document-list/document-list.component';
 import { AuthService } from '../service/auth.service';
+import { LocalStorageService } from '../service/local-storage.service';
 
 
 @Component({
@@ -139,11 +140,18 @@ export class DocumentComponent implements OnInit {
         }, 400);
     }
 
-    constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute, public http: HttpClient,
+    constructor(private translate: TranslateService,
+        private router: Router,
+        private route: ActivatedRoute,
+        public http: HttpClient,
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         private cookieService: CookieService,
-        private sanitizer: DomSanitizer, public dialog: MatDialog, private bottomSheet: MatBottomSheet, public authService: AuthService) {
+        private sanitizer: DomSanitizer,
+        public dialog: MatDialog,
+        private bottomSheet: MatBottomSheet,
+        public authService: AuthService,
+        private localStorage: LocalStorageService) {
         this.draggable = false;
     }
 
@@ -227,7 +235,8 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
 
-        const notesContent = localStorage.getItem(this.mainDocument.id.toString());
+        const notesContent = this.localStorage.get(this.mainDocument.id.toString());
+
         if (notesContent) {
             const storageContent = JSON.parse(notesContent);
             this.signaturesService.notesContent = storageContent['note'];
@@ -371,7 +380,7 @@ export class DocumentComponent implements OnInit {
                     direction: 'ltr'
                 };
                 this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
-                localStorage.removeItem(this.mainDocument.id.toString());
+                this.localStorage.remove(this.mainDocument.id.toString());
             } else if (result === 'annotation') {
                 this.signaturesService.annotationMode = true;
                 this.appDocumentNotePad.initPad();
@@ -392,7 +401,7 @@ export class DocumentComponent implements OnInit {
                     direction: 'ltr'
                 };
                 this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                localStorage.removeItem(this.mainDocument.id.toString());
+                this.localStorage.remove(this.mainDocument.id.toString());
             }
         });
     }
@@ -422,7 +431,7 @@ export class DocumentComponent implements OnInit {
             if (result) {
                 this.signaturesService.signaturesContent = [];
                 this.signaturesService.notesContent = [];
-                localStorage.removeItem(this.mainDocument.id.toString());
+                this.localStorage.remove(this.mainDocument.id.toString());
                 this.notificationService.success('lang.noteAndSignatureDeleted');
             }
         });
@@ -447,7 +456,8 @@ export class DocumentComponent implements OnInit {
     undoTag() {
         if (this.signaturesService.notesContent[this.pageNum]) {
             this.signaturesService.notesContent[this.pageNum].pop();
-            localStorage.setItem(this.mainDocument.id.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+            this.localStorage.remove(this.mainDocument.id.toString());
+            this.localStorage.save(this.mainDocument.id.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
         }
     }
 

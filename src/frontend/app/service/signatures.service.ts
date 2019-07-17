@@ -37,8 +37,10 @@ export class SignaturesContentService {
     x = 0;
     y = 90;
     mainLoading = true;
+    appSession: any;
 
     constructor() {
+        console.log(location);
         if (window.screen.width <= 360) {
             this.smartphoneMode = true;
         } else {
@@ -103,5 +105,9 @@ export class SignaturesContentService {
         this.scale = 1;
         this.x = 0;
         this.y = 90;
+    }
+
+    getAppSession() {
+        this.appSession = 'AD098AD9ADA0D9IAXKJ90AKS099S';
     }
 }
