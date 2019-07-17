@@ -38,8 +38,11 @@ class AuthenticationController
     {
         $connection = ConfigurationModel::getConnection();
         $encryptKey = CoreConfigModel::getEncryptKey();
+        $path = CoreConfigModel::getConfigPath();
+        $hashedPath = md5($path);
 
-        return $response->withJson(['connection' => $connection, 'changeKey' => $encryptKey == 'Security Key Maarch Parapheur #2008']);
+
+        return $response->withJson(['connection' => $connection, 'changeKey' => $encryptKey == 'Security Key Maarch Parapheur #2008', 'instanceId' => $hashedPath]);
     }
 
     public static function authentication($authorizationHeaders = [])
