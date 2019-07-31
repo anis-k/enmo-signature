@@ -105,6 +105,12 @@ export class ProfileComponent implements OnInit {
         if (this.signaturesService.mobileMode) {
             this.snavLeftComponent.open();
             this.snavRightComponent.close();
+        } else {
+            this.signaturesService.sideNavRigtDatas = {
+                mode: 'mainDocumentDetail',
+                width: '450px',
+                locked: false,
+            };
         }
     }
 
