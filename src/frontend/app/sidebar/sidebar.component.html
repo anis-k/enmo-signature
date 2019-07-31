@@ -16,9 +16,9 @@
       </div>
       <div *ngIf="authService.user.picture" class="avatar"
         [ngStyle]="{'background': 'url(' + authService.user.picture + ') no-repeat scroll center center / cover'}"
-        (click)="openProfile()">
+        (click)="openProfile()" title="{{'lang.myProfil' | translate}}">
       </div>
-      <div *ngIf="authService.user.picture === '' || authService.user.picture === undefined" class="avatar" (click)="openProfile()">
+      <div *ngIf="authService.user.picture === '' || authService.user.picture === undefined" class="avatar" (click)="openProfile()" title="{{'lang.myProfil' | translate}}">
       </div>
     </header>
     <header class="sidebar-header">
