@@ -181,7 +181,6 @@ CREATE TABLE signatures
   path character varying(255) NOT NULL,
   filename character varying(255) NOT NULL,
   fingerprint character varying(255) NOT NULL,
-  substituted boolean DEFAULT FALSE NOT NULL,
   external_application CHARACTER VARYING(255),
   CONSTRAINT signatures_pkey PRIMARY KEY (id)
 )

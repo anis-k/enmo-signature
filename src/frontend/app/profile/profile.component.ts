@@ -420,15 +420,6 @@ export class ProfileComponent implements OnInit {
         this.translate.use(lang);
     }
 
-    toggleSignature(i: number) {
-        this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
-
-        this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/substituted', { 'signatures': this.signaturesService.signaturesList })
-            .subscribe((data: any) => {
-                this.notificationService.success('lang.modificationSaved');
-            });
-    }
-
     refreshUserList(opened: any) {
         if (opened) {
             this.http.get('../rest/users')

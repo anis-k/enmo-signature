@@ -7,7 +7,6 @@ export class SignaturesContentService {
     signaturesContent: any[] = [];
     notesContent: any[] = [];
     signaturesList: any[] = [];
-    signaturesListSubstituted: any[] = [];
     currentPage = 1;
     totalPage = 1;
     isTaggable = true;
@@ -63,7 +62,6 @@ export class SignaturesContentService {
         this.signaturesContent = [];
         this.notesContent = [];
         this.signaturesList = [];
-        this.signaturesListSubstituted = [];
         this.currentPage = 1;
         this.totalPage = 1;
         this.isTaggable = true;

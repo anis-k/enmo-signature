@@ -28,26 +28,15 @@ class SignatureController
 {
     public function get(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id']) {
-            $user = UserModel::getById(['id' => $args['id'], 'select' => ['substitute']]);
-            if (empty($user) || $user['substitute'] != $GLOBALS['id']) {
-                return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-            }
-        }
-
         $docserver = DocserverModel::getByType(['type' => 'SIGNATURE', 'select' => ['path']]);
         if (empty($docserver['path']) || !is_dir($docserver['path'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Docserver \'SIGNATURE\' does not exist']);
         }
 
-        $where = ['user_id = ?'];
-        if ($GLOBALS['id'] != $args['id']) {
-            $where[] = 'substituted = true';
-        }
         $rawSignatures = SignatureModel::get([
-            'select'    => ['id', 'path', 'filename', 'fingerprint', 'substituted'],
-            'where'     => $where,
-            'data'      => [$args['id']],
+            'select'    => ['id', 'path', 'filename', 'fingerprint'],
+            'where'     => ['user_id = ?'],
+            'data'      => [$GLOBALS['id']],
             'orderBy'   => ['id DESC']
         ]);
 
@@ -59,7 +48,6 @@ class SignatureController
                 if ($signature['fingerprint'] == $fingerprint) {
                     $signatures[] = [
                         'id'                => $signature['id'],
-                        'substituted'       => $signature['substituted'],
                         'encodedSignature'  => base64_encode(file_get_contents($pathToSignature))
                     ];
                 }
@@ -198,42 +186,6 @@ class SignatureController
                 'type'          => 'CREATION',
                 'message'       => '{userSignatureAdded}',
                 'data'          => ['userId' => $args['id'], 'externalApplication' => $body['externalApplication']]
-            ]);
-        }
-
-        return $response->withStatus(204);
-    }
-
-    public function updateSubstituted(Request $request, Response $response, array $args)
-    {
-        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
-        $user = UserModel::getById(['select' => [1], 'id' => $args['id']]);
-        if (empty($user)) {
-            return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
-        }
-
-        $body = $request->getParsedBody();
-
-        if (!Validator::arrayType()->notEmpty()->validate($body['signatures'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Body signature is empty or not an array']);
-        }
-
-        foreach ($body['signatures'] as $key => $signature) {
-            if (!Validator::intVal()->notEmpty()->validate($signature['id'])) {
-                return $response->withStatus(400)->withJson(['errors' => "Body signatures[{$key}] id is empty or not an integer"]);
-            } elseif (!Validator::boolType()->validate($signature['substituted'])) {
-                return $response->withStatus(400)->withJson(['errors' => "Body signatures[{$key}] substituted is not a boolean"]);
-            }
-        }
-
-        foreach ($body['signatures'] as $signature) {
-            SignatureModel::update([
-                'set'   => ['substituted' => $signature['substituted'] ? 'true' : 'false'],
-                'where' => ['user_id = ?', 'id = ?'],
-                'data'  => [$args['id'], $signature['id']]
             ]);
         }
 

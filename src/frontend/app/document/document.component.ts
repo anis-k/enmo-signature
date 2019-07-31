@@ -173,17 +173,6 @@ export class DocumentComponent implements OnInit {
 
                         this.initDoc();
 
-                        const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-
-                        if (realUserWorkflow.userId !== this.authService.user.id) {
-                            this.http.get('../rest/users/' + realUserWorkflow.userId + '/signatures')
-                                .subscribe((dataSign: any) => {
-                                    this.signaturesService.signaturesListSubstituted = dataSign.signatures;
-                                    this.signaturesService.loadingSign = false;
-                                });
-                        } else {
-                            this.signaturesService.signaturesListSubstituted = [];
-                        }
                         this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgContent': [], 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
                         this.mainDocument.attachments.forEach((attach: any) => {
                             this.docList.push({ 'id': attach.id, 'title': attach.title, 'pages': attach.pages, 'imgContent': [], 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });

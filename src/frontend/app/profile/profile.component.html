@@ -223,12 +223,6 @@
                                         </mat-form-field>
                                     </div>
                                 </div>
-                                <fieldset *ngIf="profileInfo.substitute != null && signaturesService.signaturesList.length > 0">
-                                    <legend align="left">{{'lang.signSubstituted' | translate}} :</legend>
-                                    <ng-container>
-                                        <button type="button" class="signListButton" mat-stroked-button *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)" [class.selected]="signature.substituted"><img [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"/></button>
-                                    </ng-container>
-                                </fieldset>
                             </fieldset>
                         </div>
                     </div>
