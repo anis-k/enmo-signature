@@ -1,7 +1,4 @@
 <article class="signatures" *ngIf="signaturesService.showSign">
-  <div style="font-size: 20px;font-weight: bold;opacity: 0.3;">
-    {{'lang.doubletapSignatureToAddDocument' | translate}}
-  </div>
   <section class="list">
     <div class="list-item create" (click)="uploadFile.click()">
       <i class="fas fa-upload fa-2x"></i>
@@ -13,8 +10,13 @@
       {{'lang.createNewSignature' | translate}}
     </div>
     <div [@listAnimation]="signaturesService.signaturesList.length" style="display: contents;">
-      <div *ngFor="let signature of signaturesService.signaturesList;let i=index" class="list-item" style="position: relative;overflow: hidden" (tap)="tapEvent(signature,i,'')">
-        <span class="remove_icon_{{i}}" style="display:none;position: absolute;top: 5px;left: 5px;" (tap)="removeSignature(signature,i);"><i style="border-radius: 25px;background: white;left:0px;top:0px;color:red;font-size: 50px;" class="fa fa-times-circle fa-2x"></i></span>
+      <div *ngFor="let signature of signaturesService.signaturesList;let i=index" class="list-item" [title]="'lang.selectSignature' | translate" style="position: relative;overflow: hidden" (tap)="tapEvent(signature,i,'')">
+        <button mat-mini-fab color="warn" [title]="'lang.removeSignature' | translate" class="sign_icon remove_icon" (tap)="removeSignature(signature,i);">
+          <mat-icon class="fa fa-times"></mat-icon>
+        </button>
+        <button mat-mini-fab color="primary" [title]="'lang.selectSignature' | translate" class="sign_icon add_icon" (tap)="selectSignature(signature);">
+          <mat-icon class="fa fa-arrow-up"></mat-icon>
+        </button>
         <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
           style="width: 190px;">
       </div>

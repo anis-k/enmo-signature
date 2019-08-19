@@ -35,7 +35,6 @@
 		"documentRefusedAs"                  : "Document refused as a:",
 		"documentValidateAs"                 : "Document validated as:",
 		"documentViewed"                     : "Document viewed",
-		"doubletapSignatureToAddDocument"    : "Double-tap on a signature to add it to your document",
 		"email"                              : "Email",
 		"emailAdded"                         : "Email added",
 		"emailFailed"                        : "Sending email failed",
@@ -253,6 +252,8 @@
 		"importNewSignature" : "Import a new signature",
 		"restUser" : "Webservice user",
 		"unlinkUser" : "Unlink user",
-		"substituteEnabled" : "Substitute enabled"
+		"substituteEnabled" : "Substitute enabled",
+		"selectSignature" : "Put thids signature on the document",
+		"removeSignature" : "Remove signature"
 	}
 }

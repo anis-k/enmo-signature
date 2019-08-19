@@ -35,7 +35,6 @@
 		"documentRefusedAs"                  : "Document refusé en tant que :",
 		"documentValidateAs"                 : "Document validé en tant que :",
 		"documentViewed"                     : "Document consulté",
-		"doubletapSignatureToAddDocument"    : "Double-tapez sur une signature pour l'ajouter à votre document",
 		"email"                              : "Courriel",
 		"emailAdded"                         : "Courriel ajouté",
 		"emailFailed"                        : "L'envoi du courriel a échoué",
@@ -254,6 +253,8 @@
 		"importNewSignature" : "Importer une signature",
 		"restUser" : "Utilisateur webservice",
 		"unlinkUser" : "Dissocier l'utilisateur",
-		"substituteEnabled" : "Délégation activée"
+		"substituteEnabled" : "Délégation activée",
+		"selectSignature" : "Apposer la signature sur le document",
+		"removeSignature" : "Supprimer la signature"
 	}
 }

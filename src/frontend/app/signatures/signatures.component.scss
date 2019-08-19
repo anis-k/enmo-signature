@@ -1,47 +1,72 @@
 @import '../../css/vars.scss';
 
 .signatures {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  &-top {
-    height: 105px;
-    width: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-around;
-    border-bottom: 1px solid #e9e8e8;
-  }
-  .list {
-    width: 100%;
-    padding-top: 40px;
-    overflow: auto;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    &-item {
-      transition: 0.5s all ease-in-out;
-      height: 190px;
-      width: 190px;
-      margin: 8px;
-      border: 1px solid rgba(151, 151, 151, 0.55);
-      border-radius: 5px;
-      background-color: #fff;
-      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      &.create {
-        background-color: #F1F4F4;
-        flex-direction: column;
-        text-align: center;
-      }
-      &:hover, &:active {
-        transform: translateY(-40px);
-        cursor: pointer;
-      }
+
+    &-top {
+        height: 105px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        border-bottom: 1px solid #e9e8e8;
     }
-  }
+
+    .list {
+        width: 100%;
+        padding-top: 40px;
+        overflow: auto;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+
+        &-item {
+            transition: 0.3s all ease-in-out;
+            height: 190px;
+            width: 190px;
+            margin: 8px;
+            border: 1px solid rgba(151, 151, 151, 0.55);
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            &.create {
+                background-color: #F1F4F4;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            &:hover,
+            &:active {
+                transform: translateY(-20px);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.sign_icon {
+    position: absolute;
+    top: 5px;
+    
+    .mat-icon {
+        color: white;
+        height: auto;
+    }
+}
+
+.add_icon {
+    right: 5px;
+}
+
+
+.remove_icon {
+    left: 5px;
 }

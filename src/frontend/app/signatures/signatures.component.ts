@@ -108,12 +108,6 @@ export class SignaturesComponent implements OnInit {
 
     tapEvent(signature: any, i: any, mode: string) {
         this.count++;
-        if (mode === '') {
-            $('[class*=remove_icon_]').hide();
-            $('.remove_icon_' + i).show();
-        } else {
-            $('[class*=remove_icon_]').hide();
-        }
 
         setTimeout(() => {
             if (this.count === 1) {
