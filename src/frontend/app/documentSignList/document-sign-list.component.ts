@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild, Input, ElementRef } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import {
-    MatMenuTrigger,
+    MatMenuTrigger, MatDialog,
 } from '@angular/material';
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalStorageService } from '../service/local-storage.service';
+import { ConfirmComponent } from '../plugins/confirm.component';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class DocumentSignListComponent implements OnInit {
         private sanitization: DomSanitizer,
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
-        private localStorage: LocalStorageService
+        private localStorage: LocalStorageService,
+        public dialog: MatDialog
         ) { }
 
     ngOnInit(): void { }
@@ -40,22 +42,25 @@ export class DocumentSignListComponent implements OnInit {
     }
 
     cloneSign(i: number) {
-        const r = confirm(this.translate.instant('lang.wantSignOtherPage'));
+        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, width: '450px', data: { title: 'lang.wantSignOtherPage', msg: '' } });
 
-        if (r) {
-            this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
-            this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].token = Math.random().toString(36).substr(2, 9);
+        dialogRef.afterClosed().subscribe(result => {
+            if (result === 'yes') {
+                this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].inAllPage = true;
+                this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].token = Math.random().toString(36).substr(2, 9);
 
-            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                if (!this.signaturesService.signaturesContent[index]) {
-                  this.signaturesService.signaturesContent[index] = [];
+                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                    if (!this.signaturesService.signaturesContent[index]) {
+                      this.signaturesService.signaturesContent[index] = [];
+                    }
+                    if (index !== this.signaturesService.currentPage) {
+                        this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i])));
+                    }
                 }
-                if (index !== this.signaturesService.currentPage) {
-                    this.signaturesService.signaturesContent[index].push(JSON.parse(JSON.stringify(this.signaturesService.signaturesContent[this.signaturesService.currentPage][i])));
-                }
+                this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
             }
-            this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
-        }
+        });
+
         this.menuSign.closeMenu();
     }
 

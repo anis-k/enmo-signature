@@ -178,7 +178,7 @@
 		"manage_email_configuration": "Email server",
 		"manage_email_configurationDesc": "Configure email server for users notifications.",
 		"administration": "Administration",
-		"confirmMsg": "Are you sure",
+		"confirmMsg": "Are you sure ?",
 		"yes": "Yes",
 		"no": "No",
 		"ldapEnabled": "LDAP enabled",

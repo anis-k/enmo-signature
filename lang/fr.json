@@ -178,7 +178,7 @@
 		"manage_email_configuration": "Serveur courriel",
 		"manage_email_configurationDesc": "Paramétrer le serveur de courriels pour les envois de notifications aux utilisateurs.",
 		"administration": "Administration",
-		"confirmMsg": "Voulez-vous effectuer cette action",
+		"confirmMsg": "Voulez-vous effectuer cette action ?",
 		"yes": "Oui",
 		"no": "Non",
 		"ldapEnabled": "LDAP activé",
