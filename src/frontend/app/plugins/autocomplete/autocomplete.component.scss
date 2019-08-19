@@ -1,0 +1,31 @@
+@import '../../../css/vars.scss';
+
+.mat-form-field-appearance-outline {
+    font-size: 11px;
+    width: 100%;
+}
+/deep/.mat-form-field-appearance-outline .mat-form-field-outline-thick {
+    color: $primary;
+}
+
+/deep/.mat-form-field-prefix {
+    top: 0px !important;
+}
+.mat-option {
+    ::ng-deep.mat-option-text {
+        display: flex;
+    }
+    span {
+        font-weight: bold;
+    }
+}
+
+.mat-option:not(.mat-option-disabled) { 
+    color: $primary;
+}
+
+.autcompleteIcon {
+    width: 20px;
+    display: flex;
+    align-items: center;
+}

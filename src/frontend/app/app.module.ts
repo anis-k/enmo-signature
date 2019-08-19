@@ -73,6 +73,8 @@ import { FiltersService } from './service/filters.service';
 // OTHERS
 import { ConfirmComponent } from './plugins/confirm.component';
 import { AlertComponent } from './plugins/alert.component';
+import { PluginAutocompleteComponent } from './plugins/autocomplete/autocomplete.component';
+import { SortPipe } from './plugins/sorting.pipe';
 
 
 
@@ -112,7 +114,9 @@ import { AlertComponent } from './plugins/alert.component';
     LdapComponent,
     SendmailComponent,
     GroupsListComponent,
-    GroupComponent
+    GroupComponent,
+    PluginAutocompleteComponent,
+    SortPipe
   ],
   imports: [
     FormsModule,

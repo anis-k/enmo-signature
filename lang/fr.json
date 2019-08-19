@@ -255,6 +255,11 @@
 		"unlinkUser" : "Dissocier l'utilisateur",
 		"substituteEnabled" : "Délégation activée",
 		"selectSignature" : "Apposer la signature sur le document",
-		"removeSignature" : "Supprimer la signature"
+		"removeSignature" : "Supprimer la signature",
+		"chooseValue" : "Choisissez une valeur",
+		"availableValues" : "Valeur(s) disponible(s)",
+		"noAvailableValue" : "Aucun élément disponible",
+		"autocompleteInfo" : "La recherche doit contenir au minimum&nbsp;<b>3 caractères</b>",
+		"availableUsers" : "Utilisateur(s) disponible(s)"
 	}
 }

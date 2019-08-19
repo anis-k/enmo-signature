@@ -155,8 +155,7 @@
                                 <div class="form-container">
                                     <div class="form-2-col">
                                         <mat-form-field>
-                                            <mat-select name="writingSize"
-                                                [(ngModel)]="this.preferenceInfo.writingSize"
+                                            <mat-select name="writingSize" [(ngModel)]="this.preferenceInfo.writingSize"
                                                 (selectionChange)="drawSample();">
                                                 <mat-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">
                                                     {{i+1}}</mat-option>
@@ -200,27 +199,22 @@
                     <div class="profile-content">
                         <div class="input-row">
                             <fieldset>
-                                <legend align="left">{{'lang.substitution' | translate}}</legend>
+                                <legend align="left">{{'lang.substitute' | translate}}</legend>
                                 <div class="form-container">
-                                    <div class="form-2-col">
-                                        {{'lang.substitute' | translate}}
-                                    </div>
-                                    <div class="form-2-col">
-                                        <mat-form-field style="width:100%">
-                                            <mat-select placeholder="{{'lang.chooseSubstitute' | translate}}" name="usersList"
-                                                [(ngModel)]="profileInfo.substitute" (selectionChange)="selectSubstitute($event)" (openedChange)="refreshUserList($event)">
-                                                <ng-container *ngFor="let userRest of usersList">
-                                                    <mat-option *ngIf="userRest.id !== profileInfo.id && !userRest.substitute"
-                                                        [value]="userRest.id">
-                                                        {{userRest.firstname}}
-                                                        {{userRest.lastname}}</mat-option>
-                                                </ng-container>
-                                            </mat-select>
-                                            <button matSuffix *ngIf="profileInfo.substitute != null" mat-icon-button type="button"
-                                                (tap)="deleteSubstitute()" color="warn" title="{{'lang.deleteSubstitution' | translate}}">
-                                                <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
-                                            </button>
-                                        </mat-form-field>
+                                    <div class="form-col">
+                                        <ng-container *ngFor="let user of usersList">
+                                            <mat-form-field class="selectedSubstitute"  *ngIf="user.id === authService.user.substitute">
+                                                <input matInput 
+                                                    [value]="user.lastname + ' ' + user.firstname" readonly>
+                                                    <button matSuffix mat-icon-button type="button"
+                                                    (tap)="deleteSubstitute()" color="warn" title="{{'lang.deleteSubstitution' | translate}}">
+                                                    <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
+                                                </button>
+                                            </mat-form-field>
+                                        </ng-container>
+                                        <plugin-autocomplete *ngIf="authService.user.substitute === null" [labelPlaceholder]="'lang.chooseSubstitute' | translate"
+                                            [datas]="usersList" [targetSearchKey]="['lastname', 'firstname']"
+                                            (triggerEvent)="selectSubstitute($event)" (click)="refreshUserList()"></plugin-autocomplete>
                                     </div>
                                 </div>
                             </fieldset>

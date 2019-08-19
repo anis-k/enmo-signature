@@ -9,7 +9,7 @@ import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
 import { FiltersService } from '../service/filters.service';
 import { Router } from '@angular/router';
-import { tap, exhaustMap, filter, catchError, takeUntil, finalize } from 'rxjs/operators';
+import { tap, exhaustMap, filter, catchError, takeUntil, finalize, map } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
 import { of, Subject } from 'rxjs';
 
@@ -277,13 +277,12 @@ export class ProfileComponent implements OnInit {
         ).subscribe();
     }
 
-    selectSubstitute(ev: any) {
+    selectSubstitute(newUserSubtituted: any) {
         if (this.profileInfo.substitute !== null) {
             alert(this.translate.instant('lang.substitutionWarn'));
         }
-        const newUserSubtituted = ev.value;
 
-        this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: newUserSubtituted })
+        this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: newUserSubtituted.id })
             .subscribe(() => {
                 this.authService.updateUserInfoWithTokenRefresh();
                 this.filtersService.resfreshDocuments();
@@ -402,10 +401,19 @@ export class ProfileComponent implements OnInit {
 
     swithToAdmin() {
         if (this.authService.user.substitute || this.usersList.length === 0) {
-            this.http.get('../rest/users')
-                .subscribe((data: any) => {
-                    this.usersList = data.users;
-                });
+            this.http.get('../rest/users').pipe(
+                map((data: any) => {
+                    data.users.forEach((element: any) => {
+                        if (element.id !== this.profileInfo.id && !element.substitute) {
+                            element.disabled = false;
+                        } else {
+                            element.disabled = true;
+                        }
+                    });
+                    return data;
+                }),
+                tap((data: any) => this.usersList = data.users),
+            ).subscribe();
         }
 
         if (this.signaturesService.signaturesList.length === 0) {
@@ -420,13 +428,21 @@ export class ProfileComponent implements OnInit {
         this.translate.use(lang);
     }
 
-    refreshUserList(opened: any) {
-        if (opened) {
-            this.http.get('../rest/users')
-                .subscribe((data: any) => {
-                    this.usersList = data.users;
+    refreshUserList() {
+        this.usersList = [];
+        this.http.get('../rest/users').pipe(
+            map((data: any) => {
+                data.users.forEach((element: any) => {
+                    if (element.id !== this.profileInfo.id && !element.substitute) {
+                        element.disabled = false;
+                    } else {
+                        element.disabled = true;
+                    }
                 });
-        }
+                return data;
+            }),
+            tap((data: any) => this.usersList = data.users),
+        ).subscribe();
     }
 
     refreshInfoSubstitute() {

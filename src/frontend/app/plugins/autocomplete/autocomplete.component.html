@@ -1,0 +1,26 @@
+<form>
+    <mat-form-field [appearance]="singleMode !== undefined ? 'standard' : 'outline'">
+        <mat-label *ngIf="singleMode !== undefined">{{placeholder}}</mat-label>
+        <mat-icon color="primary" class="fa fa-search" matPrefix></mat-icon>
+        <input type="text" #autoCompleteInput [placeholder]="singleMode !== undefined ? '' : placeholder"
+            aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto"
+            (click)="$event.stopPropagation()" (focus)="resetAutocomplete()" [required]="required">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectOpt($event)">
+            <mat-option *ngFor="let option of filteredOptions | async | sortBy: key[0]" [value]="option"
+                [disabled]="option.disabled">
+                <mat-icon *ngIf="type[option['type']]" class="autcompleteIcon fas {{type[option['type']]}}"
+                    color="primary">
+                </mat-icon>&nbsp;<span>
+                    <ng-container *ngFor="let k of key">
+                        {{option[k]}}
+                    </ng-container>
+                </span>&nbsp;<small>{{option[subInfoKey]}}</small>
+            </mat-option>
+            <mat-option *ngIf="(filteredOptions | async)?.length === 0 && !loading" disabled [innerHTML]="listInfo">
+            </mat-option>
+            <mat-option *ngIf="loading" disabled>
+                <mat-spinner diameter="20"></mat-spinner>
+            </mat-option>
+        </mat-autocomplete>
+    </mat-form-field>
+</form>
