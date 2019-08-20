@@ -213,8 +213,8 @@
                                             </mat-form-field>
                                         </ng-container>
                                         <plugin-autocomplete *ngIf="authService.user.substitute === null" [labelPlaceholder]="'lang.chooseSubstitute' | translate"
-                                            [datas]="usersList" [targetSearchKey]="['lastname', 'firstname']"
-                                            (triggerEvent)="selectSubstitute($event)" (click)="refreshUserList()"></plugin-autocomplete>
+                                            [routeDatas]="['/rest/autocomplete/users']" [targetSearchKey]="['lastname', 'firstname']" [subInfoKey]="'email'"
+                                            (triggerEvent)="selectSubstitute($event)" [excludeClause]="[{id:profileInfo.id}, {substitute: true}]"></plugin-autocomplete>
                                     </div>
                                 </div>
                             </fieldset>

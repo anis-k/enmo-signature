@@ -4,8 +4,9 @@
         <mat-icon color="primary" class="fa fa-search" matPrefix></mat-icon>
         <input type="text" #autoCompleteInput [placeholder]="singleMode !== undefined ? '' : placeholder"
             aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto"
-            (click)="$event.stopPropagation()" (focus)="resetAutocomplete()" [required]="required">
+            (click)="$event.stopPropagation();" (focus)="resetAutocomplete()" [required]="required">
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectOpt($event)">
+            <mat-option *ngIf="autoCompleteInput.textLength <= 2 && !loading" disabled [innerHTML]="'lang.autocompleteInfo' | translate"></mat-option>
             <mat-option *ngFor="let option of filteredOptions | async | sortBy: key[0]" [value]="option"
                 [disabled]="option.disabled">
                 <mat-icon *ngIf="type[option['type']]" class="autcompleteIcon fas {{type[option['type']]}}"
@@ -16,8 +17,7 @@
                     </ng-container>
                 </span>&nbsp;<small>{{option[subInfoKey]}}</small>
             </mat-option>
-            <mat-option *ngIf="(filteredOptions | async)?.length === 0 && !loading" disabled [innerHTML]="listInfo">
-            </mat-option>
+            <mat-option *ngIf="autoCompleteInput.textLength > 2 && (filteredOptions | async)?.length === 0 && !loading" disabled>{{'lang.noAvailableValue' | translate}}</mat-option>
             <mat-option *ngIf="loading" disabled>
                 <mat-spinner diameter="20"></mat-spinner>
             </mat-option>

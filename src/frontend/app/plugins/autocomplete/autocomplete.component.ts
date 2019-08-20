@@ -30,6 +30,8 @@ export class PluginAutocompleteComponent implements OnInit {
     @Input('labelPlaceholder') placeholder: string;
     @Input('targetSearchKey') key: string[];
     @Input('subInfoKey') subInfoKey: string;
+    @Input('excludeClause') excludeClause: any[];
+
     // tslint:disable-next-line:no-output-rename
     @Output('triggerEvent') selectedOpt = new EventEmitter();
 
@@ -67,7 +69,13 @@ export class PluginAutocompleteComponent implements OnInit {
         this.options = [];
         this.myControl.valueChanges
             .pipe(
+                tap(() => this.loading = true),
+                tap(() => {
+                    this.options = [];
+                    this.filteredOptions = of(this.options);
+                }),
                 debounceTime(300),
+                tap(() => this.loading = false),
                 filter(value => value.length > 2),
                 distinctUntilChanged(),
                 tap(() => this.loading = true),
@@ -77,7 +85,7 @@ export class PluginAutocompleteComponent implements OnInit {
                     this.options = data;
                     this.filteredOptions = of(this.options);
                     this.loading = false;
-                })
+                }),
             ).subscribe();
     }
 
@@ -89,16 +97,30 @@ export class PluginAutocompleteComponent implements OnInit {
         });
 
         return forkJoin(arrayObs).pipe(
-            tap(dataMap => console.log(dataMap)),
             map(dataMap => {
                 dataMap.forEach((element: any) => {
                     element.forEach((element2: any) => {
+                        if (this.isExcludeData(element2)) {
+                            element2.disabled = true;
+                        }
                         test.push(element2);
                     });
                 });
                 return test;
             })
         );
+    }
+
+    isExcludeData(data: any) {
+        let state = false;
+        if (this.excludeClause !== undefined) {
+            this.excludeClause.forEach(clause => {
+                if (data[Object.keys(clause)[0]] === (Object.values(clause)[0])) {
+                    state = true;
+                }
+            });
+        }
+        return state;
     }
 
     selectOpt(ev: any) {
