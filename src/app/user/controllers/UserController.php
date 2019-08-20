@@ -60,9 +60,6 @@ class UserController
 
         foreach ($users as $key => $user) {
             $users[$key]['substitute'] = !empty($user['substitute']);
-            if (!empty($user['substitute'])) {
-                $users[$key]['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
-            }
         }
 
         return $response->withJson(['users' => $users]);
@@ -619,6 +616,9 @@ class UserController
             $user['preferences']                = json_decode($user['preferences'], true);
             $user['availableLanguages']         = LanguageController::getAvailableLanguages();
             $user['administrativePrivileges']   = PrivilegeController::getAdministrativePrivilegesByUserId(['userId' => $args['id']]);
+            if (!empty($user['substitute'])) {
+                $users['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
+            }
         }
 
         return $user;
