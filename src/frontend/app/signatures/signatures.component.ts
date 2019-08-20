@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -39,7 +39,8 @@ export class SignaturesComponent implements OnInit {
         private sanitization: DomSanitizer,
         public notificationService: NotificationService,
         public authService: AuthService,
-        private localStorage: LocalStorageService) {
+        private localStorage: LocalStorageService,
+        private renderer: Renderer2) {
     }
 
     ngOnInit() {
@@ -68,10 +69,14 @@ export class SignaturesComponent implements OnInit {
         this.signaturesService.newSign = {};
     }
 
-    selectSignature(signature: any) {
+    selectSignature(signature: any, img: any) {
+
         signature.positionX = 70;
         signature.positionY = 70;
-        signature.width = 25;
+
+        const percentWidth = (this.renderer.selectRootElement('#' + img).naturalWidth * 100) / this.renderer.selectRootElement('#snapshotPdf').naturalWidth;
+
+        signature.width = percentWidth;
 
         if (!this.signaturesService.signaturesContent[this.signaturesService.currentPage]) {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
@@ -114,7 +119,7 @@ export class SignaturesComponent implements OnInit {
                 this.count = 0;
             } else if (this.count > 1) {
                 this.count = 0;
-                this.selectSignature(signature);
+                this.selectSignature(signature, 'imgSign_' + i);
             }
         }, 250);
     }

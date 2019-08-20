@@ -440,7 +440,7 @@ class DocumentController
                             $signPosX = 0;
                             $signPosY = 0;
                         } else {
-                            $signWidth = $size['width'] / 4;
+                            $signWidth = ($signature['width'] * $size['width']) / 100;
                             $signPosX = ($signature['positionX'] * $size['width']) / 100;
                             $signPosY = ($signature['positionY'] * $size['height']) / 100;
                         }

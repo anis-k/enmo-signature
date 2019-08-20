@@ -38,8 +38,8 @@ export class SignaturePadPageComponent implements AfterViewInit {
         maxWidth: 2.5,
         // dotSize: 0,
         backgroundColor: 'rgba(255, 255, 255, 0)',
-        canvasWidth: 600,
-        canvasHeight: 315
+        canvasWidth: 1200,
+        canvasHeight: 630
     };
 
     constructor(private translate: TranslateService,

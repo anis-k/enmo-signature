@@ -14,10 +14,10 @@
         <button mat-mini-fab color="warn" [title]="'lang.removeSignature' | translate" class="sign_icon remove_icon" (tap)="removeSignature(signature,i);">
           <mat-icon class="fa fa-times"></mat-icon>
         </button>
-        <button mat-mini-fab color="primary" [title]="'lang.selectSignature' | translate" class="sign_icon add_icon" (tap)="selectSignature(signature);">
+        <button mat-mini-fab color="primary" [title]="'lang.selectSignature' | translate" class="sign_icon add_icon" (tap)="selectSignature(signature,'imgSign_'+i);">
           <mat-icon class="fa fa-arrow-up"></mat-icon>
         </button>
-        <img [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
+        <img id="imgSign_{{i}}" [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"
           style="width: 190px;">
       </div>
     </div>

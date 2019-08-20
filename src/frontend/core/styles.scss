@@ -223,3 +223,7 @@ mat-accordion mat-expansion-panel {
 .mat-paginator-navigation-previous {
   left: -20px;
 }
+
+.mat-bottom-sheet-container {
+  max-height: 90vh !important;
+}
