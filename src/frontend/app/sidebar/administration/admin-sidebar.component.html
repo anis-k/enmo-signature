@@ -10,7 +10,7 @@
       <button *ngIf="checkClose()" class="closePanel" mat-icon-button type="button" (tap)="snavLeftComponent.close();">
         <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
       </button>
-      <div class="user" style="color: #F99830">
+      <div class="user" style="color: #F99830" title="{{authService.user.firstname}} {{authService.user.lastname}}">
         {{authService.user.firstname}} {{authService.user.lastname}}
       </div>
       <div *ngIf="authService.user.picture" class="avatar"

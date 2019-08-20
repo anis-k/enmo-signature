@@ -153,6 +153,13 @@
   padding-top: 10px;
   font-weight: bold;
   font-size: 20px;
+  position: absolute;
+  max-width: 250px;
+  right: 0px;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
 }
 
 .logout-button {
