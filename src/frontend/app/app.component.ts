@@ -30,15 +30,6 @@ export class AppComponent {
     private localStorage: LocalStorageService) {
     iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
 
-    this.http.get('../rest/authenticationInformations')
-      .subscribe((data: any) => {
-        this.authService.authMode = data.connection;
-        this.authService.changeKey = data.changeKey;
-        this.localStorage.setAppSession(data.instanceId);
-        if (this.authService.changeKey) {
-          this.dialog.open(AlertComponent, { autoFocus: false, disableClose: true, data: { mode: 'warning', title: 'lang.warnPrivateKeyTitle', msg: 'lang.warnPrivateKey' } });
-        }
-      });
     if (this.cookieService.check('maarchParapheurLang')) {
       const cookieInfoLang = this.cookieService.get('maarchParapheurLang');
       translate.setDefaultLang(cookieInfoLang);
