@@ -71,8 +71,8 @@ export class SignaturesComponent implements OnInit {
 
     selectSignature(signature: any, img: any) {
 
-        signature.positionX = 70;
-        signature.positionY = 70;
+        signature.positionX = 2;
+        signature.positionY = (-(this.signaturesService.y - 110) * 100) / this.signaturesService.workingAreaHeight;
 
         const percentWidth = (this.renderer.selectRootElement('#' + img).naturalWidth * 100) / this.renderer.selectRootElement('#snapshotPdf').naturalWidth;
 
