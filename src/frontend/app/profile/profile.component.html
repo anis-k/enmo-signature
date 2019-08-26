@@ -15,8 +15,7 @@
     </div>
     <div class="panel-content">
         <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
-            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);"
-                (swipeleft)="switchToleft(tabProfile)" (swiperight)="switchToRight(tabProfile)">
+            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);">
                 <mat-tab label="{{'lang.informations' | translate}}">
                     <div class="profile-content">
                         <mat-form-field class="input-row">
@@ -202,19 +201,21 @@
                                 <legend align="left">{{'lang.substitute' | translate}}</legend>
                                 <div class="form-container">
                                     <div class="form-col">
-                                        <ng-container *ngFor="let user of usersList">
-                                            <mat-form-field class="selectedSubstitute"  *ngIf="user.id === authService.user.substitute">
-                                                <input matInput 
-                                                    [value]="user.lastname + ' ' + user.firstname" readonly>
-                                                    <button matSuffix mat-icon-button type="button"
-                                                    (tap)="deleteSubstitute()" color="warn" title="{{'lang.deleteSubstitution' | translate}}">
-                                                    <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
-                                                </button>
-                                            </mat-form-field>
-                                        </ng-container>
-                                        <plugin-autocomplete *ngIf="authService.user.substitute === null" [labelPlaceholder]="'lang.chooseSubstitute' | translate"
-                                            [routeDatas]="['/rest/autocomplete/users']" [targetSearchKey]="['lastname', 'firstname']" [subInfoKey]="'email'"
-                                            (triggerEvent)="selectSubstitute($event)" [excludeClause]="[{id:profileInfo.id}, {substitute: true}]"></plugin-autocomplete>
+                                        <mat-form-field class="selectedSubstitute"
+                                            *ngIf="authService.user.substitute !== null">
+                                            <input matInput [value]="authService.user.substituteUser" readonly>
+                                            <button matSuffix mat-icon-button type="button" (tap)="deleteSubstitute()"
+                                                color="warn" title="{{'lang.deleteSubstitution' | translate}}">
+                                                <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
+                                            </button>
+                                        </mat-form-field>
+                                        <plugin-autocomplete *ngIf="authService.user.substitute === null"
+                                            [labelPlaceholder]="'lang.chooseSubstitute' | translate"
+                                            [routeDatas]="['/rest/autocomplete/users']"
+                                            [targetSearchKey]="['lastname', 'firstname']" [subInfoKey]="'email'"
+                                            (triggerEvent)="selectSubstitute($event)"
+                                            [excludeClause]="[{id:profileInfo.id}, {substitute: true}]">
+                                        </plugin-autocomplete>
                                     </div>
                                 </div>
                             </fieldset>

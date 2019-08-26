@@ -278,6 +278,7 @@ export class ProfileComponent implements OnInit {
     }
 
     selectSubstitute(newUserSubtituted: any) {
+
         if (this.profileInfo.substitute !== null) {
             alert(this.translate.instant('lang.substitutionWarn'));
         }
@@ -371,85 +372,13 @@ export class ProfileComponent implements OnInit {
         if (e.index === 1) {
             this.drawSample();
         }
-        if (e.index === 2) {
-            this.refreshInfoSubstitute();
-            this.swithToAdmin();
-        }
     }
 
     counter(i: number) {
         return new Array(i);
     }
 
-    switchToleft(tab: MatTabGroup) {
-        tab.selectedIndex++;
-
-        if (tab.selectedIndex === 2) {
-            this.swithToAdmin();
-        }
-    }
-
-    switchToRight(tab: MatTabGroup) {
-        if (tab.selectedIndex > 0) {
-            tab.selectedIndex--;
-
-            if (tab.selectedIndex === 2) {
-                this.swithToAdmin();
-            }
-        }
-    }
-
-    swithToAdmin() {
-        if (this.authService.user.substitute || this.usersList.length === 0) {
-            this.http.get('../rest/users').pipe(
-                map((data: any) => {
-                    data.users.forEach((element: any) => {
-                        if (element.id !== this.profileInfo.id && !element.substitute) {
-                            element.disabled = false;
-                        } else {
-                            element.disabled = true;
-                        }
-                    });
-                    return data;
-                }),
-                tap((data: any) => this.usersList = data.users),
-            ).subscribe();
-        }
-
-        if (this.signaturesService.signaturesList.length === 0) {
-            this.http.get('../rest/users/' + this.profileInfo.id + '/signatures')
-                .subscribe((data: any) => {
-                    this.signaturesService.signaturesList = data.signatures;
-                });
-        }
-    }
-
     setLang(lang: any) {
         this.translate.use(lang);
-    }
-
-    refreshUserList() {
-        this.usersList = [];
-        this.http.get('../rest/users').pipe(
-            map((data: any) => {
-                data.users.forEach((element: any) => {
-                    if (element.id !== this.profileInfo.id && !element.substitute) {
-                        element.disabled = false;
-                    } else {
-                        element.disabled = true;
-                    }
-                });
-                return data;
-            }),
-            tap((data: any) => this.usersList = data.users),
-        ).subscribe();
-    }
-
-    refreshInfoSubstitute() {
-        this.http.get('../rest/users/' + this.authService.user.id + '/substitute')
-            .subscribe((data: any) => {
-                this.authService.user.substitute = data.substitute;
-                this.profileInfo.substitute = data.substitute;
-            });
     }
 }
