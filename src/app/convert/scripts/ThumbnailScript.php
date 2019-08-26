@@ -24,8 +24,9 @@ use SrcCore\models\DatabasePDO;
 //id            = $argv[2];
 //type          = $argv[3];
 //userId        = $argv[4];
+//page          = $argv[5]; Optionnal
 
-ThumbnailScript::convert(['configPath' => $argv[1], 'id' => $argv[2], 'type' => $argv[3], 'userId' => $argv[4]]);
+ThumbnailScript::convert(['configPath' => $argv[1], 'id' => $argv[2], 'type' => $argv[3], 'userId' => $argv[4], 'page' => $argv[5] ?? null]);
 
 class ThumbnailScript
 {
@@ -36,7 +37,11 @@ class ThumbnailScript
 
         $GLOBALS['id'] = $args['userId'];
 
-        $isConverted = ConvertThumbnailController::convert(['id' => $args['id'], 'type' => $args['type']]);
+        if (isset($args['page'])) {
+            $isConverted = ConvertThumbnailController::convertOnePage(['id' => $args['id'], 'type' => $args['type'], 'page' => $args['page']]);
+        } else {
+            $isConverted = ConvertThumbnailController::convert(['id' => $args['id'], 'type' => $args['type']]);
+        }
         if (!empty($isConverted['errors'])) {
             HistoryController::add([
                 'code'          => 'KO',

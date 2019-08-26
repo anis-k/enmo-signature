@@ -15,6 +15,7 @@
 namespace Document\controllers;
 
 use Attachment\controllers\AttachmentController;
+use Convert\scripts\ThumbnailScript;
 use Docserver\models\AdrModel;
 use Email\controllers\EmailController;
 use Group\controllers\PrivilegeController;
@@ -421,8 +422,9 @@ class DocumentController
             $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_' . $adr[0]['filename'];
             copy($pathToDocument, $tmpFilename);
 
-            $pdf     = new Fpdi('P');
-            $nbPages = $pdf->setSourceFile($tmpFilename);
+            $pages      = [];
+            $pdf        = new Fpdi('P');
+            $nbPages    = $pdf->setSourceFile($tmpFilename);
             $pdf->setPrintHeader(false);
 
             for ($i = 1; $i <= $nbPages; $i++) {
@@ -435,6 +437,9 @@ class DocumentController
                 $pdf->SetAutoPageBreak(false, 0);
                 foreach ($body['signatures'] as $signature) {
                     if ($signature['page'] == $i) {
+                        if (!in_array($i, $pages)) {
+                            $pages[] = $i;
+                        }
                         if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
                             $signWidth = $size['width'];
                             $signPosX = 0;
@@ -512,6 +517,22 @@ class DocumentController
                 'filename'      => $storeInfos['filename'],
                 'fingerprint'   => $storeInfos['fingerprint']
             ]);
+
+            $tnlPages = [];
+            foreach ($pages as $page) {
+                $tnlPages[] = "TNL{$page}";
+            }
+            if (!empty($tnlPages)) {
+                AdrModel::deleteDocumentAdr([
+                    'where' => ['main_document_id = ?', 'type in (?)'],
+                    'data'  => [$args['id'], $tnlPages]
+                ]);
+            }
+
+            $configPath = CoreConfigModel::getConfigPath();
+            foreach ($pages as $page) {
+                exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
+            }
         }
 
         $set = ['process_date' => 'CURRENT_TIMESTAMP', 'status' => DocumentController::ACTIONS[$args['actionId']]];
@@ -531,14 +552,6 @@ class DocumentController
                 'data'  => [$args['id']]
             ]);
         }
-
-        AdrModel::deleteDocumentAdr([
-            'where' => ['main_document_id = ?', 'type != ?'],
-            'data'  => [$args['id'], 'DOC']
-        ]);
-
-        $configPath = CoreConfigModel::getConfigPath();
-        exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' > /dev/null &");
 
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['id'], 'userId' => $GLOBALS['id']]);
 
