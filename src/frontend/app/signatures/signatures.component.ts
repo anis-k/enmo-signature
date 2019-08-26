@@ -71,8 +71,8 @@ export class SignaturesComponent implements OnInit {
 
     selectSignature(signature: any, img: any) {
 
-        signature.positionX = 2;
-        signature.positionY = (-(this.signaturesService.y - 110) * 100) / this.signaturesService.workingAreaHeight;
+        signature.positionX = 60;
+        signature.positionY = 80;
 
         const percentWidth = (this.renderer.selectRootElement('#' + img).naturalWidth * 100) / this.renderer.selectRootElement('#snapshotPdf').naturalWidth;
 
@@ -83,7 +83,7 @@ export class SignaturesComponent implements OnInit {
         }
         this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
-
+        this.notificationService.success('lang.signatureInDocAdded');
         this.bottomSheetRef.dismiss();
     }
 
