@@ -116,31 +116,19 @@ class ConvertThumbnailController
 
     public static function convertOnePage(array $args)
     {
-        ValidatorModel::notEmpty($args, ['id', 'type', 'page']);
-        ValidatorModel::stringType($args, ['type']);
+        ValidatorModel::notEmpty($args, ['id', 'page']);
         ValidatorModel::intVal($args, ['id', 'page']);
 
-        if ($args['type'] == 'document') {
-            $adr = AdrModel::getDocumentsAdr([
-                'select'  => ['path', 'filename'],
-                'where'   => ['main_document_id = ?', 'type = ?'],
-                'data'    => [$args['id'], 'DOC']
-            ]);
-            $docserverType = 'DOC';
-        } elseif ($args['type'] == 'attachment') {
-            $adr = AdrModel::getAttachmentsAdr([
-                'select'    => ['path', 'filename'],
-                'where'     => ['attachment_id = ?', 'type = ?'],
-                'data'      => [$args['id'], 'ATTACH']
-            ]);
-            $docserverType = 'ATTACH';
-        }
-
-        if (empty($adr) || empty($docserverType)) {
+        $adr = AdrModel::getDocumentsAdr([
+            'select'  => ['path', 'filename'],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'DOC']
+        ]);
+        if (empty($adr)) {
             return ['errors' => 'Document does not exist'];
         }
 
-        $docserver = DocserverModel::getByType(['type' => $docserverType, 'select' => ['path']]);
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
         if (empty($docserver['path']) || !is_dir($docserver['path'])) {
             return ['errors' => 'Docserver does not exist'];
         }
@@ -176,7 +164,7 @@ class ConvertThumbnailController
         $storeInfos = DocserverController::storeResourceOnDocServer([
             'encodedFile'     => base64_encode($resource),
             'format'          => 'png',
-            'docserverType'   => $docserverType
+            'docserverType'   => 'DOC'
         ]);
         if (!empty($storeInfos['errors'])) {
             return ['errors' => $storeInfos['errors']];
@@ -184,23 +172,13 @@ class ConvertThumbnailController
 
         unlink("{$tmpPath}{$fileNameOnTmp}.png");
 
-        if ($args['type'] == 'document') {
-            AdrModel::createDocumentAdr([
-                'documentId'    => $args['id'],
-                'type'          => 'TNL' . $args['page'],
-                'path'          => $storeInfos['path'],
-                'filename'      => $storeInfos['filename'],
-                'fingerprint'   => $storeInfos['fingerprint']
-            ]);
-        } elseif ($args['type'] == 'attachment') {
-            AdrModel::createAttachmentAdr([
-                'attachmentId'   => $args['id'],
-                'type'           => 'TNL' . ($args['page'] + 1),
-                'path'           => $storeInfos['path'],
-                'filename'       => $storeInfos['filename'],
-                'fingerprint'    => $storeInfos['fingerprint']
-            ]);
-        }
+        AdrModel::createDocumentAdr([
+            'documentId'    => $args['id'],
+            'type'          => 'TNL' . $args['page'],
+            'path'          => $storeInfos['path'],
+            'filename'      => $storeInfos['filename'],
+            'fingerprint'   => $storeInfos['fingerprint']
+        ]);
 
         return true;
     }
