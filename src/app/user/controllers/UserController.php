@@ -617,7 +617,7 @@ class UserController
             $user['availableLanguages']         = LanguageController::getAvailableLanguages();
             $user['administrativePrivileges']   = PrivilegeController::getAdministrativePrivilegesByUserId(['userId' => $args['id']]);
             if (!empty($user['substitute'])) {
-                $users['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
+                $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
             }
         }
 
