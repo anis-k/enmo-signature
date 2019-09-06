@@ -192,7 +192,8 @@ class EmailController
 
         $phpmailer->Timeout = 30;
         $phpmailer->SMTPDebug = 1;
-        $phpmailer->Debugoutput = function ($str) {};
+        $phpmailer->Debugoutput = function ($str) {
+        };
 
         $isSent = $phpmailer->send();
         if (!$isSent) {
@@ -220,7 +221,7 @@ class EmailController
         $nextUser['preferences'] = json_decode($nextUser['preferences'], true);
         if ($nextUser['preferences']['notifications']) {
             $lang = LanguageController::get(['lang' => $nextUser['preferences']['lang']]);
-            $url = UrlController::getCoreUrl() . 'dist/index.html#/documents/' . $args['documentId'];
+            $url = UrlController::getCoreUrl() . 'dist/documents/' . $args['documentId'];
             EmailController::createEmail([
                 'userId'    => $args['userId'],
                 'data'      => [

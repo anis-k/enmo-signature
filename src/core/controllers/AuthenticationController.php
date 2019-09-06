@@ -107,18 +107,18 @@ class AuthenticationController
                 ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
                 ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
                 ldap_set_option($ldap, LDAP_OPT_NETWORK_TIMEOUT, 10);
-                $login = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
-                $login = (!empty($ldapConfiguration['suffix']) ? $login . $ldapConfiguration['suffix'] : $login);
+                $ldapLogin = (!empty($ldapConfiguration['prefix']) ? $ldapConfiguration['prefix'] . '\\' . $body['login'] : $body['login']);
+                $ldapLogin = (!empty($ldapConfiguration['suffix']) ? $ldapLogin . $ldapConfiguration['suffix'] : $ldapLogin);
                 if (!empty($ldapConfiguration['baseDN'])) { //OpenLDAP
-                    $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$login})", ['dn']);
+                    $search = @ldap_search($ldap, $ldapConfiguration['baseDN'], "(uid={$ldapLogin})", ['dn']);
                     if ($search === false) {
                         $error = 'Ldap search failed : baseDN is maybe wrong => ' . ldap_error($ldap);
                         continue;
                     }
                     $entries = ldap_get_entries($ldap, $search);
-                    $login = $entries[0]['dn'];
+                    $ldapLogin = $entries[0]['dn'];
                 }
-                $authenticated = @ldap_bind($ldap, $login, $body['password']);
+                $authenticated = @ldap_bind($ldap, $ldapLogin, $body['password']);
                 if (!$authenticated) {
                     $error = ldap_error($ldap);
                 }

@@ -522,7 +522,7 @@ class UserController
         $user['preferences'] = json_decode($user['preferences'], true);
         $lang = LanguageController::get(['lang' => $user['preferences']['lang']]);
 
-        $url = UrlController::getCoreUrl() . 'dist/index.html#/update-password?token=' . $resetToken;
+        $url = UrlController::getCoreUrl() . 'dist/update-password?token=' . $resetToken;
         EmailController::createEmail([
             'userId'    => $user['id'],
             'data'      => [
