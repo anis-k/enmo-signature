@@ -1,4 +1,4 @@
 
 RewriteEngine On
-RewriteRule "\.(css|js|eot|ttf|woff|woff2|svg)$" - [L]
+RewriteRule "\.(css|js|eot|ttf|woff|woff2|svg|ico|png)$" - [L]
 RewriteRule ^ dist/index.html
