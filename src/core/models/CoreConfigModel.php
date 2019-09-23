@@ -17,9 +17,16 @@ namespace SrcCore\models;
 
 class CoreConfigModel
 {
-    public static function getConfig()
+    public static function getConfigPath()
     {
         $path = empty($_SERVER['CONFIG_DIR']) ? $_SERVER['REDIRECT_CONFIG_DIR'] : $_SERVER['CONFIG_DIR'];
+
+        return $path;
+    }
+
+    public static function getConfig()
+    {
+        $path = CoreConfigModel::getConfigPath();
 
         $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $path . '/config.xml']);
 
@@ -44,13 +51,6 @@ class CoreConfigModel
         }
 
         return $timezone;
-    }
-
-    public static function getConfigPath()
-    {
-        $path = empty($_SERVER['CONFIG_DIR']) ? $_SERVER['REDIRECT_CONFIG_DIR'] : $_SERVER['CONFIG_DIR'];
-
-        return $path;
     }
 
     /**

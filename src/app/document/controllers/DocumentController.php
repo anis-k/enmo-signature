@@ -423,6 +423,11 @@ class DocumentController
             copy($pathToDocument, $tmpFilename);
 
             $pages      = [];
+            $configPath = CoreConfigModel::getConfigPath();
+            $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+            if (file_exists($overrideFile)) {
+                require_once ($overrideFile);
+            }
             $pdf        = new Fpdi('P');
             $nbPages    = $pdf->setSourceFile($tmpFilename);
             $pdf->setPrintHeader(false);
