@@ -210,7 +210,6 @@ class ConfigurationController
                 'from'      => $body['value']['from'],
                 'charset'   => empty($body['value']['charset']) ? 'utf-8' : $body['value']['charset']
             ]);
-
         } elseif ($configuration['identifier'] == 'ldapServer') {
             if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_connections'])) {
                 return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
@@ -368,8 +367,8 @@ class ConfigurationController
                 return ['errors' => 'Body[\'value\'] port is empty or not an integer'];
             } elseif (!Validator::boolType()->validate($args['auth'])) {
                 return ['errors' => 'Body[\'value\'] auth is empty or not a boolean'];
-            } elseif (!Validator::stringType()->notEmpty()->validate($args['secure'])) {
-                return ['errors' => 'Body[\'value\'] secure is empty or not a string'];
+            } elseif (!Validator::stringType()->validate($args['secure'])) {
+                return ['errors' => 'Body[\'value\'] secure is not a string'];
             } elseif (!Validator::stringType()->notEmpty()->validate($args['from'])) {
                 return ['errors' => 'Body[\'value\'] from is empty or not a string'];
             }
