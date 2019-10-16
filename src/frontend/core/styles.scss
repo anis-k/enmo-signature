@@ -50,6 +50,56 @@ button:disabled {
   display: flex;
   align-items: center;
 }
+.btn-filled {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid black;
+  color: white;
+  background-color: #fff;
+  padding: 0 25px;
+  border-radius: 25px !important;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 10px 10px 17px -10px rgba(0,0,0,0.75);
+  transition: all 0.2;
+  &:active {
+    transition: all 0.2;
+    box-shadow: none;
+  }
+  &.btn-xs {
+    height: 35px;
+  }
+  &.green {
+    background-color: $accent;
+    border: 1px solid $accent;
+  }
+  &.red {
+    background-color: $warn;
+    border: 1px solid $warn;
+  }
+  &.blue {
+    background-color: $primary;
+    border: 1px solid $primary;
+    &.active {
+      color: #fff;
+      background: $primary;
+    }
+  }
+  &:disabled {
+    opacity: 0.5;
+    color: #000;
+    border: 1px solid #000;
+    cursor: not-allowed;
+  }
+  .fas, i, .material-icons {
+    margin: 0 5px;
+  }
+}
+
 .btn {
   height: 50px;
   display: flex;
@@ -76,7 +126,6 @@ button:disabled {
   }
   &.blue {
     color: $primary;
-    background: #fff;
     border: 1px solid $primary;
     &.active {
       color: #fff;
