@@ -172,7 +172,7 @@ class DocumentController
         $currentFound = false;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
-                $date = new \DateTime($document['process_date']);
+                $date = new \DateTime($value['process_date']);
                 $value['process_date'] = $date->format('d-m-Y H:i');
             }
             $formattedDocument['workflow'][] = [
@@ -426,7 +426,7 @@ class DocumentController
             $configPath = CoreConfigModel::getConfigPath();
             $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
             if (file_exists($overrideFile)) {
-                require_once ($overrideFile);
+                require_once($overrideFile);
             }
             $pdf        = new Fpdi('P');
             $nbPages    = $pdf->setSourceFile($tmpFilename);
