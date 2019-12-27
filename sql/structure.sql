@@ -144,6 +144,7 @@ CREATE TABLE main_documents
   description text,
   sender text NOT NULL,
   deadline timestamp without time zone,
+  notes jsonb
   metadata jsonb NOT NULL DEFAULT '{}',
   creation_date timestamp without time zone NOT NULL DEFAULT NOW(),
   modification_date timestamp without time zone DEFAULT NOW(),

@@ -60,7 +60,7 @@ class DocumentModel
     public static function create(array $args)
     {
         ValidatorModel::notEmpty($args, ['title', 'sender', 'metadata']);
-        ValidatorModel::stringType($args, ['title', 'reference', 'description', 'sender', 'deadline', 'metadata']);
+        ValidatorModel::stringType($args, ['title', 'reference', 'description', 'sender', 'deadline', 'notes', 'metadata']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'main_documents_id_seq']);
 
@@ -73,6 +73,7 @@ class DocumentModel
                 'description'       => $args['description'],
                 'sender'            => $args['sender'],
                 'deadline'          => $args['deadline'],
+                'notes'             => $args['notes'],
                 'metadata'          => $args['metadata']
             ]
         ]);
@@ -80,30 +81,30 @@ class DocumentModel
         return $nextSequenceId;
     }
 
-    public static function update(array $aArgs)
+    public static function update(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['set', 'where', 'data']);
-        ValidatorModel::arrayType($aArgs, ['set', 'where', 'data']);
+        ValidatorModel::notEmpty($args, ['set', 'where', 'data']);
+        ValidatorModel::arrayType($args, ['set', 'where', 'data']);
 
         DatabaseModel::update([
             'table' => 'main_documents',
-            'set'   => $aArgs['set'],
-            'where' => $aArgs['where'],
-            'data'  => $aArgs['data']
+            'set'   => $args['set'],
+            'where' => $args['where'],
+            'data'  => $args['data']
         ]);
 
         return true;
     }
 
-    public static function delete(array $aArgs)
+    public static function delete(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['where', 'data']);
-        ValidatorModel::arrayType($aArgs, ['where', 'data']);
+        ValidatorModel::notEmpty($args, ['where', 'data']);
+        ValidatorModel::arrayType($args, ['where', 'data']);
 
         DatabaseModel::delete([
             'table' => 'main_documents',
-            'where' => $aArgs['where'],
-            'data'  => $aArgs['data']
+            'where' => $args['where'],
+            'data'  => $args['data']
         ]);
 
         return true;

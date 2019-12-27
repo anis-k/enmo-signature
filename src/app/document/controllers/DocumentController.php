@@ -151,6 +151,7 @@ class DocumentController
             'reference'         => $document['reference'],
             'description'       => $document['description'],
             'sender'            => $document['sender'],
+            'notes'             => !empty($document['notes']) ? json_decode($document['notes'], true) : null,
             'creationDate'      => $document['creation_date'],
             'modificationDate'  => $document['modification_date'],
             'pages'             => $adr[0]['count']
@@ -318,14 +319,24 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
         }
 
+        if (!empty($body['notes']) && !empty($body['notes']['value'])) {
+            $notes = [
+                'value'         => $body['notes']['value'],
+                'creator'       => $body['notes']['creator'] ?? null,
+                'creationDate'  => $body['notes']['creationDate'] ?? null
+            ];
+            $notes = json_encode($notes);
+        }
+
         DatabaseModel::beginTransaction();
         $id = DocumentModel::create([
-            'title'             => $body['title'],
-            'reference'         => empty($body['reference']) ? null : $body['reference'],
-            'description'       => empty($body['description']) ? null : $body['description'],
-            'sender'            => $body['sender'],
-            'deadline'          => empty($body['deadline']) ? null : $body['deadline'],
-            'metadata'          => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
+            'title'         => $body['title'],
+            'reference'     => empty($body['reference']) ? null : $body['reference'],
+            'description'   => empty($body['description']) ? null : $body['description'],
+            'sender'        => $body['sender'],
+            'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
+            'notes'         => $notes ?? null,
+            'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
         ]);
 
         AdrModel::createDocumentAdr([
