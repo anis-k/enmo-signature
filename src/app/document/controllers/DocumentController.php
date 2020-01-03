@@ -208,6 +208,10 @@ class DocumentController
             ];
         }
 
+        if (!empty($document['link_id'])) {
+            $formattedDocument['linkedDocuments'] = DocumentController::getLinkedDocuments(['id' => $args['id'], 'userId' => $GLOBALS['id'], 'linkId' => $document['link_id']]);
+        }
+
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'main_documents',
@@ -336,6 +340,7 @@ class DocumentController
             'sender'        => $body['sender'],
             'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
             'notes'         => $notes ?? null,
+            'link_id'       => $body['linkId'] ?? null,
             'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
         ]);
 
@@ -666,5 +671,36 @@ class DocumentController
         }
 
         return ['errors' => "getDocumentFromEncodedZip : No document was found in Zip"];
+    }
+
+    public static function getLinkedDocuments(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['id', 'userId', 'linkId']);
+        ValidatorModel::intVal($args, ['id', 'userId']);
+        ValidatorModel::stringType($args, ['linkId']);
+
+        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['userId']]]);
+
+        $users = [$args['userId']];
+        foreach ($substitutedUsers as $value) {
+            $users[] = $value['id'];
+        }
+
+        $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
+        $workflows = WorkflowModel::get([
+            'select'    => ['main_document_id', 'mode', 'user_id'],
+            'where'     => ['user_id in (?)', "(id) in ({$workflowSelect})", 'main_document_id != ?'],
+            'data'      => [$users, $args['id']]
+        ]);
+        $documentIds = array_column($workflows, 'main_document_id');
+
+        $linkedDocuments = DocumentModel::get([
+            'select'    => ['id', 'title', 'reference'],
+            'where'     => ['id in (?)', 'link_id = ?'],
+            'data'      => [$documentIds, $args['linkId']],
+            'orderBy'   => ['creation_date desc']
+        ]);
+
+        return $linkedDocuments;
     }
 }
