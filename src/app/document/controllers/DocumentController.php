@@ -340,7 +340,7 @@ class DocumentController
             'sender'        => $body['sender'],
             'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
             'notes'         => $notes ?? null,
-            'link_id'       => $body['linkId'] ?? null,
+            'link_id'       => (string)$body['linkId'] ?? null,
             'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
         ]);
 
