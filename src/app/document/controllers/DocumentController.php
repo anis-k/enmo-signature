@@ -314,71 +314,75 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
 
-        $storeInfos = DocserverController::storeResourceOnDocServer([
-            'encodedFile'       => $encodedDocument['encodedDocument'],
-            'format'            => 'pdf',
-            'docserverType'     => 'DOC'
-        ]);
-        if (!empty($storeInfos['errors'])) {
-            return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
-        }
-
-        if (!empty($body['notes']) && !empty($body['notes']['value'])) {
-            $notes = [
-                'value'         => $body['notes']['value'],
-                'creator'       => $body['notes']['creator'] ?? null,
-                'creationDate'  => $body['notes']['creationDate'] ?? null
-            ];
-            $notes = json_encode($notes);
-        }
-
-        DatabaseModel::beginTransaction();
-        $id = DocumentModel::create([
-            'title'         => $body['title'],
-            'reference'     => empty($body['reference']) ? null : $body['reference'],
-            'description'   => empty($body['description']) ? null : $body['description'],
-            'sender'        => $body['sender'],
-            'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
-            'notes'         => $notes ?? null,
-            'link_id'       => (string)$body['linkId'] ?? null,
-            'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
-        ]);
-
-        AdrModel::createDocumentAdr([
-            'documentId'     => $id,
-            'type'           => 'DOC',
-            'path'           => $storeInfos['path'],
-            'filename'       => $storeInfos['filename'],
-            'fingerprint'    => $storeInfos['fingerprint']
-        ]);
-
-        foreach ($body['workflow'] as $key => $workflow) {
-            WorkflowModel::create([
-                'userId'            => $workflow['userId'],
-                'mainDocumentId'    => $id,
-                'mode'              => $workflow['mode'],
-                'order'             => $key + 1
+        try {
+            $storeInfos = DocserverController::storeResourceOnDocServer([
+                'encodedFile'       => $encodedDocument['encodedDocument'],
+                'format'            => 'pdf',
+                'docserverType'     => 'DOC'
             ]);
-        }
-
-        foreach ($body['attachments'] as $key => $value) {
-            $value['mainDocumentId'] = $id;
-            $attachment = AttachmentController::create($value);
-            if (!empty($attachment['errors'])) {
-                DatabaseModel::rollbackTransaction();
-                return $response->withStatus(500)->withJson(['errors' => "An error occured for attachment {$key} : {$attachment['errors']}"]);
+            if (!empty($storeInfos['errors'])) {
+                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
+
+            if (!empty($body['notes']) && !empty($body['notes']['value'])) {
+                $notes = [
+                    'value'         => $body['notes']['value'],
+                    'creator'       => $body['notes']['creator'] ?? null,
+                    'creationDate'  => $body['notes']['creationDate'] ?? null
+                ];
+                $notes = json_encode($notes);
+            }
+
+            DatabaseModel::beginTransaction();
+            $id = DocumentModel::create([
+                'title'         => $body['title'],
+                'reference'     => empty($body['reference']) ? null : $body['reference'],
+                'description'   => empty($body['description']) ? null : $body['description'],
+                'sender'        => $body['sender'],
+                'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
+                'notes'         => $notes ?? null,
+                'link_id'       => (string)$body['linkId'] ?? null,
+                'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
+            ]);
+
+            AdrModel::createDocumentAdr([
+                'documentId'     => $id,
+                'type'           => 'DOC',
+                'path'           => $storeInfos['path'],
+                'filename'       => $storeInfos['filename'],
+                'fingerprint'    => $storeInfos['fingerprint']
+            ]);
+
+            foreach ($body['workflow'] as $key => $workflow) {
+                WorkflowModel::create([
+                    'userId'            => $workflow['userId'],
+                    'mainDocumentId'    => $id,
+                    'mode'              => $workflow['mode'],
+                    'order'             => $key + 1
+                ]);
+            }
+
+            foreach ($body['attachments'] as $key => $value) {
+                $value['mainDocumentId'] = $id;
+                $attachment = AttachmentController::create($value);
+                if (!empty($attachment['errors'])) {
+                    DatabaseModel::rollbackTransaction();
+                    return $response->withStatus(500)->withJson(['errors' => "An error occured for attachment {$key} : {$attachment['errors']}"]);
+                }
+            }
+
+            HistoryController::add([
+                'code'          => 'OK',
+                'objectType'    => 'main_documents',
+                'objectId'      => $id,
+                'type'          => 'CREATION',
+                'message'       => "{documentAdded} : {$body['title']}"
+            ]);
+
+            DatabaseModel::commitTransaction();
+        } catch (\Exception $e) {
+            return $response->withStatus(500)->withJson(['errors' => $e->getMessage()]);
         }
-
-        HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'main_documents',
-            'objectId'      => $id,
-            'type'          => 'CREATION',
-            'message'       => "{documentAdded} : {$body['title']}"
-        ]);
-
-        DatabaseModel::commitTransaction();
 
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
