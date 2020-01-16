@@ -1,6 +1,7 @@
 {
 	"lang": {
 		"actionDone"                         : "Action effectuée",
+		"actionDoneInPlaceOf"               	: "Action effectuée à la place de",
 		"administrations"                    : "Administrations",
 		"afterClickingSendLinkChangePassword": "Après avoir cliqué sur <b>Envoyer</b>, vous recevrez un courriel contenant un lien pour modifier votre mot de passe. Ce lien sera actif <b>1 heure</b>.",
 		"annotateDocument"                   : "Annoter ce document",
@@ -167,8 +168,9 @@
 		"attachment": "annexe",
 		"deleteSubstitution": "Supprimer la délégation",
 		"substitutionDeleted": "Délégation supprimée",
-		"substitutionInfo": "Vous avez délégué vos documents, vous ne pouvez pas faire d'action",
+		"substitutionInfo": "Vous avez délégué vos documents",
 		"substitutedDoc": "Document délégué",
+		"substitutedSignature": "Signature déléguée",
 		"substituteMsg": "Vous agissez en tant que",
 		"substitutionWarn": "Vous avez choisi une délégation, vous ne pourrez plus faire d'action.",
 		"manage_users": "Utilisateurs",

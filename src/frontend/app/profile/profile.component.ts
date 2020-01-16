@@ -381,4 +381,12 @@ export class ProfileComponent implements OnInit {
     setLang(lang: any) {
         this.translate.use(lang);
     }
+
+    toggleSignature(i: number) {
+        this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/' + this.signaturesService.signaturesList[i].id  + '/substituted', { 'substituted': !this.signaturesService.signaturesList[i].substituted })
+            .subscribe(() => {
+                this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
+                this.notificationService.success('lang.modificationSaved');
+            });
+    }
 }

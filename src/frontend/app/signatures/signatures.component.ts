@@ -119,7 +119,8 @@ export class SignaturesComponent implements OnInit {
                 this.count = 0;
             } else if (this.count > 1) {
                 this.count = 0;
-                this.selectSignature(signature, 'imgSign_' + i);
+                const id = mode === 'substitute' ? ('imgSignSub_' + i) : ('imgSign_' + i);
+                this.selectSignature(signature, id);
             }
         }, 250);
     }

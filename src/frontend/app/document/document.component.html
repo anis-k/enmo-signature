@@ -76,22 +76,12 @@
       <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
     </section>
     <footer class="footer"
-      *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && currentDoc === 0 && authService.user.substitute === null"
+      *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && currentDoc === 0"
       [@slideUp]>
       <ng-container *ngFor="let action of actionsList;">
         <button [style.color]="action.color" [style.borderColor]="action.color" class="btn"
           (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}</button>
       </ng-container>
-    </footer>
-    <footer class="footer substutionModal" *ngIf="!freezeSidenavClose && currentDoc === 0 && authService.user.substitute !== null" [@slideUp]>
-      <div class="msgModal">
-        {{'lang.substitutionInfo' | translate}}
-      </div>
-      <div>
-        <button mat-icon-button title="{{'lang.deleteSubstitution' | translate}}" (click)="deleteSubstution()">
-          <mat-icon fontSet="fas" fontIcon="fa-times"></mat-icon>
-        </button>
-      </div>
     </footer>
     <app-drawer></app-drawer>
   </mat-sidenav-content>

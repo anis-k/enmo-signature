@@ -398,16 +398,11 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $currentUser = UserModel::getById(['id' => $GLOBALS['id'], 'select' => ['substitute']]);
-        if (!empty($currentUser['substitute'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'User can not make action with substituted account']);
-        }
-
         if (empty(DocumentController::ACTIONS[$args['actionId']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
 
-        $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode'], 'documentId' => $args['id']]);
+        $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id'], 'documentId' => $args['id']]);
 
         $body = $request->getParsedBody();
         if (!empty($body['signatures'])) {
@@ -580,12 +575,18 @@ class DocumentController
 
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['id'], 'userId' => $GLOBALS['id']]);
 
+        $historyMessagePart = "{actionDone} : ";
+        if ($workflow['user_id'] != $GLOBALS['id']) {
+            $user = UserModel::getLabelledUserById(['id' => $workflow['user_id']]);
+            $historyMessagePart = "{actionDoneInPlaceOf} {$user} : ";
+        }
+
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'ACTION',
-            'message'       => "{actionDone} : " . DocumentController::ACTIONS[$args['actionId']],
+            'message'       => $historyMessagePart . DocumentController::ACTIONS[$args['actionId']],
             'data'          => ['actionId' => $args['actionId']]
         ]);
 

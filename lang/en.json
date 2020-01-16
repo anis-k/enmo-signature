@@ -1,6 +1,7 @@
 {
 	"lang": {
 		"actionDone"                         : "Action done",
+		"actionDoneInPlaceOf"               	: "Action done in place of",
 		"administrations"                    : "Administrations",
 		"afterClickingSendLinkChangePassword": "After clicking on <b>Send</b>, you will receive an email containing a link to change your password. This link will be active <b>1 hour</b>.",
 		"annotateDocument"                   : "Annotate this document",
@@ -158,6 +159,7 @@
 		"search": "Search",
 		"substitute": "Substitute user",
 		"substitution": "Substitution",
+		"signSubstituted": "Signatures to substitute",
 		"chooseSubstitute": "Choose a substitute",
 		"noResult": "No result",
 		"circuit": "Circuit",
@@ -167,8 +169,9 @@
 		"attachment": "attachment",
 		"deleteSubstitution": "Delete substitution",
 		"substitutionDeleted": "Substitution deleted",
-		"substitutionInfo": "You are in substitution mode, you can't make any action",
+		"substitutionInfo": "You are in substitution mode",
 		"substitutedDoc": "Substituted document",
+		"substitutedSignature": "Substituted signature",
 		"substituteMsg": "You act as",
 		"substitutionWarn": "You choose a substitution, you will not be able to make any action.",
 		"manage_users": "Users",
