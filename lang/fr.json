@@ -159,6 +159,7 @@
 		"search": "Rechercher",
 		"substitution": "Délégation",
 		"substitute": "Utilisateur délégataire",
+		"signSubstituted": "Signatures à déléguer",
 		"chooseSubstitute": "Choisissez un utilisateur",
 		"noResult": "Aucun résultat",
 		"circuit": "Circuit",

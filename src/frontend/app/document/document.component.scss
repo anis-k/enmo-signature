@@ -291,3 +291,17 @@ button.disabled {
     flex: 1;
   }
 }
+
+.substitutedInformations {
+  position: fixed;
+  top: 95px;
+  background-color: #F1F4F4;
+  border-radius: 14px;
+  padding: 0 20px;
+  z-index: 1;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 15px;
+  color: #135F7F;
+}

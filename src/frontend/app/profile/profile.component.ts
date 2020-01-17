@@ -279,10 +279,6 @@ export class ProfileComponent implements OnInit {
 
     selectSubstitute(newUserSubtituted: any) {
 
-        if (this.profileInfo.substitute !== null) {
-            alert(this.translate.instant('lang.substitutionWarn'));
-        }
-
         this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: newUserSubtituted.id })
             .subscribe(() => {
                 this.authService.updateUserInfoWithTokenRefresh();
