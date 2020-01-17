@@ -46,9 +46,9 @@
                 </section>
             </article>
         </header>
-        <div class="substitutedInformations" *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
+        <mat-card class="substitutedInformations" *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
             <div>{{'lang.substitutionInfo' | translate}}</div>
-        </div>
+        </mat-card>
         <app-overlay *ngIf="this.signaturesService.annotationMode"
                      [appDocumentNotePad]="appDocumentNotePad"></app-overlay>
         <ng-container *ngIf="!freezeSidenavClose && !loadingUI">
