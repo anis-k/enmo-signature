@@ -265,6 +265,9 @@
 		"availableUsers" : "Available users",
 		"signatureInDocAdded" : "Signature added in bottom document",
 		"associatedDocuments" : "Associated documents",
-		"attachedElements" : "Attached elements"
+		"attachedElements" : "Attached elements",
+		"note" : "Note",
+		"collapseNote" : "Collapse the note",
+		"expandNote" : "Expand the note"	
 	}
 }

@@ -118,6 +118,8 @@ export class DocumentComponent implements OnInit {
 
     img: any;
 
+    expandedNote: boolean = true;
+
     @ViewChild('snav') snav: MatSidenav;
     @ViewChild('snavRight') snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;

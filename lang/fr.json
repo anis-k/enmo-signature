@@ -266,6 +266,9 @@
 		"availableUsers" : "Utilisateur(s) disponible(s)",
 		"signatureInDocAdded" : "Signature apposée en bas du document",
 		"associatedDocuments" : "Document(s) associé(s)",
-		"attachedElements" : "Pièce(s) attaché(s)"
+		"attachedElements" : "Pièce(s) attaché(s)",
+		"note" : "Note",
+		"collapseNote" : "Réduire la note",
+		"expandNote" : "Ouvrir la note"		
 	}
 }

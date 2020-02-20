@@ -312,3 +312,39 @@ button.disabled {
   font-size: 13px;
   text-align: center;
 }
+
+.note {
+  top: 150px;
+  right: 40px;
+  z-index: 2;
+  cursor: grab;
+  position: absolute;
+  background-color: #FFF8BB;
+  width: 300px;
+  max-height: 400px;
+  overflow: auto;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+
+  &-title {
+    background-color: #FFF8BB;
+    position: sticky;
+    top: 0px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #135F7F;
+    font-weight: bold;
+  }
+
+  &-creator {
+    padding: 10px;
+    color: #135F7F;
+    font-size: 12px;
+    text-decoration: underline;
+  }
+
+  &-content {
+    padding: 10px;
+    color: #4F4F4F;
+  }
+}
