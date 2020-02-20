@@ -539,4 +539,15 @@ export class DocumentComponent implements OnInit {
                 });
         }
     }
+
+    gotTo(documentId: number, i: any) {
+        this.router.navigate(['/documents/' + documentId]);
+        this.signaturesService.mainDocumentId = documentId;
+        // this.signaturesService.indexDocumentsList = i;
+        this.signaturesService.sideNavRigtDatas = {
+            mode: 'mainDocumentDetail',
+            width: '450px',
+            locked: false,
+        };
+    }
 }

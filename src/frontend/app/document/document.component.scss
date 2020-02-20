@@ -71,6 +71,7 @@ canvas {
   justify-content: center;
   align-items: center;
   padding: 0;
+
   /*&-left
       position absolute
       top 15px
@@ -79,6 +80,12 @@ canvas {
     justify-content: center;
     display: flex;
     color: $primary;
+
+    &-button {
+      white-space: initial;
+      word-break: break-word;
+      width: 135px !important;
+    }
   }
 
   &-infos {
@@ -133,20 +140,20 @@ canvas {
     }
 
     ::ng-deep .mat-form-field-underline {
-        display: none;
+      display: none;
     }
 
     &-content {
-        width: 33%;
-        display: inline-block;
+      width: 33%;
+      display: inline-block;
 
-        input {
-          text-overflow: ellipsis;
-        }
-        
-        .mat-form-field {
-          width: 100%;
-        }
+      input {
+        text-overflow: ellipsis;
+      }
+
+      .mat-form-field {
+        width: 100%;
+      }
     }
 
     input:disabled {
@@ -271,7 +278,7 @@ button.disabled {
 }
 
 .leftPosDesk {
-  left:25% !important;
+  left: 25% !important;
 }
 
 .mat-badge-content {
@@ -283,7 +290,7 @@ button.disabled {
   background: $primary;
 
   div {
-    padding:10px;
+    padding: 10px;
   }
 
   .msgModal {
@@ -299,9 +306,9 @@ button.disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   background:
-  #135F7F;
+    #135F7F;
   color:
-  white;
+    white;
   font-size: 13px;
   text-align: center;
 }

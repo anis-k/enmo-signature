@@ -25,17 +25,29 @@
                     </button>
                 </section>
                 <section class="header-action">
-                    <button mat-button (click)="openDocumentList();">
-                        <i class="fas fa-file fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span
-                            style="display: block;line-height: 10px;">{{'lang.documents' | translate | titlecase}}</span>
+                    <button mat-button class="header-action-button" *ngIf="mainDocument.linkedDocuments !== undefined && mainDocument.linkedDocuments.length > 0" [matMenuTriggerFor]="assocDoc">
+                        <i class="fas fa-folder-open fa-2x" [matBadge]="mainDocument.linkedDocuments.length"></i><span
+                            style="display: block;line-height: 15px;">{{'lang.associatedDocuments' | translate | ucfirst}}</span>
                     </button>
-                    <button mat-button (click)="openVisaWorkflow();">
+                    <mat-menu #assocDoc="matMenu">
+                        <button mat-menu-item *ngFor="let doc of mainDocument.linkedDocuments" (click)="gotTo(doc.id)" style="height: auto;line-height: inherit;font-family: 'lato', sans-serif;">
+                            <div style="font-size: 12px;color: #4F4F4F;padding-top: 10px;padding-bottom: 10px;">
+                                <div>{{doc.reference}}</div>
+                                <div style="font-weight: 600;color: #135F7F;font-size: 14px;">{{doc.title}}</div>
+                            </div>
+                        </button>
+                      </mat-menu>
+                    <button mat-button class="header-action-button" (click)="openDocumentList();">
+                        <i class="fas fa-paperclip fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span
+                            style="display: block;line-height: 15px;">{{'lang.attachedElements' | translate | ucfirst}}</span>
+                    </button>
+                    <button mat-button class="header-action-button" (click)="openVisaWorkflow();">
                         <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span
-                            style="display: block;line-height: 10px;">{{'lang.circuit' | translate}}</span>
+                            style="display: block;line-height: 15px;">{{'lang.circuit' | translate}}</span>
                     </button>
-                    <button mat-button [matMenuTriggerFor]="menu">
+                    <button mat-button class="header-action-button" [matMenuTriggerFor]="menu">
                         <i class="fas fa-cog fa-2x"></i><span
-                            style="display: block;line-height: 10px;">{{'lang.actions' | translate}}</span>
+                            style="display: block;line-height: 15px;">{{'lang.actions' | translate}}</span>
                     </button>
                     <mat-menu #menu="matMenu">
                         <button [disabled]="checkEmptiness()" mat-menu-item

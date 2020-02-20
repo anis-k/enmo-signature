@@ -276,3 +276,11 @@ mat-accordion mat-expansion-panel {
 .mat-bottom-sheet-container {
   max-height: 90vh !important;
 }
+
+.mat-menu-panel {
+  max-width: inherit !important;
+}
+.mat-menu-content:not(:empty) {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}

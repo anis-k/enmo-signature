@@ -4,7 +4,7 @@
             (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
         </button>
-        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;{{'lang.documents' | translate}}
+        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;{{'lang.attachedElements' | translate}}
     </div>
     <div class="pjListContent">
         <div *ngFor="let doc of docList;let i=index" style="position: relative;">
