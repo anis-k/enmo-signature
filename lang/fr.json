@@ -264,6 +264,8 @@
 		"noAvailableValue" : "Aucun élément disponible",
 		"autocompleteInfo" : "La recherche doit contenir au minimum&nbsp;<b>3 caractères</b>",
 		"availableUsers" : "Utilisateur(s) disponible(s)",
-		"signatureInDocAdded" : "Signature apposée en bas du document"
+		"signatureInDocAdded" : "Signature apposée en bas du document",
+		"associatedDocuments" : "Document(s) associé(s)",
+		"attachedElements" : "Pièce(s) attaché(s)"
 	}
 }
