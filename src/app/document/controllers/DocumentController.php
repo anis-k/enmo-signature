@@ -699,12 +699,15 @@ class DocumentController
         ]);
         $documentIds = array_column($workflows, 'main_document_id');
 
-        $linkedDocuments = DocumentModel::get([
-            'select'    => ['id', 'title', 'reference'],
-            'where'     => ['id in (?)', 'link_id = ?'],
-            'data'      => [$documentIds, $args['linkId']],
-            'orderBy'   => ['creation_date desc']
-        ]);
+        $linkedDocuments = [];
+        if (!empty($documentIds)) {
+            $linkedDocuments = DocumentModel::get([
+                'select'    => ['id', 'title', 'reference'],
+                'where'     => ['id in (?)', 'link_id = ?'],
+                'data'      => [$documentIds, $args['linkId']],
+                'orderBy'   => ['creation_date desc']
+            ]);
+        }
 
         return $linkedDocuments;
     }
