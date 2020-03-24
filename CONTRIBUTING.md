@@ -57,7 +57,7 @@ En voici les grands principes de fonctionnement :
 * C'est sur cette branche que se passent l'ensemble des tests unitaires et d'intégration.
 
 ##### Version stable
-'v19.x' (v18.x, v19.x, v20.x, …) est la version opérationnelle et stable de Maarch Parapheur de l'année en cours
+'v20.x' (v18.x, v19.x, v20.x, …) est la version opérationnelle et stable de Maarch Parapheur de l'année en cours
 
 * Son code représente un instant T dans l'année de 'master' qu'on a jugé prêt et stable pour déploiement chez les utilisateurs.
 * À sa création, c'est donc une branche directement issue de 'master' sans rien d'autre.
@@ -66,8 +66,8 @@ En voici les grands principes de fonctionnement :
 * Cette branche est 'taguée' régulièrement pour indiquer à tous qu'il y a eu des corrections de bugs.
 * C'est sur cette branche que sont passés l'ensemble des tests unitaires (créés dans 'develop'), d'intégration (créés dans 'master') et fonctionnels.
 * Les montées de versions sont :
-** Scriptés par Maarch pour passer d'une v18.x à une v19.x
-** (Semi-) Automatisés pour passer d'une version 19.x à une version 19.y
+** Scriptés par Maarch pour passer d'une v19.x à une v20.x
+** (Semi-) Automatisés pour passer d'une version 20.x.y à une version 20.x.z
 
 ## Comment je contribue ?
 ### Signaler des bugs
