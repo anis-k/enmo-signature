@@ -3,6 +3,7 @@ TRUNCATE TABLE main_documents;
 TRUNCATE TABLE adr_main_documents;
 TRUNCATE TABLE attachments;
 TRUNCATE TABLE adr_attachments;
+TRUNCATE TABLE workflows;
 
 -- MASS TEST
 -- DO $$
@@ -31,8 +32,8 @@ INSERT INTO attachments (id, main_document_id, reference, title, creation_date)
 VALUES (1, 1, 'MAARCH/2019A/1', 'Réponse dérogation carte scolaire', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (1, 'ATTACH', 'tests/', 'demande_derogation.pdf', '8a41c12d4b1885f6929a91f2f2e71fa11d5b76019337b705a9593576bf61dbc2ca4f6fe2b46596a22eeeb7244f2fb9b71594c4ef291b5092df8743747a0d738d');
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 1, 'visa', 1);
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 1, 'sign', 2);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (4, 1, 'visa', 1);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (4, 1, 'sign', 2);
 --
 INSERT INTO main_documents (id, reference, title, sender, creation_date)
 VALUES (2, 'MAARCH/2019D/2', 'Accusé de Réception de votre demande intervenant dans le cadre d’une décision implicite d’acceptation', 'Charlotte Charles', CURRENT_TIMESTAMP);
@@ -42,7 +43,7 @@ INSERT INTO attachments (id, main_document_id, reference, title, creation_date)
 VALUES (2, 2, 'MAARCH/2019A/2', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (2, 'ATTACH', 'tests/', 'sva_route_66.pdf', '7ac968279579b547867964dd1d86b8cbc2bf9c9e6f68229cd42bbdbbcaded0062cb90759d31f08eef08bd8dc21d83912085adca87e27218dfceda5f7b56d6699');
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 2, 'visa', 1);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (3, 2, 'visa', 1);
 --
 INSERT INTO main_documents (id, reference, title, sender, creation_date)
 VALUES (3, 'MAARCH/2019D/3', 'Accusé de Réception de votre demande intervenant dans le cadre d’une décision implicite de rejet', 'Robert Renaud', CURRENT_TIMESTAMP);
@@ -52,7 +53,7 @@ INSERT INTO attachments (id, main_document_id, reference, title, creation_date)
 VALUES (3, 3, 'MAARCH/2019A/3', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (3, 'ATTACH', 'tests/', 'svr_route_chien_bruyant.pdf', '669b144a43f9b9c447e9a00794813ef95cd3b8392d5ec86f3aa8f2fbe65b6a3715fbddde8217165a3b1d7eb3b8e0eea040275a67dcab467bdc1c7783e146f18a');
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 3, 'visa', 1);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (3, 3, 'visa', 1);
 --
 INSERT INTO main_documents (id, reference, title, sender, creation_date)
 VALUES (4, 'MAARCH/2019D/4', 'Invitation pour échanges journée des sports', 'Barbara Bain', CURRENT_TIMESTAMP);
@@ -62,7 +63,7 @@ INSERT INTO attachments (id, main_document_id, reference, title, creation_date)
 VALUES (4, 4, 'MAARCH/2019D/4', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (4, 'ATTACH', 'tests/', 'test.pdf', '9510c93637f6baafbb9082a802aa6c3d1167f4cf6a02c432131de3a6f98d39cd3cac5f26d7b472e8fc2a50930a4e1ca89e8d9e839c81ef201198678aac3df45a');
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 4, 'visa', 1);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (3, 4, 'visa', 1);
 --
 INSERT INTO main_documents (id, reference, title, sender, creation_date)
 VALUES (5, 'MAARCH/2019D/5', 'Votre demande de place en crèche', 'Sabrina Saporta', CURRENT_TIMESTAMP);
@@ -72,7 +73,7 @@ INSERT INTO attachments (id, main_document_id, reference, title, creation_date)
 VALUES (5, 5, 'MAARCH/2019A/4', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (5, 'ATTACH', 'tests/', 'demande_place_creche.pdf', 'ac4190f7b9a07204d15a3c0616b36be43de732a3c7a50d4c72f00eaa2e8bef19c5219b60e5e465ddf6d22a12dfb8157b97d47b96af0cd047296f3ddb7f79ad08');
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 5, 'sign', 1);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (4, 5, 'sign', 1);
 --
 INSERT INTO main_documents (id, reference, title, sender, creation_date)
 VALUES (6, 'MAARCH/2019D/6', 'Mécontentement délais de réponses place crèche', 'Sabrina Saporta', CURRENT_TIMESTAMP);
@@ -82,7 +83,7 @@ INSERT INTO attachments (id, main_document_id, reference, title, creation_date)
 VALUES (6, 6, 'MAARCH/2019A/5', 'PJ 1', CURRENT_TIMESTAMP);
 INSERT INTO adr_attachments (attachment_id, type, path, filename, fingerprint) 
 VALUES (6, 'ATTACH', 'tests/', 'relance_place_creche.pdf', 'a252b97a682f84ae27ec3a03097d9be94c817904ff90eecccbe75afdf90768c5b1cc75aa8b358a8f1573e0622e4e11c3ec5a6f4d3d2f2beffae939df7bc31e7d');
-INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (1, 6, 'sign', 1);
+INSERT INTO workflows (user_id, main_document_id, mode, "order") VALUES (4, 6, 'sign', 1);
 
 -- LIST OF ANNOTATE DOCS
 INSERT INTO main_documents (id, reference, title, sender, creation_date)
@@ -161,23 +162,29 @@ INSERT INTO adr_attachments VALUES (10, 4, 'TNL1', 'tests/', '0004_552761620.png
 INSERT INTO adr_attachments VALUES (11, 5, 'TNL1', 'tests/', '0005_979446594.png', 'f87b91e923a72e3325f761bb8bc6f89987a3963d7937e725b54f1edbaead0ec1242df9fd777c90254dee40bf5ee7892f5ee6ff6743bd9d72830565917f1dd702');
 INSERT INTO adr_attachments VALUES (12, 6, 'TNL1', 'tests/', '0006_503091136.png', 'd355f75a88d96dc85ce1e80f88a5800fb717131cd2b90134e04c5888f42d7fc8e519c61934ce6e25363758a1e027c58ba761b7025cf7db6cc6887d256bffc0eb');
 
-ALTER SEQUENCE main_documents_id_seq RESTART WITH 15;
-ALTER SEQUENCE adr_main_documents_id_seq RESTART WITH 34;
-ALTER SEQUENCE attachments_id_seq RESTART WITH 7;
-ALTER SEQUENCE adr_attachments_id_seq RESTART WITH 13;
+ALTER SEQUENCE main_documents_id_seq RESTART WITH 1000;
+ALTER SEQUENCE adr_main_documents_id_seq RESTART WITH 1000;
+ALTER SEQUENCE attachments_id_seq RESTART WITH 1000;
+ALTER SEQUENCE adr_attachments_id_seq RESTART WITH 1000;
 
 -----
 -- Signatures
 -----
 TRUNCATE TABLE signatures;
-INSERT INTO signatures VALUES (1, 1, 'tests/', '1.png', '8429de8819279f416f1427593798e7b8d22f92ae74b7635d74b450365aee90f7919540109e4b78179c19436dc673b47a7a4f133150c6a19ee5567c3a4b5cdf52');
+--mmanfred
+INSERT INTO signatures VALUES (1, 3, 'tests/', '1.png', '8429de8819279f416f1427593798e7b8d22f92ae74b7635d74b450365aee90f7919540109e4b78179c19436dc673b47a7a4f133150c6a19ee5567c3a4b5cdf52');
+--jjane
 INSERT INTO signatures VALUES (2, 1, 'tests/', '2.png', '1add86db218fe4a0eb2385c826cfb7c51163b3a7862803c918ad122b30ea75021598540170f8ea9a97d97e7ce34df17530ec9d239cd7cfdf516e55b75f694364');
 INSERT INTO signatures VALUES (3, 1, 'tests/', '3.png', '01ae8ee839a4e65cdc2c56ca6c3cf419c4c4e3a48656107e3adfacdfb105f407aef2d4f01e159871cac4af2c971f25acbc6909da2c21ccde18e05d15761bd588');
 INSERT INTO signatures VALUES (4, 1, 'tests/', '4.png', '0a17f4f63490851c07c757c22b19846f17b4f36476f30900417ee56261dcfac319a350f33505cf45abd3f51cf0d94fffb0858708696fd616b7dc2f38bb1ef217');
 INSERT INTO signatures VALUES (5, 1, 'tests/', '5.png', '26206efefbe4f3bcf674f72588d88c9f779e6f41945d92f45e3a4267abc69c5500e5769a4dc72a28c6cc508fced24e73131471392a7e22f290f2ce896aee7fce');
 INSERT INTO signatures VALUES (6, 1, 'tests/', '6.png', '05cddd650ce17dcd3e14869f7a6d8dbc3d5a079a66f61bb0cf5532d17c53f1a552d207284072f75eb7ab13466efe9a16b3150115663c4c53d4c19c9566948208');
-INSERT INTO signatures VALUES (7, 1, 'tests/', '7.png', '9b10027df5a5c3730e7e8ae98117e5d597fff2e2777e175a7e8a8653fc8309ee74ab3221782fd2f551adef7ae18224107c5b4df7f0792b846106683bd258d6d6');
-INSERT INTO signatures VALUES (8, 1, 'tests/', '8.png', '63fa29872286baf7ee9a295e6fce6c78e2a176ee5952b374dd5a448dac9cef42e393be7216584b3f3fefcaed8ffe60faa05210d200a6c02f5fe5f01480930db2');
-INSERT INTO signatures VALUES (9, 1, 'tests/', '9.png', '06f847c16e32e4e2b761d30281e009d7621731606526e3b86aa0bd2672dbfa932bd55dbfc116b818c507c55f14d7940b87e1bab78bbbacea78178c330a89a289');
-INSERT INTO signatures VALUES (10, 1, 'tests/', '10.png', '49163968e27e8232aa9d9fad817d78a233cb112dc49d0158644444d19f6c3b718731a442b401295bc02ea5af5f1dc93bed18b4709929ed3b882d87b8019ad8ff');
-ALTER SEQUENCE signatures_id_seq RESTART WITH 11;
+--mmanfred
+INSERT INTO signatures VALUES (7, 3, 'tests/', '7.png', '9b10027df5a5c3730e7e8ae98117e5d597fff2e2777e175a7e8a8653fc8309ee74ab3221782fd2f551adef7ae18224107c5b4df7f0792b846106683bd258d6d6');
+--ppetit
+INSERT INTO signatures VALUES (8, 4, 'tests/', '8.png', '63fa29872286baf7ee9a295e6fce6c78e2a176ee5952b374dd5a448dac9cef42e393be7216584b3f3fefcaed8ffe60faa05210d200a6c02f5fe5f01480930db2');
+INSERT INTO signatures VALUES (9, 4, 'tests/', '9.png', '06f847c16e32e4e2b761d30281e009d7621731606526e3b86aa0bd2672dbfa932bd55dbfc116b818c507c55f14d7940b87e1bab78bbbacea78178c330a89a289');
+INSERT INTO signatures VALUES (10, 4, 'tests/', '10.png', '49163968e27e8232aa9d9fad817d78a233cb112dc49d0158644444d19f6c3b718731a442b401295bc02ea5af5f1dc93bed18b4709929ed3b882d87b8019ad8ff');
+ALTER SEQUENCE signatures_id_seq RESTART WITH 1000;
+
+
