@@ -201,11 +201,11 @@ legend {
 
 .selectedSubstitute {
     width: 100%;
-    /deep/.mat-input-element {
+    ::ng-deep.mat-input-element {
         cursor: default;
     }
 
-    /deep/.mat-form-field-suffix {
+    ::ng-deep.mat-form-field-suffix {
         top: 0;
         display: flex;
     }

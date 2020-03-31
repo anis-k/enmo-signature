@@ -4,11 +4,11 @@
     font-size: 11px;
     width: 100%;
 }
-/deep/.mat-form-field-appearance-outline .mat-form-field-outline-thick {
+::ng-deep.mat-form-field-appearance-outline .mat-form-field-outline-thick {
     color: $primary;
 }
 
-/deep/.mat-form-field-prefix {
+::ng-deep.mat-form-field-prefix {
     top: 0px !important;
 }
 .mat-option {

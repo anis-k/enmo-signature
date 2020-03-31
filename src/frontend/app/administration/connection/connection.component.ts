@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';

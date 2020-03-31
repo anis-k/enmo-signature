@@ -1,8 +1,8 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { NgModule, Injectable } from '@angular/core';
 import { HammerGestureConfig, HAMMER_GESTURE_CONFIG } from '@angular/platform-browser';
 
 import { AuthInterceptor } from './service/auth-interceptor.service';
@@ -11,6 +11,7 @@ import { AuthInterceptor } from './service/auth-interceptor.service';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+@Injectable()
 export class CustomHammerConfig extends HammerGestureConfig {
   overrides = <any>{
     'pinch': { enable: false },
@@ -138,6 +139,7 @@ import { SortPipe } from './plugins/sorting.pipe';
     AngularDraggableModule,
     AppMaterialModule,
     AppRoutingModule,
+    HammerModule,
   ],
   entryComponents: [
     CustomSnackbarComponent,

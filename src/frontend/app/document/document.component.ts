@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, HostListener } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatDialog, MatBottomSheet, MatBottomSheetConfig, MatSidenav } from '@angular/material';
+import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
 import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -120,8 +122,8 @@ export class DocumentComponent implements OnInit {
 
     expandedNote: boolean = true;
 
-    @ViewChild('snav') snav: MatSidenav;
-    @ViewChild('snavRight') snavRight: MatSidenav;
+    @ViewChild('snav', { static: true }) snav: MatSidenav;
+    @ViewChild('snavRight', { static: true }) snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;

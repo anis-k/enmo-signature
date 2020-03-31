@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { map, tap, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';

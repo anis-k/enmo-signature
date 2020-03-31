@@ -35,7 +35,7 @@ export class PluginAutocompleteComponent implements OnInit {
     // tslint:disable-next-line:no-output-rename
     @Output('triggerEvent') selectedOpt = new EventEmitter();
 
-    @ViewChild('autoCompleteInput') autoCompleteInput: ElementRef;
+    @ViewChild('autoCompleteInput', { static: true }) autoCompleteInput: ElementRef;
 
     filteredOptions: Observable<string[]>;
 

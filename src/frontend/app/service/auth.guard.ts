@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { AlertComponent } from '../plugins/alert.component';
-import { MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 
 @Injectable({
     providedIn: 'root'

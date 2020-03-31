@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../../service/signatures.service';
 import { NotificationService } from '../../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog, MatSidenav } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSidenav } from '@angular/material/sidenav';
 import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../../plugins/confirm.component';
@@ -44,7 +45,7 @@ export class LdapComponent implements OnInit {
     title: string = '';
 
     // tslint:disable-next-line:no-input-rename
-    @ViewChild('snavRight') snavRight: MatSidenav;
+    @ViewChild('snavRight', { static: true }) snavRight: MatSidenav;
 
     constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
     }

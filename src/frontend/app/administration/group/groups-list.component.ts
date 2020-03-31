@@ -2,7 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
-import { MatTableDataSource, MatPaginator, MatSort, MatDialog } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { map, tap, finalize } from 'rxjs/operators';
@@ -27,8 +30,8 @@ export class GroupsListComponent implements OnInit {
     displayedColumns: string[];
     loading: boolean = true;
 
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild(MatSort) sort: MatSort;
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(public http: HttpClient, private translate: TranslateService, private latinisePipe: LatinisePipe, public dialog: MatDialog, public signaturesService: SignaturesContentService, public notificationService: NotificationService) {
         this.displayedColumns = ['label', 'actions'];
