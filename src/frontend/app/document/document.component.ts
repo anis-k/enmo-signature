@@ -112,6 +112,7 @@ export class DocumentComponent implements OnInit {
 
     mainDocument: any = {
         id: 0,
+        status,
         attachments: [],
         workflow: [],
     };
@@ -344,7 +345,7 @@ export class DocumentComponent implements OnInit {
 
         e = e.srcEvent;
 
-        if (!this.signaturesService.annotationMode && this.currentDoc === 0) {
+        if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.mainDocument.status === 'READY') {
 
             this.backToDetails();
 

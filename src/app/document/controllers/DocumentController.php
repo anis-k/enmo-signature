@@ -154,7 +154,8 @@ class DocumentController
             'notes'             => !empty($document['notes']) ? json_decode($document['notes'], true) : null,
             'creationDate'      => $document['creation_date'],
             'modificationDate'  => $document['modification_date'],
-            'pages'             => $adr[0]['count']
+            'pages'             => $adr[0]['count'],
+            'status'            => $document['status']
         ];
         if (!empty($document['deadline'])) {
             $date = new \DateTime($document['deadline']);
@@ -342,7 +343,8 @@ class DocumentController
                 'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
                 'notes'         => $notes ?? null,
                 'link_id'       => (string)$body['linkId'] ?? null,
-                'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata'])
+                'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
+                'status'        => 'CREATED'
             ]);
 
             AdrModel::createDocumentAdr([

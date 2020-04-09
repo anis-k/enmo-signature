@@ -85,6 +85,9 @@
             *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
             <div>{{'lang.substitutionInfo' | translate}}</div>
         </mat-card>
+        <mat-card class="substitutedInformations" *ngIf="mainDocument.id !== 0 && mainDocument.status !== 'READY'" style="background: rgb(231,76,60)">
+            <div>{{'lang.convertingDocument' | translate}}</div>
+        </mat-card>
         <app-overlay *ngIf="this.signaturesService.annotationMode" [appDocumentNotePad]="appDocumentNotePad">
         </app-overlay>
         <ng-container *ngIf="!freezeSidenavClose && !loadingUI">
@@ -120,7 +123,7 @@
             [@slideUp]>
             <ng-container *ngFor="let action of actionsList;">
                 <button [style.color]="action.color" [style.borderColor]="action.color" class="btn"
-                    (click)="launchEvent(action)"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}
+                    (click)="launchEvent(action)" [disabled]="mainDocument.status !== 'READY'"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}
                 </button>
             </ng-container>
         </footer>

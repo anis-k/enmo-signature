@@ -17,6 +17,7 @@ namespace Convert\scripts;
 require 'vendor/autoload.php';
 
 use Convert\controllers\ConvertThumbnailController;
+use Document\models\DocumentModel;
 use History\controllers\HistoryController;
 use SrcCore\models\DatabasePDO;
 
@@ -37,12 +38,24 @@ class ThumbnailScript
 
         $GLOBALS['id'] = $args['userId'];
 
+        DocumentModel::update([
+            'set'   => ['status' => 'CONVERTING'],
+            'where' => ['id = ?'],
+            'data'  => [$args['id']]
+        ]);
+
         if (isset($args['page'])) {
             $isConverted = ConvertThumbnailController::convertOnePage(['id' => $args['id'], 'type' => $args['type'], 'page' => $args['page']]);
         } else {
             $isConverted = ConvertThumbnailController::convert(['id' => $args['id'], 'type' => $args['type']]);
         }
         if (!empty($isConverted['errors'])) {
+            DocumentModel::update([
+                'set'   => ['status' => 'ERROR'],
+                'where' => ['id = ?'],
+                'data'  => [$args['id']]
+            ]);
+
             HistoryController::add([
                 'code'          => 'KO',
                 'objectType'    => $args['type'],
@@ -50,6 +63,12 @@ class ThumbnailScript
                 'type'          => 'THUMBNAIL',
                 'message'       => '{thumbnailFailed}',
                 'data'          => ['errors' => $isConverted['errors']]
+            ]);
+        } else {
+            DocumentModel::update([
+                'set'   => ['status' => 'READY'],
+                'where' => ['id = ?'],
+                'data'  => [$args['id']]
             ]);
         }
 

@@ -269,6 +269,7 @@
 		"attachedElements" : "Document(s) attaché(s)",
 		"note" : "Note",
 		"collapseNote" : "Réduire la note",
-		"expandNote" : "Ouvrir la note"		
+		"expandNote" : "Ouvrir la note",
+		"convertingDocument" : "Document en cours de conversion"
 	}
 }
