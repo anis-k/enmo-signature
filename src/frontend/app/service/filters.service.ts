@@ -9,7 +9,7 @@ export class FiltersService {
     constructor(public http: HttpClient, public signaturesService: SignaturesContentService) { }
 
     resfreshDocuments() {
-        this.http.get('../rest/documents?limit=25&offset=0&mode=')
+        this.http.get('../rest/documents?limit=10&offset=0&mode=')
             .subscribe((data: any) => {
                 this.signaturesService.mode = '';
                 this.signaturesService.documentsList = data.documents;

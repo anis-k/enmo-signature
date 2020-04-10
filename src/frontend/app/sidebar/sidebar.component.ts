@@ -19,7 +19,7 @@ export class SidebarComponent implements OnInit {
 
     loadingList: boolean = false;
     offset: number = 0;
-    limit: number = 25;
+    limit: number = 10;
     searchMode: boolean = false;
 
     @ViewChild('listContent') listContent: ElementRef;
