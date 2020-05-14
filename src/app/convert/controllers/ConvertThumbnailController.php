@@ -70,7 +70,7 @@ class ConvertThumbnailController
         while ($i < $pageCount) {
             $fileNameOnTmp = rand() . $filename;
 
-            $command = "convert -density 500x500 -quality 100 -background white -alpha remove "
+            $command = ConvertThumbnailController::getConvertCommand() . " "
                 . escapeshellarg($pathToDocument) . "[{$i}] " . escapeshellarg("{$tmpPath}{$fileNameOnTmp}.png");
             exec($command.' 2>&1', $output, $return);
 
@@ -151,7 +151,7 @@ class ConvertThumbnailController
         $fileNameOnTmp = rand() . $filename;
 
         $convertPage = $args['page'] - 1;
-        $command = "convert -density 500x500 -quality 100 -background white -alpha remove "
+        $command = ConvertThumbnailController::getConvertCommand() . " "
             . escapeshellarg($pathToDocument) . "[{$convertPage}] " . escapeshellarg("{$tmpPath}{$fileNameOnTmp}.png");
         exec($command.' 2>&1', $output, $return);
 
@@ -181,5 +181,21 @@ class ConvertThumbnailController
         ]);
 
         return true;
+    }
+
+    /**
+     * [Choose between graphicImage and imageMagics]
+     */
+    public function getConvertCommand() {
+
+        $command = 'gm version';
+
+        exec($command.' 2>&1', $output, $return);
+
+        if ($return !== 0) {
+            return "convert -density 500x500 -quality 100 -background white -alpha remove";
+        } else {
+            return "gm convert -density 500x500 -quality 100 -background white +matte";
+        }
     }
 }
