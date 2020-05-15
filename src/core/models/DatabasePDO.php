@@ -27,74 +27,64 @@ class DatabasePDO
             return;
         }
 
-        $server = '';
-        $port = '';
-        $name = '';
-        $user = '';
-        $password = '';
-        $formattedDriver = '';
-
-        if (!empty($args['server'])) {
-            $server     = $args['server'];
-            $port       = $args['port'];
-            $name       = $args['name'];
-            $user       = $args['user'];
-            $password   = $args['password'];
-            self::$type = $args['type'];
+        if (!empty($args['configPath'])) {
+            $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $args['configPath'] . '/config.xml']);
         } else {
-            if (!empty($args['configPath'])) {
-                $loadedXml = CoreConfigModel::getXmlLoaded(['path' => $args['configPath'] . '/config.xml']);
-            } else {
-                $loadedXml = CoreConfigModel::getConfig();
-            }
-            if ($loadedXml) {
-                $server     = (string)$loadedXml->database->server;
-                $port       = (string)$loadedXml->database->port;
-                $name       = (string)$loadedXml->database->name;
-                $user       = (string)$loadedXml->database->user;
-                $password   = (string)$loadedXml->database->password;
-                self::$type = (string)$loadedXml->database->type;
-            }
+            $loadedXml = CoreConfigModel::getConfig();
         }
 
-        if (self::$type == 'POSTGRESQL') {
+        if (!$loadedXml) {
+            throw new \Exception('Configuration file can not be read');
+        }
+
+        foreach ($loadedXml->database as $key => $database) {
+            $server     = (string)$database->server;
+            $port       = (string)$database->port;
+            $name       = (string)$database->name;
+            $user       = (string)$database->user;
+            $password   = (string)$database->password;
+            self::$type = (string)$database->type;
+
             $formattedDriver = 'pgsql';
-        } elseif (self::$type == 'MYSQL') {
-            $formattedDriver = 'mysql';
-        } elseif (self::$type == 'ORACLE') {
-            $formattedDriver = 'oci';
-        }
-
-        ValidatorModel::notEmpty(
-            ['driver' => $formattedDriver, 'server' => $server, 'port' => $port, 'name' => $name, 'user' => $user],
-            ['driver', 'server', 'port', 'name', 'user']
-        );
-        ValidatorModel::stringType(
-            ['driver' => $formattedDriver, 'server' => $server, 'name' => $name, 'user' => $user],
-            ['driver', 'server', 'name', 'user']
-        );
-        ValidatorModel::intVal(['port' => $port], ['port']);
-
-        if (self::$type == 'ORACLE') {
-            $dsn = "oci:dbname=(DESCRIPTION = (ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = {$server})(PORT = {$port})))(CONNECT_DATA =(SERVICE_NAME = {$name})))";
-        } else {
-            $dsn = "{$formattedDriver}:host={$server};port={$port};dbname={$name}";
-        }
-
-        $options = [
-            \PDO::ATTR_PERSISTENT   => true,
-            \PDO::ATTR_ERRMODE      => \PDO::ERRMODE_EXCEPTION,
-            \PDO::ATTR_CASE         => \PDO::CASE_LOWER
-        ];
-
-        try {
-            self::$pdo = new \PDO($dsn, $user, $password, $options);
-        } catch (\PDOException $PDOException) {
+            if (self::$type == 'POSTGRESQL') {
+                $formattedDriver = 'pgsql';
+            } elseif (self::$type == 'MYSQL') {
+                $formattedDriver = 'mysql';
+            } elseif (self::$type == 'ORACLE') {
+                $formattedDriver = 'oci';
+            }
+    
+            ValidatorModel::notEmpty(['server' => $server, 'port' => $port, 'name' => $name, 'user' => $user], ['server', 'port', 'name', 'user']);
+            ValidatorModel::stringType(['server' => $server, 'name' => $name, 'user' => $user], ['server', 'name', 'user']);
+            ValidatorModel::intVal(['port' => $port], ['port']);
+    
+            if (self::$type == 'ORACLE') {
+                $dsn = "oci:dbname=(DESCRIPTION = (ADDRESS_LIST =(ADDRESS = (PROTOCOL = TCP)(HOST = {$server})(PORT = {$port})))(CONNECT_DATA =(SERVICE_NAME = {$name})))";
+            } else {
+                $dsn = "{$formattedDriver}:host={$server};port={$port};dbname={$name}";
+            }
+    
+            $options = [
+                \PDO::ATTR_PERSISTENT   => true,
+                \PDO::ATTR_ERRMODE      => \PDO::ERRMODE_EXCEPTION,
+                \PDO::ATTR_CASE         => \PDO::CASE_LOWER
+            ];
+    
             try {
-                $options[\PDO::ATTR_PERSISTENT] = false;
                 self::$pdo = new \PDO($dsn, $user, $password, $options);
+                break;
             } catch (\PDOException $PDOException) {
-                throw new \Exception($PDOException->getMessage());
+                try {
+                    $options[\PDO::ATTR_PERSISTENT] = false;
+                    self::$pdo = new \PDO($dsn, $user, $password, $options);
+                    break;
+                } catch (\PDOException $PDOException) {
+                    if (!empty($loadedXml->database[$key + 1])) {
+                        continue;
+                    } else {
+                        throw new \Exception($PDOException->getMessage());
+                    }
+                }
             }
         }
 
