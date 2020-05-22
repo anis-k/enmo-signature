@@ -315,6 +315,27 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
 
+        if (is_file('vendor/SetaPDF-FormFiller-Full_2.33.0.1425/library/SetaPDF/Autoload.php')) {
+            require_once 'vendor/SetaPDF-FormFiller-Full_2.33.0.1425/library/SetaPDF/Autoload.php';
+
+
+            $targetFile = CoreConfigModel::getTmpPath() . "tmp_file_{$GLOBALS['id']}_" .rand(). "_target_watermark.pdf";
+            $flattenedFile = CoreConfigModel::getTmpPath() . "tmp_file_{$GLOBALS['id']}_" .rand(). "_watermark.pdf";
+            file_put_contents($targetFile, base64_decode($encodedDocument['encodedDocument']));
+            $writer = new \SetaPDF_Core_Writer_File($flattenedFile);
+            $document = \SetaPDF_Core_Document::loadByFilename($targetFile, $writer);
+
+            $formFiller = new \SetaPDF_FormFiller($document);
+            $fields = $formFiller->getFields();
+            $fields->flatten();
+            $document->save()->finish();
+
+            $file = file_get_contents($flattenedFile);
+            $encodedDocument['encodedDocument'] = base64_encode($file);
+            unlink($flattenedFile);
+            unlink($targetFile);
+        }
+
         try {
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'       => $encodedDocument['encodedDocument'],

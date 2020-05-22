@@ -186,7 +186,7 @@ class ConvertThumbnailController
     /**
      * [Choose between graphicImage and imageMagics]
      */
-    public function getConvertCommand() {
+    public static function getConvertCommand() {
 
         $command = 'gm version';
 
