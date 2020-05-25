@@ -315,9 +315,9 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
 
-        if (is_file('vendor/SetaPDF-FormFiller-Full_2.33.0.1425/library/SetaPDF/Autoload.php')) {
-            require_once 'vendor/SetaPDF-FormFiller-Full_2.33.0.1425/library/SetaPDF/Autoload.php';
-
+        $libDir = CoreConfigModel::getLibrariesDirectory();
+        if (!empty($libDir) && is_file($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php')) {
+            require_once ($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');
 
             $targetFile = CoreConfigModel::getTmpPath() . "tmp_file_{$GLOBALS['id']}_" .rand(). "_target_watermark.pdf";
             $flattenedFile = CoreConfigModel::getTmpPath() . "tmp_file_{$GLOBALS['id']}_" .rand(). "_watermark.pdf";

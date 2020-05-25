@@ -99,6 +99,19 @@ class CoreConfigModel
         return $encriptKey;
     }
 
+    public static function getLibrariesDirectory()
+    {
+        if (isset($_SERVER['LIBRARIES_DIR'])) {
+            $librariesDirectory = rtrim($_SERVER['LIBRARIES_DIR'], '/') . '/';
+        } elseif (isset($_SERVER['REDIRECT_LIBRARIES_DIR'])) {
+            $librariesDirectory = rtrim($_SERVER['REDIRECT_LIBRARIES_DIR'], '/') . '/';
+        } else {
+            $librariesDirectory = null;
+        }
+
+        return $librariesDirectory;
+    }
+
     public static function getUniqueId()
     {
         $parts = explode('.', microtime(true));
