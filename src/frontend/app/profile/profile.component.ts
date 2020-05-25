@@ -102,8 +102,9 @@ export class ProfileComponent implements OnInit {
         setTimeout(() => {
             this.initProfileInfo();
         }, 200);
-        this.passwordContent.close();
-
+        if (this.passwordContent) {
+            this.passwordContent.close();
+        }
         if (this.signaturesService.mobileMode) {
             this.snavLeftComponent.open();
             this.snavRightComponent.close();
@@ -311,7 +312,9 @@ export class ProfileComponent implements OnInit {
     }
 
     handleFileInput(files: FileList) {
-        this.passwordContent.close();
+        if (this.passwordContent) {
+            this.passwordContent.close();
+        }
         const fileToUpload = files.item(0);
         this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
 
