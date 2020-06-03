@@ -734,4 +734,51 @@ class DocumentController
 
         return $linkedDocuments;
     }
+
+    public static function getPdfCertificate(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['path', 'documentId']);
+        ValidatorModel::intVal($args, ['documentId']);
+        ValidatorModel::stringType($args, ['path']);
+
+        $path = $args['path'];
+        $documentId = $args['documentId'];
+
+        $tmpPath = CoreConfigModel::getTmpPath();
+
+        $signaturePath = $tmpPath . 'signature_' . $documentId . '.pkcs7';
+        $signatureInfoPath = $tmpPath . 'signatureInfo_' . $documentId . '.txt';
+
+        if (file_exists($signatureInfoPath)) {
+            $content = file_get_contents($signatureInfoPath);
+            if ($content !== false) {
+                return $content;
+            }
+        }
+
+        $content = file_get_contents($path);
+        $regexp = '#ByteRange\[\s*(\d+) (\d+) (\d+)#'; // subexpressions are used to extract b and c
+
+        $result = [];
+        preg_match_all($regexp, $content, $result);
+
+        // $result[2][0] and $result[3][0] are b and c
+        if (isset($result[2]) && isset($result[3]) && isset($result[2][0]) && isset($result[3][0]))
+        {
+            $start = $result[2][0];
+            $end = $result[3][0];
+            if ($stream = fopen($path, 'rb')) {
+                $signature = stream_get_contents($stream, $end - $start - 2, $start + 1); // because we need to exclude < and > from start and end
+                fclose($stream);
+                file_put_contents($signaturePath, hex2bin($signature));
+            }
+        }
+
+        if (!file_exists($signaturePath)) {
+            return false;
+        }
+        exec('openssl pkcs7 -in ' . $signaturePath . ' -inform DER -print_certs > ' . $signatureInfoPath . ' 2>&1', $output, $return);
+
+        return file_get_contents($signatureInfoPath);
+    }
 }

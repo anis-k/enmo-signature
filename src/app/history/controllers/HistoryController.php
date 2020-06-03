@@ -14,6 +14,8 @@
 
 namespace History\controllers;
 
+use Docserver\models\AdrModel;
+use Docserver\models\DocserverModel;
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
 use Group\controllers\PrivilegeController;
@@ -63,8 +65,34 @@ class HistoryController
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         }
 
+        $adr = AdrModel::getDocumentsAdr([
+            'select'    => ['filename', 'fingerprint', 'path'],
+            'where'     => ['main_document_id = ?', 'type = ?'],
+            'data'      => [$args['id'], 'DOC']
+        ]);
+        $adr = $adr[0];
+
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
+        }
+
+        $pathToDocument = $docserver['path'] . $adr['path'] . $adr['filename'];
+        unset($adr['path']);
+
+        $fileContent = file_get_contents($pathToDocument);
+        if ($fileContent !== false) {
+            $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+            $adr['mimeType'] = $finfo->buffer($fileContent);
+        }
+
+        $certificate = DocumentController::getPdfCertificate(['path' => $pathToDocument, 'documentId' => $args['id']]);
+        if (!empty($certificate)) {
+            $adr['certificate'] = $certificate;
+        }
+
         $history = HistoryModel::get([
-            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data'],
+            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip'],
             'where'     => ["(object_type = ? AND object_id = ?) OR (data->>'mainDocumentId' = ?)"],
             'data'      => ['main_documents', $args['id'], $args['id']],
             'orderBy'   => ['date']
@@ -83,14 +111,25 @@ class HistoryController
         foreach ($history as $value) {
             $date = new \DateTime($value['date']);
 
-            $formattedHistory[] = [
-                'code'          => $value['code'],
-                'type'          => $value['type'],
-                'user'          => $value['user'],
-                'date'          => $date->format('d-m-Y H:i'),
-                'message'       => preg_replace($langKeys, $langValues, $value['message']),
-                'data'          => json_decode($value['data'], true)
+            $user = UserModel::getById(['id' => $value['user_id'], 'select' => ['id', 'email', 'firstname', 'lastname']]);
+
+            $user['ip'] = $value['ip'];
+
+            $data = json_decode($value['data'], true);
+            $formatted = [
+                'code'     => $value['code'],
+                'type'     => $value['type'],
+                'user'     => $user,
+                'date'     => $date->format('d-m-Y H:i'),
+                'message'  => preg_replace($langKeys, $langValues, $value['message']),
+                'data'     => $data
             ];
+
+            if ($value['type'] === 'ACTION' && !empty($data['actionId']) && $data['actionId'] == 1) {
+                $formatted['document'] = $adr;
+            }
+
+            $formattedHistory[] = $formatted;
         }
 
         HistoryController::add([
