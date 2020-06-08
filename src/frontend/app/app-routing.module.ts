@@ -1,6 +1,6 @@
-import { NgModule }                         from '@angular/core';
-import { RouterModule }                     from '@angular/router';
-import { AuthGuard }                        from './service/auth.guard';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from './service/auth.guard';
 
 import { AdministrationComponent } from './administration/home/administration.component';
 import { UsersListComponent } from './administration/user/users-list.component';
@@ -15,6 +15,7 @@ import { DocumentComponent } from './document/document.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './login/forgotPassword/forgotPassword.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
+import {SecuritiesAdministrationComponent} from './administration/security/securities-administration.component';
 
 @NgModule({
     imports: [
@@ -31,6 +32,7 @@ import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.c
             { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },
             { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
             { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
+            { path: 'administration/passwordRules', canActivate: [AuthGuard], component: SecuritiesAdministrationComponent },
             { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
             { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
             { path: 'login', component: LoginComponent },

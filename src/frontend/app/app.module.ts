@@ -64,6 +64,7 @@ import { LdapComponent } from './administration/connection/ldap/ldap.component';
 import { SendmailComponent } from './administration/sendmail/sendmail.component';
 import { GroupsListComponent } from './administration/group/groups-list.component';
 import { GroupComponent } from './administration/group/group.component';
+import {SecuritiesAdministrationComponent} from './administration/security/securities-administration.component';
 
 
 // SERVICES
@@ -117,7 +118,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     GroupsListComponent,
     GroupComponent,
     PluginAutocompleteComponent,
-    SortPipe
+    SortPipe,
+    SecuritiesAdministrationComponent
   ],
   imports: [
     FormsModule,
