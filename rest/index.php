@@ -37,6 +37,12 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
         $id = \SrcCore\controllers\AuthenticationController::authentication($authorizationHeaders);
         if (!empty($id)) {
             $GLOBALS['id'] = $id;
+            if (!empty($currentRoute)) {
+                $r = \SrcCore\controllers\AuthenticationController::isRouteAvailable(['userId' => $id, 'currentRoute' => $currentRoute]);
+                if (!$r['isRouteAvailable']) {
+                    return $response->withStatus(403)->withJson(['errors' => $r['errors']]);
+                }
+            }
             $response = $next($request, $response);
         } else {
             $response = $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
@@ -81,6 +87,7 @@ $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . 
 
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
+$app->put('/passwordRules', \SrcCore\controllers\PasswordController::class . ':updateRules');
 
 //Groups
 $app->post('/groups', \Group\controllers\GroupController::class . ':create');

@@ -22,6 +22,8 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
+use SrcCore\models\PasswordModel;
+use SrcCore\models\ValidatorModel;
 use User\controllers\UserController;
 use User\models\UserModel;
 
@@ -130,6 +132,14 @@ class AuthenticationController
             $authenticated = AuthenticationModel::authentication(['login' => $login, 'password' => $body['password']]);
         }
         if (empty($authenticated)) {
+            $user = UserModel::getByLogin(['login' => $login, 'select' => ['id']]);
+
+            if (!empty($user)) {
+                $handle = AuthenticationController::handleFailedAuthentication(['userId' => $user['id']]);
+                if (!empty($handle['accountLocked'])) {
+                    return $response->withStatus(401)->withJson(['errors' => 'Account Locked', 'date' => $handle['lockedDate']]);
+                }
+            }
             return $response->withStatus(401)->withJson(['errors' => 'Authentication Failed']);
         }
 
@@ -264,5 +274,75 @@ class AuthenticationController
         $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
 
         return $jwt;
+    }
+
+    public static function isRouteAvailable(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['userId', 'currentRoute']);
+        ValidatorModel::intVal($args, ['userId']);
+        ValidatorModel::stringType($args, ['currentRoute']);
+
+        $user = UserModel::getById(['select' => ['password_modification_date', '"isRest"'], 'id' => $args['userId']]);
+
+        if (!in_array($args['currentRoute'], ['/passwordRules', '/users/{id}/password']) && empty($user['isRest'])) {
+            $connectionConfiguration = ConfigurationModel::getByIdentifier(['identifier' => 'connection', 'select' => ['value']]);
+
+            if ($connectionConfiguration[0]['value'] == '"default"') {
+                $passwordRules = PasswordModel::getEnabledRules();
+                if (!empty($passwordRules['renewal'])) {
+                    $currentDate = new \DateTime();
+                    $lastModificationDate = new \DateTime($user['password_modification_date']);
+                    $lastModificationDate->add(new \DateInterval("P{$passwordRules['renewal']}D"));
+
+                    if ($currentDate > $lastModificationDate) {
+                        return ['isRouteAvailable' => false, 'errors' => 'Password expired : User must change his password'];
+                    }
+                }
+            }
+        }
+
+        return ['isRouteAvailable' => true];
+    }
+
+    public static function handleFailedAuthentication(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['userId']);
+        ValidatorModel::intVal($args, ['userId']);
+
+        $passwordRules = PasswordModel::getEnabledRules();
+
+        if (!empty($passwordRules['lockAttempts'])) {
+            $user = UserModel::getById(['select' => ['failed_authentication', 'locked_until'], 'id' => $args['userId']]);
+            $set = [];
+            if (!empty($user['locked_until'])) {
+                $currentDate = new \DateTime();
+                $lockedUntil = new \DateTime($user['locked_until']);
+                if ($lockedUntil < $currentDate) {
+                    $set['locked_until'] = null;
+                    $user['failed_authentication'] = 0;
+                } else {
+                    return ['accountLocked' => true, 'lockedDate' => $user['locked_until']];
+                }
+            }
+
+            $set['failed_authentication'] = $user['failed_authentication'] + 1;
+            UserModel::update([
+                'set'       => $set,
+                'where'     => ['id = ?'],
+                'data'      => [$args['userId']]
+            ]);
+
+            if (!empty($user['failed_authentication']) && ($user['failed_authentication'] + 1) >= $passwordRules['lockAttempts'] && !empty($passwordRules['lockTime'])) {
+                $lockedUntil = time() + 60 * $passwordRules['lockTime'];
+                UserModel::update([
+                    'set'       => ['locked_until'  => date('Y-m-d H:i:s', $lockedUntil)],
+                    'where'     => ['id = ?'],
+                    'data'      => [$args['userId']]
+                ]);
+                return ['accountLocked' => true, 'lockedDate' => date('Y-m-d H:i:s', $lockedUntil)];
+            }
+        }
+
+        return true;
     }
 }

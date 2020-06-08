@@ -27,6 +27,7 @@ class PrivilegeController
         ['id' => 'manage_groups',               'type' => 'admin', 'icon' => 'fa fa-users',         'route' => '/administration/groups'],
         ['id' => 'manage_connections',          'type' => 'admin', 'icon' => 'fas fa-database',     'route' => '/administration/connections'],
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'fa fa-paper-plane',   'route' => '/administration/emailConfiguration'],
+        ['id' => 'manage_password_rules',       'type' => 'admin', 'icon' => 'fa fa-lock',          'route' => '/administration/passwordRules'],
         ['id' => 'manage_documents',            'type' => 'simple']
     ];
 

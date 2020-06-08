@@ -28,6 +28,7 @@ use SrcCore\controllers\PasswordController;
 use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
+use SrcCore\models\PasswordModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
 use User\models\UserModel;
@@ -472,9 +473,12 @@ class UserController
         }
         if (!PasswordController::isPasswordValid(['password' => $body['newPassword']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
+        } elseif (!PasswordModel::isPasswordHistoryValid(['password' => $body['newPassword'], 'userId' => $args['id']])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Password has already been used']);
         }
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $body['newPassword']]);
+        PasswordModel::setHistoryPassword(['userId' => $args['id'], 'password' => $body['newPassword']]);
 
         $refreshToken = [];
         if ($GLOBALS['id'] == $args['id']) {

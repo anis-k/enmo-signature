@@ -50,4 +50,118 @@ class PasswordModel
 
         return $formattedRules;
     }
+
+    public static function getRuleById(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['id']);
+        ValidatorModel::intVal($aArgs, ['id']);
+        ValidatorModel::arrayType($aArgs, ['select']);
+
+        $rules = DatabaseModel::select([
+            'select' => empty($aArgs['select']) ? ['*'] : $aArgs['select'],
+            'table'  => ['password_rules'],
+            'where'  => ['id = ?'],
+            'data'   => [$aArgs['id']],
+        ]);
+
+        if (empty($rules[0])) {
+            return [];
+        }
+
+        return $rules[0];
+    }
+
+    public static function updateRuleById(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['id']);
+        ValidatorModel::intVal($aArgs, ['id', 'value']);
+        ValidatorModel::stringType($aArgs, ['enabled']);
+
+        DatabaseModel::update([
+            'table' => 'password_rules',
+            'set'   => [
+                '"value"' => $aArgs['value'],
+                'enabled' => $aArgs['enabled'],
+            ],
+            'where' => ['id = ?'],
+            'data'  => [$aArgs['id']]
+        ]);
+
+        return true;
+    }
+
+    public static function isPasswordHistoryValid(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['password', 'userId']);
+        ValidatorModel::stringType($aArgs, ['password']);
+        ValidatorModel::intVal($aArgs, ['userId']);
+
+        $passwordRules = PasswordModel::getEnabledRules();
+
+        if (!empty($passwordRules['historyLastUse'])) {
+            $passwordHistory = DatabaseModel::select([
+                'select'   => ['password'],
+                'table'    => ['password_history'],
+                'where'    => ['user_id = ?'],
+                'data'     => [$aArgs['userId']],
+                'order_by' => ['id DESC'],
+                'limit'    => $passwordRules['historyLastUse']
+            ]);
+
+            foreach ($passwordHistory as $value) {
+                if (password_verify($aArgs['password'], $value['password'])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static function setHistoryPassword(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['password', 'userId']);
+        ValidatorModel::stringType($aArgs, ['password']);
+        ValidatorModel::intVal($aArgs, ['userId']);
+
+        $passwordHistory = DatabaseModel::select([
+            'select'   => ['id'],
+            'table'    => ['password_history'],
+            'where'    => ['user_id = ?'],
+            'data'     => [$aArgs['userId']],
+            'order_by' => ['id DESC']
+        ]);
+
+        if (count($passwordHistory) >= 10) {
+            DatabaseModel::delete([
+                'table' => 'password_history',
+                'where' => ['id < ?', 'user_id = ?'],
+                'data'  => [$passwordHistory[8]['id'], $aArgs['userId']]
+            ]);
+        }
+
+        DatabaseModel::insert([
+            'table'         => 'password_history',
+            'columnsValues' => [
+                'user_id'  => $aArgs['userId'],
+                'password' => AuthenticationModel::getPasswordHash($aArgs['password'])
+            ],
+        ]);
+
+        return true;
+    }
+
+    public static function encrypt(array $aArgs)
+    {
+        ValidatorModel::notEmpty($aArgs, ['password']);
+        ValidatorModel::stringType($aArgs, ['password']);
+
+        $enc_key = CoreConfigModel::getEncryptKey();
+
+        $cipher_method = 'AES-128-CTR';
+        $enc_iv        = openssl_random_pseudo_bytes(openssl_cipher_iv_length($cipher_method));
+        $crypted_token = openssl_encrypt($aArgs['password'], $cipher_method, $enc_key, 0, $enc_iv) . "::" . bin2hex($enc_iv);
+
+        return $crypted_token;
+    }
 }
