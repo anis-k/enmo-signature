@@ -125,7 +125,7 @@ class HistoryController
                 'data'     => $data
             ];
 
-            if ($value['type'] === 'ACTION' && !empty($data['actionId']) && $data['actionId'] == 1) {
+            if ($value['type'] == 'ACTION' && $data['actionId'] == 1 && $data['mode'] == 'sign') {
                 $formatted['document'] = $adr;
             }
 
