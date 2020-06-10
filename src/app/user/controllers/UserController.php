@@ -468,13 +468,13 @@ class UserController
 
         if ($user['isRest'] == false) {
             if (empty($body['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $body['currentPassword']])) {
-                return $response->withStatus(401)->withJson(['errors' => 'Wrong Password']);
+                return $response->withStatus(401)->withJson(['errors' => 'Wrong Password', 'lang' => 'wrongCurrentPassword']);
             }
         }
         if (!PasswordController::isPasswordValid(['password' => $body['newPassword']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Password does not match security criteria']);
         } elseif (!PasswordModel::isPasswordHistoryValid(['password' => $body['newPassword'], 'userId' => $args['id']])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Password has already been used']);
+            return $response->withStatus(400)->withJson(['errors' => 'Password has already been used', 'lang' => 'alreadyUsedPassword']);
         }
 
         UserModel::updatePassword(['id' => $args['id'], 'password' => $body['newPassword']]);

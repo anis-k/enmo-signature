@@ -51,6 +51,7 @@ import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.co
 import { DocumentListComponent } from './document/document-list/document-list.component';
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
+import {PasswordModificationComponent} from './login/passwordModification/password-modification.component';
 
 // ADMINISTRATION
 import { AdminSidebarComponent } from './sidebar/administration/admin-sidebar.component';
@@ -77,6 +78,7 @@ import { ConfirmComponent } from './plugins/confirm.component';
 import { AlertComponent } from './plugins/alert.component';
 import { PluginAutocompleteComponent } from './plugins/autocomplete/autocomplete.component';
 import { SortPipe } from './plugins/sorting.pipe';
+import {MatToolbarModule} from '@angular/material/toolbar';
 
 
 
@@ -119,30 +121,32 @@ import { SortPipe } from './plugins/sorting.pipe';
     GroupComponent,
     PluginAutocompleteComponent,
     SortPipe,
-    SecuritiesAdministrationComponent
+    SecuritiesAdministrationComponent,
+    PasswordModificationComponent
   ],
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    HttpClientModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    }),
-    SignaturePadModule,
-    ScrollEventModule,
-    NgPipesModule,
-    AngularDraggableModule,
-    AppMaterialModule,
-    AppRoutingModule,
-    HammerModule,
-  ],
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        HttpClientModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide:    TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps:       [HttpClient]
+            }
+        }),
+        SignaturePadModule,
+        ScrollEventModule,
+        NgPipesModule,
+        AngularDraggableModule,
+        AppMaterialModule,
+        AppRoutingModule,
+        HammerModule,
+        MatToolbarModule,
+    ],
   entryComponents: [
     CustomSnackbarComponent,
     WarnModalComponent,

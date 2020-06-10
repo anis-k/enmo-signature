@@ -14,6 +14,13 @@ export class AuthInterceptor implements HttpInterceptor {
   excludeUrls: string[] = ['../rest/authenticate', '../rest/authenticate/token', '../rest/authenticationInformations', '../rest/password', '../rest/passwordRules', '../rest/languages/fr', '../rest/languages/en'];
   frontUrl: string[] = ['../rest/documents/', '../rest/users/', '../rest/groups/', '../rest/configurations/'];
 
+  byPassHandleErrors: any[] = [
+    {
+      route: '/password',
+      method : ['PUT']
+    }
+  ];
+
   constructor(public http: HttpClient, private router: Router, public notificationService: NotificationService, public signaturesService: SignaturesContentService, public authService: AuthService) { }
 
   addAuthHeader(request: HttpRequest<any>) {
@@ -49,7 +56,9 @@ export class AuthInterceptor implements HttpInterceptor {
         ),*/
         catchError(error => {
           // Disconnect user if bad token process
-          if (error.status === 401) {
+          if (this.byPassHandleErrors.filter(url => request.url.indexOf(url.route) > -1 && url.method.indexOf(request.method) > -1).length > 0) {
+            return next.handle(request);
+          } else if (error.status === 401) {
             return this.http.get('../rest/authenticate/token', {
               params: {
                 refreshToken: this.authService.getRefreshToken()
@@ -86,6 +95,8 @@ export class AuthInterceptor implements HttpInterceptor {
                 return EMPTY;
               })
             );
+          } else if (error.error.errors === 'Password expired : User must change his password') {
+            return this.router.navigate(['/password-modification']);
           } else {
             if (request.method === 'GET') {
                 this.frontUrl.forEach(element => {

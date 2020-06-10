@@ -16,6 +16,7 @@ import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './login/forgotPassword/forgotPassword.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 import {SecuritiesAdministrationComponent} from './administration/security/securities-administration.component';
+import {PasswordModificationComponent} from './login/passwordModification/password-modification.component';
 
 @NgModule({
     imports: [
@@ -38,6 +39,7 @@ import {SecuritiesAdministrationComponent} from './administration/security/secur
             { path: 'login', component: LoginComponent },
             { path: 'forgot-password', component: ForgotPasswordComponent },
             { path: 'update-password', component: UpdatePasswordComponent },
+            { path: 'password-modification', component: PasswordModificationComponent },
             { path: '**', redirectTo: 'login', pathMatch: 'full' },
           ]),
     ],
