@@ -142,7 +142,8 @@ class DocumentController
             'data'    => [$args['id'], 'DOC']
         ]);
         if (empty($adr[0]['count'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document thumbnails do not exist']);
+            $configPath = CoreConfigModel::getConfigPath();
+            exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' > /dev/null");
         }
 
         $formattedDocument = [
@@ -317,7 +318,7 @@ class DocumentController
 
         $libDir = CoreConfigModel::getLibrariesDirectory();
         if (!empty($libDir) && is_file($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php')) {
-            require_once ($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');
+            require_once($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');
 
             $targetFile = CoreConfigModel::getTmpPath() . "tmp_file_{$GLOBALS['id']}_" .rand(). "_target_watermark.pdf";
             $flattenedFile = CoreConfigModel::getTmpPath() . "tmp_file_{$GLOBALS['id']}_" .rand(). "_watermark.pdf";
@@ -635,7 +636,17 @@ class DocumentController
 
         $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document not found on docserver or not readable']);
+            $configPath = CoreConfigModel::getConfigPath();
+            exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$args['page']} > /dev/null");
+            $adr = AdrModel::getDocumentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['main_document_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'TNL' . $args['page']]
+            ]);
+            $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Document not found on docserver or not readable']);
+            }
         }
 
         $fileContent = file_get_contents($pathToThumbnail);
@@ -763,8 +774,7 @@ class DocumentController
         preg_match_all($regexp, $content, $result);
 
         // $result[2][0] and $result[3][0] are b and c
-        if (isset($result[2]) && isset($result[3]) && isset($result[2][0]) && isset($result[3][0]))
-        {
+        if (isset($result[2]) && isset($result[3]) && isset($result[2][0]) && isset($result[3][0])) {
             $start = $result[2][0];
             $end = $result[3][0];
             if ($stream = fopen($path, 'rb')) {

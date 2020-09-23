@@ -148,7 +148,17 @@ class AttachmentController
 
         $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
-            return $response->withStatus(400)->withJson(['errors' => 'Attachment not found on docserver or not readable']);
+            $configPath = CoreConfigModel::getConfigPath();
+            exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'attachment' '{$GLOBALS['id']}' > /dev/null");
+            $adr = AdrModel::getAttachmentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['attachment_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'TNL' . $args['page']]
+            ]);
+            $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
+                return $response->withStatus(400)->withJson(['errors' => 'Attachment not found on docserver or not readable']);
+            }
         }
 
         $fileContent = file_get_contents($pathToThumbnail);
