@@ -28,7 +28,8 @@ class PrivilegeController
         ['id' => 'manage_connections',          'type' => 'admin', 'icon' => 'server-sharp',  'route' => '/administration/connections'],
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'paper-plane',   'route' => '/administration/emailConfiguration'],
         ['id' => 'manage_password_rules',       'type' => 'admin', 'icon' => 'lock-closed',    'route' => '/administration/passwordRules'],
-        ['id' => 'manage_documents',            'type' => 'simple']
+        ['id' => 'manage_documents',            'type' => 'simple'],
+        ['id' => 'indexation',                  'type' => 'simple']
     ];
 
     public static function getAdministrativePrivilegesByUserId(array $args)

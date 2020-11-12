@@ -270,7 +270,7 @@ class DocumentController
 
     public function create(Request $request, Response $response)
     {
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
@@ -366,7 +366,8 @@ class DocumentController
                 'notes'         => $notes ?? null,
                 'link_id'       => (string)$body['linkId'] ?? null,
                 'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
-                'status'        => 'CREATED'
+                'status'        => 'CREATED',
+                'typist'        => $GLOBALS['id']
             ]);
 
             AdrModel::createDocumentAdr([
@@ -663,6 +664,11 @@ class DocumentController
     {
         ValidatorModel::notEmpty($args, ['id', 'userId']);
         ValidatorModel::intVal($args, ['id', 'userId']);
+
+        $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['id']]);
+        if ($document['typist'] == $GLOBALS['id']) {
+            return true;
+        }
 
         $workflow = WorkflowModel::getCurrentStep(['select' => ['user_id'], 'documentId' => $args['id']]);
         if (empty($workflow)) {

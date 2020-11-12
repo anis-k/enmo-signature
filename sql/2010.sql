@@ -9,6 +9,13 @@
 ALTER TABLE main_documents DROP COLUMN IF EXISTS status;
 ALTER TABLE main_documents ADD COLUMN status varchar(10);
 
+ALTER TABLE main_documents DROP COLUMN IF EXISTS typist;
+ALTER TABLE main_documents ADD COLUMN typist INTEGER;
+
+DELETE FROM groups_privileges WHERE privilege = 'indexation';
+INSERT INTO groups_privileges (group_id, privilege)
+SELECT group_id, 'indexation' FROM groups_privileges WHERE privilege = 'manage_documents';
+
 UPDATE main_documents SET status = 'READY';
 
 DROP TABLE IF EXISTS workflow_templates;

@@ -25,7 +25,6 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
-use User\controllers\UserController;
 
 class AttachmentController
 {
