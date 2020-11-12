@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -17,6 +17,7 @@ import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { DragScrollModule } from 'ngx-drag-scroll';
 import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
+import { DndModule } from 'ng2-dnd';
 import { CookieService } from 'ngx-cookie-service';
 import { NgPipesModule } from 'ngx-pipes';
 import { LatinisePipe } from 'ngx-pipes';
@@ -28,6 +29,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { HomeComponent } from './home/home.component';
+import { IndexationComponent } from './indexation/indexation.component';
 import { ForgotPasswordComponent } from './login/forgotPassword/forgotPassword.component';
 import { SignaturesComponent } from './signatures/signatures.component';
 import { SignaturePadPageComponent } from './pad/pad.component';
@@ -122,7 +124,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     PasswordModificationComponent,
     UsersComponent,
     CheckConnectionComponent,
-    CheckEmailConnectionComponent
+    CheckEmailConnectionComponent,
+    IndexationComponent
   ],
   imports: [
     FormsModule,
@@ -130,7 +133,7 @@ import { SortPipe } from './plugins/sorting.pipe';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    IonicModule.forRoot({mode: 'md'}),
+    IonicModule.forRoot({ mode: 'md' }),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -142,10 +145,12 @@ import { SortPipe } from './plugins/sorting.pipe';
     NgxExtendedPdfViewerModule,
     ScrollEventModule,
     DragScrollModule,
+    DndModule.forRoot(),
     NgPipesModule,
     AngularDraggableModule,
     AppMaterialModule,
     AppRoutingModule,
+    HammerModule,
   ],
   entryComponents: [
     WarnModalComponent,

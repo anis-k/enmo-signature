@@ -1,4 +1,4 @@
-import { DomPortalHost, TemplatePortal } from '@angular/cdk/portal';
+import { DomPortalHost, DomPortalOutlet, TemplatePortal } from '@angular/cdk/portal';
 import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector, TemplateRef, ViewContainerRef } from '@angular/core';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class SignaturesContentService {
 
     appSession: any;
 
-    private portalHost: DomPortalHost;
+    private portalHost: DomPortalOutlet;
 
     constructor(
         private componentFactoryResolver: ComponentFactoryResolver,
@@ -120,9 +120,8 @@ export class SignaturesContentService {
     }
 
     initTemplate(template: TemplateRef<any>, viewContainerRef: ViewContainerRef, id: string = 'adminMenu', mode: string = '') {
-
         // Create a portalHost from a DOM element
-        this.portalHost = new DomPortalHost(
+        this.portalHost = new DomPortalOutlet(
             document.querySelector(`#${id}`),
             this.componentFactoryResolver,
             this.appRef,
@@ -153,5 +152,9 @@ export class SignaturesContentService {
         } else {
             return true;
         }
+    }
+
+    detachTemplate(id: string = 'adminMenu') {
+        this.portalHost.detach();
     }
 }

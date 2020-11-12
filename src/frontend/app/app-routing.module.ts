@@ -19,32 +19,34 @@ import { SecuritiesAdministrationComponent } from './administration/security/sec
 import { PasswordModificationComponent } from './login/passwordModification/password-modification.component';
 import { ProfileComponent } from './profile/profile.component';
 import { HomeComponent } from './home/home.component';
+import { IndexationComponent } from './indexation/indexation.component';
 
 @NgModule({
     imports: [
         RouterModule.forRoot([
-            { path: 'home', canActivate: [AuthGuard], component: HomeComponent },
-            { path: 'profile', canActivate: [AuthGuard], component: ProfileComponent },
-            { path: 'administration', canActivate: [AuthGuard], component: AdministrationComponent },
-            { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
-            { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
-            { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
-            { path: 'administration/groups', canActivate: [AuthGuard], component: GroupsListComponent },
-            { path: 'administration/groups/new', canActivate: [AuthGuard], component: GroupComponent },
-            { path: 'administration/groups/:id', canActivate: [AuthGuard], component: GroupComponent },
-            { path: 'administration/connections', canActivate: [AuthGuard], component: ConnectionComponent },
-            { path: 'administration/connections/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
-            { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },
-            { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
-            { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
-            { path: 'administration/passwordRules', canActivate: [AuthGuard], component: SecuritiesAdministrationComponent },
-            { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
-            { path: 'login', canActivate: [AuthGuard], component: LoginComponent },
-            { path: 'forgot-password', component: ForgotPasswordComponent },
-            { path: 'update-password', component: UpdatePasswordComponent },
-            { path: 'password-modification', component: PasswordModificationComponent },
-            { path: '**', redirectTo: 'login', pathMatch: 'full' },
-        ]),
+    { path: 'home', canActivate: [AuthGuard], component: HomeComponent },
+    { path: 'indexation', canActivate: [AuthGuard], component: IndexationComponent },
+    { path: 'profile', canActivate: [AuthGuard], component: ProfileComponent },
+    { path: 'administration', canActivate: [AuthGuard], component: AdministrationComponent },
+    { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
+    { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
+    { path: 'administration/users/:id', canActivate: [AuthGuard], component: UserComponent },
+    { path: 'administration/groups', canActivate: [AuthGuard], component: GroupsListComponent },
+    { path: 'administration/groups/new', canActivate: [AuthGuard], component: GroupComponent },
+    { path: 'administration/groups/:id', canActivate: [AuthGuard], component: GroupComponent },
+    { path: 'administration/connections', canActivate: [AuthGuard], component: ConnectionComponent },
+    { path: 'administration/connections/ldaps', canActivate: [AuthGuard], component: LdapListComponent },
+    { path: 'administration/connections/ldaps/new', canActivate: [AuthGuard], component: LdapComponent },
+    { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
+    { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
+    { path: 'administration/passwordRules', canActivate: [AuthGuard], component: SecuritiesAdministrationComponent },
+    { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
+    { path: 'login', canActivate: [AuthGuard], component: LoginComponent },
+    { path: 'forgot-password', component: ForgotPasswordComponent },
+    { path: 'update-password', component: UpdatePasswordComponent },
+    { path: 'password-modification', component: PasswordModificationComponent },
+    { path: '**', redirectTo: 'login', pathMatch: 'full' },
+], { relativeLinkResolution: 'legacy' }),
     ],
     exports: [
         RouterModule

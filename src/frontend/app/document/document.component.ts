@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
@@ -284,11 +284,14 @@ export class DocumentComponent implements OnInit {
         document.getElementsByClassName('drag-scroll-content')[0].scrollTo(1000, 1000);
     }
 
+    ionViewWillEnter() {
+        this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
+    }
+
     ngOnInit(): void {
         // console.log('oninit!');
         this.menu.enable(false, 'right-menu');
         this.menu.enable(true, 'left-menu');
-        this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
 
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
@@ -755,5 +758,9 @@ export class DocumentComponent implements OnInit {
             width: '450px',
             locked: false,
         };
+    }
+
+    ionViewWillLeave() {
+        this.signaturesService.detachTemplate('rightContent');
     }
 }
