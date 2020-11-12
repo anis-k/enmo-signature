@@ -1,87 +1,94 @@
-<nav class="sidebar" *ngIf="snavLeftComponent.opened">
-  <div class="main-header">
-    <header class="profile-header">
-      <button class="logout-button" mat-icon-button (click)="authService.logout()">
-        <mat-icon fontSet="fas" fontIcon="fa-power-off"></mat-icon>
-      </button>
-      <button *ngIf="authService.user.administrativePrivileges.length > 0" class="admin-button" mat-icon-button
-        (click)="openAdmin()">
-        <mat-icon fontSet="fas" fontIcon="fa-tools"></mat-icon>
-      </button>
-      <button *ngIf="checkClose()" class="closePanel" mat-icon-button type="button" (tap)="snavLeftComponent.close();">
-        <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
-      </button>
-      <div class="user" style="color: #F99830" title="{{authService.user.firstname}} {{authService.user.lastname}}">
-        {{authService.user.firstname}} {{authService.user.lastname}}
-      </div>
-      <div *ngIf="authService.user.picture" class="avatar"
-        [ngStyle]="{'background': 'url(' + authService.user.picture + ') no-repeat scroll center center / cover'}"
-        (click)="openProfile()" title="{{'lang.myProfil' | translate}}">
-      </div>
-      <div *ngIf="authService.user.picture === '' || authService.user.picture === undefined" class="avatar" (click)="openProfile()" title="{{'lang.myProfil' | translate}}">
-      </div>
-    </header>
-    <header class="sidebar-header">
-      <div *ngIf="!searchMode" (click)="search();" style="cursor: pointer;">
-        <span
-          [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount.current}}</span>&nbsp;{{'lang.documents' | translate}}&nbsp;<span
-          class="primary"
-          *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
-      </div>
-      <button *ngIf="!searchMode" color="primary" mat-icon-button type="button" (click)="search();"
-        title="{{'lang.search' | translate}}">
-        <mat-icon fontSet="fas" fontIcon="fa-search fa-2x"></mat-icon>
-      </button>
-      <mat-form-field *ngIf="searchMode" floatLabel="never" style="width: 80%;">
-        <input #searchInput matInput placeholder="{{'lang.filterInfo' | translate}}" [formControl]="searchTerm">
-        <button matSuffix color="primary" mat-icon-button type="button"
-          (click)="searchMode = !searchMode;this.filter('');" title="{{'lang.cancel' | translate}}">
-          <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
-        </button>
-      </mat-form-field>
-    </header>
-    <section class="sidebar-btn">
-      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.sign === 0"
-        [matBadge]="signaturesService.documentsListCount.sign"
-        [ngClass]="[signaturesService.mode == 'sign' ? 'active' : '']"
-        (click)="filter('sign')">{{'lang.signLabel' | translate | titlecase}}</button>
-      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.visa === 0"
-        [matBadge]="signaturesService.documentsListCount.visa"
-        [ngClass]="[signaturesService.mode == 'visa' ? 'active' : '']"
-        (click)="filter('visa')">{{'lang.visaLabel' | translate | titlecase}}</button>
-      <button class="btn btn-xs blue filter" [class.noDoc]="signaturesService.documentsListCount.note === 0"
-        [matBadge]="signaturesService.documentsListCount.note"
-        [ngClass]="[signaturesService.mode == 'note' ? 'active' : '']"
-        (click)="filter('note')">{{'lang.noteLabel' | translate | titlecase}}</button>
-    </section>
-  </div>
-  <ul #listContent class="nav" detect-scroll (onScroll)="handleScroll($event)" [bottomOffset]="1" [topOffset]="1">
-    <div *ngIf="loadingList" class="loadList">
-      <mat-spinner></mat-spinner>
-    </div>
-    <ng-container *ngFor="let document of signaturesService.documentsList;let i=index">
-      <li [class.active]="signaturesService.mainDocumentId === document.id" class="nav-item" matRipple
-        (click)="gotTo(document.id, i)">
-        <div class="nav-item-left">
-          <i class="fas" [ngClass]="{
-            'fa-file-signature':document.mode == 'sign',
-            'fa-thumbs-up':document.mode == 'visa',
-            'fa-comment-dots':document.mode == 'note'
-          }"></i>
-        </div>
-        <div class="nav-item-middle">
-          <div class="">{{document.reference}}</div>
-          <div class="nav-item-title">{{document.title | shorten: 50: '...'}}</div>
-          <div *ngIf="!document.owner" style="color:#F99830;font-size: 10px;">{{'lang.substitutedDoc' | translate}}
-          </div>
-        </div>
-        <div class="nav-item-right">
-          <i class="fas fa-arrow-right"></i>
-        </div>
-      </li>
-    </ng-container>
-    <span *ngIf="signaturesService.documentsList.length == 0" class="noResult">
-      {{'lang.noResult' | translate | titlecase}}
-    </span>
-  </ul>
-</nav>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-item color="primary" lines="none">
+            <ion-label color="secondary" class="ion-text-center">
+                <h2 style="font-weight: bold;font-size: 24px;">{{authService.user.firstname}} {{authService.user.lastname}}</h2>
+            </ion-label>
+        </ion-item>
+    </ion-toolbar>
+</ion-header>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button (click)="authService.logout()">
+                <ion-icon slot="icon-only" name="power"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="!isAdminRoute()" (click)="openAdmin()">
+                <ion-icon slot="icon-only" name="build-outline"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="isAdminRoute()" (click)="openHome()">
+                <ion-icon slot="icon-only" name="home"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-avatar class="avatar-user" (click)="openProfile()">
+    <img [src]="authService.user.picture">
+</ion-avatar>
+<ion-header *ngIf="!isAdminRoute()">
+    <ion-toolbar color="light">
+        <ion-title *ngIf="!searchMode" (click)="search();" [title]="'lang.search' | translate" style="text-align: center;font-size: 14px;">
+            <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount.current}}</span>
+            {{'lang.documents' | translate}}
+            <span class="primary"
+                *ngIf="signaturesService.mode != ''">{{'lang.'+signaturesService.mode+'Label' | translate}}</span>
+            &nbsp;
+            <ion-icon color="primary" name="search-outline"></ion-icon>
+        </ion-title>
+        <ion-searchbar *ngIf="searchMode" #searchInput [placeholder]="'lang.filterInfo' | translate" showCancelButton="always" (ionCancel)="search();searchMode=!searchMode;" [formControl]="searchTerm"></ion-searchbar>
+    </ion-toolbar>
+</ion-header>
+<ion-header *ngIf="!isAdminRoute()" style="background: white;">
+    <ion-toolbar class="filters">
+        <ion-segment value="heart" [value]="signaturesService.mode">
+            <ion-segment-button value="sign" (click)="filter('sign')">
+                <ion-label>{{'lang.signLabel' | translate | titlecase}}</ion-label>
+                <ion-icon color="primary" name="pencil-outline"></ion-icon>
+                <ion-badge color="secondary">{{signaturesService.documentsListCount.sign}}</ion-badge>
+            </ion-segment-button>
+            <ion-segment-button value="visa" (click)="filter('visa')">
+                <ion-label>{{'lang.visaLabel' | translate | titlecase}}</ion-label>
+                <ion-icon color="primary" name="checkmark-done-outline"></ion-icon>
+                <ion-badge color="secondary">{{signaturesService.documentsListCount.visa}}</ion-badge>
+            </ion-segment-button>
+            <ion-segment-button value="note" (click)="filter('note')">
+                <ion-label>{{'lang.noteLabel' | translate | titlecase}}</ion-label>
+                <ion-icon color="primary" name="chatbubble-ellipses-outline"></ion-icon>
+                <ion-badge color="secondary">{{signaturesService.documentsListCount.note}}</ion-badge>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+<app-admin-sidebar *ngIf="isAdminRoute()" style="display: contents;"></app-admin-sidebar>
+<ion-content *ngIf="!isAdminRoute()">
+    <ion-list id="labels-list">
+        <ion-item *ngIf="signaturesService.documentsList.length == 0" lines="none">
+            <ion-label color="medium" class="ion-text-center">
+                {{'lang.noResult' | translate | titlecase}}
+            </ion-label>
+        </ion-item>
+        <ion-menu-toggle auto-hide="false" *ngFor="let document of signaturesService.documentsList;let i=index">
+            <ion-item class="doc-item" (click)="selectedIndex = i" routerDirection="root"
+                [routerLink]="['/documents/'+document.id]" detail="false"
+                [class.selected]="router.url === '/documents/'+document.id">
+                <ion-icon *ngIf="document.mode == 'sign'" color="primary" slot="start" name="pencil-outline"></ion-icon>
+                <ion-icon *ngIf="document.mode == 'visa'" color="primary" slot="start" name="checkmark-done-outline">
+                </ion-icon>
+                <ion-icon *ngIf="document.mode == 'note'" color="primary" slot="start"
+                    name="chatbubble-ellipses-outline">
+                </ion-icon>
+                <div>
+                    <ion-label class="sub-label">{{document.reference}}</ion-label>
+                    <ion-label class="ion-text-wrap" color="primary">{{document.title | shorten: 50: '...'}}</ion-label>
+                    <ion-label *ngIf="!document.owner" color="secondary" class="sub-label">
+                        {{'lang.substitutedDoc' | translate}}</ion-label>
+                </div>
+                <ion-icon slot="end" color="medium" name="arrow-forward-outline"></ion-icon>
+            </ion-item>
+        </ion-menu-toggle>
+    </ion-list>
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>

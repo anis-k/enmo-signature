@@ -1,0 +1,56 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{'lang.connectionTest' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<form style="display: contents;" (ngSubmit)="testLdap()" #adminTestForm="ngForm">
+    <ion-content #mainContent>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.login' | translate}} *</ion-label>
+            <ion-input name="login" [(ngModel)]="ldapTest.login" required>
+            </ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.password' | translate}} *</ion-label>
+            <ion-input name="password" [(ngModel)]="ldapTest.password" required>
+            </ion-input>
+        </ion-item>
+        <ion-card>
+            <ion-card-header>
+                <ion-card-subtitle color="secondary">{{'lang.ldapInformations' | translate}} :</ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content>
+                <ion-item>
+                    <ion-label color="primary">{{'lang.uri' | translate}} :</ion-label>
+                    <ion-input name="uri" [(ngModel)]="ldap.value.uri" readonly>
+                    </ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="primary">{{'lang.login' | translate}} :</ion-label>
+                    <ion-input name="pathLogin" [value]="ldap.value.prefix ? this.ldap.value.prefix + '\\' + ldapTest.login + ldap.value.suffix : ldapTest.login + ldap.value.suffix" readonly>
+                    </ion-input>
+                </ion-item>
+                <div *ngIf="ldapTest.result !== '' || loadingTest" class="bash">
+                    <ng-container *ngIf="loadingTest">
+                        {{'lang.connectionInProgress' | translate}}...
+                    </ng-container>
+                    <ng-container *ngIf="ldapTest.result !== ''">
+                        {{ldapTest.result}}
+                    </ng-container>
+                </div>
+            </ion-card-content>
+        </ion-card>
+    </ion-content>
+    <ion-footer class="ion-no-border">
+        <ion-toolbar>
+            <ion-buttons class="ion-justify-content-center">
+                <ion-button type="submit" color="primary" [disabled]="!adminTestForm.form.valid || loadingTest">
+                    <ion-label>{{'lang.connectionTest' | translate}}</ion-label>
+                </ion-button>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-footer>
+</form>

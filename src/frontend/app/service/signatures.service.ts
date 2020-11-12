@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { DomPortalHost, TemplatePortal } from '@angular/cdk/portal';
+import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector, TemplateRef, ViewContainerRef } from '@angular/core';
 
 @Injectable()
 export class SignaturesContentService {
@@ -37,10 +38,17 @@ export class SignaturesContentService {
     x = 0;
     y = 90;
     mainLoading = true;
+    dragging = false;
+
     appSession: any;
 
-    constructor() {
-        console.log(location);
+    private portalHost: DomPortalHost;
+
+    constructor(
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private injector: Injector,
+        private appRef: ApplicationRef,
+    ) {
         if (window.screen.width <= 360) {
             this.smartphoneMode = true;
         } else {
@@ -109,5 +117,41 @@ export class SignaturesContentService {
 
     getAppSession() {
         this.appSession = 'AD098AD9ADA0D9IAXKJ90AKS099S';
+    }
+
+    initTemplate(template: TemplateRef<any>, viewContainerRef: ViewContainerRef, id: string = 'adminMenu', mode: string = '') {
+
+        // Create a portalHost from a DOM element
+        this.portalHost = new DomPortalHost(
+            document.querySelector(`#${id}`),
+            this.componentFactoryResolver,
+            this.appRef,
+            this.injector
+        );
+        // Create a template portal
+        const templatePortal = new TemplatePortal(
+            template,
+            viewContainerRef
+        );
+
+        // Attach portal to host
+        this.portalHost.attach(templatePortal);
+    }
+
+    empty(value: any) {
+        if (value === null || value === undefined) {
+            return true;
+
+        } else if (Array.isArray(value)) {
+            if (value.length > 0) {
+                return false;
+            } else {
+                return true;
+            }
+        } else if (String(value) !== '') {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

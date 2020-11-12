@@ -1,7 +1,65 @@
-<div *ngIf="signaturesService.annotationMode" [style.width.px]="this.signaturesService.workingAreaWidth*this.signaturesService.scale" [style.height.px]="this.signaturesService.workingAreaHeight*this.signaturesService.scale"
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Annoter le document</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content #mainContent>
+  <div class="tool-content tool-content-right">
+    <ng-container *ngFor="let color of penColors" let idx="index">
+      <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" class="radio"
+        [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
+    </ng-container>
+    <hr>
+    <i class="fa fa-undo fa-2x undo" (click)="undo()"></i>
+  </div>
+  <ion-fab vertical="top" horizontal="start" slot="fixed" activated>
+    <ion-fab-button>
+      <ion-icon name="settings"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="bottom">
+      <ion-fab-button [color]="editMode ? 'danger' : 'success'"
+        [title]="editMode ? 'Verrouiller l\'édition' : 'Déverrouiller l\'édition'"
+        (click)="$event.stopPropagation();editMode=!editMode">
+        <ion-icon [name]="editMode ? 'lock-closed-outline' : 'lock-open-outline'" [title]="'Verouiller l\'édition'">
+        </ion-icon>
+      </ion-fab-button>
+      <ion-fab-button [title]="originalSize ? 'taille originale' : 'taille écran'"
+        (click)="$event.stopPropagation();getImageDimensions(!originalSize)">
+        <ion-icon [name]="originalSize ? 'scan-outline' : 'crop-outline'"
+          [title]="originalSize ? 'taille originale' : 'taille écran'"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+  <div style="display: contents;">
+    <drag-scroll style="overflow:auto;height: 100%;width: 100%;margin: auto;" [style.maxWidth.px]="areaWidth" #nav>
+      <div style="position:relative;" [style.width.px]="areaWidth" [style.height.px]="areaHeight" #myBounds>
+        <ion-img class="img-content" [src]="content" [style.width.px]="areaWidth" [style.height.px]="areaHeight"
+          (ionImgDidLoad)="imageLoaded($event)" #img>
+        </ion-img>
+        <canvas [style.display]="!editMode ? 'none' : 'initial'" style="position: absolute;top: 0px;left:0px;"
+          id="myCanvas" #canvas></canvas>
+      </div>
+    </drag-scroll>
+  </div>
+</ion-content>
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons class="ion-justify-content-center">
+      <ion-button color="primary" (click)="validateAnnotation()">
+        <ion-label>{{'lang.save' | translate}}</ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+<!--<div *ngIf="signaturesService.annotationMode" [style.width.px]="this.areaWidth*this.signaturesService.scale" [style.height.px]="this.areaHeight*this.signaturesService.scale"
   style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{
   'pdf-page-canvas':!signaturesService.renderingDoc,
   'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
 }">
   <canvas id="myCanvas" #canvas></canvas>
-</div>
+</div>-->

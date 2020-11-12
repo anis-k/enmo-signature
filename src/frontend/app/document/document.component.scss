@@ -314,7 +314,7 @@ button.disabled {
 }
 
 .note {
-  top: 150px;
+  top: 40px;
   right: 40px;
   z-index: 2;
   cursor: grab;
@@ -346,5 +346,58 @@ button.disabled {
   &-content {
     padding: 10px;
     color: #4F4F4F;
+  }
+}
+
+.footer-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 10px;
+
+  ion-button {
+    margin: auto;
+    width: 150px;
+  }
+}
+
+.paginate-left {
+  position: absolute;
+  top: 40%;
+  left: 20px;
+  transform: translateY(-50%);
+  --background: #c6c6c680;
+  --color: #666;
+}
+
+.paginate-right {
+  position: absolute;
+  top: 40%;
+  right: 20px;
+  transform: translateY(-50%);
+  --background: #c6c6c680;
+  --color: #666;
+}
+
+::ng-deep.custom-alert-danger .alert-wrapper {
+  border: solid 1px var(--ion-color-danger);
+
+  .alert-title {
+    color: var(--ion-color-danger-tint);
+  }
+
+  .alert-button {
+    color: var(--ion-color-danger);
+  }
+}
+
+::ng-deep.custom-alert-success .alert-wrapper {
+  border: solid 1px var(--ion-color-success);
+
+  .alert-title {
+    color: var(--ion-color-success-tint);
+  }
+
+  .alert-button {
+    color: var(--ion-color-success);
   }
 }

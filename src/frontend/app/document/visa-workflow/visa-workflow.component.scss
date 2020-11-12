@@ -1,108 +1,26 @@
-@import '../../../css/vars.scss';
 
-.panelTitle {
-    font-size: 30px;
-    opacity: 0.1;
-    padding-bottom: 30px;
-    text-align: center;
+.current {
+    --background: var(--ion-color-success);
 }
 
-.avatar {
-    border: solid 3px #F99830;
-    height: 65px !important;
-    width: 65px !important;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+.primary {
+    color: var(--ion-color-primary);
 }
 
-.userDisplay {
-    display: flex !important;
-    flex: 1;
-    font-size: 25px !important;
+.secondary {
+    color: var(--ion-color-secondary);
 }
 
-.userDisplayDel {
-    font-style: italic;
-    font-size: 14px !important;
+.success {
+    color: var(--ion-color-success);
 }
 
-.workflowData {
-    flex: 1;
-    text-align: right;
-    font-size: 90%;
+.danger {
+    color: var(--ion-color-danger);
 }
 
-.workflowSubData {
-    opacity: 0.5;
-}
-
-.statusIcon {
-    font-size: 12px !important;
-    opacity: 0.5;
-    width: auto !important;
-    height: auto !important;
-}
-
-.current ::ng-deep.mat-list-item-content {
-    background: rgba(0, 128, 0, 0.11);
-}
-
-.green {
-    color: $accent;
-}
-
-.mat-list-item {
-    height: 90px !important;
-}
-
-.noWorkflow {
-    opacity: 0.5;
-    text-align: center;
-    font-size: 10px;
-    padding: 10px;
-}
-
-.panel-container {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    height: 100%;
-    overflow: hidden;
-}
-
-.panel-header {
-    box-shadow: 0px 0px 10px 0px #656565;
-    color: white;
-    background: $primary;
-    height: 65px;
-    display: flex;
-    justify-content: center;
-    position: relative;
-    font-size: 20px;
-    align-items: center;
-}
-
-.panel-content {
-    flex: 1;
-    overflow: auto;
-}
-
-.mat-icon {
-    height:auto;
-}
-
-.closePanel {
-    position: absolute;
-    left: 0px;
-    font-size: 24px;
-}
-
-.mat-spinner {
-    left: 8px;
-    top: 8px;
-}
-
-.userSubstitute {
-    color: #F99830;
+.avatar-user {
+    width: 80px;
+    height: 80px;
+    border: solid var(--ion-color-secondary);
 }

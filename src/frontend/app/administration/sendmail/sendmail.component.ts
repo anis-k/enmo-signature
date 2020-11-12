@@ -4,29 +4,31 @@ import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { map, finalize } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
+import { CheckEmailConnectionComponent } from './check-email-connection.component';
+import { ModalController } from '@ionic/angular';
 
 
 export interface Sendmail {
 
-    auth:                   boolean;
-    from:                   string;
-    host:                   string;
-    port:                   number;
-    type:                   string;
-    user:                   string;
-    secure:                 string;
-    charset:                string;
-    password:               string;
-    passwordAlreadyExists:  boolean;
+    auth: boolean;
+    from: string;
+    host: string;
+    port: number;
+    type: string;
+    user: string;
+    secure: string;
+    charset: string;
+    password: string;
+    passwordAlreadyExists: boolean;
 }
 
 @Component({
     selector: 'app-administration-sendmail',
     templateUrl: 'sendmail.component.html',
-    styleUrls: ['../administration.scss', 'sendmail.component.scss'],
+    styleUrls: ['sendmail.component.scss'],
 })
 
 export class SendmailComponent implements OnInit {
@@ -38,15 +40,6 @@ export class SendmailComponent implements OnInit {
     passwordLanguage: string = '';
     hidePassword: boolean = true;
     sendmailLabel: string;
-    emailSendResult = {
-        icon: '',
-        msg: '',
-        debug: '',
-        error: false
-    };
-    recipientTest: string;
-    emailSendLoading: boolean;
-    profileInfo: any;
 
     smtpTypeList = [
         {
@@ -68,20 +61,29 @@ export class SendmailComponent implements OnInit {
     ];
     smtpSecList = [
         {
-            id : '',
-            label : 'lang.none'
+            id: '',
+            label: 'lang.none'
         },
         {
-            id : 'ssl',
-            label : 'ssl'
+            id: 'ssl',
+            label: 'ssl'
         },
         {
-            id : 'tls',
-            label : 'tls'
+            id: 'tls',
+            label: 'tls'
         }
     ];
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
+    constructor(
+        public http: HttpClient,
+        private translate: TranslateService,
+        private route: ActivatedRoute,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public dialog: MatDialog,
+        public authService: AuthService,
+        public modalController: ModalController
+    ) {
     }
 
     ngOnInit(): void {
@@ -113,64 +115,15 @@ export class SendmailComponent implements OnInit {
 
     onSubmit() {
         this.loading = true;
-        this.http.patch('../rest/configurations/1', {'value': this.sendmail, 'label': this.sendmailLabel})
+        this.http.patch('../rest/configurations/1', { 'value': this.sendmail, 'label': this.sendmailLabel })
             .pipe(
                 finalize(() => this.loading = false)
             )
             .subscribe({
                 next: () => {
+                    this.sendmailClone = JSON.parse(JSON.stringify(this.sendmail));
                     this.notificationService.success('lang.emailConfigurationUpdated');
                 },
-            });
-    }
-
-    initEmailSend() {
-        this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
-        this.recipientTest = this.profileInfo.email;
-    }
-
-    testEmailSend() {
-        if (JSON.stringify(this.sendmailClone) !== JSON.stringify(this.sendmail)) {
-            this.onSubmit();
-        }
-        this.emailSendResult = {
-            icon: 'fa-paper-plane primary',
-            msg: 'lang.emailSendInProgress',
-            debug: '',
-            error: false
-        };
-        const email = {
-            'sender'        : this.sendmail.from,
-            'recipients'    : [this.recipientTest],
-            'subject'       : '[' + this.translate.instant('lang.doNotReply') + '] ' + this.translate.instant('lang.emailSendTest'),
-            'status'        : 'EXPRESS',
-            'body'          : this.translate.instant('lang.emailSendTest'),
-            'isHtml'        : false
-        };
-        this.emailSendLoading = true;
-
-        this.http.post('../rest/emails', email)
-            .pipe(
-                finalize(() => this.emailSendLoading = false)
-            )
-            .subscribe({
-                next: (data: any) => {
-                    if (data.isSent) {
-                        this.emailSendResult = {
-                            icon: 'fa-check green',
-                            msg: 'lang.emailSendSuccess',
-                            debug: '',
-                            error: false
-                        };
-                    } else {
-                        this.emailSendResult = {
-                            icon: 'fa-times red',
-                            msg: 'lang.emailSendFailed',
-                            debug: data.informations,
-                            error: true
-                        };
-                    }
-                }
             });
     }
 
@@ -180,7 +133,18 @@ export class SendmailComponent implements OnInit {
         this.sendmail.password = '';
     }
 
-    cancel() {
-        this.router.navigate(['/administration']);
+    async checkConnection(ev: any) {
+        const profileInfo = JSON.parse(JSON.stringify(this.authService.user));
+        if (JSON.stringify(this.sendmailClone) !== JSON.stringify(this.sendmail)) {
+            this.onSubmit();
+        }
+        const modal = await this.modalController.create({
+            component: CheckEmailConnectionComponent,
+            componentProps: {
+                'sendmailFrom': this.sendmail.from,
+                'recipientTest': profileInfo.email
+            }
+        });
+        await modal.present();
     }
 }

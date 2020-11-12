@@ -4,13 +4,14 @@ import { Router } from '@angular/router';
 import { NotificationService } from './notification.service';
 import { SignaturesContentService } from './signatures.service';
 import { LocalStorageService } from './local-storage.service';
+import { NavController } from '@ionic/angular';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
 
-    authMode: string = '';
+    authMode: string = 'default';
     changeKey: boolean = false;
     user: any = {};
 
@@ -18,7 +19,9 @@ export class AuthService {
         private router: Router,
         public notificationService: NotificationService,
         public signaturesService: SignaturesContentService,
-        private localStorage: LocalStorageService) { }
+        private localStorage: LocalStorageService,
+        public navCtrl: NavController
+    ) { }
 
     getToken() {
         return this.localStorage.get('MaarchParapheurToken');
@@ -43,7 +46,8 @@ export class AuthService {
 
     logout() {
         this.clearTokens();
-        this.router.navigate(['/login']);
+        this.navCtrl.navigateRoot('/login');
+        // this.router.navigate(['/login']);
     }
 
     saveTokens(token: string, refreshToken: string) {

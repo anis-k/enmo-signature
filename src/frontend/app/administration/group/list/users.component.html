@@ -1,0 +1,16 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-title>{{'lang.users' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-virtual-scroll [items]="usersList" approxItemHeight="50px" style="height: 450px;">
+            <ion-item button *virtualItem="let element" (click)="selectUser(element)">
+                <ion-label>
+                    {{element.firstname}} {{element.lastname}}
+                </ion-label>
+            </ion-item>
+        </ion-virtual-scroll>
+    </ion-list>
+</ion-content>

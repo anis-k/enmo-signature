@@ -1,147 +1,139 @@
-<div *ngIf="enterApp" class="enterApp" [@enterApp]>
-    <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
-</div>
-<mat-sidenav-container autosize>
-    <mat-sidenav #snav disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'"
-        [opened]="!signaturesService.mobileMode || freezeSidenavClose" fixedInViewport="true"
-        [disableClose]="freezeSidenavClose" [style.width.px]="350">
-        <app-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-sidebar>
-    </mat-sidenav>
-    <mat-sidenav-content class="mainView">
-        <ng-container *ngIf="mainDocument.notes !== undefined && mainDocument.notes !== null && !this.signaturesService.annotationMode && !freezeSidenavClose">
-            <button *ngIf="!expandedNote" mat-fab color="primary" [title]="'lang.expandNote' | translate" (click)="expandedNote = true;" style="top: 150px;right: 40px;z-index:2;position:absolute;">
-                <mat-icon class="far fa-sticky-note" style="height:auto;font-size: 25px;"></mat-icon>
-              </button>
-    
-            <div cdkDrag cdkDragBoundary=".mainView" *ngIf="expandedNote"
-                class="note">
-                <div class="note-title">
-                    <i class="far fa-sticky-note" style="padding-right: 5px;"></i>
-                    <span style="flex:1;">{{'lang.note' | translate}}</span>
-                    <i class="fa fa-minus-square" style="cursor: pointer;" (click)="expandedNote = false;" [title]="'lang.collapseNote' | translate"></i>
-                </div>
-                <div class="note-creator">
-                    {{mainDocument.notes.creator}} : 
-                </div>
-                <div class="note-content">
-                    {{mainDocument.notes.value}}
-                </div>
+<ion-header *ngIf="!loadingdocument" [translucent]="true">
+    <ion-toolbar color="light">
+        <ion-buttons slot="start">
+            <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+        <ion-segment value="favorite" [value]="signaturesService.sideNavRigtDatas.mode"
+            (ionChange)="signaturesService.sideNavRigtDatas.mode=$event.detail.value">
+            <ion-segment-button value="mainDocumentDetail" (click)="openMainDocumentDetail();">
+                <ion-label color="primary">{{'lang.informations' | translate}}</ion-label>
+                <ion-icon color="primary" name="information-circle"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="documentList" (click)="openDocumentList();">
+                <ion-label color="primary">{{'lang.attachedElements' | translate | ucfirst}}</ion-label>
+                <ion-icon color="primary" name="document-attach-outline"></ion-icon>
+                <ion-badge color="danger" style="position: absolute;top: 10px;right: 40%;">
+                    {{mainDocument.attachments.length + 1}}
+                </ion-badge>
+            </ion-segment-button>
+            <ion-segment-button value="linkeddoc"
+                *ngIf="mainDocument.linkedDocuments !== undefined && mainDocument.linkedDocuments.length > 0"
+                (click)="openDocumentList();">
+                <ion-label color="primary">{{'lang.associatedDocuments' | translate | ucfirst}}</ion-label>
+                <ion-icon color="primary" name="link-outline"></ion-icon>
+                <ion-badge color="danger" style="position: absolute;top: 10px;right: 40%;">
+                    {{mainDocument.linkedDocuments.length}}
+                </ion-badge>
+            </ion-segment-button>
+            <ion-segment-button value="visaWorkflow" (click)="openVisaWorkflow();">
+                <ion-label color="primary">{{'lang.circuit' | translate}}</ion-label>
+                <ion-icon color="primary" name="list-outline"></ion-icon>
+                <ion-badge color="danger" style="position: absolute;top: 10px;right: 40%;">
+                    {{mainDocument.workflow.length}}
+                </ion-badge>
+            </ion-segment-button>
+        </ion-segment>
+        <ion-buttons slot="end">
+            <ion-button color="primary" (click)="openAction()">
+              <ion-icon slot="icon-only" name="settings-sharp"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-toolbar class="ion-text-center" color="primary"
+    *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
+    <ion-label style="font-size: 13px;">{{'lang.substitutionInfo' | translate}}</ion-label>
+</ion-toolbar>
+<ion-toolbar class="ion-text-center" color="danger" *ngIf="mainDocument.id !== 0 && mainDocument.status !== 'READY'">
+    <ion-label style="font-size: 13px;">{{'lang.convertingDocument' | translate}}</ion-label>
+</ion-toolbar>
+<ion-content *ngIf="!loadingdocument" #mainContent>
+    <ng-container *ngIf="mainDocument.notes !== undefined && mainDocument.notes !== null">
+        <ion-fab-button *ngIf="!expandedNote" ngDraggable [bounds]="myBounds" [inBounds]="true"
+            (movingOffset)="signaturesService.dragging=true" (endOffset)="signaturesService.dragging=false"
+            [title]="'lang.expandNote' | translate" (click)="expandedNote = true;"
+            style="top: 40px;right: 40px;z-index:2;position:absolute;" [disabled]="signaturesService.dragging">
+            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+        </ion-fab-button>
+        <div ngDraggable (movingOffset)="signaturesService.dragging=true" (endOffset)="signaturesService.dragging=false"
+            [bounds]="myBounds" [inBounds]="true" *ngIf="expandedNote" class="note">
+            <div class="note-title">
+                <i class="far fa-sticky-note" style="padding-right: 5px;"></i>
+                <span style="flex:1;">{{'lang.note' | translate}}</span>
+                <i class="fa fa-minus-square" style="cursor: pointer;" (click)="expandedNote = false;"
+                    [title]="'lang.collapseNote' | translate"></i>
             </div>
-        </ng-container>
-        <div *ngIf="signaturesService.mainLoading"
-            style="position: absolute;z-index: 2;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
-            <mat-spinner></mat-spinner>
+            <div class="note-creator">
+                {{mainDocument.notes.creator}} :
+            </div>
+            <div class="note-content">
+                {{mainDocument.notes.value}}
+            </div>
         </div>
-        <header class="header" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose" [@slideDown]>
-            <article class="header-infos">
-                <section class="header-action">
-                    <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();"
-                        style="width:70px;">
-                        <mat-icon fontSet="fas" fontIcon="fa-bars"></mat-icon>
-                    </button>
-                    <button mat-button (click)="openMainDocumentDetail();">
-                        <i class="fas fa-info-circle fa-2x"></i><span
-                            style="display: block;line-height: 10px;">{{'lang.informations' | translate}}</span>
-                    </button>
-                </section>
-                <section class="header-action">
-                    <button mat-button class="header-action-button"
-                        *ngIf="mainDocument.linkedDocuments !== undefined && mainDocument.linkedDocuments.length > 0"
-                        [matMenuTriggerFor]="assocDoc">
-                        <i class="fas fa-folder-open fa-2x" [matBadge]="mainDocument.linkedDocuments.length"></i><span
-                            style="display: block;line-height: 15px;">{{'lang.associatedDocuments' | translate | ucfirst}}</span>
-                    </button>
-                    <mat-menu #assocDoc="matMenu">
-                        <button mat-menu-item *ngFor="let doc of mainDocument.linkedDocuments" (click)="gotTo(doc.id)"
-                            style="height: auto;line-height: inherit;font-family: 'lato', sans-serif;">
-                            <div style="font-size: 12px;color: #4F4F4F;padding-top: 10px;padding-bottom: 10px;">
-                                <div>{{doc.reference}}</div>
-                                <div style="font-weight: 600;color: #135F7F;font-size: 14px;">{{doc.title}}</div>
-                            </div>
-                        </button>
-                    </mat-menu>
-                    <button mat-button class="header-action-button" (click)="openDocumentList();">
-                        <i class="fas fa-paperclip fa-2x" [matBadge]="mainDocument.attachments.length + 1"></i><span
-                            style="display: block;line-height: 15px;">{{'lang.attachedElements' | translate | ucfirst}}</span>
-                    </button>
-                    <button mat-button class="header-action-button" (click)="openVisaWorkflow();">
-                        <i class="fas fa-list-ol fa-2x" [matBadge]="mainDocument.workflow.length"></i><span
-                            style="display: block;line-height: 15px;">{{'lang.circuit' | translate}}</span>
-                    </button>
-                    <button mat-button class="header-action-button" [matMenuTriggerFor]="menu">
-                        <i class="fas fa-cog fa-2x"></i><span
-                            style="display: block;line-height: 15px;">{{'lang.actions' | translate}}</span>
-                    </button>
-                    <mat-menu #menu="matMenu">
-                        <button [disabled]="checkEmptiness()" mat-menu-item
-                            (click)="removeTags();">{{'lang.deleteAll' | translate}}</button>
-                        <button [disabled]="checkEmptyNote()" mat-menu-item
-                            (click)="undoTag();">{{'lang.cancelPreviousNote' | translate}}</button>
-                    </mat-menu>
-                </section>
-            </article>
-        </header>
-        <mat-card class="substitutedInformations"
-            *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
-            <div>{{'lang.substitutionInfo' | translate}}</div>
-        </mat-card>
-        <mat-card class="substitutedInformations" *ngIf="mainDocument.id !== 0 && mainDocument.status !== 'READY'" style="background: rgb(231,76,60)">
-            <div>{{'lang.convertingDocument' | translate}}</div>
-        </mat-card>
-        <app-overlay *ngIf="this.signaturesService.annotationMode" [appDocumentNotePad]="appDocumentNotePad">
-        </app-overlay>
-        <ng-container *ngIf="!freezeSidenavClose && !loadingUI">
-            <button class="btn-previous" (tap)="prevPage()"
-                *ngIf="pageNum > 1 && !this.signaturesService.annotationMode"><i
-                    class="fas fa-chevron-left fa-3x"></i></button>
-            <button class="btn-next" (tap)="nextPage()"
-                *ngIf="pageNum < totalPages && !this.signaturesService.annotationMode"><i
-                    class="fas fa-chevron-right fa-3x"></i></button>
-        </ng-container>
-
-        <div [style.width]="widthDoc" style="height:100%;overflow:hidden;background:grey;">
-            <div *ngIf="!resetDragPos" #dragElem class="example-box" cdkDragLockAxis="y" cdkDrag
-                [cdkDragDisabled]="this.signaturesService.annotationMode"
-                style="width: 100%;transform: translate3d(0px, 80px, 0px)" (cdkDragEnded)="testDrag($event)">
-                <app-document-note-list (tap)="addAnnotation($event)" *ngIf="currentDoc == 0">
+    </ng-container>
+    <div style="display: contents;">
+        <drag-scroll style="overflow:auto;height: 100%;width: 100%;margin: auto;"
+            [drag-scroll-disabled]="(signaturesService.dragging || signaturesService.resizing) && signaturesService.mobileMode"
+            [drag-disabled]="(signaturesService.dragging || signaturesService.resizing) && !signaturesService.mobileMode"
+            [style.maxWidth.px]="signaturesService.workingAreaWidth" #nav (click)="currentDoc == 0 ? openNoteEditor($event) : false">
+            <div style="position:relative;cursor: grab;" [style.width.px]="signaturesService.workingAreaWidth"
+                [style.height.px]="signaturesService.workingAreaHeight" id="myBounds" #myBounds>
+                <app-document-note-list *ngIf="currentDoc == 0 && !loadingImage">
                 </app-document-note-list>
-                <app-document-sign-list *ngIf="currentDoc == 0"></app-document-sign-list>
-                <img *ngIf="!signaturesService.mainLoading && !freezeSidenavClose" (tap)="addAnnotation($event)"
-                    id="snapshotPdf"
-                    [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+docList[currentDoc].imgContent[pageNum])"
-                    style="width:100%;" class="zoom" />
-                <app-document-note-pad (triggerEvent)="zoomForView()" #appDocumentNotePad *ngIf="currentDoc == 0">
-                </app-document-note-pad>
+                <app-document-sign-list *ngIf="currentDoc === 0 && !loadingImage" [bounds]="myBounds">
+                </app-document-sign-list>
+                <ion-img
+                    *ngIf="docList[currentDoc] !== undefined && !signaturesService.empty(docList[currentDoc].imgContent[pageNum])"
+                    class="img-content" [src]="docList[currentDoc].imgContent[pageNum]"
+                    [style.width.px]="signaturesService.workingAreaWidth"
+                    [style.height.px]="signaturesService.workingAreaHeight" (ionImgDidLoad)="imageLoaded($event)" #img>
+                </ion-img>
+                <!--<ngx-extended-pdf-viewer style="display: none;" [src]="pdfname" [useBrowserLocale]="true"
+                    [textLayer]="false" [showHandToolButton]="true" (pdfLoaded)="onPagesLoaded($event)">
+                </ngx-extended-pdf-viewer>-->
             </div>
-        </div>
+        </drag-scroll>
+    </div>
+    <section class="page-info"
+        *ngIf="!signaturesService.dragging && !signaturesService.resizing && docList[currentDoc]">
+        <div class="page-info-doc">{{docList[currentDoc].title}}</div>
+        <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
+    </section>
+    <ng-container *ngIf="!signaturesService.dragging && !signaturesService.resizing && !loadingImage">
+        <ion-fab-button *ngIf="pageNum > 1 && !loadingImage" (click)="prevPage()" class="paginate-left">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button *ngIf="pageNum < totalPages && !loadingImage" (click)="nextPage()" 
+            class="paginate-right">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-fab-button>
+    </ng-container>
 
-        <section class="page-info" *ngIf="!this.signaturesService.annotationMode && docList[currentDoc]">
-            <div class="page-info-doc">{{docList[currentDoc].title}}</div>
-            <div class="page-info-page">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
-        </section>
-        <footer class="footer" *ngIf="!this.signaturesService.annotationMode && !freezeSidenavClose && currentDoc === 0"
-            [@slideUp]>
-            <ng-container *ngFor="let action of actionsList;">
-                <button [style.color]="action.color" [style.borderColor]="action.color" class="btn"
-                    (click)="launchEvent(action)" [disabled]="mainDocument.status !== 'READY'"><i class="{{action.logo}} fa-2x"></i>{{action.label | translate}}
-                </button>
-            </ng-container>
-        </footer>
-        <app-drawer></app-drawer>
-    </mat-sidenav-content>
-    <mat-sidenav #snavRight disableClose [mode]="this.signaturesService.mobileMode ? 'over': 'side'"
-        [opened]="!signaturesService.mobileMode" fixedInViewport="true"
-        [style.width]="signaturesService.sideNavRigtDatas.width" position='end'
-        [disableClose]='signaturesService.sideNavRigtDatas.locked' (closedStart)="backToDetails()">
-        <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
-            [snavRightComponent]="this.snavRight"></app-my-profile>
-        <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
-            *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'"></app-visa-workflow>
-        <app-document-list #appDocumentList [currentDocId]="currentDoc" [snavRightComponent]="this.snavRight"
-            [docList]="docList" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
-            (triggerEvent)="loadDoc($event)"></app-document-list>
-        <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight"
-            [mainDocument]="mainDocument" *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'">
-        </app-main-document-detail>
-    </mat-sidenav>
-</mat-sidenav-container>
+</ion-content>
+<ion-footer *ngIf="!loadingImage && currentDoc === 0" class="ion-no-border footer-buttons">
+    <ion-button color="danger" shape="round" size="large" fill="outline" (click)="refuseDocument()">
+        <ion-icon [slot]="'start'" name="thumbs-down-outline"></ion-icon>
+        <ion-label style="font-size: 13px;">{{'lang.reject' | translate}}</ion-label>
+    </ion-button>
+    <ion-button size="large" shape="round" fill="outline" (click)="openSignatures()">
+        <ion-label style="font-size: 13px;">{{'lang.signatures' | translate}}</ion-label>
+    </ion-button>
+    <ion-button color="success" shape="round" size="large" fill="outline" (click)="validateDocument()">
+        <ion-icon [slot]="'start'" name="thumbs-up-outline"></ion-icon>
+        <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+    </ion-button>
+</ion-footer>
+
+<ng-template #rightContent>
+    <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
+        [snavRightComponent]="this.snavRight"></app-my-profile>
+    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
+        *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'" style="display: contents;">
+    </app-visa-workflow>
+    <app-document-list #appDocumentList [currentDocId]="currentDoc" [snavRightComponent]="this.snavRight"
+        [docList]="docList" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
+        (triggerEvent)="loadDoc($event)" style="display: contents;"></app-document-list>
+    <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight" [mainDocument]="mainDocument"
+        *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'" style="display: contents;">
+    </app-main-document-detail>
+</ng-template>

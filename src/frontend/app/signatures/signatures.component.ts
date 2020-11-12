@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -9,26 +9,26 @@ import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
+import { IonSlides, ModalController } from '@ionic/angular';
+import { log } from 'console';
+import { SignaturePadPageComponent } from '../pad/pad.component';
 
 @Component({
     selector: 'app-signatures',
     templateUrl: 'signatures.component.html',
     styleUrls: ['signatures.component.scss'],
-    animations: [
-        trigger('listAnimation', [
-            transition('* => *', [ // each time the binding value changes
-                query(':enter', [
-                    style({ opacity: 0 }),
-                    stagger(100, [
-                        animate('0.5s', style({ opacity: 1 }))
-                    ])
-                ], { optional: true })
-            ])
-        ])
-    ],
 })
 export class SignaturesComponent implements OnInit {
+    loading: boolean = true;
+    scrolling: boolean = false;
+    slideOpts = {
+        initialSlide: 0,
+        speed: 400,
+        direction: 'vertical'
+    };
+    signaturesList: any[] = [];
 
+    @ViewChild('slides', { static: false }) slides: IonSlides;
     inAllPage = false;
     count = 0;
 
@@ -40,14 +40,67 @@ export class SignaturesComponent implements OnInit {
         public notificationService: NotificationService,
         public authService: AuthService,
         private localStorage: LocalStorageService,
-        private renderer: Renderer2) {
+        private renderer: Renderer2,
+        public modalController: ModalController
+    ) {
+    }
+
+    dismissModal() {
+        this.modalController.dismiss('cancel');
+    }
+
+    scroll(ev: any) {
+        if (!this.scrolling) {
+            this.scrolling = true;
+            if (ev.deltaY < 0) {
+                this.slides.slidePrev();
+            } else {
+                this.slides.slideNext();
+            }
+            setTimeout(() => {
+                this.scrolling = false;
+            }, 500);
+        }
     }
 
     ngOnInit() {
+        this.initSignatures();
     }
 
-    openSignatures() {
-        this.signaturesService.showSign = true;
+    initSignatures() {
+        this.signaturesList = [];
+        let obj: any[] = [];
+        let index = 0;
+        const mergedSign = this.signaturesService.signaturesListSubstituted.concat(this.signaturesService.signaturesList);
+        mergedSign.forEach((element: any) => {
+            if (index === 6) {
+                this.signaturesList.push(obj);
+                obj = [element];
+                index = 0;
+            } else {
+                obj.push(element);
+                index++;
+            }
+        });
+        if (obj.length > 0) {
+            this.signaturesList.push(obj);
+        }
+    }
+
+    ionViewDidEnter() {
+        this.loading = false;
+    }
+
+    async openSignatures() {
+        const modal = await this.modalController.create({
+            component: SignaturePadPageComponent,
+            cssClass: 'my-custom-class'
+        });
+        await modal.present();
+        const { data } = await modal.onWillDismiss();
+        if (data === 'reload') {
+            this.initSignatures();
+        }
     }
 
     closeSignatures() {
@@ -59,22 +112,12 @@ export class SignaturesComponent implements OnInit {
         this.closeSignatures();
     }
 
-    reloadSignatures() {
-        this.signaturesService.signaturesList.unshift(
-            {
-                id: this.signaturesService.newSign.id,
-                encodedSignature: this.signaturesService.newSign.encodedSignature
-            }
-        );
-        this.signaturesService.newSign = {};
-    }
-
     selectSignature(signature: any, img: any) {
 
         signature.positionX = 60;
         signature.positionY = 80;
 
-        const percentWidth = (this.renderer.selectRootElement('#' + img).naturalWidth * 100) / this.renderer.selectRootElement('#snapshotPdf').naturalWidth;
+        const percentWidth = 25;
 
         signature.width = percentWidth;
 
@@ -82,9 +125,9 @@ export class SignaturesComponent implements OnInit {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
         }
         this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
         this.notificationService.success('lang.signatureInDocAdded');
-        this.bottomSheetRef.dismiss();
+        this.modalController.dismiss('success');
     }
 
     removeSignature(signature: any, i: any) {
@@ -95,12 +138,7 @@ export class SignaturesComponent implements OnInit {
                 .subscribe(() => {
                     this.signaturesService.signaturesList.splice(i, 1);
                     this.notificationService.success('lang.signatureDeleted');
-                    this.bottomSheetRef.dismiss();
-                    const config: MatBottomSheetConfig = {
-                        disableClose: false,
-                        direction: 'ltr'
-                    };
-                    this.bottomSheetRef.open(SignaturesComponent, config);
+                    this.initSignatures();
                 }, (err: any) => {
                     this.notificationService.error(err.error.errors);
                 });
@@ -143,18 +181,17 @@ export class SignaturesComponent implements OnInit {
                         'format': 'png'
                     };
                     this.http.post('../rest/users/' + this.authService.user.id + '/signatures', newSign)
-                    .subscribe((data: any) => {
-                        newSign.id = data.signatureId;
-                        this.signaturesService.newSign = newSign;
-                        this.reloadSignatures();
-                        this.notificationService.success('lang.signatureRegistered');
-                        this.bottomSheetRef.dismiss();
-                        const config: MatBottomSheetConfig = {
-                            disableClose: false,
-                            direction: 'ltr'
-                        };
-                        this.bottomSheetRef.open(SignaturesComponent, config);
-                    });
+                        .subscribe((data: any) => {
+                            newSign.id = data.signatureId;
+                            this.signaturesService.signaturesList.unshift(
+                                {
+                                    id: newSign.id,
+                                    encodedSignature: newSign.encodedSignature
+                                }
+                            );
+                            this.initSignatures();
+                            this.notificationService.success('lang.signatureRegistered');
+                        });
                 };
                 myReader.readAsDataURL(fileToUpload);
             } else {

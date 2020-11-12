@@ -1,13 +1,14 @@
 import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ScrollEvent } from 'ngx-scroll-event';
 import { MatSidenav } from '@angular/material/sidenav';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime, switchMap, distinctUntilChanged, tap, finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
+import { ModalController } from '@ionic/angular';
+import { ProfileComponent } from '../profile/profile.component';
 
 
 @Component({
@@ -24,14 +25,18 @@ export class SidebarComponent implements OnInit {
 
     @ViewChild('listContent') listContent: ElementRef;
     @ViewChild('searchInput') searchInput: ElementRef;
-    // tslint:disable-next-line:no-input-rename
-    @Input('snavRightComponent') snavRightComponent: MatSidenav;
-    // tslint:disable-next-line:no-input-rename
-    @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
 
     searchTerm: FormControl = new FormControl();
 
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sidenav: MatSidenav, private route: ActivatedRoute, private router: Router, public notificationService: NotificationService, public authService: AuthService) {
+    constructor(
+        public http: HttpClient,
+        public signaturesService: SignaturesContentService,
+        private route: ActivatedRoute,
+        public router: Router,
+        public notificationService: NotificationService,
+        public authService: AuthService,
+        public modalController: ModalController,
+    ) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),
             distinctUntilChanged(),
@@ -53,22 +58,10 @@ export class SidebarComponent implements OnInit {
             });
     }
 
-    handleScroll(event: ScrollEvent) {
-        if (event.isReachingBottom && !this.loadingList && this.signaturesService.documentsList.length < this.signaturesService.documentsListCount.current) {
-
-            this.loadingList = true;
-            this.listContent.nativeElement.style.overflowY = 'hidden';
-            this.offset = this.offset + this.limit;
-
-            this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
-                .subscribe((data: any) => {
-                    this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
-                    this.loadingList = false;
-                    this.listContent.nativeElement.style.overflowY = 'auto';
-                    this.notificationService.success('lang.updatedListDocument');
-                });
-        }
+    ngAfterViewInit(): void {
+        this.filter('');
     }
+
 
     gotTo(documentId: number, i: any) {
         this.router.navigate(['/documents/' + documentId]);
@@ -80,27 +73,24 @@ export class SidebarComponent implements OnInit {
             locked: false,
         };
         if (this.signaturesService.mobileMode) {
-            this.sidenav.close();
+            // this.sidenav.close();
         }
     }
 
-    openProfile() {
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'profile',
-            width: '650px',
-            locked: true,
-        };
-        if (this.signaturesService.mobileMode) {
-            this.snavLeftComponent.close();
-            this.snavRightComponent.open();
-        }
+    async openProfile() {
+        const modal = await this.modalController.create({
+            component: ProfileComponent,
+            cssClass: 'my-custom-class'
+        });
+        await modal.present();
     }
 
     openAdmin() {
         this.router.navigate(['/administration/']);
-        if (this.signaturesService.mobileMode) {
-            this.snavLeftComponent.close();
-        }
+    }
+
+    openHome() {
+        this.router.navigate(['/home']);
     }
 
     search() {
@@ -121,7 +111,6 @@ export class SidebarComponent implements OnInit {
 
         this.loadingList = true;
         this.signaturesService.mode === mode ? this.signaturesService.mode = '' : this.signaturesService.mode = mode;
-
         this.offset = 0;
         this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
             .pipe(
@@ -142,5 +131,23 @@ export class SidebarComponent implements OnInit {
         } else {
             return false;
         }
+    }
+
+    loadData(event: any) {
+        this.offset = this.offset + this.limit;
+
+        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode).pipe(
+            tap((data: any) => {
+                this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
+                event.target.complete();
+                if (this.signaturesService.documentsList.length === this.signaturesService.documentsListCount.current) {
+                    event.target.disabled = true;
+                }
+            })
+        ).subscribe();
+    }
+
+    isAdminRoute() {
+        return this.router.url.split('/').indexOf('administration') > -1;
     }
 }

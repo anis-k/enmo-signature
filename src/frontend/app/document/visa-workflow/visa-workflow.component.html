@@ -1,50 +1,29 @@
-<div class="panel-container" *ngIf="!loading">
-    <div class="panel-header">
-        <button *ngIf="signaturesService.mobileMode" class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
-            <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
-        </button>
-        <mat-icon fontSet="fas" fontIcon="fa-list-ol fa-2x"></mat-icon> {{'lang.circuit' | translate}}
-    </div>
-    <div class="panel-content">
-        <mat-list>
-            <div *ngIf="visaWorkflow.length === 0" class="noWorkflow">
-                {{'lang.noPerson' | translate}}
-            </div>
-            <mat-list-item *ngFor="let diffusion of visaWorkflow;let i=index" [class.current]="diffusion.current">
-                <mat-icon *ngIf="diffusion.userPicture !== undefined" class="avatar" mat-list-icon color="primary"
-                    [style.background-image]="'url('+diffusion.userPicture+')'"></mat-icon>
-                <div *ngIf="diffusion.userPicture === undefined && diffusion.userDisplay !== ''" mat-list-icon class="avatar">
-                    <mat-spinner diameter="50"></mat-spinner>
-                </div>
-                <p class="userSubstitute" mat-line *ngIf="diffusion.current && diffusion.userId !== authService.user.id">
-                    {{'lang.substituteMsg' | translate}}
-                </p>
-                <h4 mat-line *ngIf="diffusion.userDisplay != ''" class="userDisplay primary">
-                    {{diffusion.userDisplay}}
-                </h4>
-                <p mat-line *ngIf="diffusion.userDisplay == ''" class="userDisplayDel red">
-                    {{'lang.userDeleted' | translate}}
-                </p>
-                <p mat-line style="display: flex;">
-                    <span class="workflowData" style="text-align:left">
-                        <span class="workflowSubData" *ngIf="diffusion.processDate == null && diffusion.current">
-                            <i mat-list-icon class="fa fa-hourglass statusIcon"></i>
-                            {{'lang.inProgress' | translate}}
-                        </span>
-                        <span class="workflowSubData" *ngIf="diffusion.processDate == null && !diffusion.current">
-                            <i mat-list-icon class="fa fa-question statusIcon"></i>
-                            {{'lang.waiting' | translate}}
-                        </span>
-                        <span *ngIf="diffusion.processDate != null">
-                            <i mat-list-icon class="fa fa-check green statusIcon"></i>
-                            <span class="green">{{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
-                                {{diffusion.processDate}}</span>
-                        </span>
-                    </span>
-                    <span class="workflowData workflowSubData">{{'lang.'+diffusion.mode+'User' | translate}}</span>
-                </p>
-                <mat-divider></mat-divider>
-            </mat-list-item>
-        </mat-list>
-    </div>
-</div>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button>
+                <ion-icon slot="icon-only" name="list-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">{{'lang.circuit' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item *ngFor="let diffusion of visaWorkflow;let i=index" [class.current]="diffusion.current">
+            <ion-avatar slot="start" class="avatar-user">
+                <img [src]="diffusion.userPicture">
+            </ion-avatar>
+            <ion-label>
+                <p class="secondary" *ngIf="diffusion.current && diffusion.userId !== authService.user.id">{{'lang.substituteMsg' | translate}}</p>
+                <h1 class="primary" *ngIf="diffusion.userDisplay != ''">{{diffusion.userDisplay}}</h1>
+                <h1 class="danger" *ngIf="diffusion.userDisplay == ''">{{'lang.userDeleted' | translate}}</h1>
+                <p *ngIf="diffusion.processDate == null && diffusion.current">{{'lang.inProgress' | translate}}</p>
+                <p *ngIf="diffusion.processDate == null && !diffusion.current">{{'lang.waiting' | translate}}</p>
+                <p class="success" *ngIf="diffusion.processDate != null">{{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
+                    {{diffusion.processDate}}</p>
+            </ion-label>
+            <ion-note slot="end">{{'lang.'+diffusion.mode+'User' | translate}}</ion-note>
+        </ion-item>
+    </ion-list>
+</ion-content>

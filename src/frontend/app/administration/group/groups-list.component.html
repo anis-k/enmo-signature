@@ -1,55 +1,49 @@
-<mat-sidenav-container autosize>
-  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode" [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
-    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
-    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
-  </mat-sidenav>
-  <mat-sidenav-content class="mainView">
-    <header class="header">
-      <div class="header-title">
-        <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
-          <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
-        </button>
-        <span><b>{{groupList.length}}</b> {{'lang.manage_groupsAlt' | translate}}</span>
-      </div>
-      <div>
-        <mat-paginator #paginator [length]="100" [pageSize]="10"></mat-paginator>
-      </div>
-    </header>
-    <div class="container">
-      <div *ngIf="loading" class="loader">
-        <mat-spinner></mat-spinner>
-      </div>
-      <mat-table #table class="dataTable" [dataSource]="dataSource" matSort matSortActive="label"
-        matSortDirection="asc" [class.emptyTable]="dataSource.filteredData.length === 0">
-        <ng-container matColumnDef="label">
-          <mat-header-cell *matHeaderCellDef mat-sort-header>{{'lang.label' | translate}}</mat-header-cell>
-          <mat-cell *matCellDef="let element"> {{element.label}} </mat-cell>
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{'lang.administration' | translate}} {{'lang.manage_groupsAlt' | translate}}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar  color="primary">
+    <ion-buttons slot="start">
+      <ion-button fill="outline"  shape="round" routerLink="/administration/groups/new">
+        {{'lang.groupCreation' | translate}}
+      </ion-button>
+    </ion-buttons>
+    <ion-title slot="end" color="secondary">{{groupList.length}} {{'lang.manage_groupsAlt' | translate}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content #mainContent>
+  <ion-list>
+    <ion-item style="display: flex;">
+      <!--<ion-checkbox slot="start"></ion-checkbox>-->
+      <ion-label color="primary" matSort [matSortActive]="displayedColumns[0]" matSortDirection='asc' style="display: flex;font-size: 12px;align-items: center;" (matSortChange)="sortData($event)">
+        <ng-container *ngFor="let col of displayedColumns">
+          <div [mat-sort-header]="col" disableClear style="flex: 1" *ngIf="col!=='actions'">
+            {{'lang.' + col | translate}}
+          </div>
         </ng-container>
-        <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef style="justify-content: end;">
-            <mat-form-field>
-              <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filtrer">
-            </mat-form-field>
-          </mat-header-cell>
-          <mat-cell *matCellDef="let element" style="justify-content: flex-end;">
-            <button mat-icon-button color="warn" (click)="$event.stopPropagation();delete(element)" title="{{'lang.delete' | translate}}">
-              <mat-icon class="fa fa-trash-alt fa-2x"></mat-icon>
-            </button>
-          </mat-cell>
-        </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/administration/groups/{{row.id}}"
-          style="cursor:pointer;"></mat-row>
-      </mat-table>
-      <div class="addButton">
-        <button mat-stroked-button type="button" class="btn blue" routerLink="/administration/groups/new">{{'lang.groupCreation' | translate}}</button>
-      </div>
-      <div class="noResult" *ngIf="dataSource.filteredData.length === 0">
-          {{'lang.noResult' | translate}}
-      </div>
-    </div>
-  </mat-sidenav-content>
-  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
-    fixedInViewport="true" position='end'>
-  </mat-sidenav>
-</mat-sidenav-container>
+        <div style="flex: 1" *ngIf="displayedColumns.indexOf('actions') > -1">
+          <ion-searchbar placeholder="Filtrer" style="padding: 1px;" (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
+        </div>
+      </ion-label>
+      <ion-button slot="end" fill="clear" shape="round" disabled>
+        <ion-icon></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-virtual-scroll [items]="sortedData" approxItemHeight="50px">
+      <ion-item *virtualItem="let element" style="display: flex;">
+        <!--<ion-checkbox slot="start"></ion-checkbox>-->
+        <ion-label style="display: flex;cursor: pointer;" routerLink="/administration/groups/{{element.id}}">
+          <div style="flex: 1" *ngFor="let col of displayedColumns">
+            {{element[col]}}
+          </div>
+        </ion-label>
+        <ion-button slot="end" fill="clear" shape="round" (click)="$event.stopPropagation();delete(element)" title="{{'lang.delete' | translate}}">
+          <ion-icon color="danger" slot="icon-only" name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-virtual-scroll>
+  </ion-list>
+</ion-content>

@@ -1,8 +1,8 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
+import { Component, Input, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import { IonSlides, MenuController } from '@ionic/angular';
 
 @Component({
     selector: 'app-document-list',
@@ -11,34 +11,62 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class DocumentListComponent implements OnInit {
 
-    loading: boolean = false;
+    loading: boolean = true;
 
-    // tslint:disable-next-line:no-input-rename
-    @Input('docList') docList: any;
-    // tslint:disable-next-line:no-input-rename
-    @Input('currentDocId') currentDocId: any;
-    // tslint:disable-next-line:no-input-rename
-    @Input('snavRightComponent') snavRightComponent: MatSidenav;
+    scrolling: boolean = false;
+    slideOpts = {
+        initialSlide: 0,
+        speed: 400,
+        direction: 'vertical'
+    };
+
+    @Input() docList: any;
+    @Input() currentDocId: any;
 
     @Output() triggerEvent = new EventEmitter<string>();
 
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, private sanitizer: DomSanitizer) { }
+    @ViewChild('slides', { static: false }) slides: IonSlides;
+
+    constructor(
+        public http: HttpClient,
+        public signaturesService: SignaturesContentService,
+        private sanitizer: DomSanitizer,
+        private menu: MenuController
+    ) { }
 
     ngOnInit(): void {
         this.docList.forEach((element: any, index: number) => {
-            if (element.imgContent[1] === undefined && index > 0 ) {
+            if (element.imgContent[1] === undefined && index > 0) {
                 this.http.get('../rest/attachments/' + element.id + '/thumbnails/1')
-                .subscribe((data: any) => {
-                    element.imgContent[1] = data.fileContent;
-                });
+                    .subscribe((data: any) => {
+                        element.imgContent[1] = 'data:image/png;base64,' + data.fileContent;
+                    });
             }
         });
     }
 
+    ngAfterViewInit(): void {
+      //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+      //Add 'implements AfterViewInit' to the class.
+      this.loading = false;
+    }
+
     loadDoc(id: string) {
         this.triggerEvent.emit(id);
-        if (this.signaturesService.mobileMode) {
-            this.snavRightComponent.close();
-        }
+        this.menu.close('right-menu');
     }
+
+    scroll(ev: any) {
+        if (!this.scrolling) {
+          this.scrolling = true;
+          if (ev.deltaY < 0) {
+            this.slides.slidePrev();
+          } else {
+            this.slides.slideNext();
+          }
+          setTimeout(() => {
+            this.scrolling = false;
+          }, 500);
+        }
+      }
 }

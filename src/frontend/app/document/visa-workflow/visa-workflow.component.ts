@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../service/auth.service';
@@ -16,10 +15,11 @@ export class VisaWorkflowComponent implements OnInit {
     // tslint:disable-next-line:no-input-rename
     @Input('visaWorkflow') visaWorkflow: any;
 
-    // tslint:disable-next-line:no-input-rename
-    @Input('snavRightComponent') snavRightComponent: MatSidenav;
-
-    constructor(public http: HttpClient, public signaturesService: SignaturesContentService, public authService: AuthService) { }
+    constructor(
+        public http: HttpClient,
+        public signaturesService: SignaturesContentService,
+        public authService: AuthService
+    ) { }
 
     ngOnInit(): void {
         this.visaWorkflow.forEach((element: any) => {

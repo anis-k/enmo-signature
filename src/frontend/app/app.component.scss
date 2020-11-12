@@ -1,0 +1,23 @@
+.left-menu {
+    --width: 350px;
+    --min-width: 350px;
+    --max-width: 350px;
+}
+
+.right-menu {
+    --width: 350px;
+    --min-width: 350px;
+    --max-width: 350px%;
+}
+
+.split-pane-ios.split-pane-visible>.left-menu,
+.split-pane-md.split-pane-visible>.left-menu{
+  max-width: 350px;
+  min-width: 350px;
+}
+
+.split-pane-ios.split-pane-visible>.right-menu,
+.split-pane-md.split-pane-visible>.right-menu{
+  max-width: 450px;
+  min-width: 450px;
+}

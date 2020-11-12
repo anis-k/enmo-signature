@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { AuthService } from '../../service/auth.service';
+import { MenuController } from '@ionic/angular';
 
 export interface Privilege {
     id: string;
@@ -16,7 +17,14 @@ export interface Privilege {
 
 export class AdministrationComponent implements OnInit {
 
-    constructor(public signaturesService: SignaturesContentService, public authService: AuthService) { }
+    constructor(
+        public signaturesService: SignaturesContentService,
+        public authService: AuthService,
+        private menu: MenuController
+    ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        this.menu.close('left-menu');
+        this.menu.enable(false, 'right-menu');
+    }
 }

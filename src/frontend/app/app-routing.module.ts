@@ -15,12 +15,16 @@ import { DocumentComponent } from './document/document.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './login/forgotPassword/forgotPassword.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
-import {SecuritiesAdministrationComponent} from './administration/security/securities-administration.component';
-import {PasswordModificationComponent} from './login/passwordModification/password-modification.component';
+import { SecuritiesAdministrationComponent } from './administration/security/securities-administration.component';
+import { PasswordModificationComponent } from './login/passwordModification/password-modification.component';
+import { ProfileComponent } from './profile/profile.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
     imports: [
         RouterModule.forRoot([
+            { path: 'home', canActivate: [AuthGuard], component: HomeComponent },
+            { path: 'profile', canActivate: [AuthGuard], component: ProfileComponent },
             { path: 'administration', canActivate: [AuthGuard], component: AdministrationComponent },
             { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
             { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },
@@ -35,16 +39,15 @@ import {PasswordModificationComponent} from './login/passwordModification/passwo
             { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
             { path: 'administration/passwordRules', canActivate: [AuthGuard], component: SecuritiesAdministrationComponent },
             { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
-            { path: 'documents', canActivate: [AuthGuard], component: DocumentComponent },
-            { path: 'login', component: LoginComponent },
+            { path: 'login', canActivate: [AuthGuard], component: LoginComponent },
             { path: 'forgot-password', component: ForgotPasswordComponent },
             { path: 'update-password', component: UpdatePasswordComponent },
             { path: 'password-modification', component: PasswordModificationComponent },
             { path: '**', redirectTo: 'login', pathMatch: 'full' },
-          ]),
+        ]),
     ],
     exports: [
         RouterModule
     ]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

@@ -8,6 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
+import { ModalController } from '@ionic/angular';
 
 interface AfterViewInit {
     ngAfterViewInit(): void;
@@ -32,14 +33,14 @@ export class SignaturePadPageComponent implements AfterViewInit {
     @Output()
     reloaded = new EventEmitter<string>();
 
-    private signaturePadOptions: Object = {
+    signaturePadOptions: Object = {
         // passed through to szimek/signature_pad constructor
         minWidth: 1,
         maxWidth: 2.5,
         // dotSize: 0,
         backgroundColor: 'rgba(255, 255, 255, 0)',
-        canvasWidth: 1200,
-        canvasHeight: 630
+        canvasWidth: 600,
+        canvasHeight: 400
     };
 
     constructor(private translate: TranslateService,
@@ -47,7 +48,9 @@ export class SignaturePadPageComponent implements AfterViewInit {
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         public authService: AuthService,
-        private localStorage: LocalStorageService) { }
+        private localStorage: LocalStorageService,
+        public modalController: ModalController
+    ) { }
 
     ngAfterViewInit() {
         const signPointsData = this.localStorage.get('signature');
@@ -77,8 +80,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
     }
 
     closePad() {
-        this.signaturesService.showPad = false;
-        this.signaturesService.showSign = true;
+        this.modalController.dismiss('cancel');
     }
 
     saveSignature() {
@@ -102,10 +104,13 @@ export class SignaturePadPageComponent implements AfterViewInit {
             )
             .subscribe((data: any) => {
                 newSign.id = data.signatureId;
-                this.signaturesService.newSign = newSign;
-                this.closePad();
-                this.reloaded.emit('reload');
-                this.signaturePad.clear();
+                this.signaturesService.signaturesList.unshift(
+                    {
+                        id: newSign.id,
+                        encodedSignature: newSign.encodedSignature
+                    }
+                );
+                this.modalController.dismiss('reload');
                 this.notificationService.success('lang.signatureRegistered');
             });
 

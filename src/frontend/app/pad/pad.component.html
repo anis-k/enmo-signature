@@ -1,4 +1,46 @@
-<article class="pad" *ngIf="signaturesService.showPad">
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-title>Créer une signature</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closePad()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-header [translucent]="true">
+    <ion-toolbar color="light" class="pad">
+        <section class="pad-actions">
+            <div class="pad-actions-boxed">
+                <ng-container *ngFor="let color of penColors" let idx="index">
+                    <input type="radio" name="colors" [checked]="idx === 0" [value]="color.id" (change)="onColorChange(color)"
+                           class="radio" [ngStyle]="{'border-color': color.id, 'background-color': color.id}">
+                </ng-container>
+            </div>
+            <button (click)="drawClear()" class="btn">{{'lang.erase' | translate}}</button>
+            <div class="pad-actions-boxed">
+                <input type="range" name="dot" min="1" max="10" step="1" value="1" (input)="onDotChange($event.target.value)" class="range">
+            </div>
+        </section>
+    </ion-toolbar>
+</ion-header>
+<ion-content #padContent>
+    <article class="pad">
+        <section class="pad-draw">
+            <signature-pad class="padContent" [options]="signaturePadOptions" (onEndEvent)="drawComplete()"></signature-pad>
+        </section>
+        <div class="draw"></div>
+    </article>
+</ion-content>
+<ion-footer class="footer-buttons">
+    <ion-button color="danger" (click)="closePad()">
+        <ion-label>{{'lang.cancel' | translate}}</ion-label>
+    </ion-button>
+    <ion-button color="success" (click)="saveSignature()">
+        <ion-label>{{'lang.save' | translate}}</ion-label>
+    </ion-button>
+</ion-footer>
+<!--<article class="pad">
     <section class="pad-actions">
         <div class="pad-actions-boxed">
             <ng-container *ngFor="let color of penColors" let idx="index">
@@ -19,4 +61,4 @@
         <button class="btn green" (click)="saveSignature()" [disabled]="!haveSigned || disableState">{{'lang.save' | translate}} <i class="fas fa-check-circle fa-2x"></i></button>
     </section>
     <div class="draw"></div>
-</article>
+</article>-->

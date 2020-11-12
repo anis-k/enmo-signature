@@ -1,16 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { ConfirmComponent } from '../../plugins/confirm.component';
+import { MatSort, Sort } from '@angular/material/sort';
 import { TranslateService } from '@ngx-translate/core';
-import { map, tap, finalize } from 'rxjs/operators';
+import { map, finalize } from 'rxjs/operators';
 import { LatinisePipe } from 'ngx-pipes';
 import { AuthService } from '../../service/auth.service';
+import { AlertController } from '@ionic/angular';
 
 
 export interface User {
@@ -28,53 +26,48 @@ export interface User {
     styleUrls: ['../administration.scss', 'users-list.component.scss'],
 })
 
-export class UsersListComponent implements OnInit {
+export class UsersListComponent {
 
     userList: User[] = [];
-    dataSource: MatTableDataSource<User>;
+    sortedData: any[];
     displayedColumns: string[];
     loading: boolean = true;
 
-    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) sort: MatSort;
+    constructor(
+        public http: HttpClient,
+        private translate: TranslateService,
+        private latinisePipe: LatinisePipe,
+        public dialog: MatDialog,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public authService: AuthService,
+        public alertController: AlertController
+    ) {
 
-    constructor(public http: HttpClient, private translate: TranslateService, private latinisePipe: LatinisePipe, public dialog: MatDialog, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public authService: AuthService) {
-        if (this.signaturesService.smartphoneMode) {
-            this.displayedColumns = ['firstname', 'lastname', 'actions'];
+        if (this.signaturesService.mobileMode) {
+            this.displayedColumns = ['firstname', 'lastname', 'email'];
         } else {
             this.displayedColumns = ['firstname', 'lastname', 'email', 'actions'];
         }
-        this.dataSource = new MatTableDataSource(this.userList);
-        this.dataSource.filterPredicate = (data, filter) => {
-            let state = false;
-            this.displayedColumns.forEach(column => {
-                if (data[column] !== undefined) {
-                    const cleanData = this.latinisePipe.transform(data[column].trim().toLowerCase());
-                    const cleanFilter = this.latinisePipe.transform(filter.trim().toLowerCase());
-                    if (cleanData.indexOf(cleanFilter) !== -1) {
-                        state = true;
-                    }
-                }
-            });
-            return state;
-        };
-    }
-
-    updateDataTable() {
-        this.dataSource.data = this.userList;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
     }
 
     applyFilter(filterValue: string) {
-        this.dataSource.filter = filterValue;
+        filterValue = this.latinisePipe.transform(filterValue.toLowerCase());
 
-        if (this.dataSource.paginator) {
-            this.dataSource.paginator.firstPage();
-        }
+        this.sortedData = this.userList.filter(
+            (option: any) => {
+                let state = false;
+                this.displayedColumns.forEach(element => {
+                    if (option[element] && this.latinisePipe.transform(option[element].toLowerCase()).includes(filterValue)) {
+                        state = true;
+                    }
+                });
+                return state;
+            }
+        );
     }
 
-    ngOnInit(): void {
+    ionViewWillEnter() {
         this.http.get('../rest/users' + '?mode=all')
             .pipe(
                 map((data: any) => data.users),
@@ -83,35 +76,66 @@ export class UsersListComponent implements OnInit {
             .subscribe({
                 next: data => {
                     this.userList = data;
-                    this.updateDataTable();
+                    this.sortedData = this.userList.slice();
                 },
             });
     }
 
 
-    delete(userToDelete: User) {
-        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: '', title: 'lang.confirmMsg', msg: '' } });
+    async delete(userToDelete: User) {
+        const alert = await this.alertController.create({
+            // cssClass: 'custom-alert-danger',
+            header: this.translate.instant('lang.confirmMsg'),
+            buttons: [
+                {
+                    text: this.translate.instant('lang.no'),
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => { }
+                },
+                {
+                    text: this.translate.instant('lang.yes'),
+                    handler: () => {
+                        this.http.delete('../rest/users/' + userToDelete.id)
+                            .pipe(
+                                finalize(() => this.loading = false)
+                            )
+                            .subscribe({
+                                next: data => {
+                                    const indexToDelete = this.userList.findIndex(user => user.id === userToDelete.id);
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result === 'yes') {
-                this.loading = true;
-                this.http.delete('../rest/users/' + userToDelete.id)
-                    .pipe(
-                        finalize(() => this.loading = false)
-                    )
-                    .subscribe({
-                        next: data => {
-                            const indexToDelete = this.userList.findIndex(user => user.id === userToDelete.id);
+                                    this.userList.splice(indexToDelete, 1);
 
-                            this.userList.splice(indexToDelete, 1);
+                                    this.sortedData = this.userList.slice();
 
-                            this.updateDataTable();
+                                    this.notificationService.success('lang.userDeleted');
 
-                            this.notificationService.success('lang.userDeleted');
+                                },
+                            });
+                    }
+                }
+            ]
+        });
 
-                        },
-                    });
-            }
+        await alert.present();
+    }
+
+    sortData(sort: Sort) {
+        const data = this.userList.slice();
+        if (!sort.active || sort.direction === '') {
+            this.sortedData = data;
+            return;
+        }
+
+        this.sortedData = data.sort((a, b) => {
+            const isAsc = sort.direction === 'asc';
+            return compare(a[sort.active], b[sort.active], isAsc);
         });
     }
+
+
+}
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

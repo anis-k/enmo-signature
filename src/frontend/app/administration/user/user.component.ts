@@ -1,9 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { map, tap, finalize } from 'rxjs/operators';
+import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
@@ -30,7 +30,15 @@ export class UserComponent implements OnInit {
 
     creationMode: boolean = true;
     loading: boolean = true;
-    user: User;
+    user: User = {
+        id: '',
+        firstname: '',
+        lastname: '',
+        login: '',
+        email: '',
+        picture: '',
+        isRest: false
+    };
     userClone: User;
     title: string = '';
     hideCurrentPassword: Boolean = true;
@@ -60,7 +68,16 @@ export class UserComponent implements OnInit {
         errorMsg: ''
     };
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
+    constructor(
+        public http: HttpClient,
+        private translate: TranslateService,
+        private route: ActivatedRoute,
+        private router: Router,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public dialog: MatDialog,
+        public authService: AuthService
+    ) {
     }
 
     ngOnInit(): void {

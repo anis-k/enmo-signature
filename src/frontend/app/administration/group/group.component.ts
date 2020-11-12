@@ -4,15 +4,14 @@ import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { map, tap, finalize, startWith } from 'rxjs/operators';
+import { MatSort, Sort } from '@angular/material/sort';
+import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
-import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { AuthService } from '../../service/auth.service';
+import { AlertController, ModalController, PopoverController } from '@ionic/angular';
+import { UsersComponent } from './list/users.component';
 
 
 export interface Group {
@@ -35,15 +34,26 @@ export class GroupComponent implements OnInit {
     group: Group;
     groupClone: Group;
     title: string = '';
-    dataSource: MatTableDataSource<any>;
     displayedColumns: string[];
     usersList: any[];
-
+    sortedData: any[];
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
+    constructor(
+        public http: HttpClient,
+        private translate: TranslateService,
+        private route: ActivatedRoute,
+        private router: Router,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public dialog: MatDialog,
+        public authService: AuthService,
+        public popoverController: PopoverController,
+        public modalController: ModalController,
+        public alertController: AlertController
+    ) {
         this.displayedColumns = ['firstname', 'lastname', 'actions'];
         this.group = {
             id: '',
@@ -51,7 +61,7 @@ export class GroupComponent implements OnInit {
             users: [],
             privileges: []
         };
-        this.dataSource = new MatTableDataSource(this.group.users);
+        this.groupClone = JSON.parse(JSON.stringify(this.group));
     }
 
     ngOnInit(): void {
@@ -68,7 +78,9 @@ export class GroupComponent implements OnInit {
                 this.http.get('../rest/groups/' + params['id'])
                     .pipe(
                         map((data: any) => data.group),
-                        finalize(() => this.loading = false)
+                        finalize(() => {
+                            this.loading = false;
+                        })
                     )
                     .subscribe({
                         next: data => {
@@ -93,9 +105,21 @@ export class GroupComponent implements OnInit {
     }
 
     updateDataTable() {
-        this.dataSource.data = this.group.users;
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        this.sortedData = this.group.users.slice();
+    }
+
+    async openUserList(ev: any) {
+        const modal = await this.modalController.create({
+            component: UsersComponent,
+            componentProps: {
+                'users': this.group.users
+            }
+        });
+        await modal.present();
+        const { data } = await modal.onWillDismiss();
+        if (data !== undefined) {
+            this.linkUser(data);
+        }
     }
 
     canValidate() {
@@ -125,15 +149,29 @@ export class GroupComponent implements OnInit {
             });
     }
 
-    unlinkUser(userToDelete: any) {
+    async unlinkUser(userToDelete: any) {
         if (userToDelete.id === this.authService.user.id) {
-            const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: 'warning', title: 'lang.confirmMsg', msg: 'lang.groupWarnMsg' } });
-
-            dialogRef.afterClosed().subscribe(result => {
-                if (result === 'yes') {
-                    this.deleteUser(userToDelete);
-                }
+            const alert = await this.alertController.create({
+                // cssClass: 'custom-alert-danger',
+                header: this.translate.instant('lang.confirmMsg'),
+                buttons: [
+                    {
+                        text: this.translate.instant('lang.no'),
+                        role: 'cancel',
+                        cssClass: 'secondary',
+                        handler: () => { }
+                    },
+                    {
+                        text: this.translate.instant('lang.yes'),
+                        handler: () => {
+                            this.deleteUser(userToDelete);
+                        }
+                    }
+                ]
             });
+
+            await alert.present();
+
         } else {
             this.deleteUser(userToDelete);
         }
@@ -174,34 +212,60 @@ export class GroupComponent implements OnInit {
             });
     }
 
-    deleteGroup() {
-        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: '', title: 'lang.confirmMsg', msg: '' } });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result === 'yes') {
-                this.loading = true;
-                this.http.delete('../rest/groups/' + this.group.id)
-                    .subscribe({
-                        next: () => {
-                            this.router.navigate(['/administration/groups']);
-                            this.notificationService.success('lang.groupDeleted');
-                        },
-                    });
-            }
+    async deleteGroup() {
+        const alert = await this.alertController.create({
+            // cssClass: 'custom-alert-danger',
+            header: this.translate.instant('lang.confirmMsg'),
+            buttons: [
+                {
+                    text: this.translate.instant('lang.no'),
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => { }
+                },
+                {
+                    text: this.translate.instant('lang.yes'),
+                    handler: () => {
+                        this.http.delete('../rest/groups/' + this.group.id)
+                            .subscribe({
+                                next: () => {
+                                    this.router.navigate(['/administration/groups']);
+                                    this.notificationService.success('lang.groupDeleted');
+                                },
+                            });
+                    }
+                }
+            ]
         });
+
+        await alert.present();
     }
 
-    togglePrivilege(privilege: any) {
+    async togglePrivilege(privilege: any) {
         if (privilege.id === 'manage_groups') {
-            const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: 'warning', title: 'lang.confirmMsg', msg: 'lang.groupWarnMsg' } });
-
-            dialogRef.afterClosed().subscribe(result => {
-                if (result === 'yes') {
-                    this.updatePrivilege(privilege);
-                } else {
-                    privilege.checked = !privilege.checked;
-                }
+            const alert = await this.alertController.create({
+                // cssClass: 'custom-alert-danger',
+                header: this.translate.instant('lang.confirmMsg'),
+                message: this.translate.instant('lang.groupWarnMsg'),
+                buttons: [
+                    {
+                        text: this.translate.instant('lang.no'),
+                        role: 'cancel',
+                        cssClass: 'secondary',
+                        handler: () => {
+                            privilege.checked = !privilege.checked;
+                        }
+                    },
+                    {
+                        text: this.translate.instant('lang.yes'),
+                        handler: () => {
+                            this.updatePrivilege(privilege);
+                        }
+                    }
+                ]
             });
+            await alert.present();
+
         } else {
             this.updatePrivilege(privilege);
         }
@@ -220,11 +284,20 @@ export class GroupComponent implements OnInit {
         this.router.navigate(['/administration/groups']);
     }
 
-    isInGroup(user: any) {
-        if (this.group.users.findIndex((userG: any) => userG.id === user.id) > -1) {
-            return true;
-        } else {
-            return false;
+    sortData(sort: Sort) {
+        const data = this.group.users.slice();
+        if (!sort.active || sort.direction === '') {
+            this.sortedData = data;
+            return;
         }
+
+        this.sortedData = data.sort((a, b) => {
+            const isAsc = sort.direction === 'asc';
+            return compare(a[sort.active], b[sort.active], isAsc);
+        });
     }
+}
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

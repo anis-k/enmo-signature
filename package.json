@@ -1,5 +1,5 @@
 {
-  "name": "Maarch_Parapheur",
+  "name": "parapheur",
   "version": "20.03.1",
   "description": "Annoter ou Signer vos documents sur votre tablette",
   "homepage": "https://labs.maarch.org/maarch/MaarchParapheur",
@@ -43,6 +43,9 @@
     "@angular/router": "^9.1.0",
     "@biesbjerg/ngx-translate-extract": "^6.0.3",
     "@fortawesome/fontawesome-free": "^5.13.0",
+    "@ionic/angular": "^5.0.0",
+    "ngx-drag-scroll": "^9.0.0-beta.4",
+    "ngx-extended-pdf-viewer": "^5.0.1",
     "@ngrx/store": "^9.0.0",
     "@ngrx/store-devtools": "^9.0.0",
     "@ngx-translate/core": "^12.1.2",

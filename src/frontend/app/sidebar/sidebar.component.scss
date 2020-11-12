@@ -21,9 +21,11 @@
     font-size: 14px;
     font-weight: 600;
     padding-top: 10px;
+
     &-icon {
       margin-right: 15px;
       position: relative;
+
       &.notification {
         &:after {
           position: absolute;
@@ -37,16 +39,19 @@
         }
       }
     }
+
     &-subtitle {
       color: #9B9B9B;
     }
   }
+
   &-btn {
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-around;
   }
+
   .nav {
     flex: 1;
     overflow-y: scroll;
@@ -66,9 +71,11 @@
       margin: 0;
       padding-left: 30px;
       cursor: pointer;
+
       &.active {
         border-left: solid 5px $primary;
         background: rgba($primary, 0.14);
+
         &:after {
           position: absolute;
           right: 10px;
@@ -78,12 +85,16 @@
           background: #F1F4F4;
         }
       }
+
       &-right {
         text-align: center;
       }
+
       &-left {
         width: 50px;
-        .fas, .material-icons {
+
+        .fas,
+        .material-icons {
           background: #f1f4f4;
           border-radius: 50%;
           color: #135f7f;
@@ -94,12 +105,14 @@
           margin-right: 10px;
         }
       }
+
       &-middle {
         width: 180px;
         height: 50px;
         font-size: 12px;
         color: #4F4F4F;
       }
+
       &-title {
         font-weight: 600;
         color: #135F7F;
@@ -212,4 +225,39 @@
 
 .noDoc .mat-badge-content {
   background: #ddd;
+}
+
+.sub-label {
+  font-size: 11px;
+  --color: var(--ion-color-medium);
+}
+
+ion-item.selected {
+  --background: rgba(var(--ion-color-primary-rgb), 0.2);
+}
+
+.doc-item {
+  --inner-padding-bottom: 10px;
+  --inner-padding-top: 10px;
+}
+
+.filters {
+  ion-badge {
+    position: absolute;
+    top: 10px;
+    right: 0px;
+    color: white;
+  }
+}
+
+.avatar-user {
+  cursor: pointer;
+  position: absolute;
+  z-index: 99;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 60px;
+  border: solid var(--ion-color-secondary);
+  width: 71px;
+  height: 71px;
 }

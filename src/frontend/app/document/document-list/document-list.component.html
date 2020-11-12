@@ -1,27 +1,22 @@
-<div class="panel-content" *ngIf="!loading">
-    <div class="panel-header">
-        <button *ngIf="signaturesService.mobileMode" class="closePanel" mat-icon-button type="button"
-            (tap)="snavRightComponent.close();">
-            <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
-        </button>
-        <mat-icon fontSet="fas" fontIcon="fa-file fa-2x"></mat-icon> <b>{{docList.length}}</b>&nbsp;{{'lang.attachedElements' | translate}}
-    </div>
-    <div class="pjListContent">
-        <div *ngFor="let doc of docList;let i=index" style="position: relative;">
-            <div>
-                <img *ngIf="doc.imgContent[1] !== undefined" (click)="loadDoc(i)"
-                    [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64, '+doc.imgContent[1])"
-                    style="cursor:pointer;padding:0;margin-top: 30px;width: 100%;height: auto;border-radius: 4px;transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);border: solid 1px #E0E0E0;"
-                    [class.current]="i == currentDocId" />
-                <div *ngIf="doc.imgContent[1] === undefined"
-                    style="width: 380px;height:380px;z-index: 2;display: flex;background: #fffc;justify-content: center;align-items: center;">
-                    <mat-spinner></mat-spinner>
-                </div>
-            </div>
-            <div class="pjToolsContent">
-                {{doc.title}}&nbsp;<span class="red" *ngIf="i == 0">({{'lang.mainDocument' | translate}})</span><span class="red" *ngIf="i > 0">({{'lang.attachment' | translate}})</span>
-            </div>
-        </div>
-
-    </div>
-</div>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button>
+                <ion-icon slot="icon-only" name="document-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center"><b class="secondary">{{docList.length}}</b>&nbsp;{{'lang.attachedElements' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content (wheel)="scroll($event)">
+    <ion-slides *ngIf="!loading" pager="true" [options]="slideOpts" #slides>
+        <ion-slide *ngFor="let doc of docList;let i=index">
+            <div style="height: 90%;width: 100%;position: relative;padding: 10px;" >
+                <div (click)="loadDoc(i)" [class.current]="i == currentDocId" style="cursor:pointer;height: 100%;width: 100%;border-radius: 4px;transition: box-shadow 280ms cubic-bezier(.4,0,.2,1);border: solid 1px #E0E0E0;" [ngStyle]="{'background': 'url(' + doc.imgContent[1] + ') no-repeat scroll center center / contain'}"></div>
+                        <div class="pjToolsContent">
+                            {{doc.title}}&nbsp;<span class="red" *ngIf="i == 0">({{'lang.mainDocument' | translate}})</span><span class="red" *ngIf="i > 0">({{'lang.attachment' | translate}})</span>
+                        </div>
+                    </div>
+        </ion-slide>
+    </ion-slides>
+</ion-content>

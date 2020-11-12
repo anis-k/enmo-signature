@@ -1,4 +1,60 @@
-<mat-sidenav-container autosize>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{title}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<form style="display: contents;" id="adminForm" (ngSubmit)="onSubmit()" #adminForm="ngForm">
+    <ion-content>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.label' | translate}} *</ion-label>
+            <ion-input name="label" [(ngModel)]="ldap.label" required>
+            </ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.uri' | translate}} *</ion-label>
+            <ion-input name="uri" [(ngModel)]="ldap.value.uri" required>
+            </ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.baseDN' | translate}}</ion-label>
+            <ion-input name="baseDN" [(ngModel)]="ldap.value.baseDN">
+            </ion-input>
+            <ion-note>ex: dc=maarch,dc=com</ion-note>
+        </ion-item>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.prefix' | translate}}</ion-label>
+            <ion-input name="prefix" [(ngModel)]="ldap.value.prefix">
+            </ion-input>
+            <ion-note>ex: MAARCH</ion-note>
+        </ion-item>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.suffix' | translate}}</ion-label>
+            <ion-input name="suffix" [(ngModel)]="ldap.value.suffix">
+            </ion-input>
+            <ion-note>ex: @maarch.com</ion-note>
+        </ion-item>
+        <ion-item text-center lines="none" style="position: sticky;bottom:0px;z-index:1;">
+            <div style="display: flex;align-items: center;justify-content: center;width: 100%;background: white;">
+                <ion-button type="submit" shape="round" size="large" fill="outline" color="primary"
+                    [disabled]="!adminForm.form.valid || !canValidate()">
+                    <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+                </ion-button>
+                <ion-button *ngIf="!creationMode"
+                    type="button" shape="round" size="large" fill="outline" color="medium" (click)="checkConnection()">
+                    <ion-label style="font-size: 13px;">{{'lang.connectionTest' | translate}}</ion-label>
+                </ion-button>
+                <ion-button *ngIf="!creationMode" [disabled]="authService.authMode==='ldap' && ldap.count === 1"
+                    type="button" shape="round" size="large" fill="outline" color="danger" (click)="delete()">
+                    <ion-label style="font-size: 13px;">{{'lang.delete' | translate}}</ion-label>
+                </ion-button>
+            </div>
+        </ion-item>
+    </ion-content>
+</form>
+<!--mat-sidenav-container autosize>
     <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
                  [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
                  [opened]="!signaturesService.mobileMode" [style.width.px]="350">
@@ -109,4 +165,4 @@
             </div>
         </div>
     </mat-sidenav>
-</mat-sidenav-container>
+</mat-sidenav-container>-->

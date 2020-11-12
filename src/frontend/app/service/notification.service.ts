@@ -1,43 +1,40 @@
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Injectable, Component, Inject } from '@angular/core';
-import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-
-@Component({
-    selector: 'app-custom-snackbar',
-    template: '{{data.message | translate}}' // You may also use a HTML file
-})
-export class CustomSnackbarComponent {
-    constructor(private translate: TranslateService, @Inject(MAT_SNACK_BAR_DATA) public data: any) { }
-}
+import { ToastController } from '@ionic/angular';
 
 @Injectable()
 export class NotificationService {
 
-    constructor(private translate: TranslateService, private router: Router, public snackBar: MatSnackBar) {
+    constructor(
+        private translate: TranslateService,
+        private router: Router,
+        public toastController: ToastController
+    ) { }
+
+    async success(message: string) {
+        const msg = message.includes('lang.') ? this.translate.instant(message) : message;
+        const toast = await this.toastController.create({
+            cssClass: 'notif-success',
+            duration: 3000,
+            message: msg,
+            position: 'top'
+        });
+        toast.present();
     }
 
-    success(message: string) {
-        this.snackBar.openFromComponent(CustomSnackbarComponent, {
+    async error(message: string) {
+        const msg = message.includes('lang.') ? this.translate.instant(message) : message;
+        const toast = await this.toastController.create({
+            cssClass: 'notif-error',
             duration: 3000,
-            panelClass: 'success-snackbar',
-            verticalPosition: 'top',
-            data: { message: message }
+            message: msg,
+            position: 'top'
         });
-    }
-
-    error(message: string) {
-        this.snackBar.openFromComponent(CustomSnackbarComponent, {
-            duration: 3000,
-            panelClass: 'error-snackbar',
-            verticalPosition: 'top',
-            data: { message: message }
-        });
+        toast.present();
     }
 
     handleErrors(err: any) {
-        console.log(err);
         if (err.status === 0 && err.statusText === 'Unknown Error') {
             this.error('lang.connectionServerFailed');
         } else {
@@ -48,12 +45,14 @@ export class NotificationService {
                     this.error(err.error.errors);
                 }
                 if (err.status === 403 || err.status === 404) {
-                    this.router.navigate(['/documents']);
+                    this.router.navigate(['/home']);
                 }
             } else if (err.error.exception !== undefined) {
                 this.error(err.error.exception[0].message);
-            } else if (err.error.error !== undefined) {
+            } else if (err.error.error !== undefined && err.error.error.message !== undefined) {
                 this.error(err.error.error.message);
+            } else if (err.error.error[0] !== undefined) {
+                this.error(err.error.error[0].message);
             } else {
                 this.error(err.message);
             }

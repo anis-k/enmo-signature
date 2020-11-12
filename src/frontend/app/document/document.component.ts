@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, TemplateRef, ViewContainerRef } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
@@ -8,7 +8,6 @@ import { SignaturesComponent } from '../signatures/signatures.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
-import { trigger, transition, style, animate } from '@angular/animations';
 import { CookieService } from 'ngx-cookie-service';
 import { DocumentNotePadComponent } from '../documentNotePad/document-note-pad.component';
 import { WarnModalComponent } from '../modal/warn-modal.component';
@@ -16,60 +15,19 @@ import { RejectInfoBottomSheetComponent } from '../modal/reject-info.component';
 import { ConfirmModalComponent } from '../modal/confirm-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 import { TranslateService } from '@ngx-translate/core';
-import { CdkDragEnd, DragRef, CdkDrag } from '@angular/cdk/drag-drop';
 import { DocumentListComponent } from './document-list/document-list.component';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
+import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
+import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 
 @Component({
     selector: 'app-document',
     templateUrl: 'document.component.html',
     styleUrls: ['document.component.scss'],
-    animations: [
-        trigger(
-            'enterApp',
-            [
-                transition(
-                    ':leave', [
-                        style({ transform: 'translateY(0)' }),
-                        animate('500ms', style({ transform: 'translateY(-100%)' })),
-                    ]
-                )]
-        ),
-        trigger(
-            'slideDown',
-            [
-                transition(
-                    ':enter', [
-                        style({ transform: 'translateY(-100%)', opacity: 0 }),
-                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
-                    ]
-                ),
-                transition(
-                    ':leave', [
-                        style({ transform: 'translateY(0)', 'opacity': 1 }),
-                        animate('500ms', style({ transform: 'translateY(-100%)', 'opacity': 0 })),
-                    ]
-                )]
-        ),
-        trigger(
-            'slideUp',
-            [
-                transition(
-                    ':enter', [
-                        style({ transform: 'translateY(100%)', opacity: 0 }),
-                        animate('500ms', style({ transform: 'translateY(0)', 'opacity': 1 }))
-                    ]
-                ),
-                transition(
-                    ':leave', [
-                        style({ transform: 'translateY(0)', 'opacity': 1 }),
-                        animate('500ms', style({ transform: 'translateY(100%)', 'opacity': 0 })),
-                    ]
-                )]
-        )
-    ],
 })
 export class DocumentComponent implements OnInit {
 
@@ -119,31 +77,23 @@ export class DocumentComponent implements OnInit {
 
     loadingUI: any = false;
 
-    img: any;
-
     expandedNote: boolean = true;
-
+    currentTool = 'info';
+    load: HTMLIonLoadingElement = null;
+    dragging: boolean = false;
+    resizing: boolean = false;
+    pdfname: string = null;
+    loadingdocument: boolean = true;
+    loadingpdf: boolean = false;
+    loadingImage: boolean = true;
+    @ViewChild('mainContent') mainContent: any;
+    @ViewChild('img') img: any;
     @ViewChild('snav', { static: true }) snav: MatSidenav;
     @ViewChild('snavRight', { static: true }) snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
-
-
-    @HostListener('window:resize', ['$event'])
-    onResize(event: any) {
-        this.signaturesService.annotationMode = false;
-        this.widthDoc = '100%';
-        this.resetDragPos = true;
-        setTimeout(() => {
-            this.resetDragPos = false;
-        }, 200);
-        setTimeout(() => {
-            this.signaturesService.workingAreaHeight = $('#snapshotPdf').height();
-            this.signaturesService.workingAreaWidth = $('#snapshotPdf').width();
-            this.signaturesService.scale = 1;
-        }, 400);
-    }
+    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
 
     constructor(private translate: TranslateService,
         private router: Router,
@@ -152,86 +102,298 @@ export class DocumentComponent implements OnInit {
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         private cookieService: CookieService,
-        private sanitizer: DomSanitizer,
+        public sanitizer: DomSanitizer,
         public dialog: MatDialog,
         private bottomSheet: MatBottomSheet,
         public authService: AuthService,
-        private localStorage: LocalStorageService) {
+        private localStorage: LocalStorageService,
+        private menu: MenuController,
+        public actionSheetController: ActionSheetController,
+        public loadingController: LoadingController,
+        public viewContainerRef: ViewContainerRef,
+        public modalController: ModalController,
+        private pdfViewerService: NgxExtendedPdfViewerService,
+        public alertController: AlertController,
+    ) {
         this.draggable = false;
     }
 
+    imageLoaded(ev: any) {
+        this.getImageDimensions(true);
+        // this.loadingDocument = false;
+        this.load.dismiss();
+        this.menu.enable(true, 'right-menu');
+        this.loadingImage = false;
+    }
+
+    getImageDimensions(ajustSize: boolean = false): void {
+        const img = new Image();
+        img.onload = (data: any) => {
+
+            const percent = (data.target.naturalWidth * 100) / this.signaturesService.workingAreaWidth;
+
+            this.signaturesService.workingAreaWidth = data.target.naturalWidth;
+            this.signaturesService.workingAreaHeight = data.target.naturalHeight;
+
+            if (ajustSize) {
+                this.getAreaDimension();
+            }
+
+            /*if (percent !== Infinity) {
+                this.signatures.forEach(element => {
+                    element.position.height = (percent * element.position.height) / 100;
+                    element.position.width = (percent * element.position.width) / 100;
+                    element.position.top = (percent * element.position.top) / 100;
+                    element.position.left = (percent * element.position.left) / 100;
+                });
+            }*/
+            // this.originalSize = true;
+        };
+        img.src = this.docList[this.currentDoc].imgContent[this.pageNum];
+    }
+
+    getAreaDimension() {
+        const percent = (this.mainContent.el.offsetWidth * 100) / this.signaturesService.workingAreaWidth;
+
+        this.signaturesService.workingAreaWidth = (percent * this.signaturesService.workingAreaWidth) / 100;
+        this.signaturesService.workingAreaHeight = (percent * this.signaturesService.workingAreaHeight) / 100;
+
+        /*this.signatures.forEach(element => {
+          element.position.height = (percent * element.position.height) / 100;
+          element.position.width = (percent * element.position.width) / 100;
+          element.position.top = (percent * element.position.top) / 100;
+          element.position.left = (percent * element.position.left) / 100;
+        });*/
+        // this.originalSize = false;
+    }
+
+    async openAction() {
+        let buttons = [];
+        if (!this.checkEmptyNote()) {
+            buttons.push({
+                text: this.translate.instant('lang.cancelPreviousNote'),
+                icon: 'arrow-undo-outline',
+                handler: () => {
+                    this.undoTag();
+                }
+            });
+        }
+
+        buttons.push({
+            text: 'Apposer une signature',
+            icon: 'ribbon-outline',
+            handler: () => {
+                this.openSignatures();
+            }
+        });
+
+        buttons.push({
+            text: 'Annoter le document',
+            icon: 'receipt-outline',
+            handler: () => {
+                this.openNoteEditor();
+            }
+        });
+        /* if (this.originalSize) {
+          buttons.push({
+            text: 'Zoom taille écran',
+            icon: 'contract-outline',
+            handler: () => {
+              this.getAreaDimension();
+              console.log('Share clicked');
+            }
+          });
+        } else {
+          buttons.push({
+            text: 'Zoom taille écran',
+            icon: 'contract-outline',
+            handler: () => {
+              this.getImageDimensions();
+              console.log('Share clicked');
+            }
+          });
+        } */
+        if (!this.checkEmptiness()) {
+            buttons.push({
+                text: this.translate.instant('lang.deleteAll'),
+                icon: 'color-wand-outline',
+                handler: () => {
+                    this.removeTags();
+                }
+            });
+        }
+
+        const actionSheet = await this.actionSheetController.create({
+            header: 'Actions',
+            cssClass: 'my-custom-class',
+            buttons: buttons,
+        });
+        await actionSheet.present();
+    }
+
+    async openSignatures() {
+        const modal = await this.modalController.create({
+            component: SignaturesComponent,
+            cssClass: 'my-custom-class'
+        });
+        await modal.present();
+        const { data } = await modal.onWillDismiss();
+        this.dragging = false;
+        if (data === 'success') {
+            this.scrollToElem();
+            // this.addSignature();
+        }
+        // console.log('dissmiss');
+    }
+
+    async openNoteEditor(ev: any = null) {
+        let scrollPercentX = 0;
+        let scrollPercentY = 0;
+        if (ev !== null) {
+            const offsetTop = -($('#myBounds')[0].getBoundingClientRect().top - 70);
+            const realPosY = (ev.pageY - 75) + offsetTop;
+
+            // console.log(offsetTop);
+
+            scrollPercentX = ((ev.pageX - 350) / ($('#myBounds').width() - $(window).width())) * 100;
+            scrollPercentX = scrollPercentX;
+            scrollPercentY = (offsetTop / ($('#myBounds').height() - $(window).height())) * 100;
+            // scrollPercentY = (realPosY / ($('#myBounds').height() - $(window).height())) * 100;
+
+            // console.log('scrollPercentX', scrollPercentX);
+            // console.log('scrollPercentY', scrollPercentY);
+        }
+        const modal = await this.modalController.create({
+            component: DocumentNotePadComponent,
+            cssClass: 'fullscreen',
+            componentProps: {
+                precentScrollTop: scrollPercentY,
+                precentScrollLeft: -scrollPercentX,
+                content: this.docList[this.currentDoc].imgContent[this.pageNum]
+            }
+        });
+        await modal.present();
+        const { data } = await modal.onWillDismiss();
+        if (data === 'success') {
+
+        }
+        // console.log('dissmiss');
+    }
+
+    scrollToElem() {
+        document.getElementsByClassName('drag-scroll-content')[0].scrollTo(1000, 1000);
+    }
+
     ngOnInit(): void {
-        setTimeout(() => {
-            this.enterApp = false;
-        }, 500);
+        // console.log('oninit!');
+        this.menu.enable(false, 'right-menu');
+        this.menu.enable(true, 'left-menu');
+        this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
+
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
-                this.signaturesService.mainLoading = true;
-                this.signaturesService.renderingDoc = true;
-                this.http.get('../rest/documents/' + params['id'])
-                    .subscribe((data: any) => {
-                        this.mainDocument = data.document;
-                        this.totalPages = this.mainDocument.pages;
+                this.loadingController.create({
+                    message: 'Chargement du document',
+                    spinner: 'dots'
+                }).then((load: HTMLIonLoadingElement) => {
+                    this.load = load;
+                    this.load.present();
+                    this.signaturesService.mainLoading = true;
+                    this.signaturesService.renderingDoc = true;
+                    this.http.get('../rest/documents/' + params['id']).pipe(
+                        tap((data: any) => {
+                            this.mainDocument = data.document;
+                            this.totalPages = this.mainDocument.pages;
 
-                        this.signaturesService.mainDocumentId = this.mainDocument.id;
-                        this.signaturesService.totalPage = this.mainDocument.pages;
+                            this.signaturesService.mainDocumentId = this.mainDocument.id;
+                            this.signaturesService.totalPage = this.mainDocument.pages;
+                            this.menu.enable(true, 'right-menu');
+                            this.initDoc();
 
-                        this.initDoc();
+                            const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
 
-                        const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
+                            if (realUserWorkflow.userId !== this.authService.user.id) {
+                                this.http.get('../rest/users/' + realUserWorkflow.userId + '/signatures')
+                                    .subscribe((dataSign: any) => {
+                                        this.signaturesService.signaturesListSubstituted = dataSign.signatures;
+                                        this.signaturesService.loadingSign = false;
+                                    });
+                            } else {
+                                this.signaturesService.signaturesListSubstituted = [];
+                            }
 
-                        if (realUserWorkflow.userId !== this.authService.user.id) {
-                            this.http.get('../rest/users/' + realUserWorkflow.userId + '/signatures')
-                                .subscribe((dataSign: any) => {
-                                    this.signaturesService.signaturesListSubstituted = dataSign.signatures;
-                                    this.signaturesService.loadingSign = false;
-                                });
-                        } else {
-                            this.signaturesService.signaturesListSubstituted = [];
-                        }
-
-                        this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgContent': [], 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
-                        this.mainDocument.attachments.forEach((attach: any) => {
-                            this.docList.push({ 'id': attach.id, 'title': attach.title, 'pages': attach.pages, 'imgContent': [], 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
-                        });
-                        this.renderImage();
-
-                    });
-            } else {
-                this.docList = [];
-                this.signaturesService.signaturesContent = [];
-                this.signaturesService.notesContent = [];
-                this.snav.open();
-                this.signaturesService.mainDocumentId = null;
-                this.freezeSidenavClose = true;
-                this.signaturesService.mainLoading = false;
+                            this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgContent': [], 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
+                            this.mainDocument.attachments.forEach((attach: any) => {
+                                this.docList.push({ 'id': attach.id, 'title': attach.title, 'pages': attach.pages, 'imgContent': [], 'imgUrl': '../rest/attachments/' + attach.id + '/thumbnails' });
+                            });
+                            this.menu.enable(true, 'right-menu');
+                            // this.renderPdf();
+                            this.renderImage();
+                            this.loadingdocument = false;
+                        }),
+                        catchError((err: any) => {
+                            // console.log('error');
+                            setTimeout(() => {
+                                this.load.dismiss();
+                            }, 200);
+                            this.router.navigate(['/home']);
+                            return of(false);
+                        })
+                    ).subscribe();
+                });
             }
         });
     }
 
+    renderPdf() {
+        // console.log('renderPdf');
+
+        this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/content')
+            .subscribe((data: any) => {
+                this.pdfname = 'data:application/pdf;base64,' + data.encodedDocument;
+                this.loadingpdf = true;
+            });
+    }
+
+    async onPagesLoaded(ev: any) {
+        this.totalPages = ev.pagesCount;
+        this.exportAsImage();
+    }
+
+    public async exportAsImage(): Promise<void> {
+        const scale = { width: 1000 };
+        // or: scale = {height: this.height};
+        // or: scale = {scale: this.scale};
+        const data = await this.pdfViewerService.getPageAsImage(this.pageNum, scale);
+        this.docList[this.currentDoc].imgContent[this.pageNum] = data;
+        this.loadingpdf = false;
+        this.load.dismiss();
+    }
+
     renderImage() {
         if (this.docList[this.currentDoc].imgContent[this.pageNum] === undefined) {
-            this.signaturesService.mainLoading = true;
-            this.loadingUI = true;
             if (this.currentDoc === 0) {
-                this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum)
-                    .subscribe((data: any) => {
-                        this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
-                        this.signaturesService.mainLoading = false;
-                        setTimeout(() => {
-                            this.initWorkingArea();
-                            this.loadingUI = false;
-                        }, 400);
-                    });
+                this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum).pipe(
+                    tap((data: any) => {
+                        this.docList[this.currentDoc].imgContent[this.pageNum] = 'data:image/png;base64,' + data.fileContent;
+                    }),
+                    catchError((err: any) => {
+                        this.load.dismiss();
+                        this.router.navigate(['/home']);
+                        return of(false);
+                    })
+                ).subscribe();
             } else {
-                this.http.get('../rest/attachments/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum)
-                    .subscribe((data: any) => {
-                        this.docList[this.currentDoc].imgContent[this.pageNum] = data.fileContent;
-                        this.signaturesService.mainLoading = false;
-                        setTimeout(() => {
-                            this.loadingUI = false;
-                        }, 400);
-                    });
+                this.http.get('../rest/attachments/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum).pipe(
+                    tap((data: any) => {
+                        this.docList[this.currentDoc].imgContent[this.pageNum] = 'data:image/png;base64,' + data.fileContent;
+                    }),
+                    catchError((err: any) => {
+                        this.load.dismiss();
+                        this.router.navigate(['/home']);
+                        return of(false);
+                    })
+                ).subscribe();
             }
         }
     }
@@ -240,6 +402,7 @@ export class DocumentComponent implements OnInit {
         this.docList = [];
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
+        this.signaturesService.sideNavRigtDatas.mode = 'mainDocumentDetail';
 
         const notesContent = this.localStorage.get(this.mainDocument.id.toString());
 
@@ -304,6 +467,14 @@ export class DocumentComponent implements OnInit {
     }
 
     prevPage() {
+        this.loadingController.create({
+            message: 'Chargement du document',
+            spinner: 'dots'
+        }).then((load: HTMLIonLoadingElement) => {
+            this.load = load;
+            this.load.present();
+        });
+        this.loadingImage = true;
         this.pageNum--;
 
         if (this.pageNum === 0) {
@@ -314,10 +485,19 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
+        // this.exportAsImage();
         this.renderImage();
     }
 
     nextPage() {
+        this.loadingController.create({
+            message: 'Chargement du document',
+            spinner: 'dots'
+        }).then((load: HTMLIonLoadingElement) => {
+            this.load = load;
+            this.load.present();
+        });
+        this.loadingImage = true;
         if (this.pageNum >= this.totalPages) {
             this.pageNum = this.totalPages;
         } else {
@@ -328,20 +508,21 @@ export class DocumentComponent implements OnInit {
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
+        // this.exportAsImage();
         this.renderImage();
     }
 
     initWorkingArea() {
-        if ((typeof this.signaturesService.workingAreaHeight !== 'number' || this.signaturesService.workingAreaHeight === 0) && (typeof this.signaturesService.workingAreaWidth !== 'number' || this.signaturesService.workingAreaWidth === 0)) {
+        /*if ((typeof this.signaturesService.workingAreaHeight !== 'number' || this.signaturesService.workingAreaHeight === 0) && (typeof this.signaturesService.workingAreaWidth !== 'number' || this.signaturesService.workingAreaWidth === 0)) {
             this.img = document.querySelector('img.zoom');
             const rect = this.img.getBoundingClientRect();
             this.signaturesService.workingAreaHeight = rect.height;
             this.signaturesService.workingAreaWidth = rect.width;
-        }
+        }*/
     }
 
     addAnnotation(e: any) {
-        e.preventDefault();
+        /*e.preventDefault();
 
         e = e.srcEvent;
 
@@ -370,46 +551,62 @@ export class DocumentComponent implements OnInit {
 
             this.signaturesService.annotationMode = true;
             this.appDocumentNotePad.initPad();
-        }
+        }*/
     }
 
-    refuseDocument(): void {
-        const dialogRef = this.dialog.open(WarnModalComponent, {
-            width: '350px',
-            data: {}
+    async refuseDocument(): Promise<void> {
+        const alert = await this.alertController.create({
+            cssClass: 'custom-alert-danger',
+            header: this.translate.instant('lang.warning'),
+            message: this.translate.instant('lang.areYouSure'),
+            inputs: [
+                // multiline input.
+                {
+                    name: 'paragraph',
+                    id: 'paragraph',
+                    type: 'textarea',
+                    placeholder: this.translate.instant('lang.addNote')
+                },
+            ],
+            buttons: [
+                {
+                    text: this.translate.instant('lang.rejectDocument'),
+                    handler: () => {
+                        const config: MatBottomSheetConfig = {
+                            disableClose: true,
+                            direction: 'ltr'
+                        };
+                        this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
+                        this.localStorage.remove(this.mainDocument.id.toString());
+                    }
+                }
+            ]
         });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result === 'sucess') {
-                const config: MatBottomSheetConfig = {
-                    disableClose: true,
-                    direction: 'ltr'
-                };
-                this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
-                this.localStorage.remove(this.mainDocument.id.toString());
-            } else if (result === 'annotation') {
-                this.signaturesService.annotationMode = true;
-                this.appDocumentNotePad.initPad();
-            }
-        });
+        await alert.present();
     }
 
-    validateDocument(mode: any): void {
-        const dialogRef = this.dialog.open(ConfirmModalComponent, {
-            width: '350px',
-            data: { msg: 'lang.areYouSure' }
+    async validateDocument(mode: any): Promise<void> {
+        const alert = await this.alertController.create({
+            cssClass: 'custom-alert-success',
+            header: this.translate.instant('lang.warning'),
+            message: this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0 ? this.translate.instant('lang.validateDocumentWithoutSignOrNote') : this.translate.instant('lang.areYouSure'),
+            buttons: [
+                {
+                    text: this.translate.instant('lang.validate'),
+                    handler: () => {
+                        const config: MatBottomSheetConfig = {
+                            disableClose: true,
+                            direction: 'ltr'
+                        };
+
+                        this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                        this.localStorage.remove(this.mainDocument.id.toString());
+                    }
+                }
+            ]
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                const config: MatBottomSheetConfig = {
-                    disableClose: true,
-                    direction: 'ltr'
-                };
-                this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                this.localStorage.remove(this.mainDocument.id.toString());
-            }
-        });
+        await alert.present();
     }
 
     openDrawer(): void {
@@ -426,21 +623,25 @@ export class DocumentComponent implements OnInit {
         this.bottomSheet.open(SignaturesComponent, config);
     }
 
-    removeTags() {
+    async removeTags() {
         this.signaturesService.currentAction = 0;
-        const dialogRef = this.dialog.open(ConfirmModalComponent, {
-            width: '350px',
-            data: { msg: 'lang.deleteNoteAndSignature' }
+
+        const alert = await this.alertController.create({
+            header: this.translate.instant('lang.deleteNoteAndSignature'),
+            buttons: [
+                {
+                    text: this.translate.instant('lang.validate'),
+                    handler: () => {
+                        this.signaturesService.signaturesContent = [];
+                        this.signaturesService.notesContent = [];
+                        this.localStorage.remove(this.mainDocument.id.toString());
+                        this.notificationService.success('lang.noteAndSignatureDeleted');
+                    }
+                }
+            ]
         });
 
-        dialogRef.afterClosed().subscribe(result => {
-            if (result) {
-                this.signaturesService.signaturesContent = [];
-                this.signaturesService.notesContent = [];
-                this.localStorage.remove(this.mainDocument.id.toString());
-                this.notificationService.success('lang.noteAndSignatureDeleted');
-            }
-        });
+        await alert.present();
     }
 
     loadDoc(index: any) {
@@ -499,7 +700,7 @@ export class DocumentComponent implements OnInit {
     }
 
     openVisaWorkflow() {
-        this.snavRight.open();
+        this.menu.open('right-menu');
         this.signaturesService.sideNavRigtDatas = {
             mode: 'visaWorkflow',
             width: '450px',
@@ -508,7 +709,7 @@ export class DocumentComponent implements OnInit {
     }
 
     openDocumentList() {
-        this.snavRight.open();
+        this.menu.open('right-menu');
         this.signaturesService.sideNavRigtDatas = {
             mode: 'documentList',
             width: '450px',
@@ -517,7 +718,7 @@ export class DocumentComponent implements OnInit {
     }
 
     openMainDocumentDetail() {
-        this.snavRight.open();
+        this.menu.open('right-menu');
         this.signaturesService.sideNavRigtDatas = {
             mode: 'mainDocumentDetail',
             width: '450px',

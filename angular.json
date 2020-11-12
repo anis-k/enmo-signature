@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
+  "defaultProject": "parapheur",
   "newProjectRoot": "projects",
   "projects": {
     "parapheur": {
@@ -20,12 +21,34 @@
             "polyfills": "./src/frontend/core/polyfills.ts",
             "tsConfig": "./src/frontend/core/tsconfig.app.json",
             "assets": [
-              "./src/frontend/core/favicon.ico",
-              "./src/frontend/assets"
+              {
+                "glob": "**/*",
+                "input": "src/frontend/assets",
+                "output": "assets"
+              },
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+                "output": "/assets/"
+              },
+              "./src/frontend/core/favicon.ico"
             ],
             "styles": [
+              {
+                "input": "./src/frontend/core/theme/variables.scss"
+              },
+              {
+                "input": "./src/frontend/core/global.scss"
+              },
               "./src/frontend/core/styles.scss",
-              "./node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+              "./node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "node_modules/angular2-draggable/css/resizable.min.css"
+
             ],
             "scripts": [
               "./node_modules/jquery/dist/jquery.min.js",
@@ -90,5 +113,15 @@
       }
     }
   },
-  "defaultProject": "parapheur"
+  "cli": {
+    "defaultCollection": "@ionic/angular-toolkit"
+  },
+  "schematics": {
+    "@ionic/angular-toolkit:component": {
+      "styleext": "scss"
+    },
+    "@ionic/angular-toolkit:page": {
+      "styleext": "scss"
+    }
+  }
 }

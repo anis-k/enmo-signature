@@ -4,7 +4,6 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../service/notification.service';
-import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -23,7 +22,13 @@ export class ForgotPasswordComponent implements OnInit {
     appVersion: string = '';
     appAuthor: string = '';
 
-    constructor(private translate: TranslateService, private router: Router, public http: HttpClient, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public notificationService: NotificationService) {
+    constructor(
+        private router: Router,
+        public http: HttpClient,
+        iconReg: MatIconRegistry,
+        sanitizer: DomSanitizer,
+        public notificationService: NotificationService
+    ) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
     }
 

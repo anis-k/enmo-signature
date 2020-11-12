@@ -52,7 +52,7 @@
     font-weight: 600;
     color: #135F7F;
     font-size: 14px;
-    top: 30px;
+    top: 10px;
 }
 
 .current {
@@ -88,4 +88,12 @@
     position: absolute;
     left: 0px;
     font-size: 24px;
+}
+
+img {
+    pointer-events: none;
+}
+
+.secondary {
+    color: var(--ion-color-secondary);
 }

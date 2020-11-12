@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild, Input, ElementRef, EventEmitter, Output } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output, Input } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
+import { ModalController } from '@ionic/angular';
+import { DragScrollComponent } from 'ngx-drag-scroll';
 
 @Component({
     selector: 'app-document-note-pad',
@@ -13,35 +15,87 @@ import { LocalStorageService } from '../service/local-storage.service';
 })
 export class DocumentNotePadComponent implements OnInit {
 
+    @Input() content: string;
+    @Input() precentScrollTop: any;
+    @Input() precentScrollLeft: any;
+
     penColors = [{ id: '#000000' }, { id: '#1a75ff' }, { id: '#FF0000' }];
 
+    areaWidth = 0;
+    areaHeight = 0;
+    editMode: boolean = true;
+    originalSize: boolean = true;
+
     @Output() triggerEvent = new EventEmitter<string>();
+    @ViewChild('mainContent') mainContent: any;
     @ViewChild('canvas') canvas: ElementRef;
+    @ViewChild('img') img: any;
+    @ViewChild('nav', { read: DragScrollComponent }) ds: DragScrollComponent;
 
     constructor(private translate: TranslateService,
         private sanitizer: DomSanitizer,
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         public authService: AuthService,
-        private localStorage: LocalStorageService) { }
+        private localStorage: LocalStorageService,
+        public modalController: ModalController
+    ) { }
 
     ngOnInit(): void { }
 
+    imageLoaded(ev: any) {
+        // console.log('imageLoaded');
+        // this.getImageDimensions(!this.signaturesService.mobileMode);
+        this.getImageDimensions(false);
+    }
+
+    getImageDimensions(originalsize: boolean = false): void {
+        this.originalSize = originalsize;
+        const img = new Image();
+        img.onload = (data: any) => {
+            this.areaWidth = data.target.naturalWidth;
+            this.areaHeight = data.target.naturalHeight;
+            if (!originalsize) {
+                this.getAreaDimension();
+            }
+            if (this.editMode) {
+                setTimeout(() => {
+                    //const scrollY = (this.areaHeight * this.precentScrollTop) / 100;
+                    const scrollY = (this.precentScrollTop / 100) * ($('#myBounds').height() - $(window).height());
+                    const scrollX = (this.areaWidth * this.precentScrollLeft) / 100;
+
+                    document.getElementsByClassName('drag-scroll-content')[1].scrollTo(scrollX, scrollY);
+                    this.initPad();
+                }, 200);
+            }
+        };
+        img.src = this.content;
+    }
+
+    getAreaDimension() {
+        const percent = (this.mainContent.el.offsetWidth * 100) / this.areaWidth;
+
+        this.areaWidth = (percent * this.areaWidth) / 100;
+        this.areaHeight = (percent * this.areaHeight) / 100;
+    }
+
+    dismissModal() {
+        this.modalController.dismiss('cancel');
+    }
+
     initPad() {
-        setTimeout(() => {
-            ($('#myCanvas') as any).sign({
-                mode: this.authService.user.preferences.writingMode, // direct or stylus
-                lineWidth: this.authService.user.preferences.writingSize,
-                changeColor: $('.radio'),
-                undo: $('.undo'),
-                height: this.signaturesService.workingAreaHeight,
-                width: this.signaturesService.workingAreaWidth,
-                fixHeight: this.signaturesService.y,
-                fixWidth: this.signaturesService.x,
-                mobileMode: this.signaturesService.mobileMode
-            });
-            $('input[value=\'' + this.authService.user.preferences.writingColor + '\']').trigger('click');
-        }, 200);
+        ($('#myCanvas') as any).sign({
+            mode: this.authService.user.preferences.writingMode, // direct or stylus
+            lineWidth: this.authService.user.preferences.writingSize,
+            changeColor: $('.radio'),
+            undo: $('.undo'),
+            height: this.areaHeight,
+            width: this.areaWidth,
+            fixHeight: 56,
+            fixWidth: 0,
+            mobileMode: this.signaturesService.mobileMode
+        });
+        $('input[value=\'' + this.authService.user.preferences.writingColor + '\']').trigger('click');
     }
 
     cancelAnnotation() {
@@ -56,7 +110,6 @@ export class DocumentNotePadComponent implements OnInit {
     }
 
     validateAnnotation() {
-        this.signaturesService.mainLoading = true;
         if (!this.signaturesService.notesContent[this.signaturesService.currentPage]) {
             this.signaturesService.notesContent[this.signaturesService.currentPage] = [];
         }
@@ -70,14 +123,8 @@ export class DocumentNotePadComponent implements OnInit {
                 'width': this.signaturesService.workingAreaWidth,
             }
         );
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({'sign' : this.signaturesService.signaturesContent, 'note' : this.signaturesService.notesContent}));
-        this.triggerEvent.emit();
-        this.signaturesService.x = 0;
-        this.signaturesService.y = 90;
-        if (this.signaturesService.scale > 1) {
-            this.signaturesService.renderingDoc = true;
-        }
-        this.signaturesService.annotationMode = false;
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+        this.modalController.dismiss('');
         this.notificationService.success('lang.annotationAdded');
     }
 

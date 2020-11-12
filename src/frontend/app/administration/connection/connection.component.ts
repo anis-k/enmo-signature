@@ -32,7 +32,7 @@ export class ConnectionComponent implements OnInit {
     privileges: Privilege[] = [
         {
             id: 'manage_ldap_configurations',
-            icon: 'fas fa-database',
+            icon: 'server-sharp',
             route: '/administration/connections/ldaps'
         }
     ];

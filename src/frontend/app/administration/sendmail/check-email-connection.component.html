@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{'lang.emailSendTest' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<form style="display: contents;" (ngSubmit)="testEmailSend()" #adminTestForm="ngForm">
+    <ion-content #mainContent>
+        <ion-item>
+            <ion-label color="secondary" position="floating">{{'lang.mailTo' | translate}} *</ion-label>
+            <ion-input name="recipientTest" [(ngModel)]="recipientTest" required [disabled]="emailSendLoading"
+                pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
+            </ion-input>
+        </ion-item>
+        <ion-item *ngIf="emailSendResult.msg != ''">
+            <ion-icon slot="start" [color]="emailSendResult.icon === 'close-outline' ? 'danger' : 'primary'" [name]="emailSendResult.icon">
+            </ion-icon>
+            <ion-label [color]="emailSendResult.icon === 'close-outline' ? 'danger' : 'primary'">{{emailSendResult.msg | translate}}</ion-label>
+        </ion-item>
+        <div *ngIf="emailSendResult.error" class="bash">
+            {{this.emailSendResult.debug}}
+        </div>
+    </ion-content>
+    <ion-footer class="ion-no-border">
+        <ion-toolbar>
+            <ion-buttons class="ion-justify-content-center">
+                <ion-button type="submit" color="primary" [disabled]="!adminTestForm.form.valid || emailSendLoading">
+                    <ion-label>{{'lang.connectionTest' | translate}}</ion-label>
+                </ion-button>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-footer>
+</form>

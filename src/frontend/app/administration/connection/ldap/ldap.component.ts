@@ -9,6 +9,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../service/auth.service';
+import { ModalController } from '@ionic/angular';
+import { CheckConnectionComponent } from './check-connection.component';
 
 
 export interface Ldap {
@@ -40,14 +42,32 @@ export class LdapComponent implements OnInit {
         password: '',
         result: ''
     };
-    ldap: Ldap;
+    ldap: Ldap = {
+        id: 0,
+        label: '',
+        identifier: 'ldapServer',
+        value: {
+            uri: '',
+            ssl: false,
+            prefix: '',
+            suffix: '',
+            baseDN: '',
+        }
+    };
     ldapClone: Ldap;
     title: string = '';
 
-    // tslint:disable-next-line:no-input-rename
-    @ViewChild('snavRight', { static: true }) snavRight: MatSidenav;
-
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
+    constructor(
+        public http: HttpClient,
+        private translate: TranslateService,
+        private route: ActivatedRoute,
+        private router: Router,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public dialog: MatDialog,
+        public authService: AuthService,
+        public modalController: ModalController,
+    ) {
     }
 
     ngOnInit(): void {
@@ -57,18 +77,6 @@ export class LdapComponent implements OnInit {
             if (params['id'] === undefined) {
                 this.creationMode = true;
                 this.title = this.translate.instant('lang.ldapCreation');
-                this.ldap = {
-                    id: 0,
-                    label: '',
-                    identifier: 'ldapServer',
-                    value: {
-                        uri: '',
-                        ssl: false,
-                        prefix: '',
-                        suffix: '',
-                        baseDN: '',
-                    }
-                };
                 this.loading = false;
             } else {
                 this.creationMode = false;
@@ -157,52 +165,15 @@ export class LdapComponent implements OnInit {
         this.router.navigate(['/administration/connections/ldaps']);
     }
 
-    testLdap() {
-        this.loadingTest = true;
-        this.ldapTest.result = '';
-        if (this.canValidate()) {
-            this.http.patch('../rest/configurations/' + this.ldap.id, this.ldap)
-            .subscribe({
-                next: () => {
-                    this.ldapClone = JSON.parse(JSON.stringify(this.ldap));
-                    this.notificationService.success('lang.ldapUpdated');
-                    this.http.get('../rest/configurations/' + this.ldap.id + '/connection', {
-                        params: {
-                            login: this.ldapTest.login,
-                            password: this.ldapTest.password
-                        }
-                    })
-                        .pipe(
-                            finalize(() => this.loadingTest = false)
-                        )
-                        .subscribe({
-                            next: (data: any) => {
-                                this.ldapTest.result = data.informations;
-                                if (data.connection) {
-                                    this.notificationService.success('lang.ldapConnectionSucceeded');
-                                }
-                            },
-                        });
-                },
-            });
-        } else {
-            this.http.get('../rest/configurations/' + this.ldap.id + '/connection', {
-                params: {
-                    login: this.ldapTest.login,
-                    password: this.ldapTest.password
-                }
-            })
-                .pipe(
-                    finalize(() => this.loadingTest = false)
-                )
-                .subscribe({
-                    next: (data: any) => {
-                        this.ldapTest.result = data.informations;
-                        if (data.connection) {
-                            this.notificationService.success('lang.ldapConnectionSucceeded');
-                        }
-                    },
-                });
-        }
+    async checkConnection(ev: any) {
+        const modal = await this.modalController.create({
+            component: CheckConnectionComponent,
+            componentProps: {
+                'ldapTest': this.ldapTest,
+                'ldap': this.ldap,
+                'canValidate': this.canValidate()
+            }
+        });
+        await modal.present();
     }
 }

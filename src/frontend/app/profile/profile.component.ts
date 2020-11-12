@@ -14,6 +14,8 @@ import { Router } from '@angular/router';
 import { tap, exhaustMap, filter, catchError, takeUntil, finalize, map } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
 import { of, Subject } from 'rxjs';
+import { IonSlides, ModalController } from '@ionic/angular';
+import { data } from 'jquery';
 
 @Component({
     selector: 'app-my-profile',
@@ -29,7 +31,7 @@ export class ProfileComponent implements OnInit {
 
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
     @ViewChild('avatarProfile') avatarProfile: ElementRef;
-
+    currentTool = 'info';
     profileInfo: any = {
         substitute: null,
         preferences: []
@@ -37,7 +39,7 @@ export class ProfileComponent implements OnInit {
     preferenceInfo: any = {};
     avatarInfo: any = {
         picture: '',
-        pictureOrientation : ''
+        pictureOrientation: ''
     };
     hideCurrentPassword: Boolean = true;
     hideNewPassword: Boolean = true;
@@ -73,6 +75,13 @@ export class ProfileComponent implements OnInit {
     msgButton = 'lang.validate';
     loading: boolean = false;
 
+    slideOpts = {
+        initialSlide: 0,
+        speed: 400
+    };
+    showHideContent = false;
+    userList: any[] = [];
+
     constructor(private translate: TranslateService,
         public http: HttpClient,
         private router: Router,
@@ -82,10 +91,32 @@ export class ProfileComponent implements OnInit {
         public authService: AuthService,
         private cookieService: CookieService,
         public filtersService: FiltersService,
-        private renderer: Renderer2) { }
+        private renderer: Renderer2,
+        public modalController: ModalController
+    ) { }
 
     ngOnInit(): void {
         this.initProfileInfo();
+    }
+
+    dismissModal() {
+        this.modalController.dismiss('cancel');
+    }
+
+    test(ev: any) {
+        if (ev.detail.value === '') {
+            this.userList = [];
+        } else if (ev.detail.value.length >= 3) {
+            this.http.get('../rest/autocomplete/users?search=' + ev.detail.value).pipe(
+                tap((res: any) => {
+                    this.userList = res.filter((item: any) => item.id !== this.profileInfo.id);
+                }),
+                catchError(err => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        }
     }
 
     initProfileInfo() {
@@ -96,25 +127,22 @@ export class ProfileComponent implements OnInit {
         delete this.profileInfo.preferences;
     }
 
+    initTab(val: any) {
+        this.currentTool = val;
+        if (val === 'pref') {
+            setTimeout(() => {
+                this.drawSample();
+            }, 200);
+        }
+    }
+
     closeProfile() {
-        this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
-        this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
+        // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
+        // this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
         setTimeout(() => {
             this.initProfileInfo();
         }, 200);
-        if (this.passwordContent) {
-            this.passwordContent.close();
-        }
-        if (this.signaturesService.mobileMode) {
-            this.snavLeftComponent.open();
-            this.snavRightComponent.close();
-        } else {
-            this.signaturesService.sideNavRigtDatas = {
-                mode: 'mainDocumentDetail',
-                width: '450px',
-                locked: false,
-            };
-        }
+        this.dismissModal();
     }
 
     changePasswd() {
@@ -281,7 +309,7 @@ export class ProfileComponent implements OnInit {
     }
 
     selectSubstitute(newUserSubtituted: any) {
-
+        this.userList = [];
         this.http.put('../rest/users/' + this.authService.user.id + '/substitute', { substitute: newUserSubtituted.id })
             .subscribe(() => {
                 this.authService.updateUserInfoWithTokenRefresh();
@@ -316,7 +344,7 @@ export class ProfileComponent implements OnInit {
             this.passwordContent.close();
         }
         const fileToUpload = files.item(0);
-        this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
+        // this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
 
         if (fileToUpload.size <= 5000000) {
             if (['image/png', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {
@@ -359,13 +387,13 @@ export class ProfileComponent implements OnInit {
     drawSample() {
         const c = document.getElementById('sampleNote');
         const ctx = (<HTMLCanvasElement>c).getContext('2d');
-        ctx.clearRect(0, 0, 150, 150);
+        ctx.clearRect(0, 0, 100, 100);
         ctx.beginPath();
         ctx.lineWidth = this.preferenceInfo.writingSize;
         ctx.moveTo(0, 0);
-        ctx.lineTo(150, 150);
-        ctx.moveTo(150, 0);
-        ctx.lineTo(0, 150);
+        ctx.lineTo(100, 100);
+        ctx.moveTo(100, 0);
+        ctx.lineTo(0, 100);
         ctx.stroke();
     }
 
@@ -384,7 +412,7 @@ export class ProfileComponent implements OnInit {
     }
 
     toggleSignature(i: number) {
-        this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/' + this.signaturesService.signaturesList[i].id  + '/substituted', { 'substituted': !this.signaturesService.signaturesList[i].substituted })
+        this.http.patch('../rest/users/' + this.authService.user.id + '/signatures/' + this.signaturesService.signaturesList[i].id + '/substituted', { 'substituted': !this.signaturesService.signaturesList[i].substituted })
             .subscribe(() => {
                 this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
                 this.notificationService.success('lang.modificationSaved');

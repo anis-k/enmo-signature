@@ -1,19 +1,26 @@
-<div class="login-content">
+<ion-content class="login-content">
     <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
-    <mat-card class="login-form" *ngIf="showForm" [@myAnimation]>
-        <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
-            <mat-form-field class="input-row">
-                <input id="login"  name="login" matInput placeholder="{{'lang.login' | translate}}" formControlName="login" type="text">
-            </mat-form-field>
-            <mat-form-field class="input-row">
-                <input id="password" name="password" matInput placeholder="{{'lang.password' | translate}}" type="password" formControlName="password">
-                <mat-hint align="end" *ngIf="authService.authMode === 'default'"><a routerLink="/forgot-password" class="infoLogin">{{'lang.forgotPassword' | translate}} ?</a></mat-hint>
-                <mat-hint align="end" *ngIf="authService.authMode === 'ldap'"><span class="infoLogin">{{'lang.ldapEnabled' | translate}}</span></mat-hint>
-            </mat-form-field>
-            <button type="submit" mat-button [disabled]="loginForm.invalid || loading">{{'lang.connect' | translate}}</button>
-        </form>
-    </mat-card>
-    <footer>
+    <ion-card style="width: 400px;position: absolute;left: 50%;top: 50%;transform: translate(-50%,-50%);">
+        <ion-card-content>
+            <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+                <ion-item>
+                    <ion-label position="floating">{{'lang.login' | translate}}</ion-label>
+                    <ion-input formControlName="login" type="text"></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label position="floating">{{'lang.password' | translate}}</ion-label>
+                    <ion-input name="password" matInput type="password" formControlName="password"></ion-input>
+                </ion-item>
+                <a routerLink="/forgot-password" *ngIf="authService.authMode === 'default'"
+                    class="forgot-password">{{'lang.forgotPassword' | translate}}</a>
+                <a href="" *ngIf="authService.authMode === 'ldap'"
+                    class="forgot-password">{{'lang.ldapEnabled' | translate}}</a>
+                <ion-button type="submit" expand="block" [disabled]="loginForm.invalid || loading">{{'lang.connect' | translate}}
+                </ion-button>
+            </form>
+        </ion-card-content>
+    </ion-card>
+    <ion-note class="version-info">
         Maarch parapheur {{environment.VERSION}} Powered by {{environment.AUTHOR}}
-    </footer>
-</div>
+    </ion-note>
+</ion-content>

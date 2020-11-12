@@ -1,246 +1,204 @@
-<div class="panel-container" *ngIf="this.signaturesService.sideNavRigtDatas.mode == 'profile'">
-    <div *ngIf="loading"
-        style="position: absolute;z-index: 2;display: flex;background: #fffc;width: 100%;height: 100%;justify-content: center;align-items: center;">
-        <mat-spinner></mat-spinner>
-    </div>
-    <div class="panel-header">
-        <div class="user">
-            {{'lang.myProfil' | translate}}
-        </div>
-        <div #avatarProfile class="avatarProfile"
-            [ngStyle]="{'background': 'url(' + this.avatarInfo.picture + ') no-repeat scroll center center / cover'}"
-            (tap)="uploadFile.click();">
-        </div>
-        <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
-    </div>
-    <div class="panel-content">
-        <form (ngSubmit)="submitProfile()" #profileForm="ngForm">
-            <mat-tab-group #tabProfile (selectedTabChange)="initProfileTab($event);">
-                <mat-tab label="{{'lang.informations' | translate}}">
-                    <div class="profile-content">
-                        <mat-form-field class="input-row">
-                            <input name="login" matInput placeholder="{{'lang.login' | translate}}" type="text"
-                                [(ngModel)]="profileInfo.login" (keyup)="newLogin.login=newLogin.login.toLowerCase()"
-                                disabled required>
-                        </mat-form-field>
-                        <mat-form-field class="input-row">
-                            <input name="email" matInput placeholder="{{'lang.email' | translate}}" type="mail"
-                                [(ngModel)]="profileInfo.email"
-                                pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required>
-                        </mat-form-field>
-                        <mat-form-field class="input-row">
-                            <input name="firstname" matInput placeholder="{{'lang.firstname' | translate}}"
-                                [(ngModel)]="profileInfo.firstname" required>
-                        </mat-form-field>
-                        <mat-form-field class="input-row">
-                            <input name="nom" matInput placeholder="{{'lang.lastname' | translate}}"
-                                [(ngModel)]="profileInfo.lastname" required>
-                        </mat-form-field>
-                        <mat-accordion *ngIf="authService.authMode === 'default'">
-                            <mat-expansion-panel (closed)="showPassword=false" (opened)="changePasswd()"
-                                #passwordContent>
-                                <mat-expansion-panel-header>
-                                    <mat-panel-title>
-                                        {{'lang.updatePassword' | translate}}
-                                    </mat-panel-title>
-                                    <mat-panel-description>
-                                    </mat-panel-description>
-                                </mat-expansion-panel-header>
-                                <ng-container *ngIf="showPassword">
-                                    <mat-form-field class="input-row">
-                                        <input name="currentPassword" matInput [(ngModel)]="password.currentPassword"
-                                            placeholder="{{'lang.currentPassword' | translate}}"
-                                            [type]="hideCurrentPassword ? 'password' : 'text'">
-                                        <mat-icon matSuffix (click)="hideCurrentPassword = !hideCurrentPassword"
-                                            class="fa fa-2x"
-                                            [ngClass]="[hideCurrentPassword ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
-                                    </mat-form-field>
-                                    <mat-form-field class="input-row">
-                                        <input name="newPassword" matInput [(ngModel)]="password.newPassword"
-                                            placeholder="{{'lang.newPassword' | translate}}"
-                                            [type]="hideNewPassword ? 'password' : 'text'"
-                                            (keyup)="checkPasswordValidity(password.newPassword)">
-                                        <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword"
-                                            class="fa fa-2x" [ngClass]="[hideNewPassword ? 'fa-eye-slash' : 'fa-eye']">
-                                        </mat-icon>
-                                        <mat-hint style="color:red;">{{handlePassword.errorMsg | translate}}</mat-hint>
-                                    </mat-form-field>
-                                    <mat-form-field class="input-row">
-                                        <input name="passwordConfirmation" matInput
-                                            [(ngModel)]="password.passwordConfirmation"
-                                            placeholder="{{'lang.passwordConfirmation' | translate}}"
-                                            [type]="hideNewPasswordConfirm ? 'password' : 'text'">
-                                        <mat-icon matSuffix (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm"
-                                            class="fa fa-2x"
-                                            [ngClass]="[hideNewPasswordConfirm ? 'fa-eye-slash' : 'fa-eye']"></mat-icon>
-                                        <mat-hint style="color:red;"
-                                            *ngIf="password.passwordConfirmation !== password.newPassword">
-                                            {{'lang.passwordNotMatch' | translate}}</mat-hint>
-                                        <mat-hint style="color:green;"
-                                            *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">
-                                            {{'lang.samePassword' | translate}}</mat-hint>
-                                    </mat-form-field>
-                                </ng-container>
-                            </mat-expansion-panel>
-                        </mat-accordion>
-                    </div>
-                </mat-tab>
-                <mat-tab label="{{'lang.preferences' | translate}}">
-                    <div class="profile-content">
-                        <div class="input-row">
-                            <fieldset>
-                                <legend align="left">{{'lang.notifications' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-2-col">
-                                        <mat-slide-toggle [checked]="this.preferenceInfo.notifications"
-                                            (change)="this.preferenceInfo.notifications=!this.preferenceInfo.notifications"
-                                            color="primary">{{'lang.receiveNotif' | translate}}</mat-slide-toggle>
-                                    </div>
-                                    <div class="form-2-col" style="text-align: justify;font-size: 12px;">
-
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div class="input-row">
-                            <fieldset>
-                                <legend align="left">{{'lang.language' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-2-col">
-                                        <mat-form-field>
-                                            <mat-select #langSelect name="langUser"
-                                                [(ngModel)]="this.preferenceInfo.lang">
-                                                <mat-option *ngFor="let lang of this.profileInfo['availableLanguages']"
-                                                    [value]="lang">{{'lang.'+lang | translate }}</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="form-2-col" style="text-align: justify;font-size: 12px;">
-
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div class="input-row">
-                            <fieldset>
-                                <legend align="left">{{'lang.annotationMode' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-2-col">
-                                        <mat-form-field>
-                                            <mat-select name="writingMode"
-                                                [(ngModel)]="this.preferenceInfo.writingMode">
-                                                <mat-option value="direct">{{'lang.free' | translate}}</mat-option>
-                                                <mat-option value="stylus">{{'lang.appleStylus' | translate}} <i
-                                                        class="fab fa-apple"></i>
-                                                </mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div *ngIf="this.preferenceInfo.writingMode == 'stylus'" class="form-2-col"
-                                        style="text-align: justify;font-size: 12px;"
-                                        [innerHTML]="'lang.freeModeInfo' | translate">
-                                    </div>
-                                    <div *ngIf="this.preferenceInfo.writingMode == 'direct'" class="form-2-col"
-                                        style="text-align: justify;font-size: 12px;"
-                                        [innerHTML]="'lang.standardModeInfo' | translate">
-                                    </div>
-                                </div>
-
-                            </fieldset>
-                        </div>
-                        <div class="input-row">
-                            <fieldset>
-                                <legend align="left">{{'lang.stylusWidh' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-2-col">
-                                        <mat-form-field>
-                                            <mat-select name="writingSize" [(ngModel)]="this.preferenceInfo.writingSize"
-                                                (selectionChange)="drawSample();">
-                                                <mat-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">
-                                                    {{i+1}}</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="form-2-col">
-                                        <canvas id="sampleNote" width="150" height="150"></canvas>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                        <div class="input-row">
-                            <fieldset style="display:table;">
-                                <legend align="left">{{'lang.defaultColor' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-2-col">
-                                        <mat-form-field>
-                                            <mat-select name="writingColor"
-                                                [(ngModel)]="this.preferenceInfo.writingColor">
-                                                <mat-option style="color:#000000" value="#000000">
-                                                    {{'lang.black' | translate}}</mat-option>
-                                                <mat-option style="color:#1a75ff" value="#1a75ff">
-                                                    {{'lang.blue' | translate}}</mat-option>
-                                                <mat-option style="color:#FF0000" value="#FF0000">
-                                                    {{'lang.red' | translate}}</mat-option>
-                                            </mat-select>
-                                        </mat-form-field>
-                                    </div>
-                                    <div class="form-2-col">
-                                        <div style="height:50px;width:100px;margin:auto;"
-                                            [style.backgroundColor]="this.preferenceInfo.writingColor">
-                                        </div>
-                                    </div>
-                                </div>
-                            </fieldset>
-                        </div>
-                    </div>
-                </mat-tab>
-                <mat-tab label="{{'lang.substitution' | translate}}">
-                    <div class="profile-content">
-                        <div class="input-row">
-                            <fieldset>
-                                <legend align="left">{{'lang.substitute' | translate}}</legend>
-                                <div class="form-container">
-                                    <div class="form-col">
-                                        <mat-form-field class="selectedSubstitute"
-                                            *ngIf="authService.user.substitute !== null">
-                                            <input matInput [value]="authService.user.substituteUser" readonly>
-                                            <button matSuffix mat-icon-button type="button" (tap)="deleteSubstitute()"
-                                                color="warn" title="{{'lang.deleteSubstitution' | translate}}">
-                                                <mat-icon fontSet="fas" fontIcon="fa-times fa-2x"></mat-icon>
-                                            </button>
-                                        </mat-form-field>
-                                        <plugin-autocomplete *ngIf="authService.user.substitute === null"
-                                            [labelPlaceholder]="'lang.chooseSubstitute' | translate"
-                                            [routeDatas]="['/rest/autocomplete/users']"
-                                            [targetSearchKey]="['lastname', 'firstname']" [subInfoKey]="'email'"
-                                            (triggerEvent)="selectSubstitute($event)"
-                                            [excludeClause]="[{id:profileInfo.id}, {substitute: true}]">
-                                        </plugin-autocomplete>
-                                    </div>
-                                </div>
-                                <br/>
-                                <fieldset *ngIf="authService.user.substitute != null && signaturesService.signaturesList.length > 0">
-                                    <legend align="left">{{'lang.signSubstituted' | translate}} :</legend>
-                                    <ng-container>
-                                        <button type="button" class="signListButton" mat-stroked-button *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)" [class.selected]="signature.substituted">
-                                            <img style="width: 190px;" [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"/>
-                                        </button>
-                                    </ng-container>
-                                </fieldset>
-                            </fieldset>
-                        </div>
-                    </div>
-                </mat-tab>
-            </mat-tab-group>
-            <span class="actions">
-                <button class="validate" mat-button color="primary" type="submit"
-                    [disabled]="allowValidate() || !profileForm.form.valid">{{
-                            msgButton | translate}}</button>
-                <button *ngIf="signaturesService.mobileMode" class="cancel" mat-icon-button type="button"
-                    (tap)="closeProfile();">
-                    <mat-icon fontSet="fas" fontIcon="fa-arrow-left fa-2x"></mat-icon>
-                </button>
-            </span>
-        </form>
-    </div>
-</div>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-title>{{'lang.myProfil' | translate}}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismissModal()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-header>
+    <ion-toolbar>
+        <ion-segment [value]="currentTool" (ionChange)="initTab($event.detail.value)">
+            <ion-segment-button value="info">
+                <ion-label>{{'lang.informations' | translate}}</ion-label>
+                <ion-icon name="information-circle"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="pref">
+                <ion-label>{{'lang.preferences' | translate}}</ion-label>
+                <ion-icon name="brush-outline"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="deleg">
+                <ion-label>{{'lang.substitute' | translate}}</ion-label>
+                <ion-icon name="hand-left-outline"></ion-icon>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+<form (ngSubmit)="submitProfile()" style="display: contents;" #profileForm="ngForm">
+    <ion-content>
+        <ng-container *ngIf="currentTool === 'info'">
+            <ion-list lines="full" class="ion-no-margin">
+                <ion-item>
+                    <ion-avatar slot="start" style="cursor: pointer;" (click)="uploadFile.click();">
+                        <img [src]="avatarInfo.picture">
+                      </ion-avatar>
+                    <ion-label color="secondary" position="floating">{{'lang.login' | translate}}</ion-label>
+                    <ion-input name="login" [(ngModel)]="profileInfo.login" readonly required></ion-input>
+                    <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
+                </ion-item>
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{'lang.email' | translate}}</ion-label>
+                    <ion-input name="email" [(ngModel)]="profileInfo.email"
+                        pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{'lang.firstname' | translate}}</ion-label>
+                    <ion-input name="firstname" [(ngModel)]="profileInfo.firstname" required></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}}</ion-label>
+                    <ion-input name="lastname" [(ngModel)]="profileInfo.lastname" required></ion-input>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="secondary" position="stacked">Changer de mot passe</ion-label>
+                    <ion-input name="currentPassword" [(ngModel)]="password.currentPassword"
+                        placeholder="{{'lang.currentPassword' | translate}}"
+                        [type]="hideCurrentPassword ? 'password' : 'text'"></ion-input>
+                    <ion-button class="showpassButton" slot="end" color="light"
+                        (click)="hideCurrentPassword = !hideCurrentPassword">
+                        <ion-icon slot="icon-only" color="primary"
+                            [name]="hideCurrentPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                    </ion-button>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="secondary" position="stacked">{{'lang.newPassword' | translate}}</ion-label>
+                    <ion-input name="newPassword" [(ngModel)]="password.newPassword"
+                        placeholder="{{'lang.newPassword' | translate}}" [type]="hideNewPassword ? 'password' : 'text'"
+                        (keyup)="checkPasswordValidity(password.newPassword)"></ion-input>
+                    <ion-button class="showpassButton" slot="end" color="light"
+                        (click)="hideNewPassword = !hideNewPassword">
+                        <ion-icon slot="icon-only" color="primary"
+                            [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                    </ion-button>
+                </ion-item>
+                <ion-item>
+                    <ion-label color="secondary" position="stacked">{{'lang.passwordConfirmation' | translate}}
+                    </ion-label>
+                    <ion-input name="passwordConfirmation" [(ngModel)]="password.passwordConfirmation"
+                        placeholder="{{'lang.passwordConfirmation' | translate}}"
+                        [type]="hideNewPasswordConfirm ? 'password' : 'text'"></ion-input>
+                    <ion-button class="showpassButton" slot="end" color="light"
+                        (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm">
+                        <ion-icon slot="icon-only" color="primary"
+                            [name]="hideNewPasswordConfirm ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                    </ion-button>
+                </ion-item>
+                <ion-item lines="none">
+                    <ion-note color="success"
+                        *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">
+                        {{'lang.samePassword' | translate}}</ion-note>
+                    <ion-note color="danger" *ngIf="password.passwordConfirmation !== password.newPassword">
+                        {{'lang.passwordNotMatch' | translate}}</ion-note>
+                </ion-item>
+            </ion-list>
+        </ng-container>
+        <ng-container *ngIf="currentTool === 'pref'">
+            <ion-list lines="full" class="ion-no-margin">
+                <ion-item>
+                    <ion-label>{{'lang.receiveNotif' | translate}}</ion-label>
+                    <ion-toggle slot="start" [checked]="preferenceInfo.notifications"
+                        (ionChange)="preferenceInfo.notifications=!preferenceInfo.notifications"></ion-toggle>
+                </ion-item>
+                <ion-list>
+                    <ion-item>
+                        <ion-label position="floating" color="secondary">{{'lang.language' | translate}}</ion-label>
+                        <ion-select name="langUser" [(ngModel)]="preferenceInfo.lang">
+                            <ion-select-option *ngFor="let lang of this.profileInfo['availableLanguages']"
+                                [value]="lang">{{'lang.'+lang | translate }}</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                </ion-list>
+                <ion-list>
+                    <ion-item>
+                        <ion-label position="floating" color="secondary">{{'lang.annotationMode' | translate}}
+                        </ion-label>
+                        <ion-select name="writingMode" [(ngModel)]="this.preferenceInfo.writingMode">
+                            <ion-select-option value="direct">{{'lang.free' | translate}}</ion-select-option>
+                            <ion-select-option value="stylus">{{'lang.appleStylus' | translate}} <i
+                                    class="fab fa-apple"></i></ion-select-option>
+                        </ion-select>
+                        <ion-note *ngIf="this.preferenceInfo.writingMode === 'stylus'"
+                            [innerHTML]="'lang.freeModeInfo' | translate"></ion-note>
+                        <ion-note *ngIf="this.preferenceInfo.writingMode === 'direct'"
+                            [innerHTML]="'lang.standardModeInfo' | translate"></ion-note>
+                    </ion-item>
+                </ion-list>
+                <ion-list>
+                    <ion-item>
+                        <ion-label position="floating" color="secondary">{{'lang.stylusWidh' | translate}}</ion-label>
+                        <ion-select name="writingSize" [(ngModel)]="this.preferenceInfo.writingSize"
+                            (ionChange)="drawSample()">
+                            <ion-select-option *ngFor='let in of counter(10) ;let i = index' [value]="i+1">{{i+1}}
+                            </ion-select-option>
+                        </ion-select>
+                        <ion-note slot="end"><canvas id="sampleNote" width="100" height="100"></canvas></ion-note>
+                    </ion-item>
+                </ion-list>
+                <ion-list>
+                    <ion-item>
+                        <ion-label position="floating" color="secondary">{{'lang.defaultColor' | translate}}</ion-label>
+                        <ion-select name="writingColor" [(ngModel)]="preferenceInfo.writingColor">
+                            <ion-select-option value="#000000">{{'lang.black' | translate}}</ion-select-option>
+                            <ion-select-option value="#1a75ff">{{'lang.blue' | translate}}</ion-select-option>
+                            <ion-select-option value="#FF0000">{{'lang.red' | translate}}</ion-select-option>
+                        </ion-select>
+                        <ion-note slot="end">
+                            <div style="height: 25px;width: 25px;border-radius: 20px;"
+                                [style.backgroundColor]="this.preferenceInfo.writingColor">
+                            </div>
+                        </ion-note>
+                    </ion-item>
+                </ion-list>
+            </ion-list>
+        </ng-container>
+        <ng-container *ngIf="currentTool === 'deleg'">
+            <ion-list *ngIf="authService.user.substitute !== null">
+                <ion-item>
+                    <ion-input readonly [value]="authService.user.substituteUser"></ion-input>
+                    <ion-button slot="end" color="danger" (click)="deleteSubstitute()">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </ion-button>
+                </ion-item>
+            </ion-list>
+            <ion-list *ngIf="authService.user.substitute === null">
+                <ion-item>
+                    <ion-searchbar [placeholder]="'lang.chooseSubstitute' | translate" (ionChange)="test($event)"></ion-searchbar>
+                </ion-item>
+            </ion-list>
+            <ion-list *ngIf="authService.user.substitute === null">
+                <ion-item *ngFor="let user of userList">
+                    <ion-checkbox color="primary" slot="start" [value]="user" (ionChange)="selectSubstitute($event.detail.value)"></ion-checkbox>
+                    <ion-label>{{ user.firstname }} {{ user.lastname }}</ion-label>
+                    <ion-note slot="end">{{ user.email }}</ion-note>
+                </ion-item>
+            </ion-list>
+            <ng-container *ngIf="authService.user.substitute != null && signaturesService.signaturesList.length > 0">
+                <ion-item lines="none">
+                    <ion-label color="secondary">
+                        {{'lang.signSubstituted' | translate}} :
+                    </ion-label>
+                </ion-item>
+                <div style="display: grid;grid-template-columns: repeat(2, 1fr);">
+                    <button type="button" class="signListButton" mat-stroked-button
+                        *ngFor="let signature of signaturesService.signaturesList; let i=index" (click)="toggleSignature(i)"
+                        [class.selected]="signature.substituted">
+                        <img style="width: 190px;"
+                            [src]="sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)" />
+                    </button>
+                </div>
+            </ng-container>
+        </ng-container>
+    </ion-content>
+</form>
+<ion-footer class="ion-no-border" *ngIf="['info','pref'].indexOf(currentTool) > -1">
+    <ion-toolbar>
+        <ion-buttons class="ion-justify-content-center">
+            <ion-button type="submit" color="primary" (click)="submitProfile()"
+                [disabled]="allowValidate() || !profileForm.form.valid">
+                <ion-label>{{'lang.save' | translate}}</ion-label>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

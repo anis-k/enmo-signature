@@ -1,4 +1,42 @@
-<div class="panel-container" *ngIf="!loading">
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button>
+                <ion-icon slot="icon-only" name="information-circle"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">{{'lang.informations' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list lines="full" class="ion-no-margin">
+        <ion-item [title]="mainDocument.sender">
+            <ion-label color="secondary" position="floating">{{'lang.emittedBy' | translate}}</ion-label>
+            <ion-input [value]="mainDocument.sender" readonly></ion-input>
+        </ion-item>
+        <ion-item *ngIf="mainDocument.description != null" [title]="mainDocument.description">
+            <ion-label color="secondary" position="floating">{{'lang.description' | translate}}</ion-label>
+            <ion-input [value]="mainDocument.description" readonly></ion-input>
+        </ion-item>
+        <ion-item *ngIf="mainDocument.deadline != null" [title]="mainDocument.deadline">
+            <ion-label color="secondary" position="floating">{{'lang.processingDeadline' | translate}}</ion-label>
+            <ion-input [value]="mainDocument.deadline" readonly></ion-input>
+        </ion-item>
+        <ion-item [title]="mainDocument.reference">
+            <ion-label color="secondary" position="floating">{{'lang.reference' | translate}}</ion-label>
+            <ion-input [value]="mainDocument.reference" readonly></ion-input>
+        </ion-item>
+        <ion-item [title]="mainDocument.title">
+            <ion-label color="secondary" position="floating">{{'lang.subject' | translate}}</ion-label>
+            <ion-input [value]="mainDocument.title" readonly></ion-input>
+        </ion-item>
+        <ion-item *ngFor="let data of mainDocument.metadata;">
+            <ion-label color="secondary" position="floating">{{data.value | translate}}</ion-label>
+            <ion-input [value]="data.value" readonly></ion-input>
+        </ion-item>
+    </ion-list>
+</ion-content>
+<!--<div class="panel-container" *ngIf="!loading">
     <div class="panel-header">
         <button *ngIf="signaturesService.mobileMode" class="closePanel" mat-icon-button type="button" (tap)="snavRightComponent.close();">
             <mat-icon fontSet="fas" fontIcon="fa-arrow-right fa-2x"></mat-icon>
@@ -57,4 +95,4 @@
             </mat-list-item>
         </mat-list>
     </div>
-</div>
+</div>-->

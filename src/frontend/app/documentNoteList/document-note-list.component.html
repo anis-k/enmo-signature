@@ -1,5 +1,6 @@
 <ng-container *ngFor="let note of this.signaturesService.notesContent[this.signaturesService.currentPage];let i = index;">
-    <div style="top:0;left:0;position: absolute;" [ngClass]="{
+    <div style="top:0;left:0;position: absolute;" [style.width.px]="signaturesService.workingAreaWidth"
+    [style.height.px]="signaturesService.workingAreaHeight" [ngClass]="{
       'pdf-page-canvas':!signaturesService.renderingDoc,
       'pdf-page-canvas-loading-doc':signaturesService.renderingDoc
     }">

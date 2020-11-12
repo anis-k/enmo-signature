@@ -50,13 +50,15 @@ jQuery(document).ready(function (e) {
         var getMousePosition = function (canvas, evt) {
             var touch= {};
 			if(evt.touches === undefined){
-                touch = { clientX : evt.clientX, clientY : evt.clientY };
+                touch = { clientX : evt.pageX - jQuery('#myCanvas')[0].getBoundingClientRect().left, clientY : evt.pageY - jQuery('#myCanvas')[0].getBoundingClientRect().top };
             } else {
-                touch = evt.touches[0];
+                // touch = evt.touches[0];
+                touch = { clientX : evt.touches[0].pageX - jQuery('#myCanvas')[0].getBoundingClientRect().left, clientY : evt.touches[0].pageY - jQuery('#myCanvas')[0].getBoundingClientRect().top };
+
             }
             return {
-                x: touch.clientX - params.fixWidth,
-                y: touch.clientY - params.fixHeight
+                x: touch.clientX,
+                y: touch.clientY
             };
         }
 
