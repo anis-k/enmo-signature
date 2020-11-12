@@ -238,3 +238,26 @@ CREATE TABLE workflows
     CONSTRAINT workflow_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS workflow_templates;
+CREATE TABLE workflow_templates
+(
+    id SERIAL NOT NULL,
+    title text NOT NULL,
+    owner INTEGER NOT NULL,
+    CONSTRAINT workflow_templates_pkey PRIMARY KEY (id)
+)
+WITH (OIDS=FALSE);
+
+DROP TABLE IF EXISTS workflow_templates_items;
+CREATE TABLE workflow_templates_items
+(
+    id SERIAL NOT NULL,
+    workflow_template_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    mode CHARACTER VARYING(64) NOT NULL,
+    signature_mode CHARACTER VARYING(64) NOT NULL,
+    sequence INTEGER NOT NULL,
+    CONSTRAINT workflow_templates_items_pkey PRIMARY KEY (id)
+)
+WITH (OIDS=FALSE);

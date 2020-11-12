@@ -8,6 +8,7 @@
             <file>test/unitTests/app/configuration/ConfigurationControllerTest.php</file>
             <file>test/unitTests/app/document/DocumentControllerTest.php</file>
             <file>test/unitTests/app/group/GroupControllerTest.php</file>
+            <file>test/unitTests/app/workflow/WorkflowTemplateControllerTest.php</file>
             <file>test/unitTests/app/history/HistoryControllerTest.php</file>
         </testsuite>
     </testsuites>

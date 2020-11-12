@@ -35,19 +35,10 @@ INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_documents
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_email_configuration');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_connections');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'manage_groups');
+INSERT INTO groups_privileges (group_id, privilege) VALUES (1, 'indexation');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_users');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_documents');
 INSERT INTO groups_privileges (group_id, privilege) VALUES (2, 'manage_groups');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (3, 'manage_users');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (3, 'manage_documents');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (3, 'manage_email_configuration');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (3, 'manage_connections');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (3, 'manage_groups');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (4, 'manage_users');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (4, 'manage_documents');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (4, 'manage_email_configuration');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (4, 'manage_connections');
-INSERT INTO groups_privileges (group_id, privilege) VALUES (4, 'manage_groups');
 
 
 TRUNCATE TABLE users_groups;

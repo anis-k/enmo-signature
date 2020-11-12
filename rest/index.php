@@ -82,6 +82,9 @@ $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentCo
 $app->get('/documents/{id}/workflow', \Workflow\controllers\WorkflowController::class . ':getByDocumentId');
 $app->get('/documents/{id}/thumbnails/{page}', \Document\controllers\DocumentController::class . ':getThumbnailContent');
 
+//Emails
+$app->post('/emails', \Email\controllers\EmailController::class . ':send');
+
 //Languages
 $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
 
@@ -122,7 +125,10 @@ $app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\Signature
 $app->put('/users/{id}/externalSignatures', \User\controllers\SignatureController::class . ':updateExternalSignatures');
 $app->patch('/users/{id}/signatures/{signatureId}/substituted', \User\controllers\SignatureController::class . ':updateSubstituted');
 
-//Emails
-$app->post('/emails', \Email\controllers\EmailController::class . ':send');
+//WorkflowTemplates
+$app->post('/workflowTemplates', \Workflow\controllers\WorkflowTemplateController::class . ':create');
+$app->get('/workflowTemplates', \Workflow\controllers\WorkflowTemplateController::class . ':get');
+$app->get('/workflowTemplates/{id}', \Workflow\controllers\WorkflowTemplateController::class . ':getById');
+$app->delete('/workflowTemplates/{id}', \Workflow\controllers\WorkflowTemplateController::class . ':delete');
 
 $app->run();
