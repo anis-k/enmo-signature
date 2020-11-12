@@ -304,6 +304,8 @@
 		"passwordValid": "Mot de passe conforme",
 		"wrongCurrentPassword": "Le mot de passe actuel n'est pas correct",
 		"alreadyUsedPassword": "Le mot de passe a déjà été utilisé",
-		"homePage": "Page d'accueil"
+		"homePage": "Page d'accueil",
+		"newDocumentToVisa": "Nouveau(x) document(s) à viser / signer",
+		"searchUser": "Rechercher un utilisateur"
 	}
 }

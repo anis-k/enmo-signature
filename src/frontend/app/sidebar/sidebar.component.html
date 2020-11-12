@@ -20,6 +20,11 @@
                 <ion-icon slot="icon-only" name="home"></ion-icon>
             </ion-button>
         </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="openIndexation()" [title]="'Importer un document'">
+                <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-avatar class="avatar-user" (click)="openProfile()">

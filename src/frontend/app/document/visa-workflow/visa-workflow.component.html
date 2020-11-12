@@ -8,22 +8,36 @@
         <ion-title class="ion-text-center">{{'lang.circuit' | translate}}</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content>
-    <ion-list>
-        <ion-item *ngFor="let diffusion of visaWorkflow;let i=index" [class.current]="diffusion.current">
-            <ion-avatar slot="start" class="avatar-user">
+<ion-content (click)="resetVisaUsersList();">
+    <ng-container *ngIf="editMode">
+        <ion-item lines="none">
+            <ion-searchbar #searchInput [(ngModel)]="visaUsersSearchVal" [placeholder]="'lang.searchUser' | translate" (ionChange)="getVisaUsers($event)"></ion-searchbar>
+        </ion-item>
+        <ion-list *ngIf="visaUsersList.length > 0" style="position: absolute;z-index: 1;width: 100%;box-shadow: 0 4px 2px -2px gray;">
+            <ion-item *ngFor="let user of visaUsersList">
+                <ion-checkbox color="primary" slot="start" [value]="user" (ionChange)="addUser($event.detail.value, searchInput)"></ion-checkbox>
+                <ion-label>{{ user.firstname }} {{ user.lastname }}</ion-label>
+                <ion-note slot="end">{{ user.email }}</ion-note>
+            </ion-item>
+        </ion-list>
+    </ng-container>
+    <ion-list *ngIf="visaWorkflow.length === 0">
+        <ion-item lines="none">
+            <ion-label color="medium">Aucune personne dans le circuit</ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list dnd-sortable-container [dropZones]="['boxers-zone']" [sortableData]="visaWorkflow">
+        <ion-item class="no-ripple" *ngFor="let diffusion of visaWorkflow;let i=index" dnd-sortable [sortableIndex]="i">
+            <ion-avatar slot="start" class="avatar-user" style="cursor: grab;" (click)="$event.stopPropagation();">
                 <img [src]="diffusion.userPicture">
             </ion-avatar>
-            <ion-label>
-                <p class="secondary" *ngIf="diffusion.current && diffusion.userId !== authService.user.id">{{'lang.substituteMsg' | translate}}</p>
-                <h1 class="primary" *ngIf="diffusion.userDisplay != ''">{{diffusion.userDisplay}}</h1>
-                <h1 class="danger" *ngIf="diffusion.userDisplay == ''">{{'lang.userDeleted' | translate}}</h1>
-                <p *ngIf="diffusion.processDate == null && diffusion.current">{{'lang.inProgress' | translate}}</p>
-                <p *ngIf="diffusion.processDate == null && !diffusion.current">{{'lang.waiting' | translate}}</p>
-                <p class="success" *ngIf="diffusion.processDate != null">{{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
-                    {{diffusion.processDate}}</p>
-            </ion-label>
-            <ion-note slot="end">{{'lang.'+diffusion.mode+'User' | translate}}</ion-note>
+            <ion-label>{{diffusion.userDisplay}}</ion-label>
+            <ion-select [value]="diffusion.mode" interface="popover">
+                <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">{{mode}}</ion-select-option>
+            </ion-select>
+            <ion-button fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
+                <ion-icon slot="icon-only"  name="trash-outline"></ion-icon>
+            </ion-button>
         </ion-item>
     </ion-list>
 </ion-content>

@@ -93,6 +93,10 @@ export class SidebarComponent implements OnInit {
         this.router.navigate(['/home']);
     }
 
+    openIndexation() {
+        this.router.navigate(['/indexation']);
+    }
+
     search() {
         this.searchMode = true;
         this.signaturesService.mode = '';
