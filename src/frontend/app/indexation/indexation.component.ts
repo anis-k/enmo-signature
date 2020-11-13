@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { MenuController } from '@ionic/angular';
+import { LoadingController, MenuController } from '@ionic/angular';
 import { of } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.component';
@@ -30,6 +30,7 @@ export class IndexationComponent implements OnInit {
         public viewContainerRef: ViewContainerRef,
         public notificationService: NotificationService,
         public authService: AuthService,
+        public loadingController: LoadingController,
     ) { }
 
     ngOnInit(): void {
@@ -47,17 +48,23 @@ export class IndexationComponent implements OnInit {
         this.signaturesService.detachTemplate('rightContent');
     }
 
-    async onSubmit() {
+    onSubmit() {
         if (this.isValid()) {
-            const objTosend = this.formatData();
-            for (let index = 0; index < objTosend.length; index++) {
-                console.log('save..');
-                await this.saveDocument(objTosend[index], index);
-            }
-            if (this.errors.length === 0) {
-                this.notificationService.success('Document(s) importé(s)');
-                this.router.navigate(['/home']);
-            }
+            this.loadingController.create({
+                message: 'Enregistrement ...',
+                spinner: 'dots'
+            }).then(async (load: HTMLIonLoadingElement) => {
+                load.present();
+                const objTosend = this.formatData();
+                for (let index = 0; index < objTosend.length; index++) {
+                    await this.saveDocument(objTosend[index], index);
+                }
+                load.dismiss();
+                if (this.errors.length === 0) {
+                    this.notificationService.success('Document(s) importé(s)');
+                    this.router.navigate(['/home']);
+                }
+            });
         }
     }
 
