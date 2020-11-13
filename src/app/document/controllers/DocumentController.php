@@ -30,6 +30,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\ValidatorModel;
+use User\controllers\SignatureController;
 use User\models\UserModel;
 use History\controllers\HistoryController;
 use Workflow\models\WorkflowModel;
@@ -385,12 +386,15 @@ class DocumentController
             ]);
 
             foreach ($body['workflow'] as $key => $workflow) {
+                if (!SignatureController::isValidSignatureMode(['mode' => $workflow['signatureMode']])) {
+                    $workflow['signatureMode'] = 'stamp';
+                }
                 WorkflowModel::create([
                     'userId'            => $workflow['userId'],
                     'mainDocumentId'    => $id,
                     'mode'              => $workflow['mode'],
                     'order'             => $key + 1,
-                    'signatureMode'     => $workflow['signatureMode'] ?? 'stamp'
+                    'signatureMode'     => $workflow['signatureMode']
                 ]);
             }
 

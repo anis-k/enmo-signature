@@ -42,7 +42,7 @@ class AutoCompleteController
         ]);
 
         $users = UserModel::get([
-            'select'    => ['id', 'firstname', 'lastname', 'email', 'substitute'],
+            'select'    => ['id', 'firstname', 'lastname', 'email', 'substitute', 'signature_modes'],
             'where'     => $requestData['where'],
             'data'      => $requestData['data'],
             'orderBy'   => ['lastname'],
@@ -51,6 +51,8 @@ class AutoCompleteController
 
         foreach ($users as $key => $user) {
             $users[$key]['substitute'] = !empty($user['substitute']);
+            $users[$key]['signatureModes'] = json_decode($user['signature_modes'], true);
+            unset($user[$key]['signature_modes']);
         }
         
         return $response->withJson($users);

@@ -80,7 +80,7 @@ class UserModel
     public static function create(array $args)
     {
         ValidatorModel::notEmpty($args, ['login', 'email', 'firstname', 'lastname', 'picture']);
-        ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode']);
+        ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode', 'signatureModes']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'users_id_seq']);
 
@@ -95,7 +95,8 @@ class UserModel
                 'lastname'                      => $args['lastname'],
                 '"isRest"'                      => empty($args['isRest']) ? 'false' : 'true',
                 'picture'                       => $args['picture'],
-                'password_modification_date'    => 'CURRENT_TIMESTAMP'
+                'password_modification_date'    => 'CURRENT_TIMESTAMP',
+                'signature_mode'                => $args['signatureModes']
             ]
         ]);
 

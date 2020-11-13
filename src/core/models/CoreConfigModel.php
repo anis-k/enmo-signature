@@ -128,4 +128,23 @@ class CoreConfigModel
 
         return $uniqueId;
     }
+
+    public static function getSignatureModes()
+    {
+        $modes = [];
+
+        $config = CoreConfigModel::getConfig();
+
+        if ($config) {
+            if (!empty($config->signatureModes->mode)) {
+                foreach ($config->signatureModes->mode as $mode) {
+                    $modes[] = ['id' => (string)$mode->id, 'color' => (string)$mode->color];
+                }
+            }
+        }
+
+        $modes[] = ['id' => 'stamp', 'color' => '#808080'];
+
+        return $modes;
+    }
 }

@@ -48,3 +48,6 @@ DO $$ BEGIN
         ALTER TABLE workflows ALTER COLUMN signature_mode set not null;
     END IF;
 END$$;
+
+ALTER TABLE users DROP COLUMN IF EXISTS signature_modes;
+ALTER TABLE users ADD COLUMN signature_modes jsonb DEFAULT '["stamp"]';

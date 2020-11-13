@@ -135,6 +135,23 @@ class UserController
             $body['picture'] = 'data:image/png;base64,' . $body['picture'];
         }
 
+        if (!empty($body['signatureModes'])) {
+            if (!Validator::arrayType()->validate($body['signatureModes'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
+            } else {
+                $modes = [];
+                foreach ($body['signatureModes'] as $signatureMode) {
+                    if (SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
+                        $modes[] = $signatureMode;
+                    }
+                }
+                $body['signatureModes'] = $modes;
+            }
+        } else {
+            $body['signatureModes'] = [];
+        }
+        $body['signatureModes'] = json_encode($body['signatureModes']);
+
         $id = UserModel::create($body);
 
         HistoryController::add([
@@ -172,10 +189,26 @@ class UserController
         }
 
         $set = [
-            'firstname'     => $body['firstname'],
-            'lastname'      => $body['lastname'],
-            'email'         => $body['email']
+            'firstname'       => $body['firstname'],
+            'lastname'        => $body['lastname'],
+            'email'           => $body['email'],
+            'signature_modes' => []
         ];
+
+       if (!empty($body['signatureModes'])) {
+            if (!empty($body['signatureModes']) && !Validator::arrayType()->validate($body['signatureModes'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
+            } else {
+                $modes = [];
+                foreach ($body['signatureModes'] as $signatureMode) {
+                    if (SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
+                        $modes[] = $signatureMode;
+                    }
+                }
+                $set['signature_modes'] = $modes;
+            }
+        }
+        $set['signature_modes'] = json_encode($set['signature_modes']);
 
         UserModel::update([
             'set'   => $set,
@@ -606,10 +639,12 @@ class UserController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', '"isRest"'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', '"isRest"', 'signature_modes'], 'id' => $args['id']]);
         if (empty($user)) {
             return [];
         }
+        $user['signatureModes'] = json_decode($user['signature_modes'], true);
+        unset($user['signature_modes']);
 
         if (empty($user['picture'])) {
             $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));

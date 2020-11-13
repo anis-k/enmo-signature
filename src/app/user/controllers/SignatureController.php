@@ -21,6 +21,8 @@ use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\CoreConfigModel;
+use SrcCore\models\ValidatorModel;
 use User\models\SignatureModel;
 use User\models\UserModel;
 
@@ -229,5 +231,30 @@ class SignatureController
         ]);
 
         return $response->withStatus(204);
+    }
+
+    public function getSignatureModes(Request $request, Response $response)
+    {
+        $modes = CoreConfigModel::getSignatureModes();
+
+        return $response->withJson($modes);
+    }
+
+    public static function isValidSignatureMode(array $args)
+    {
+        ValidatorModel::stringType($args, ['mode']);
+
+        if (empty($args['mode'])) {
+            return false;
+        }
+
+        $validModes = CoreConfigModel::getSignatureModes();
+        foreach ($validModes as $validMode) {
+            if ($validMode['id'] == $args['mode']) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

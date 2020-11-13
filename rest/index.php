@@ -124,6 +124,7 @@ $app->post('/users/{id}/signatures', \User\controllers\SignatureController::clas
 $app->delete('/users/{id}/signatures/{signatureId}', \User\controllers\SignatureController::class . ':delete');
 $app->put('/users/{id}/externalSignatures', \User\controllers\SignatureController::class . ':updateExternalSignatures');
 $app->patch('/users/{id}/signatures/{signatureId}/substituted', \User\controllers\SignatureController::class . ':updateSubstituted');
+$app->get('/signatureModes', \User\controllers\SignatureController::class . ':getSignatureModes');
 
 //WorkflowTemplates
 $app->post('/workflowTemplates', \Workflow\controllers\WorkflowTemplateController::class . ':create');
