@@ -76,9 +76,10 @@ class AttachmentController
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['encodedDocument', 'title', 'mainDocumentId', 'isZipped']);
+        ValidatorModel::notEmpty($args, ['encodedDocument', 'title', 'mainDocumentId']);
         ValidatorModel::stringType($args, ['encodedDocument', 'title', 'reference']);
         ValidatorModel::intVal($args, ['mainDocumentId']);
+        ValidatorModel::boolType($args, ['isZipped']);
 
         if ($args['isZipped']) {
             $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $args['encodedDocument']]);
