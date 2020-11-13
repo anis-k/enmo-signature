@@ -7,9 +7,40 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    bonjour
+    <input type="file" #docToUpload name="files[]" (change)="uploadTrigger($event)" style="display:none;" multiple>
+    <div class="dnd-area" appUploadFileDragDrop (click)="docToUpload.click()" (onFileDropped)="dndUploadFile($event)">
+        Cliquez ici OU Glisser-déposer un fichier
+    </div>
+    <ion-list *ngIf="filesToUpload.length > 0">
+        <ion-list-header>
+            <ion-label color="primary">Document(s) téléversé(s)</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let file of filesToUpload;let i=index">
+            <ion-buttons slot="start">
+                <ion-button fill="clear" slot="icon-only" shape="round" color="primary" [title]="file.mainDocument ? 'Document à signer' : 'Pièce jointe'" (click)="file.mainDocument=!file.mainDocument">
+                    <ion-icon *ngIf="file.mainDocument" slot="icon-only" name="pencil-outline"></ion-icon>
+                    <ion-icon *ngIf="!file.mainDocument" slot="icon-only" name="document-attach-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+            <ion-icon *ngIf="file.type === 'attachment'" color="primary" slot="start" name="document-attach-outline"
+                title="Pièce jointe"></ion-icon>
+            <ion-input placeholder="Nom du fichier" matInput type="text" [(ngModel)]="file.title"></ion-input>
+            <ion-buttons slot="end">
+                <ion-button fill="clear" slot="icon-only" shape="round" color="danger" [title]="'lang.delete' | translate" (click)="deleteFile(i)">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+        </ion-item>
+    </ion-list>
 </ion-content>
+<ion-footer class="ion-no-border">
+    <div class="ion-text-center">
+        <ion-button color="primary" shape="round" size="large" fill="outline" (click)="onSubmit()">
+            <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+        </ion-button>
+    </div>
+</ion-footer>
 <ng-template #rightContent>
-    <app-visa-workflow style="display: contents;" [editMode]="true">
+    <app-visa-workflow #appVisaWorkflow style="display: contents;" [editMode]="true">
     </app-visa-workflow>
 </ng-template>
