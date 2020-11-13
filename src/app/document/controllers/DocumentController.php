@@ -265,7 +265,20 @@ class DocumentController
             'message'       => "{documentViewed} : {$document['title']}"
         ]);
 
-        return $response->withJson(['encodedDocument' => base64_encode(file_get_contents($pathToDocument))]);
+        $fileContent = file_get_contents($pathToDocument);
+        $finfo       = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType    = $finfo->buffer($fileContent);
+        
+        $data = $request->getQueryParams();
+        if (empty($data['mode']) || $data['mode'] == 'base64') {
+            return $response->withJson(['encodedDocument' => base64_encode($fileContent)]);
+        } else {
+            $pathInfo = pathinfo($pathToDocument);
+
+            $response->write($fileContent);
+            $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch.{$pathInfo['extension']}");
+            return $response->withHeader('Content-Type', $mimeType);
+        }
     }
 
     public function create(Request $request, Response $response)
