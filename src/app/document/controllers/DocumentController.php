@@ -311,7 +311,13 @@ class DocumentController
             $body['workflow'][$key]['userId'] = $processingUser['id'];
         }
 
-        $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $body['encodedDocument']]);
+        $isZipped = !isset($body['isZipped']) || $body['isZipped'] ? true : false;
+
+        if ($isZipped) {
+            $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $body['encodedDocument']]);
+        } else {
+            $encodedDocument['encodedDocument'] = $body['encodedDocument'];
+        }
         if (!empty($encodedDocument['errors'])) {
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
@@ -383,12 +389,14 @@ class DocumentController
                     'userId'            => $workflow['userId'],
                     'mainDocumentId'    => $id,
                     'mode'              => $workflow['mode'],
-                    'order'             => $key + 1
+                    'order'             => $key + 1,
+                    'signatureMode'     => $workflow['signatureMode'] ?? 'stamp'
                 ]);
             }
 
             foreach ($body['attachments'] as $key => $value) {
                 $value['mainDocumentId'] = $id;
+                $value['isZipped']       = $isZipped;
                 $attachment = AttachmentController::create($value);
                 if (!empty($attachment['errors'])) {
                     DatabaseModel::rollbackTransaction();

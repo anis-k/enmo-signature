@@ -84,9 +84,9 @@ class WorkflowModel
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['userId', 'mainDocumentId', 'mode', 'order']);
+        ValidatorModel::notEmpty($args, ['userId', 'mainDocumentId', 'mode', 'order', 'signatureMode']);
         ValidatorModel::intVal($args, ['userId', 'mainDocumentId', 'order']);
-        ValidatorModel::stringType($args, ['mode']);
+        ValidatorModel::stringType($args, ['mode', 'signatureMode']);
 
         DatabaseModel::insert([
             'table'         => 'workflows',
@@ -94,6 +94,7 @@ class WorkflowModel
                 'user_id'           => $args['userId'],
                 'main_document_id'  => $args['mainDocumentId'],
                 'mode'              => $args['mode'],
+                'signature_mode'    => $args['signatureMode'],
                 '"order"'           => $args['order']
             ]
         ]);
