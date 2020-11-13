@@ -38,7 +38,7 @@ class WorkflowTemplateItemModel
     {
         ValidatorModel::notEmpty($args, ['workflow_template_id', 'user_id', 'mode', 'signature_mode']);
         ValidatorModel::stringType($args, ['mode', 'signature_mode']);
-        ValidatorModel::intVal($args, ['workflow_template_id', 'user_id', 'sequence']);
+        ValidatorModel::intVal($args, ['workflow_template_id', 'user_id', 'order']);
 
         DatabaseModel::insert([
             'table'         => 'workflow_templates_items',
@@ -47,7 +47,7 @@ class WorkflowTemplateItemModel
                 'user_id'               => $args['user_id'],
                 'mode'                  => $args['mode'],
                 'signature_mode'        => $args['signature_mode'],
-                'sequence'              => $args['sequence']
+                'order'                 => $args['order']
             ]
         ]);
 

@@ -48,7 +48,7 @@ class WorkflowTemplateController
             return $response->withStatus(403)->withJson(['errors' => 'Workflow template out of perimeter']);
         }
 
-        $rawWorkflowTemplatesUsers = WorkflowTemplateItemModel::get(['select' => ['*'], 'where' => ['workflow_template_id = ?'], 'data' => [$args['id']], 'orderBy' => ['sequence']]);
+        $rawWorkflowTemplatesUsers = WorkflowTemplateItemModel::get(['select' => ['*'], 'where' => ['workflow_template_id = ?'], 'data' => [$args['id']], 'orderBy' => ['order']]);
         $workflowTemplatesUsers = [];
         foreach ($rawWorkflowTemplatesUsers as $value) {
             $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $value['user_id']]);
@@ -58,7 +58,7 @@ class WorkflowTemplateController
                 'userLabel'     => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                 'mode'          => $value['mode'],
                 'signatureMode' => $value['signature_mode'],
-                'sequence'      => $value['sequence']
+                'order'         => $value['order']
             ];
         }
 
@@ -93,14 +93,16 @@ class WorkflowTemplateController
             'owner' => $GLOBALS['id']
         ]);
 
-        foreach ($body['items'] as $key => $item) {
+        $i = 1;
+        foreach ($body['items'] as $item) {
             WorkflowTemplateItemModel::create([
                 'workflow_template_id'  => $workflowTemplateId,
                 'user_id'               => $item['userId'],
                 'mode'                  => $item['mode'],
                 'signature_mode'        => $item['signatureMode'],
-                'sequence'              => $key
+                'order'                 => $i
             ]);
+            ++$i;
         }
 
         HistoryController::add([

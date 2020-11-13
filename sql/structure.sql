@@ -258,7 +258,7 @@ CREATE TABLE workflow_templates_items
     user_id INTEGER NOT NULL,
     mode CHARACTER VARYING(64) NOT NULL,
     signature_mode CHARACTER VARYING(64) NOT NULL,
-    sequence INTEGER NOT NULL,
+    "order" INTEGER NOT NULL,
     CONSTRAINT workflow_templates_items_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);

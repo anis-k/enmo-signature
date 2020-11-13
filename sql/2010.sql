@@ -36,7 +36,15 @@ CREATE TABLE workflow_templates_items
     user_id INTEGER NOT NULL,
     mode CHARACTER VARYING(64) NOT NULL,
     signature_mode CHARACTER VARYING(64) NOT NULL,
-    sequence INTEGER NOT NULL,
+    "order" INTEGER NOT NULL,
     CONSTRAINT workflow_templates_items_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
+
+DO $$ BEGIN
+    IF (SELECT count(column_name) from information_schema.columns where table_name = 'workflows' and column_name = 'signature_mode') = 0 THEN
+        ALTER TABLE workflows ADD COLUMN signature_mode CHARACTER VARYING(64);
+        UPDATE workflows SET signature_mode = 'stamp';
+        ALTER TABLE workflows ALTER COLUMN signature_mode set not null;
+    END IF;
+END$$;
