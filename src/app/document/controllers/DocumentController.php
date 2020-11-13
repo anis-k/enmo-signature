@@ -171,7 +171,7 @@ class DocumentController
             }
         }
 
-        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
         $currentFound = false;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
@@ -183,7 +183,8 @@ class DocumentController
                 'userDisplay'   => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                 'mode'          => $value['mode'],
                 'processDate'   => $value['process_date'],
-                'current'       => !$currentFound && empty($value['process_date'])
+                'current'       => !$currentFound && empty($value['process_date']),
+                'signatureMode' => $value['signature_mode']
             ];
             if (empty($value['process_date'])) {
                 $currentFound = true;

@@ -54,12 +54,15 @@ class WorkflowTemplateController
         foreach ($rawWorkflowTemplatesUsers as $value) {
             $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $value['user_id']]);
 
+            $userSignaturesModes = UserModel::getById(['id' => $value['user_id'], 'select' => ['signature_modes']]);
+
             $workflowTemplatesUsers[] = [
-                'userId'        => $value['user_id'],
-                'userLabel'     => UserModel::getLabelledUserById(['id' => $value['user_id']]),
-                'mode'          => $value['mode'],
-                'signatureMode' => $value['signature_mode'],
-                'order'         => $value['order']
+                'userId'             => $value['user_id'],
+                'userLabel'          => UserModel::getLabelledUserById(['id' => $value['user_id']]),
+                'mode'               => $value['mode'],
+                'signatureMode'      => $value['signature_mode'],
+                'order'              => $value['order'],
+                'userSignatureModes' => json_decode($userSignaturesModes['signature_modes'], true)
             ];
         }
 
