@@ -92,6 +92,7 @@ export class IndexationComponent implements OnInit {
             formattedObj.push({
                 title: file.title,
                 encodedDocument: file.content,
+                isZipped: false,
                 sender: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
                 attachments: attachFiles.map((item: any) => {
                     return {

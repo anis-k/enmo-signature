@@ -309,6 +309,9 @@
 		"homePage": "Page d'accueil",
 		"newDocumentToVisa": "Importer de nouveau(x) document(s)",
 		"searchUser": "Rechercher un utilisateur",
-		"signatureModes": "Modes de signature"
+		"signatureModes": "Modes de signature",
+		"documentsToUpload": "Document(s) à téléverser",
+		"chooseDocuments": "Choisir des fichiers (pdf uniquement)",
+		"dndDocuments": "ou glisser-déposer des fichiers"
 	}
 }

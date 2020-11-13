@@ -8,16 +8,25 @@
 </ion-header>
 <ion-content>
     <input type="file" #docToUpload name="files[]" (change)="uploadTrigger($event)" style="display:none;" multiple>
-    <div class="dnd-area" appUploadFileDragDrop (click)="docToUpload.click()" (onFileDropped)="dndUploadFile($event)">
-        Cliquez ici OU Glisser-déposer un fichier
+    <div class="dnd-area" appUploadFileDragDrop (onFileDropped)="dndUploadFile($event)">
+        <ion-button fill="outline" color="medium" size="large" (click)="docToUpload.click()" >
+            {{'lang.chooseDocuments' | translate}}
+        </ion-button>
+        <ion-item lines="none" class="ion-text-center no-background">
+            <ion-label color="medium">
+                {{'lang.dndDocuments' | translate}}
+            </ion-label>
+        </ion-item>
     </div>
     <ion-list *ngIf="filesToUpload.length > 0">
         <ion-list-header>
-            <ion-label color="primary">Document(s) à téléverser</ion-label>
+            <ion-label color="primary">{{'lang.documentsToUpload' | translate}}</ion-label>
         </ion-list-header>
         <ion-item *ngFor="let file of filesToUpload;let i=index">
             <ion-buttons slot="start">
-                <ion-button fill="clear" slot="icon-only" shape="round" color="primary" [title]="file.mainDocument ? 'Document à signer' : 'Pièce jointe'" (click)="file.mainDocument=!file.mainDocument">
+                <ion-button fill="clear" slot="icon-only" shape="round" color="primary"
+                    [title]="file.mainDocument ? 'Document à signer' : 'Pièce jointe'"
+                    (click)="file.mainDocument=!file.mainDocument">
                     <ion-icon *ngIf="file.mainDocument" slot="icon-only" name="pencil-outline"></ion-icon>
                     <ion-icon *ngIf="!file.mainDocument" slot="icon-only" name="document-attach-outline"></ion-icon>
                 </ion-button>
@@ -26,7 +35,8 @@
                 title="Pièce jointe"></ion-icon>
             <ion-input placeholder="Nom du fichier" matInput type="text" [(ngModel)]="file.title"></ion-input>
             <ion-buttons slot="end">
-                <ion-button fill="clear" slot="icon-only" shape="round" color="danger" [title]="'lang.delete' | translate" (click)="deleteFile(i)">
+                <ion-button fill="clear" slot="icon-only" shape="round" color="danger"
+                    [title]="'lang.delete' | translate" (click)="deleteFile(i)">
                     <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
                 </ion-button>
             </ion-buttons>
