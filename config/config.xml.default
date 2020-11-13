@@ -28,11 +28,11 @@
     <!-- Sort by the more secure to the less secure mode -->
         <signatureModes>
             <mode>
-                <id>rgs</id>
+                <id>rgs_2stars</id>
                 <color>#FF0000</color>
             </mode>
             <mode>
-                <id>card</id>
+                <id>inca_card</id>
                 <color>#FFA500</color>
             </mode>
             <mode>

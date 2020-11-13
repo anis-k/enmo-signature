@@ -209,6 +209,7 @@ CREATE TABLE users
   password_modification_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
   failed_authentication INTEGER DEFAULT 0,
   locked_until TIMESTAMP without time zone,
+  signature_modes jsonb DEFAULT '["stamp"]',
   CONSTRAINT users_pkey PRIMARY KEY (id),
   CONSTRAINT users_login_key UNIQUE (login)
 )

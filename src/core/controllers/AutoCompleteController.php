@@ -52,7 +52,7 @@ class AutoCompleteController
         foreach ($users as $key => $user) {
             $users[$key]['substitute'] = !empty($user['substitute']);
             $users[$key]['signatureModes'] = json_decode($user['signature_modes'], true);
-            unset($user[$key]['signature_modes']);
+            unset($users[$key]['signature_modes']);
         }
         
         return $response->withJson($users);
