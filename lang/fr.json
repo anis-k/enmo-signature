@@ -36,6 +36,7 @@
 		"documentRefusedAs"                  : "Document refusé en tant que :",
 		"documentValidateAs"                 : "Document validé en tant que :",
 		"documentViewed"                     : "Document consulté",
+		"documentProofViewed"                : "Faisceau de preuve du document consulté",
 		"email"                              : "Courriel",
 		"emailAdded"                         : "Courriel ajouté",
 		"emailFailed"                        : "L'envoi du courriel a échoué",

@@ -77,6 +77,7 @@ $app->post('/documents', \Document\controllers\DocumentController::class . ':cre
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');
 $app->get('/documents/{id}', \Document\controllers\DocumentController::class . ':getById');
 $app->get('/documents/{id}/content', \Document\controllers\DocumentController::class . ':getContent');
+$app->get('/documents/{id}/proof', \Document\controllers\DigitalSignatureController::class . ':getProofByDocumentId');
 $app->get('/documents/{id}/history', \History\controllers\HistoryController::class . ':getByDocumentId');
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 $app->get('/documents/{id}/workflow', \Workflow\controllers\WorkflowController::class . ':getByDocumentId');

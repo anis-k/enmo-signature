@@ -25,19 +25,27 @@
             <contactInfo>Maarch SAS, société du groupe Archiveco</contactInfo>
         </certInfo>
     </electronicSignature>
+    <docaposteSignature>
+        <enable>false</enable>
+        <url>https://test.contralia.fr:443/Contralia/api/v2</url>
+        <user></user>
+        <password></password>
+        <offerCode></offerCode>
+        <organizationalUnitCode></organizationalUnitCode>
+    </docaposteSignature>
     <!-- Sort by the more secure to the less secure mode -->
-        <signatureModes>
-            <mode>
-                <id>rgs_2stars</id>
-                <color>#FF0000</color>
-            </mode>
-            <mode>
-                <id>inca_card</id>
-                <color>#FFA500</color>
-            </mode>
-            <mode>
-                <id>eidas</id>
-                <color>#00FF00</color>
-            </mode>
-        </signatureModes>
+    <signatureModes>
+        <mode>
+            <id>rgs_2stars</id>
+            <color>#FF0000</color>
+        </mode>
+        <mode>
+            <id>inca_card</id>
+            <color>#FFA500</color>
+        </mode>
+        <mode>
+            <id>eidas</id>
+            <color>#00FF00</color>
+        </mode>
+    </signatureModes>
 </ROOT>

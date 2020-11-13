@@ -36,6 +36,7 @@
 		"documentRefusedAs"                  : "Document refused as a:",
 		"documentValidateAs"                 : "Document validated as:",
 		"documentViewed"                     : "Document viewed",
+		"documentProofViewed"                : "Document proof history viewed",
 		"email"                              : "Email",
 		"emailAdded"                         : "Email added",
 		"emailFailed"                        : "Sending email failed",
