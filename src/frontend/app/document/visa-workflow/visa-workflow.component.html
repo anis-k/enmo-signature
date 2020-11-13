@@ -41,8 +41,10 @@
                 <img [src]="diffusion.userPicture">
             </ion-avatar>
             <ion-label>{{diffusion.userDisplay}}</ion-label>
-            <ion-select [(ngModel)]="diffusion.mode" interface="popover">
-                <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">{{'lang.' + mode + 'User' | translate}}</ion-select-option>
+            <ion-select [(ngModel)]="diffusion.mode" interface="popover" [interfaceOptions]="customPopoverOptions" [style.color]="getRole(diffusion.mode).color">
+                <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">
+                        {{getRole(mode).label}}
+                </ion-select-option>
             </ion-select>
             <ion-button fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
                 <ion-icon slot="icon-only" name="trash-outline"></ion-icon>

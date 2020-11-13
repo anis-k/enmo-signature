@@ -20,6 +20,29 @@ export class VisaWorkflowComponent implements OnInit {
     visaUsersSearchVal: string = '';
     visaUsersList: any = [];
     showVisaUsersList: boolean = false;
+    customPopoverOptions = {
+        header: 'Roles'
+    };
+    roles: any[] = [
+        {
+            id: 'rgs',
+            type: 'sign',
+            label: 'Signataire (RGS**)',
+            color: '#cb4335'
+        },
+        {
+            id: 'stamp',
+            type: 'sign',
+            label: 'Signataire (Griffe)',
+            color: '#f39c12'
+        },
+        {
+            id: 'visa',
+            type: 'visa',
+            label: 'Viseur',
+            color: '#27ae60'
+        },
+    ];
 
     @Input() editMode: boolean = false;
     @Input() visaWorkflow: any = [];
@@ -70,7 +93,7 @@ export class VisaWorkflowComponent implements OnInit {
             'current': false,
             'modes': [
                 'visa',
-                'sign',
+                'stamp',
                 'rgs'
             ]
         };
@@ -85,7 +108,7 @@ export class VisaWorkflowComponent implements OnInit {
     }
 
     getAvatarUser(index: number) {
-        if (this.visaWorkflow[index].userPicture === undefined  && this.visaWorkflow[index].userDisplay !== '') {
+        if (this.visaWorkflow[index].userPicture === undefined && this.visaWorkflow[index].userDisplay !== '') {
             this.http.get('../rest/users/' + this.visaWorkflow[index].userId + '/picture').pipe(
                 tap((data: any) => {
                     this.visaWorkflow[index].userPicture = data.picture;
@@ -119,10 +142,14 @@ export class VisaWorkflowComponent implements OnInit {
                         this.getAvatarUser(index);
                     });
                 }
-        });
+            });
     }
 
     getCurrentWorkflow() {
         return this.visaWorkflow;
+    }
+
+    getRole(id: string) {
+        return this.roles.filter((mode: any) => mode.id === id)[0];
     }
 }

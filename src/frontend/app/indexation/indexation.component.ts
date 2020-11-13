@@ -1,6 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { of } from 'rxjs';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.component';
+import { AuthService } from '../service/auth.service';
 import { NotificationService } from '../service/notification.service';
 import { SignaturesContentService } from '../service/signatures.service';
 
@@ -12,14 +17,19 @@ export class IndexationComponent implements OnInit {
 
     loading: boolean = false;
     filesToUpload: any[] = [];
+    errors: any[] = [];
+
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
 
     constructor(
+        public http: HttpClient,
+        public router: Router,
         private menu: MenuController,
         public signaturesService: SignaturesContentService,
         public viewContainerRef: ViewContainerRef,
         public notificationService: NotificationService,
+        public authService: AuthService,
     ) { }
 
     ngOnInit(): void {
@@ -37,10 +47,61 @@ export class IndexationComponent implements OnInit {
         this.signaturesService.detachTemplate('rightContent');
     }
 
-    onSubmit() {
+    async onSubmit() {
         if (this.isValid()) {
-            console.log('ok');
+            const objTosend = this.formatData();
+            for (let index = 0; index < objTosend.length; index++) {
+                console.log('save..');
+                await this.saveDocument(objTosend[index], index);
+            }
+            if (this.errors.length === 0) {
+                this.notificationService.success('Document(s) importé(s)');
+                this.router.navigate(['/home']);
+            }
         }
+    }
+
+    saveDocument(data: any, index: number) {
+        return new Promise((resolve) => {
+            this.http.post('../rest/documents', data).pipe(
+                tap(() => {
+                }),
+                finalize(() => resolve(true)),
+                catchError((err: any) => {
+                    this.errors.push(data.title);
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        });
+    }
+
+    formatData() {
+        const formattedObj: any[] = [];
+        const signedFiles = this.filesToUpload.filter((item: any) => item.mainDocument);
+        const attachFiles = this.filesToUpload.filter((item: any) => !item.mainDocument);
+
+        signedFiles.forEach((file: any) => {
+            formattedObj.push({
+                title: file.title,
+                encodedDocument: file.content,
+                sender: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
+                attachments: attachFiles.map((item: any) => {
+                    return {
+                        title: item.title,
+                        encodedDocument: item.content
+                    };
+                }),
+                workflow: this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => {
+                    return {
+                        userId: item.userId,
+                        mode: item.mode
+                    };
+                })
+            });
+        });
+
+        return formattedObj;
     }
 
     dndUploadFile(event: any) {
@@ -55,7 +116,7 @@ export class IndexationComponent implements OnInit {
     }
 
     uploadTrigger(fileInput: any) {
-        if (fileInput.target.files && fileInput.target.files[0] /*&& this.isExtensionAllowed(fileInput.target.files[0])*/) {
+        if (fileInput.target.files && fileInput.target.files[0] && this.isExtensionAllowed(fileInput.target.files)) {
             for (let index = 0; index < fileInput.target.files.length; index++) {
                 let file = {
                     title: fileInput.target.files[index].name,
@@ -73,6 +134,16 @@ export class IndexationComponent implements OnInit {
         } else {
             this.loading = false;
         }
+    }
+
+    isExtensionAllowed(files: any[]) {
+        for (let index = 0; index < files.length; index++) {
+            if (files[index].name.toLowerCase().split('.').pop() !== 'pdf') {
+                this.notificationService.error('Seul des fichiers pdf sont autorisés');
+                return false;
+            }
+        }
+        return true;
     }
 
     getBase64Document(buffer: ArrayBuffer) {
