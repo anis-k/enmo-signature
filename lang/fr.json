@@ -247,7 +247,7 @@
 		"manage_groupsAdmin" : "Administrer les groupes",
 		"manage_connectionsAdmin" : "Administrer les connexions",
 		"manage_email_configurationAdmin" : "Administrer le serveur courriel",
-		"manage_documentsAdmin" : "Accéder à tous les documents",
+		"manage_documentsAdmin" : "Accéder à tous les documents et gérer les circuits",
 		"indexationAdmin" : "Enregistrer des documents pour visa/signature",
 		"users" : "Utilisateurs",
 		"linkedUsers" : "Utilisateur(s) associé(s)",

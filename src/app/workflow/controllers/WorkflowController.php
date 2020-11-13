@@ -15,6 +15,7 @@
 namespace Workflow\controllers;
 
 use Document\controllers\DocumentController;
+use Document\models\DocumentModel;
 use Group\controllers\PrivilegeController;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -50,5 +51,61 @@ class WorkflowController
         }
 
         return $response->withJson(['workflow' => $workflow]);
+    }
+
+    public function suspend(Request $request, Response $response, array $args)
+    {
+        $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['id']]);
+        if (empty($document)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        } elseif ($document['typist'] != $GLOBALS['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $workflows = WorkflowModel::get([
+            'select'    => ['id'],
+            'where'     => ['main_document_id = ?', 'status is null'],
+            'data'      => [$args['id']]
+        ]);
+        if (empty($workflows)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Workflow is over or already suspended']);
+        }
+
+        $workflowsId = array_column($workflows, 'id');
+        WorkflowModel::update([
+            'set'   => ['status' => 'STOP', 'process_date' => 'CURRENT_TIMESTAMP'],
+            'where' => ['id in (?)'],
+            'data'  => [$workflowsId]
+        ]);
+
+        return $response->withStatus(204);
+    }
+
+    public function reactivate(Request $request, Response $response, array $args)
+    {
+        $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['id']]);
+        if (empty($document)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
+        } elseif ($document['typist'] != $GLOBALS['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $workflows = WorkflowModel::get([
+            'select'    => ['id'],
+            'where'     => ['main_document_id = ?', 'status = ?'],
+            'data'      => [$args['id'], 'STOP']
+        ]);
+        if (empty($workflows)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Workflow is not suspended']);
+        }
+
+        $workflowsId = array_column($workflows, 'id');
+        WorkflowModel::update([
+            'set'   => ['status' => null, 'process_date' => null],
+            'where' => ['id in (?)'],
+            'data'  => [$workflowsId]
+        ]);
+
+        return $response->withStatus(204);
     }
 }

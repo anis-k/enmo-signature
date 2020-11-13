@@ -81,6 +81,8 @@ $app->get('/documents/{id}/history', \History\controllers\HistoryController::cla
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 $app->get('/documents/{id}/workflow', \Workflow\controllers\WorkflowController::class . ':getByDocumentId');
 $app->get('/documents/{id}/thumbnails/{page}', \Document\controllers\DocumentController::class . ':getThumbnailContent');
+$app->put('/documents/{id}/workflows/suspend', \Workflow\controllers\WorkflowController::class . ':suspend');
+$app->put('/documents/{id}/workflows/reactivate', \Workflow\controllers\WorkflowController::class . ':reactivate');
 
 //Emails
 $app->post('/emails', \Email\controllers\EmailController::class . ':send');

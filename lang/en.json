@@ -246,7 +246,7 @@
 		"manage_groupsAdmin" : "Manage groups",
 		"manage_connectionsAdmin" : "Manage connections",
 		"manage_email_configurationAdmin" : "Manage email server",
-		"manage_documentsAdmin" : "All access of documents",
+		"manage_documentsAdmin" : "Manage all documents and manage workflows",
 		"indexationAdmin" : "Save document for visa/signature",
 		"users" : "Users",
 		"linkedUsers" : "Linked users",

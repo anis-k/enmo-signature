@@ -47,7 +47,7 @@ class WorkflowTemplateItemModel
                 'user_id'               => $args['user_id'],
                 'mode'                  => $args['mode'],
                 'signature_mode'        => $args['signature_mode'],
-                'order'                 => $args['order']
+                '"order"'               => $args['order']
             ]
         ]);
 

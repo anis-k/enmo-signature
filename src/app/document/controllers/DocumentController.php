@@ -15,7 +15,6 @@
 namespace Document\controllers;
 
 use Attachment\controllers\AttachmentController;
-use Convert\scripts\ThumbnailScript;
 use Docserver\models\AdrModel;
 use Email\controllers\EmailController;
 use Group\controllers\PrivilegeController;
