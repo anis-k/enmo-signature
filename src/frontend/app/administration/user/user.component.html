@@ -34,6 +34,15 @@
             <ion-toggle slot="start" color="primary" [disabled]="!creationMode" name="isRest" [(ngModel)]="user.isRest"
                 [checked]="user.isRest" (ionChange)="getPassRules($event)"></ion-toggle>
         </ion-item>
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary">{{'lang.signatureModes' | translate}}</ion-label>
+            </ion-list-header>
+            <ion-item *ngFor="let signMode of signatureModes">
+                <ion-label [style.color]="signMode.color">{{signMode.label}}</ion-label>
+                <ion-checkbox slot="start" [checked]="user.signatureModes.indexOf(signMode.id) > -1" (ionChange)="toggleSignMode(signMode, $event.detail.checked)" [disabled]="signMode.id === 'stamp'"></ion-checkbox>
+            </ion-item>
+        </ion-list>
         <ion-item style="align-items: center;" *ngIf="user.isRest">
             <ion-button slot="end" fill="clear" color="primary" (click)="hideNewPassword = !hideNewPassword">
                 <ion-icon color="primary" [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'">

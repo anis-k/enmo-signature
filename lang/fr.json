@@ -308,6 +308,7 @@
 		"alreadyUsedPassword": "Le mot de passe a déjà été utilisé",
 		"homePage": "Page d'accueil",
 		"newDocumentToVisa": "Importer de nouveau(x) document(s)",
-		"searchUser": "Rechercher un utilisateur"
+		"searchUser": "Rechercher un utilisateur",
+		"signatureModes": "Modes de signature"
 	}
 }

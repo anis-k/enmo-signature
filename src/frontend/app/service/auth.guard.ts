@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { AlertComponent } from '../plugins/alert.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MenuController } from '@ionic/angular';
 
 @Injectable({
     providedIn: 'root'
@@ -24,7 +25,8 @@ export class AuthGuard implements CanActivate {
         private cookieService: CookieService,
         public authService: AuthService,
         private localStorage: LocalStorageService,
-        public dialog: MatDialog) { }
+        public dialog: MatDialog,
+        private menu: MenuController) { }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
         if (route.url.join('/') === 'login') {
@@ -35,6 +37,8 @@ export class AuthGuard implements CanActivate {
                 return true;
             }
         } else {
+            this.menu.enable(true, 'left-menu');
+            this.menu.enable(false, 'right-menu');
             let tokenInfo = this.authService.getToken();
             if (tokenInfo !== null) {
                 if (this.authService.user.id === undefined) {

@@ -18,6 +18,7 @@ export interface User {
     email: string;
     picture: string;
     isRest: boolean;
+    signatureModes: string[];
 }
 
 @Component({
@@ -37,8 +38,10 @@ export class UserComponent implements OnInit {
         login: '',
         email: '',
         picture: '',
-        isRest: false
+        isRest: false,
+        signatureModes: ['stamp']
     };
+    signatureModes: any[] = [];
     userClone: User;
     title: string = '';
     hideCurrentPassword: Boolean = true;
@@ -81,6 +84,7 @@ export class UserComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.getSignatureModes();
         this.route.params.subscribe((params: any) => {
             if (params['id'] === undefined) {
                 this.creationMode = true;
@@ -92,6 +96,7 @@ export class UserComponent implements OnInit {
                     login: '',
                     email: '',
                     picture: '',
+                    signatureModes: ['stamp'],
                     isRest: false
                 };
                 this.loading = false;
@@ -105,6 +110,10 @@ export class UserComponent implements OnInit {
                     .subscribe({
                         next: data => {
                             this.user = data;
+
+                            // FOR TEST
+                            this.user.signatureModes = ['stamp'];
+
                             this.userClone = JSON.parse(JSON.stringify(this.user));
                             this.title = this.user.firstname + ' ' + this.user.lastname;
                             if (this.user.isRest) {
@@ -114,6 +123,32 @@ export class UserComponent implements OnInit {
                     });
             }
         });
+    }
+
+    getSignatureModes() {
+        // FOR TEST
+        this.signatureModes = [
+            {
+                id: 'rgs',
+                label: 'Signature RGS**',
+                color: '#cb4335'
+            },
+            {
+                id: 'cagent',
+                label: 'Signature carte agent',
+                color: '#f39c12'
+            },
+            {
+                id: 'eidas',
+                label: 'Signature eidas',
+                color: '#f39c12'
+            },
+            {
+                id: 'stamp',
+                label: 'Signature griffe',
+                color: '#27ae60'
+            },
+        ];
     }
 
     canValidate() {
@@ -292,6 +327,14 @@ export class UserComponent implements OnInit {
         } else {
             this.handlePassword.error = false;
             this.handlePassword.errorMsg = '';
+        }
+    }
+
+    toggleSignMode(signMode: any, state: boolean) {
+        if (state) {
+            this.user.signatureModes.push(signMode.id);
+        } else {
+            this.user.signatureModes = this.user.signatureModes.filter((item: any) => item.id !== signMode.id);
         }
     }
 }
