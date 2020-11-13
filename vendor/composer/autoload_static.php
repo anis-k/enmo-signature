@@ -29,6 +29,7 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'SrcCore\\' => 8,
             'Slim\\' => 5,
+            'Search\\' => 7,
         ),
         'R' => 
         array (
@@ -101,6 +102,10 @@ class ComposerStaticInit637514d10f1ed5d4c55a005a428a3656
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
+        ),
+        'Search\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/src/app/search',
         ),
         'Respect\\Validation\\' => 
         array (

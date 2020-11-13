@@ -10,6 +10,7 @@
             "Email\\"             : "src/app/email/",
             "Group\\"             : "src/app/group/",
             "History\\"           : "src/app/history/",
+            "Search\\"            : "src/app/search/",
             "User\\"              : "src/app/user/",
             "Workflow\\"          : "src/app/workflow/"
     	}
