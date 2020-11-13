@@ -26,12 +26,12 @@ class WorkflowTemplateControllerTest extends TestCase
                 [
                     'userId'        => 1,
                     'mode'          => 'visa',
-                    'signatureMode' => 'standard'
+                    'signatureMode' => 'stamp'
                 ],
                 [
                     'userId'        => 3,
                     'mode'          => 'sign',
-                    'signatureMode' => 'standard'
+                    'signatureMode' => 'stamp'
                 ]
             ]
         ];
@@ -93,11 +93,11 @@ class WorkflowTemplateControllerTest extends TestCase
         $this->assertSame(1, $responseBody['workflowTemplate']['items'][0]['userId']);
         $this->assertNotEmpty($responseBody['workflowTemplate']['items'][0]['userLabel']);
         $this->assertSame('visa', $responseBody['workflowTemplate']['items'][0]['mode']);
-        $this->assertSame('standard', $responseBody['workflowTemplate']['items'][0]['signatureMode']);
+        $this->assertSame('stamp', $responseBody['workflowTemplate']['items'][0]['signatureMode']);
         $this->assertSame(3, $responseBody['workflowTemplate']['items'][1]['userId']);
         $this->assertNotEmpty($responseBody['workflowTemplate']['items'][1]['userLabel']);
         $this->assertSame('sign', $responseBody['workflowTemplate']['items'][1]['mode']);
-        $this->assertSame('standard', $responseBody['workflowTemplate']['items'][1]['signatureMode']);
+        $this->assertSame('stamp', $responseBody['workflowTemplate']['items'][1]['signatureMode']);
 
         //ERRORS
         $previousUserId = $GLOBALS['id'];

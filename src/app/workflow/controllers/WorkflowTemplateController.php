@@ -14,6 +14,7 @@
 
 namespace Workflow\controllers;
 
+use Document\controllers\DocumentController;
 use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
@@ -147,7 +148,6 @@ class WorkflowTemplateController
         ValidatorModel::notEmpty($args, ['items']);
         ValidatorModel::arrayType($args, ['items']);
 
-        //TODO check mode + signature mode
         foreach ($args['items'] as $key => $item) {
             if (empty($item['userId'])) {
                 return ['errors' => "Item[{$key}] userId is empty"];
@@ -157,9 +157,16 @@ class WorkflowTemplateController
                 return ['errors' => "Item[{$key}] signatureMode is empty"];
             }
 
-            $user = UserModel::getById(['id' => $item['userId'], 'select' => [1]]);
+            if (!in_array($item['mode'], DocumentController::MODES)) {
+                return ['errors' => "Item[{$key}] mode is not valid"];
+            }
+            $user = UserModel::getById(['id' => $item['userId'], 'select' => ['signature_modes']]);
             if (empty($user)) {
                 return ['errors' => 'User is not valid'];
+            }
+            $user['signature_modes'] = json_decode($user['signature_modes'], true);
+            if (!in_array($item['signatureMode'], $user['signature_modes'])) {
+                return ['errors' => "Item[{$key}] signatureMode is not valid"];
             }
         }
 
