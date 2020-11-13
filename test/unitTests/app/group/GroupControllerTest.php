@@ -29,7 +29,7 @@ class GroupControllerTest extends TestCase
         $responseBody = json_decode((string)$response->getBody());
         
         $this->assertNotEmpty($responseBody->id);
-        $this->assertInternalType('int', $responseBody->id);
+        $this->assertIsInt($responseBody->id);
         self::$groupId = $responseBody->id;
 
         //Label missing
@@ -117,7 +117,7 @@ class GroupControllerTest extends TestCase
         $this->assertNotEmpty($responseBody->group);
         $this->assertSame(self::$groupId, $responseBody->group->id);
         $this->assertSame('Test TU 2', $responseBody->group->label);
-        $this->assertInternalType('array', $responseBody->group->users);
+        $this->assertIsArray($responseBody->group->users);
         $this->assertNotEmpty($responseBody->group->users);
         $this->assertSame(1, $responseBody->group->users[0]->id);
         $this->assertNotEmpty($responseBody->group->users[0]->firstname);
@@ -153,9 +153,9 @@ class GroupControllerTest extends TestCase
         $response     = $groupController->get($request, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->groups);
+        $this->assertIsArray($responseBody->groups);
         $this->assertNotEmpty($responseBody->groups);
-        $this->assertInternalType('int', $responseBody->groups[0]->id);
+        $this->assertIsInt($responseBody->groups[0]->id);
         $this->assertNotEmpty($responseBody->groups[0]->label);
     }
 

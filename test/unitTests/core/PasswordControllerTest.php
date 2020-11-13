@@ -25,11 +25,10 @@ class PasswordControllerTest extends TestCase
 
         foreach ($responseBody->rules as $value) {
             $this->assertNotEmpty($value->id);
-            $this->assertInternalType('int', $value->id);
+            $this->assertIsInt($value->id);
             $this->assertNotEmpty($value->label);
-            $this->assertInternalType('int', $value->value);
-            $this->assertInternalType('boolean', $value->enabled);
+            $this->assertIsInt($value->value);
+            $this->assertIsBool($value->enabled);
         }
-
     }
 }

@@ -32,7 +32,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
         
-        $this->assertInternalType('int', $responseBody->id);
+        $this->assertIsInt($responseBody->id);
         self::$userId = $responseBody->id;
 
         //Mail missing
@@ -132,7 +132,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->get($request, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->users);
+        $this->assertIsArray($responseBody->users);
         $this->assertNotEmpty($responseBody->users);
     }
 
@@ -195,7 +195,7 @@ class UserControllerTest extends TestCase
         $response     = $userController->update($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('object', $responseBody->user);
+        $this->assertIsObject($responseBody->user);
         $this->assertNotEmpty($responseBody->user);
 
         $response     = $userController->getById($request, new \Slim\Http\Response(), ['id' => self::$userId]);
@@ -230,7 +230,7 @@ class UserControllerTest extends TestCase
         $response     = $signatureController->create($fullRequest, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('int', $responseBody->signatureId);
+        $this->assertIsInt($responseBody->signatureId);
         self::$signatureId = $responseBody->signatureId;
         $GLOBALS['id'] = $previousUserId;
     }
@@ -247,7 +247,7 @@ class UserControllerTest extends TestCase
         $response     = $signatureController->get($request, new \Slim\Http\Response(), ['id' => self::$userId]);
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->signatures);
+        $this->assertIsArray($responseBody->signatures);
         $this->assertNotEmpty($responseBody->signatures);
         $GLOBALS['id'] = $previousUserId;
     }

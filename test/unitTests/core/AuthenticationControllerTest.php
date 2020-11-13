@@ -22,8 +22,8 @@ class AuthenticationControllerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('string', $responseBody->connection);
-        $this->assertInternalType('boolean', $responseBody->changeKey);
+        $this->assertIsString($responseBody->connection);
+        $this->assertIsBool($responseBody->changeKey);
         $this->assertNotEmpty($responseBody->connection);
     }
 
@@ -74,6 +74,6 @@ class AuthenticationControllerTest extends TestCase
         $response = \SrcCore\controllers\AuthenticationController::authentication();
 
         $this->assertNotEmpty($response);
-        $this->assertInternalType('int', $response);
+        $this->assertIsInt($response);
     }
 }

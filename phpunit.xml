@@ -20,7 +20,7 @@
     </filter>
     <logging>
         <log type="coverage-clover" target="test/unitTests/build/tests-clover.xml"/>
-        <log type="junit"           target="test/unitTests/build/tests-phpunit.xml" logIncompleteSkipped="false"/>
+        <log type="junit"           target="test/unitTests/build/tests-phpunit.xml"/>
         <log type="coverage-html"   target="test/unitTests/build" lowUpperBound="35" highLowerBound="70"/>
     </logging>
 </phpunit>

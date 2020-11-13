@@ -47,7 +47,7 @@ class DocumentControllerTest extends TestCase
         $response     = $documentController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('int', $responseBody->id);
+        $this->assertIsInt($responseBody->id);
         self::$id = $responseBody->id;
     }
 
@@ -61,19 +61,19 @@ class DocumentControllerTest extends TestCase
         $response     = $documentController->get($request, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->documents);
+        $this->assertIsArray($responseBody->documents);
         $this->assertNotEmpty($responseBody->documents);
-        $this->assertInternalType('int', $responseBody->count->visa);
-        $this->assertInternalType('int', $responseBody->count->sign);
-        $this->assertInternalType('int', $responseBody->count->note);
-        $this->assertInternalType('int', $responseBody->count->current);
+        $this->assertIsInt($responseBody->count->visa);
+        $this->assertIsInt($responseBody->count->sign);
+        $this->assertIsInt($responseBody->count->note);
+        $this->assertIsInt($responseBody->count->current);
         $this->assertNotEmpty($responseBody->count);
 
         $fullRequest = $request->withQueryParams(['mode' => 'SIGN']);
         $response     = $documentController->get($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->documents);
+        $this->assertIsArray($responseBody->documents);
         $this->assertNotEmpty($responseBody->documents);
     }
 
@@ -93,14 +93,14 @@ class DocumentControllerTest extends TestCase
         $this->assertSame('2018/CR/7', $responseBody->document->reference);
         $this->assertSame('Mon Courrier', $responseBody->document->title);
         $this->assertSame('Oliver Queen', $responseBody->document->sender);
-        $this->assertInternalType('array', $responseBody->document->metadata);
+        $this->assertIsArray($responseBody->document->metadata);
         $this->assertNotEmpty($responseBody->document->metadata);
-        $this->assertInternalType('array', $responseBody->document->workflow);
-        $this->assertInternalType('int', $responseBody->document->workflow[0]->userId);
+        $this->assertIsArray($responseBody->document->workflow);
+        $this->assertIsInt($responseBody->document->workflow[0]->userId);
         $this->assertSame(1, $responseBody->document->workflow[0]->userId);
         $this->assertSame('visa', $responseBody->document->workflow[0]->mode);
         $this->assertNotEmpty($responseBody->document->workflow);
-        $this->assertInternalType('array', $responseBody->document->attachments);
+        $this->assertIsArray($responseBody->document->attachments);
         $this->assertNotEmpty($responseBody->document->attachments);
         $this->assertNotEmpty($responseBody->document->attachments[0]->id);
         self::$attachmentId = $responseBody->document->attachments[0]->id;
@@ -124,7 +124,7 @@ class DocumentControllerTest extends TestCase
 
         $this->assertSame('2018/ZZ/10', $responseBody->attachment->reference);
         $this->assertSame('Ma pj de mon courrier', $responseBody->attachment->title);
-        $this->assertInternalType('string', $responseBody->attachment->encodedDocument);
+        $this->assertIsString($responseBody->attachment->encodedDocument);
 
         $response     = $attachmentController->getById($request, new \Slim\Http\Response(), ['id' => -1]);
         $responseBody = json_decode((string)$response->getBody());

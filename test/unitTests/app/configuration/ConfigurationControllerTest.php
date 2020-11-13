@@ -109,7 +109,7 @@ class ConfigurationControllerTest extends TestCase
         $response     = $configurationController->get($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->configurations);
+        $this->assertIsArray($responseBody->configurations);
         $this->assertNotEmpty($responseBody->configurations);
         foreach ($responseBody->configurations as $configuration) {
             if ($configuration->label == self::$ldapLabel) {
@@ -123,7 +123,7 @@ class ConfigurationControllerTest extends TestCase
         $response     = $configurationController->get($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->configurations);
+        $this->assertIsArray($responseBody->configurations);
         $this->assertNotEmpty($responseBody->configurations);
         foreach ($responseBody->configurations as $configuration) {
             if ($configuration->label == self::$emailLabel) {
@@ -138,8 +138,8 @@ class ConfigurationControllerTest extends TestCase
         $responseBody = json_decode((string)$response->getBody());
 
         $this->assertNotEmpty($responseBody->configurations);
-        $this->assertInternalType('string', $responseBody->configurations->value);
-        $this->assertInternalType('array', $responseBody->configurations->availableConnections);
+        $this->assertIsString($responseBody->configurations->value);
+        $this->assertIsArray($responseBody->configurations->availableConnections);
 
 
         //Errors

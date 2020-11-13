@@ -96,7 +96,7 @@ class UserModel
                 '"isRest"'                      => empty($args['isRest']) ? 'false' : 'true',
                 'picture'                       => $args['picture'],
                 'password_modification_date'    => 'CURRENT_TIMESTAMP',
-                'signature_mode'                => $args['signatureModes']
+                'signature_modes'               => $args['signatureModes']
             ]
         ]);
 

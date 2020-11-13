@@ -42,14 +42,14 @@ class HistoryControllerTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
 
-        $this->assertInternalType('array', $responseBody->history);
+        $this->assertIsArray($responseBody->history);
         $this->assertNotEmpty($responseBody->history);
 
-        $this->assertInternalType('string', $responseBody->history[0]->code);
-        $this->assertInternalType('string', $responseBody->history[0]->type);
-        $this->assertInternalType('string', $responseBody->history[0]->user);
-        $this->assertInternalType('string', $responseBody->history[0]->date);
-        $this->assertInternalType('string', $responseBody->history[0]->message);
+        $this->assertIsString($responseBody->history[0]->code);
+        $this->assertIsString($responseBody->history[0]->type);
+        $this->assertIsString($responseBody->history[0]->user);
+        $this->assertIsString($responseBody->history[0]->date);
+        $this->assertIsString($responseBody->history[0]->message);
         $this->assertSame('OK', $responseBody->history[0]->code);
 
 
