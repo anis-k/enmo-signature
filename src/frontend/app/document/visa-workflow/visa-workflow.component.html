@@ -11,11 +11,20 @@
 <ion-content (click)="resetVisaUsersList();">
     <ng-container *ngIf="editMode">
         <ion-item lines="none">
-            <ion-searchbar #searchInput [(ngModel)]="visaUsersSearchVal" [placeholder]="'lang.searchUser' | translate" (ionChange)="getVisaUsers($event)"></ion-searchbar>
+            <ion-searchbar #searchInput [(ngModel)]="visaUsersSearchVal" [placeholder]="'lang.searchUser' | translate"
+                (ionChange)="getVisaUsers($event)" (ionFocus)="visaUsersSearchVal=''"></ion-searchbar>
+            <ion-buttons slot="end">
+                <ion-button fill="clear" slot="icon-only" shape="round" color="primary"
+                    (click)="openVisaWorkflowModels($event)" [title]="'Modèles de circuit'">
+                    <ion-icon slot="icon-only" name="albums-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons>
         </ion-item>
-        <ion-list *ngIf="visaUsersList.length > 0" style="position: absolute;z-index: 1;width: 100%;box-shadow: 0 4px 2px -2px gray;">
+        <ion-list *ngIf="visaUsersList.length > 0"
+            style="position: absolute;z-index: 1;width: 100%;box-shadow: 0 4px 2px -2px gray;">
             <ion-item *ngFor="let user of visaUsersList">
-                <ion-checkbox color="primary" slot="start" [value]="user" (ionChange)="addUser($event.detail.value, searchInput)"></ion-checkbox>
+                <ion-checkbox color="primary" slot="start" [value]="user"
+                    (ionChange)="addUser($event.detail.value, searchInput)"></ion-checkbox>
                 <ion-label>{{ user.firstname }} {{ user.lastname }}</ion-label>
                 <ion-note slot="end">{{ user.email }}</ion-note>
             </ion-item>
@@ -23,7 +32,7 @@
     </ng-container>
     <ion-list *ngIf="visaWorkflow.length === 0">
         <ion-item lines="none">
-            <ion-label color="medium">Aucune personne dans le circuit</ion-label>
+            <ion-label class="ion-text-center" color="medium">Aucune personne dans le circuit</ion-label>
         </ion-item>
     </ion-list>
     <ion-list dnd-sortable-container [dropZones]="['boxers-zone']" [sortableData]="visaWorkflow">
@@ -32,11 +41,11 @@
                 <img [src]="diffusion.userPicture">
             </ion-avatar>
             <ion-label>{{diffusion.userDisplay}}</ion-label>
-            <ion-select [value]="diffusion.mode" interface="popover">
-                <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">{{mode}}</ion-select-option>
+            <ion-select [(ngModel)]="diffusion.mode" interface="popover">
+                <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">{{'lang.' + mode + 'User' | translate}}</ion-select-option>
             </ion-select>
             <ion-button fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
-                <ion-icon slot="icon-only"  name="trash-outline"></ion-icon>
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button>
         </ion-item>
     </ion-list>

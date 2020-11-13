@@ -1,0 +1,17 @@
+<ion-list lines="none">
+    <ion-list-header>
+        <ion-label color="secondary">Modèles de circuit</ion-label>
+    </ion-list-header>
+    <ion-item button *ngFor="let model of visaWorkflowModels" (click)="loadVisaWorkflow(model)">
+        <ion-label>{{model.title}}</ion-label>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" slot="icon-only" shape="round" color="danger" (click)="$event.stopPropagation();removeModel(model)">
+                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-item>
+    <ion-item button (click)="createModel()" [disabled]="currentWorkflow.length === 0">
+        <ion-icon color="primary" slot="start" name="add-circle-outline"></ion-icon>
+        <ion-label color="primary">Nouveau modèle</ion-label>
+    </ion-item>
+</ion-list>

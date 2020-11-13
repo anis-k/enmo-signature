@@ -307,7 +307,7 @@
 		"wrongCurrentPassword": "Le mot de passe actuel n'est pas correct",
 		"alreadyUsedPassword": "Le mot de passe a déjà été utilisé",
 		"homePage": "Page d'accueil",
-		"newDocumentToVisa": "Nouveau(x) document(s) à viser / signer",
+		"newDocumentToVisa": "Importer de nouveau(x) document(s)",
 		"searchUser": "Rechercher un utilisateur"
 	}
 }

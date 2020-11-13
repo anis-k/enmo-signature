@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.menu.enable(true, 'left-menu');
+        this.menu.enable(false, 'right-menu');
         this.menu.open('left-menu');
     }
 

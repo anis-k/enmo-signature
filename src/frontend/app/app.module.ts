@@ -24,6 +24,8 @@ import { LatinisePipe } from 'ngx-pipes';
 
 import { AppMaterialModule } from './app-material.module';
 import { AppRoutingModule } from './app-routing.module';
+import { DragDropDirective } from './plugins/upload-file-dnd.directive';
+
 
 // COMPONENTS
 import { AppComponent } from './app.component';
@@ -51,6 +53,7 @@ import { DocumentListComponent } from './document/document-list/document-list.co
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 import { PasswordModificationComponent } from './login/passwordModification/password-modification.component';
+import { VisaWorkflowModelsComponent } from './document/visa-workflow/models/visa-workflow-models.component';
 
 // ADMINISTRATION
 import { AdminSidebarComponent } from './sidebar/administration/admin-sidebar.component';
@@ -85,6 +88,7 @@ import { SortPipe } from './plugins/sorting.pipe';
 @NgModule({
   declarations: [
     AppComponent,
+    DragDropDirective,
     LoginComponent,
     HomeComponent,
     ForgotPasswordComponent,
@@ -125,7 +129,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     UsersComponent,
     CheckConnectionComponent,
     CheckEmailConnectionComponent,
-    IndexationComponent
+    IndexationComponent,
+    VisaWorkflowModelsComponent
   ],
   imports: [
     FormsModule,

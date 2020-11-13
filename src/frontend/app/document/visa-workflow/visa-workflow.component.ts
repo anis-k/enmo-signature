@@ -5,6 +5,8 @@ import { AuthService } from '../../service/auth.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NotificationService } from '../../service/notification.service';
+import { PopoverController } from '@ionic/angular';
+import { VisaWorkflowModelsComponent } from './models/visa-workflow-models.component';
 
 @Component({
     selector: 'app-visa-workflow',
@@ -27,6 +29,7 @@ export class VisaWorkflowComponent implements OnInit {
         public signaturesService: SignaturesContentService,
         public authService: AuthService,
         public notificationService: NotificationService,
+        public popoverController: PopoverController
     ) { }
 
     ngOnInit(): void {
@@ -65,7 +68,7 @@ export class VisaWorkflowComponent implements OnInit {
             'mode': 'visa',
             'processDate': null,
             'current': false,
-            'modes' : [
+            'modes': [
                 'visa',
                 'sign',
                 'rgs'
@@ -82,18 +85,44 @@ export class VisaWorkflowComponent implements OnInit {
     }
 
     getAvatarUser(index: number) {
-        this.http.get('../rest/users/' + this.visaWorkflow[index].userId + '/picture').pipe(
-            tap((data: any) => {
-                this.visaWorkflow[index].userPicture = data.picture;
-            }),
-            catchError(err => {
-                this.notificationService.handleErrors(err);
-                return of(false);
-            })
-        ).subscribe();
+        if (this.visaWorkflow[index].userPicture === undefined  && this.visaWorkflow[index].userDisplay !== '') {
+            this.http.get('../rest/users/' + this.visaWorkflow[index].userId + '/picture').pipe(
+                tap((data: any) => {
+                    this.visaWorkflow[index].userPicture = data.picture;
+                }),
+                catchError(err => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        }
     }
 
     resetVisaUsersList() {
         this.visaUsersList = [];
+    }
+
+    async openVisaWorkflowModels(ev: any) {
+        const popover = await this.popoverController.create({
+            component: VisaWorkflowModelsComponent,
+            componentProps: { currentWorkflow: this.visaWorkflow },
+            event: ev,
+        });
+        await popover.present();
+
+        popover.onDidDismiss()
+            .then((result: any) => {
+                if (result.role !== 'backdrop') {
+                    console.log(result.data);
+                    this.visaWorkflow = this.visaWorkflow.concat(result.data);
+                    this.visaWorkflow.forEach((element: any, index: number) => {
+                        this.getAvatarUser(index);
+                    });
+                }
+        });
+    }
+
+    getCurrentWorkflow() {
+        return this.visaWorkflow;
     }
 }
