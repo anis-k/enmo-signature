@@ -139,13 +139,11 @@ class UserController
             if (!Validator::arrayType()->validate($body['signatureModes'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
             } else {
-                $modes = [];
-                foreach ($body['signatureModes'] as $signatureMode) {
-                    if (SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
-                        $modes[] = $signatureMode;
+                foreach ($body['signatureModes'] as $key => $signatureMode) {
+                    if (!SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
+                        return $response->withStatus(400)->withJson(['errors' => "Body signatureModes[{$key}] is not a valid signature mode"]);
                     }
                 }
-                $body['signatureModes'] = $modes;
             }
         } else {
             $body['signatureModes'] = [];
@@ -199,13 +197,12 @@ class UserController
             if (!empty($body['signatureModes']) && !Validator::arrayType()->validate($body['signatureModes'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
             } else {
-                $modes = [];
-                foreach ($body['signatureModes'] as $signatureMode) {
-                    if (SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
-                        $modes[] = $signatureMode;
+                foreach ($body['signatureModes'] as $key => $signatureMode) {
+                    if (!SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
+                        return $response->withStatus(400)->withJson(['errors' => "Body signatureModes[{$key}] is not a valid signature mode"]);
                     }
                 }
-                $set['signature_modes'] = $modes;
+                $set['signature_modes'] = $body['signatureModes'];
             }
         }
         $set['signature_modes'] = json_encode($set['signature_modes']);
