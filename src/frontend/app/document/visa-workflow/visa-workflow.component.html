@@ -21,7 +21,7 @@
             </ion-buttons>
         </ion-item>
         <ion-list *ngIf="visaUsersList.length > 0"
-            style="position: absolute;z-index: 1;width: 100%;box-shadow: 0 4px 2px -2px gray;">
+            style="position: absolute;z-index: 2;width: 100%;box-shadow: 0 4px 2px -2px gray;">
             <ion-item *ngFor="let user of visaUsersList">
                 <ion-checkbox color="primary" slot="start" [value]="user"
                     (ionChange)="addUser($event.detail.value, searchInput)"></ion-checkbox>
@@ -35,20 +35,35 @@
             <ion-label class="ion-text-center" color="medium">Aucune personne dans le circuit</ion-label>
         </ion-item>
     </ion-list>
-    <ion-list dnd-sortable-container [dropZones]="['boxers-zone']" [sortableData]="visaWorkflow">
-        <ion-item class="no-ripple" *ngFor="let diffusion of visaWorkflow;let i=index" dnd-sortable [sortableIndex]="i">
-            <ion-avatar slot="start" class="avatar-user" style="cursor: grab;" (click)="$event.stopPropagation();">
+    <ion-reorder-group (ionItemReorder)="doReorder($event)" [disabled]="!editMode">
+        <ion-item class="no-ripple" *ngFor="let diffusion of visaWorkflow;let i=index"
+            [class.current]="diffusion.current">
+            <ion-reorder slot="start"></ion-reorder>
+            <ion-avatar *ngIf="!editMode" slot="start" class="avatar-user" style="cursor: grab;"
+                (click)="$event.stopPropagation();">
                 <img [src]="diffusion.userPicture">
             </ion-avatar>
-            <ion-label>{{diffusion.userDisplay}}</ion-label>
-            <ion-select [(ngModel)]="diffusion.mode" interface="popover" [interfaceOptions]="customPopoverOptions" [style.color]="getRole(diffusion.mode).color">
-                <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">
-                        {{getRole(mode).label}}
-                </ion-select-option>
-            </ion-select>
-            <ion-button fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
+            <ion-label>
+                <p *ngIf="diffusion.processDate === null" style="display: flex;justify-content: start;">
+                    <ion-select  [(ngModel)]="diffusion.role"
+                        [title]="'lang.' + diffusion.role + 'User' | translate" interface="popover"
+                        [interfaceOptions]="customPopoverOptions" [style.color]="getRole(diffusion.role).color"
+                        [disabled]="!editMode" style="width: auto;max-width: 100%;padding-left:0px;">
+                        <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">
+                            {{'lang.' + mode + 'User' | translate}}
+                        </ion-select-option>
+                    </ion-select>
+                </p>
+                <p *ngIf="diffusion.processDate !== null" [title]="diffusion.processDate"
+                    class="processDate">
+                    {{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
+                    {{diffusion.processDate}}
+                </p>
+                <h2 [title]="diffusion.userDisplay">{{diffusion.userDisplay}}</h2>
+            </ion-label>
+            <ion-button *ngIf="editMode" fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
                 <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button>
         </ion-item>
-    </ion-list>
+    </ion-reorder-group>
 </ion-content>

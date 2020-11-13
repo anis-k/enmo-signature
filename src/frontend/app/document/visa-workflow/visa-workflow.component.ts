@@ -1,12 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../service/auth.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NotificationService } from '../../service/notification.service';
-import { PopoverController } from '@ionic/angular';
+import { IonReorderGroup, PopoverController } from '@ionic/angular';
 import { VisaWorkflowModelsComponent } from './models/visa-workflow-models.component';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ItemReorderEventDetail } from '@ionic/core';
 
 @Component({
     selector: 'app-visa-workflow',
@@ -23,29 +25,11 @@ export class VisaWorkflowComponent implements OnInit {
     customPopoverOptions = {
         header: 'Roles'
     };
-    roles: any[] = [
-        {
-            id: 'rgs',
-            type: 'sign',
-            label: 'Signataire (RGS**)',
-            color: '#cb4335'
-        },
-        {
-            id: 'stamp',
-            type: 'sign',
-            label: 'Signataire (Griffe)',
-            color: '#f39c12'
-        },
-        {
-            id: 'visa',
-            type: 'visa',
-            label: 'Viseur',
-            color: '#27ae60'
-        },
-    ];
+    roles: any[] = [];
 
     @Input() editMode: boolean = false;
     @Input() visaWorkflow: any = [];
+    @ViewChild(IonReorderGroup) reorderGroup: IonReorderGroup;
 
     constructor(
         public http: HttpClient,
@@ -55,15 +39,29 @@ export class VisaWorkflowComponent implements OnInit {
         public popoverController: PopoverController
     ) { }
 
+
     ngOnInit(): void {
-        this.visaWorkflow.forEach((element: any) => {
-            if (element.userPicture === undefined && element.userDisplay !== '') {
-                this.http.get('../rest/users/' + element.userId + '/picture')
-                    .subscribe((data: any) => {
-                        element.userPicture = data.picture;
-                    });
-            }
+        this.visaWorkflow.forEach((element: any, index: number) => {
+            this.getAvatarUser(index);
         });
+    }
+
+    doReorder(ev: CustomEvent<ItemReorderEventDetail>) {
+        // Before complete is called with the items they will remain in the
+        // order before the drag
+        console.log('Before complete', this.visaWorkflow);
+
+        // Finish the reorder and position the item in the DOM based on
+        // where the gesture ended. Update the items variable to the
+        // new order of items
+        this.visaWorkflow = ev.detail.complete(this.visaWorkflow);
+
+        // After complete is called the items will be in the new order
+        console.log('After complete', this.visaWorkflow);
+    }
+
+    drop(event: CdkDragDrop<string[]>) {
+        moveItemInArray(this.visaWorkflow, event.previousIndex, event.currentIndex);
     }
 
     getVisaUsers(ev: any) {
@@ -85,17 +83,16 @@ export class VisaWorkflowComponent implements OnInit {
 
     addUser(user: any, searchInput: any) {
         this.resetVisaUsersList();
+
+        user.signatureModes.unshift('visa');
+
         const userObj: any = {
             'userId': user.id,
             'userDisplay': `${user.firstname} ${user.lastname}`,
-            'mode': 'visa',
+            'role': 'visa',
             'processDate': null,
             'current': false,
-            'modes': [
-                'visa',
-                'stamp',
-                'rgs'
-            ]
+            'modes': user.signatureModes
         };
         this.visaWorkflow.push(userObj);
         this.getAvatarUser(this.visaWorkflow.length - 1);
@@ -150,6 +147,6 @@ export class VisaWorkflowComponent implements OnInit {
     }
 
     getRole(id: string) {
-        return this.roles.filter((mode: any) => mode.id === id)[0];
+        return this.authService.signatureRoles.filter((mode: any) => mode.id === id)[0];
     }
 }

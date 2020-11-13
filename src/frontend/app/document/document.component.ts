@@ -20,7 +20,7 @@ import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 
@@ -42,22 +42,22 @@ export class DocumentComponent implements OnInit {
         {
             id: 2,
             label: 'lang.reject',
-            color: '#e74c3c',
-            logo: 'fas fa-backspace',
+            color: 'danger',
+            logo: 'thumbs-down-outline',
             event: 'refuseDocument'
         },
         {
             id: 3,
             label: 'lang.signatures',
-            color: '#135F7F',
+            color: '',
             logo: '',
-            event: 'openDrawer'
+            event: 'openSignatures'
         },
         {
             id: 1,
             label: 'lang.validate',
-            color: '#2ecc71',
-            logo: 'fas fa-check-circle',
+            color: 'success',
+            logo: 'thumbs-up-outline',
             event: 'validateDocument'
         },
     ];
@@ -306,6 +306,19 @@ export class DocumentComponent implements OnInit {
                     this.http.get('../rest/documents/' + params['id']).pipe(
                         tap((data: any) => {
                             this.mainDocument = data.document;
+
+                            this.mainDocument.workflow = this.mainDocument.workflow.map((item: any) => {
+                                return {
+                                    ...item,
+                                    'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
+                                    'modes': [
+                                        'visa',
+                                        'sign',
+                                        'stamp',
+                                    ]
+                                };
+                            });
+
                             this.totalPages = this.mainDocument.pages;
 
                             this.signaturesService.mainDocumentId = this.mainDocument.id;
@@ -575,12 +588,22 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.rejectDocument'),
                     handler: () => {
-                        const config: MatBottomSheetConfig = {
-                            disableClose: true,
-                            direction: 'ltr'
-                        };
-                        this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
-                        this.localStorage.remove(this.mainDocument.id.toString());
+                        this.loadingController.create({
+                            message: 'Envoi ...',
+                            spinner: 'dots'
+                        }).then(async (load: HTMLIonLoadingElement) => {
+                            load.present();
+                            const res = await this.sendDocument();
+                            if (res) {
+                                const config: MatBottomSheetConfig = {
+                                    disableClose: true,
+                                    direction: 'ltr'
+                                };
+                                this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
+                                this.localStorage.remove(this.mainDocument.id.toString());
+                            }
+                            load.dismiss();
+                        });
                     }
                 }
             ]
@@ -597,19 +620,86 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: () => {
-                        const config: MatBottomSheetConfig = {
-                            disableClose: true,
-                            direction: 'ltr'
-                        };
-
-                        this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                        this.localStorage.remove(this.mainDocument.id.toString());
+                        this.loadingController.create({
+                            message: 'Envoi ...',
+                            spinner: 'dots'
+                        }).then(async (load: HTMLIonLoadingElement) => {
+                            load.present();
+                            const res = await this.sendDocument();
+                            if (res) {
+                                const config: MatBottomSheetConfig = {
+                                    disableClose: true,
+                                    direction: 'ltr'
+                                };
+                                this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                                this.localStorage.remove(this.mainDocument.id.toString());
+                            }
+                            load.dismiss();
+                        });
                     }
                 }
             ]
         });
 
         await alert.present();
+    }
+
+    sendDocument() {
+        return new Promise((resolve) => {
+            const signatures: any[] = [];
+            if (this.signaturesService.currentAction > 0) {
+                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                    if (this.signaturesService.signaturesContent[index]) {
+                        this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                            signatures.push(
+                                {
+                                    'encodedImage': signature.encodedSignature,
+                                    'width': signature.width,
+                                    'positionX': signature.positionX,
+                                    'positionY': signature.positionY,
+                                    'type': 'PNG',
+                                    'page': index,
+                                }
+                            );
+                        });
+                    }
+                    if (this.signaturesService.notesContent[index]) {
+                        this.signaturesService.notesContent[index].forEach((note: any) => {
+                            signatures.push(
+                                {
+                                    'encodedImage': note.fullPath.replace('data:image/png;base64,', ''),
+                                    'width': note.width,
+                                    'positionX': note.positionX,
+                                    'positionY': note.positionY,
+                                    'type': 'PNG',
+                                    'page': index,
+                                }
+                            );
+                        });
+                    }
+                }
+
+                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, { 'signatures': signatures })
+                    .pipe(
+                        tap(() => {
+                            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
+                                this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                                if (this.signaturesService.documentsListCount.current > 0) {
+                                    this.signaturesService.documentsListCount.current--;
+                                }
+                            }
+                            resolve(true);
+                        }),
+                        catchError((err: any) => {
+                            this.notificationService.handleErrors(err);
+                            resolve(false);
+                            return of(false);
+                        })
+                    ).subscribe();
+            } else {
+                resolve(false);
+            }
+        });
     }
 
     openDrawer(): void {

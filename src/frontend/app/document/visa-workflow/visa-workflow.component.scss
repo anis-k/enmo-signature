@@ -1,6 +1,5 @@
-
 .current {
-    --background: var(--ion-color-success);
+    border-left: solid 5px var(--ion-color-success);
 }
 
 .primary {
@@ -32,4 +31,23 @@ ion-select {
 
 .no-ripple {
     --ripple-color: transparent;
-  }
+}
+
+.select-disabled,
+.item-select-disabled ion-label {
+    opacity: 1;
+}
+
+.item-select-disabled ion-select::part(icon) {
+    display: none !important;
+}
+
+.processDate {
+    display: flex;
+    justify-content: start;
+    font-size: 12px;
+    text-align: right;
+    color : var(--ion-color-success);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}

@@ -111,16 +111,9 @@
 
 </ion-content>
 <ion-footer *ngIf="!loadingImage && currentDoc === 0" class="ion-no-border footer-buttons">
-    <ion-button color="danger" shape="round" size="large" fill="outline" (click)="refuseDocument()">
-        <ion-icon [slot]="'start'" name="thumbs-down-outline"></ion-icon>
-        <ion-label style="font-size: 13px;">{{'lang.reject' | translate}}</ion-label>
-    </ion-button>
-    <ion-button size="large" shape="round" fill="outline" (click)="openSignatures()">
-        <ion-label style="font-size: 13px;">{{'lang.signatures' | translate}}</ion-label>
-    </ion-button>
-    <ion-button color="success" shape="round" size="large" fill="outline" (click)="validateDocument()">
-        <ion-icon [slot]="'start'" name="thumbs-up-outline"></ion-icon>
-        <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+    <ion-button *ngFor="let action of actionsList" [color]="action.color" shape="round" size="large" fill="outline" (click)="launchEvent(action)">
+        <ion-icon *ngIf="action.logo !== ''" [slot]="'start'" [name]="action.logo"></ion-icon>
+        <ion-label style="font-size: 13px;">{{action.label | translate}}</ion-label>
     </ion-button>
 </ion-footer>
 

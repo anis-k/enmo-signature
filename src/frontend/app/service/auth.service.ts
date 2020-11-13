@@ -14,6 +14,7 @@ export class AuthService {
     authMode: string = 'default';
     changeKey: boolean = false;
     user: any = {};
+    signatureRoles: any[] = [];
 
     constructor(public http: HttpClient,
         private router: Router,
@@ -86,5 +87,13 @@ export class AuthService {
 
     setUser(value: any) {
         this.user = value;
+    }
+
+    getSignatureMode(id: string) {
+        return id === 'visa' ? 'stamp' : id;
+    }
+
+    getWorkflowMode(id: string) {
+        return this.signatureRoles.filter((item: any) => item.id === id)[0].type;
     }
 }

@@ -3,11 +3,12 @@ import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { map, finalize } from 'rxjs/operators';
+import { map, finalize, catchError, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
+import { of } from 'rxjs';
 
 
 export interface User {
@@ -110,10 +111,6 @@ export class UserComponent implements OnInit {
                     .subscribe({
                         next: data => {
                             this.user = data;
-
-                            // FOR TEST
-                            this.user.signatureModes = ['stamp'];
-
                             this.userClone = JSON.parse(JSON.stringify(this.user));
                             this.title = this.user.firstname + ' ' + this.user.lastname;
                             if (this.user.isRest) {
@@ -126,29 +123,15 @@ export class UserComponent implements OnInit {
     }
 
     getSignatureModes() {
-        // FOR TEST
-        this.signatureModes = [
-            {
-                id: 'rgs',
-                label: 'Signature RGS**',
-                color: '#cb4335'
-            },
-            {
-                id: 'cagent',
-                label: 'Signature carte agent',
-                color: '#f39c12'
-            },
-            {
-                id: 'eidas',
-                label: 'Signature eidas',
-                color: '#f39c12'
-            },
-            {
-                id: 'stamp',
-                label: 'Signature griffe',
-                color: '#27ae60'
-            },
-        ];
+        this.http.get('../rest/signatureModes').pipe(
+            tap((data: any) => {
+                this.signatureModes = data;
+            }),
+            catchError((err: any) => {
+                this.notificationService.handleErrors(err);
+                return of(false);
+            })
+        ).subscribe();
     }
 
     canValidate() {
@@ -334,7 +317,7 @@ export class UserComponent implements OnInit {
         if (state) {
             this.user.signatureModes.push(signMode.id);
         } else {
-            this.user.signatureModes = this.user.signatureModes.filter((item: any) => item.id !== signMode.id);
+            this.user.signatureModes = this.user.signatureModes.filter((item: any) => item !== signMode.id);
         }
     }
 }

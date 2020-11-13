@@ -60,6 +60,34 @@ export class AuthGuard implements CanActivate {
                                 this.authService.user.picture = dataPic.picture;
                             });
                     }
+
+                    this.authService.signatureRoles = [
+                        {
+                            'id': 'rgs_2stars',
+                            'type': 'sign',
+                            'color': '#FF0000'
+                        },
+                        {
+                            'id': 'inca_card',
+                            'type': 'sign',
+                            'color': '#FFA500'
+                        },
+                        {
+                            'id': 'eidas',
+                            'type': 'sign',
+                            'color': '#00FF00'
+                        },
+                        {
+                            'id': 'stamp',
+                            'type': 'sign',
+                            'color': '#808080'
+                        },
+                        {
+                            'id': 'visa',
+                            'type': 'visa',
+                            'color': '#135F7F'
+                        }
+                    ];
                 }
 
                 return true;
@@ -67,6 +95,34 @@ export class AuthGuard implements CanActivate {
                 return this.http.get('../rest/authenticationInformations')
                     .pipe(
                         map((data: any) => {
+                            // FOR TEST
+                            this.authService.signatureRoles = [
+                                {
+                                    'id': 'rgs_2stars',
+                                    'type': 'sign',
+                                    'color': '#FF0000'
+                                },
+                                {
+                                    'id': 'inca_card',
+                                    'type': 'sign',
+                                    'color': '#FFA500'
+                                },
+                                {
+                                    'id': 'eidas',
+                                    'type': 'sign',
+                                    'color': '#00FF00'
+                                },
+                                {
+                                    'id': 'stamp',
+                                    'type': 'sign',
+                                    'color': '#808080'
+                                },
+                                {
+                                    'id': 'visa',
+                                    'type': 'visa',
+                                    'color': '#135F7F'
+                                }
+                            ];
                             this.authService.authMode = data.connection;
                             this.authService.changeKey = data.changeKey;
                             this.localStorage.setAppSession(data.instanceId);

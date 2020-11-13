@@ -1,7 +1,9 @@
+import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoadingController, MenuController } from '@ionic/angular';
+import { AlertController, LoadingController, MenuController } from '@ionic/angular';
+import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.component';
@@ -12,6 +14,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 @Component({
     templateUrl: 'indexation.component.html',
     styleUrls: ['indexation.component.scss'],
+    providers: [DatePipe]
 })
 export class IndexationComponent implements OnInit {
 
@@ -24,6 +27,7 @@ export class IndexationComponent implements OnInit {
 
     constructor(
         public http: HttpClient,
+        private translate: TranslateService,
         public router: Router,
         private menu: MenuController,
         public signaturesService: SignaturesContentService,
@@ -31,6 +35,8 @@ export class IndexationComponent implements OnInit {
         public notificationService: NotificationService,
         public authService: AuthService,
         public loadingController: LoadingController,
+        public alertController: AlertController,
+        public datePipe: DatePipe,
     ) { }
 
     ngOnInit(): void {
@@ -50,22 +56,53 @@ export class IndexationComponent implements OnInit {
 
     onSubmit() {
         if (this.isValid()) {
-            this.loadingController.create({
-                message: 'Enregistrement ...',
-                spinner: 'dots'
-            }).then(async (load: HTMLIonLoadingElement) => {
-                load.present();
-                const objTosend = this.formatData();
-                for (let index = 0; index < objTosend.length; index++) {
-                    await this.saveDocument(objTosend[index], index);
-                }
-                load.dismiss();
-                if (this.errors.length === 0) {
-                    this.notificationService.success('Document(s) importé(s)');
-                    this.router.navigate(['/home']);
-                }
-            });
+            this.promptSaveDoc();
         }
+    }
+
+    async promptSaveDoc() {
+        const alert = await this.alertController.create({
+            cssClass: 'custom-alert-info',
+            header: this.translate.instant('lang.warning'),
+            message: this.translate.instant('lang.areYouSure'),
+            inputs: [
+                {
+                    name: 'note',
+                    id: 'note',
+                    type: 'textarea',
+                    placeholder: this.translate.instant('lang.addNote')
+                },
+            ],
+            buttons: [
+                {
+                    text: this.translate.instant('lang.cancel'),
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => { }
+                },
+                {
+                    text: this.translate.instant('lang.validate'),
+                    handler: (data: any) => {
+                        this.loadingController.create({
+                            message: 'Enregistrement ...',
+                            spinner: 'dots'
+                        }).then(async (load: HTMLIonLoadingElement) => {
+                            load.present();
+                            const objTosend = this.formatData(data.note);
+                            for (let index = 0; index < objTosend.length; index++) {
+                                await this.saveDocument(objTosend[index], index);
+                            }
+                            load.dismiss();
+                            if (this.errors.length === 0) {
+                                this.notificationService.success('Document(s) importé(s)');
+                                this.router.navigate(['/home']);
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+        await alert.present();
     }
 
     saveDocument(data: any, index: number) {
@@ -83,7 +120,17 @@ export class IndexationComponent implements OnInit {
         });
     }
 
-    formatData() {
+    formatData(note: string) {
+        let noteObj: any = null;
+
+        if (note !== '') {
+            const today: Date = new Date();
+            noteObj =  {
+                value : note,
+                creator : `${this.authService.user.firstname} ${this.authService.user.lastname}`,
+                creationDate : this.datePipe.transform(today, 'dd-MM-y')
+            };
+        }
         const formattedObj: any[] = [];
         const signedFiles = this.filesToUpload.filter((item: any) => item.mainDocument);
         const attachFiles = this.filesToUpload.filter((item: any) => !item.mainDocument);
@@ -94,6 +141,7 @@ export class IndexationComponent implements OnInit {
                 encodedDocument: file.content,
                 isZipped: false,
                 sender: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
+                notes: noteObj,
                 attachments: attachFiles.map((item: any) => {
                     return {
                         title: item.title,
@@ -103,7 +151,8 @@ export class IndexationComponent implements OnInit {
                 workflow: this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => {
                     return {
                         userId: item.userId,
-                        mode: item.mode
+                        mode: this.authService.getWorkflowMode(item.role),
+                        signatureMode: this.authService.getSignatureMode(item.role)
                     };
                 })
             });

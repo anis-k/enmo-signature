@@ -4,6 +4,7 @@ import { AlertController, PopoverController } from '@ionic/angular';
 import { NotificationService } from '../../../service/notification.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { AuthService } from '../../../service/auth.service';
 
 @Component({
     selector: 'app-visa-workflow-models',
@@ -21,6 +22,7 @@ export class VisaWorkflowModelsComponent implements OnInit {
         public popoverController: PopoverController,
         public alertController: AlertController,
         public notificationService: NotificationService,
+        public authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -43,9 +45,7 @@ export class VisaWorkflowModelsComponent implements OnInit {
                     text: 'Cancel',
                     role: 'cancel',
                     cssClass: 'secondary',
-                    handler: (blah) => {
-                        console.log('Confirm Cancel: blah');
-                    }
+                    handler: () => { }
                 }, {
                     text: 'Ok',
                     handler: (data: any) => {
@@ -70,8 +70,8 @@ export class VisaWorkflowModelsComponent implements OnInit {
             items: this.currentWorkflow.map((item: any) => {
                 return {
                     userId: item.userId,
-                    mode: item.mode,
-                    signatureMode: 'standard'
+                    mode: this.authService.getWorkflowMode(item.role),
+                    signatureMode: this.authService.getSignatureMode(item.role)
                 };
             })
         };
@@ -137,13 +137,13 @@ export class VisaWorkflowModelsComponent implements OnInit {
                     const obj: any = {
                         'userId': item.userId,
                         'userDisplay': item.userLabel,
-                        'mode': item.mode,
+                        'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
                         'processDate': null,
                         'current': false,
                         'modes': [
                             'visa',
                             'sign',
-                            'rgs'
+                            'stamp',
                         ]
                     };
                     return obj;
