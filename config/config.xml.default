@@ -25,4 +25,19 @@
             <contactInfo>Maarch SAS, société du groupe Archiveco</contactInfo>
         </certInfo>
     </electronicSignature>
+    <!-- Sort by the more secure to the less secure mode -->
+        <signatureModes>
+            <mode>
+                <id>rgs</id>
+                <color>#FF0000</color>
+            </mode>
+            <mode>
+                <id>card</id>
+                <color>#FFA500</color>
+            </mode>
+            <mode>
+                <id>eidas</id>
+                <color>#00FF00</color>
+            </mode>
+        </signatureModes>
 </ROOT>
