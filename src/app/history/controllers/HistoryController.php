@@ -141,7 +141,34 @@ class HistoryController
             'data'          => ['objectType' => 'main_documents']
         ]);
 
+        $data = $request->getQueryParams();
+        if (!isset($data['mode']) || $data['mode'] == 'json') {
+            return $response->withJson(['history' => $formattedHistory]);
+        } else {
+            $xml = HistoryController::arrayToXml(['data' => $formattedHistory, 'xml' => false]);
+            $response->write($xml);
+            $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch_history.xml");
+            return $response->withHeader('Content-Type', 'application/xml');
+        }
+
         return $response->withJson(['history' => $formattedHistory]);
+    }
+
+    public static function arrayToxml($args = [])
+    {
+        if ($args['xml'] === false) {
+            $args['xml'] = new \SimpleXMLElement('<root/>');
+        }
+    
+        foreach ($args['data'] as $key => $value) {
+            if (is_array($value)) {
+                HistoryController::arrayToxml(['data' => $value, 'xml' => $args['xml']->addChild($key)]);
+            } else {
+                $args['xml']->addChild($key, $value);
+            }
+        }
+    
+        return $args['xml']->asXML();
     }
 
     public function getByUserId(Request $request, Response $response, array $args)

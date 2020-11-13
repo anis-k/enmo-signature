@@ -51,3 +51,9 @@ END$$;
 
 ALTER TABLE users DROP COLUMN IF EXISTS signature_modes;
 ALTER TABLE users ADD COLUMN signature_modes jsonb DEFAULT '["stamp"]';
+
+-- ALTER TABLE workflows DROP COLUMN IF EXISTS digital_signature_id;
+-- ALTER TABLE workflows ADD COLUMN digital_signature_id text;
+
+-- ALTER TABLE main_documents DROP COLUMN IF EXISTS digital_signature_transaction_id;
+-- ALTER TABLE main_documents ADD COLUMN digital_signature_transaction_id text;

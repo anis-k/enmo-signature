@@ -232,16 +232,28 @@ class DocumentController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $adr = AdrModel::getDocumentsAdr([
-            'select'    => ['path', 'filename', 'fingerprint'],
-            'where'     => ['main_document_id = ?', 'type = ?'],
-            'data'      => [$args['id'], 'DOC']
-        ]);
+        $queryParams = $request->getQueryParams();
+
+        if ($queryParams['eSignDocument']) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'    => ['path', 'filename', 'fingerprint', 'type'],
+                'where'     => ['main_document_id = ?', 'type = ?'],
+                'data'      => [$args['id'], 'ESIGN']
+            ]);
+        }
+        if (empty($adr)) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'    => ['path', 'filename', 'fingerprint', 'type'],
+                'where'     => ['main_document_id = ?', 'type = ?'],
+                'data'      => [$args['id'], 'DOC']
+            ]);
+        }
+
         if (empty($adr[0])) {
             return $response->withJson(['encodedDocument' => null]);
         }
 
-        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        $docserver = DocserverModel::getByType(['type' => $adr[0]['type'], 'select' => ['path']]);
         if (empty($docserver['path']) || !file_exists($docserver['path'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
         }
@@ -434,6 +446,16 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $e->getMessage()]);
         }
 
+        $loadedXml = CoreConfigModel::getConfig();
+        $workflow  = WorkflowModel::get([
+            'select'  => ['id', 'user_id'],
+            'where'   => ['mode = ?', 'main_document_id = ?'],
+            'data'    => ['sign', $id],
+            'orderBy' => ['"order" asc']
+        ]);
+        if ($loadedXml->docaposteSignature->enable == 'true' && !empty($workflow)) {
+            DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
+        }
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
         $configPath = CoreConfigModel::getConfigPath();
@@ -454,7 +476,11 @@ class DocumentController
 
         $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id'], 'documentId' => $args['id']]);
 
+        // TODO Wait for digital signature development
+        // $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id', 'digital_signature_id'], 'documentId' => $args['id']]);
+
         $body = $request->getParsedBody();
+        $loadedXml = CoreConfigModel::getConfig();
         if (!empty($body['signatures'])) {
             foreach ($body['signatures'] as $signature) {
                 foreach (['encodedImage', 'width', 'positionX', 'positionY', 'page', 'type'] as $value) {
@@ -544,7 +570,6 @@ class DocumentController
             }
 
             if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
-                $loadedXml = CoreConfigModel::getConfig();
                 if ($loadedXml->electronicSignature->enable == 'true') {
                     $certPath       = realpath((string)$loadedXml->electronicSignature->certPath);
                     $privateKeyPath = realpath((string)$loadedXml->electronicSignature->privateKeyPath);
@@ -603,6 +628,109 @@ class DocumentController
             foreach ($pages as $page) {
                 exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
             }
+        }
+        if ($workflow['mode'] == 'visa' && !empty($body['signatures']) && $loadedXml->docaposteSignature->enable == 'true') {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['main_document_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'DOC']
+            ]);
+            $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $storeInfos = DocserverController::storeResourceOnDocServer([
+                'encodedFile'       => base64_encode(file_get_contents($pathToDocument)),
+                'format'            => 'pdf',
+                'docserverType'     => 'ESIGN'
+            ]);
+            if (!empty($storeInfos['errors'])) {
+                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+            }
+            AdrModel::deleteDocumentAdr([
+                'where' => ['main_document_id = ?', 'type = ?'],
+                'data'  => [$args['id'], 'ESIGN']
+            ]);
+            AdrModel::createDocumentAdr([
+                'documentId'    => $args['id'],
+                'type'          => 'ESIGN',
+                'path'          => $storeInfos['path'],
+                'filename'      => $storeInfos['filename'],
+                'fingerprint'   => $storeInfos['fingerprint']
+            ]);
+        } elseif (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->docaposteSignature->enable == 'true') {
+            $imageSignature = false;
+
+            $adr = AdrModel::getDocumentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['main_document_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'ESIGN']
+            ]);
+            $docserver      = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $libDir         = CoreConfigModel::getLibrariesDirectory();
+            $tmpPath        = CoreConfigModel::getTmpPath();
+            if (!empty($libDir) && is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
+                require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
+
+                $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
+                $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
+                $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
+
+                $pages = $document->getCatalog()->getPages();
+                $pageCount = $pages->count();
+
+                for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+                    $page = $pages->getPage($pageNumber);
+
+                    $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
+                    foreach ($body['signatures'] as $key => $signature) {
+                        if ($signature['page'] == $pageNumber) {
+                            $image = base64_decode($signature['encodedImage']);
+                            if ($image === false) {
+                                return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
+                            }
+                            
+                            $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
+                            if ($signature['type'] == 'SVG') {
+                                $im = new \Imagick();
+                                $im->readImageBlob($image);
+                                $im->setImageFormat("png24");
+                                $im->writeImage($imageTmpPath);
+                                $im->clear();
+                                $im->destroy();
+                            } else {
+                                file_put_contents($imageTmpPath, $image);
+                                if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
+                                    $signWidth = $format['width'];
+                                    $signPosX = 0;
+                                    $signPosY = 0;
+                                } else {
+                                    $signWidth = ($signature['width'] * $format['width']) / 100;
+                                    $signPosX  = ($signature['positionX'] * $format['width']) / 100;
+                                    $signPosY  = ($signature['positionY'] * $format['height']) / 100;
+                                }
+                                DigitalSignatureController::signHashes([
+                                    'signatureId'   => $workflow['digital_signature_id'],
+                                    'documentId'    => $args['id'],
+                                    'signatureInfo' => [
+                                        'page'          => $signature['page'],
+                                        'positionX'     => $signPosX,
+                                        'positionY'     => $signPosY,
+                                        'filePath'      => $imageTmpPath,
+                                        'signWidth'     => $signWidth
+                                    ],
+                                    'isLastSignature' => !isset($body['signatures'][$key + 1])
+                                ]);
+                                $imageSignature = true;
+                            }
+                        }
+                    }
+                }
+            }
+            if (!$imageSignature) {
+                DigitalSignatureController::signHashes(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id'], 'isLastSignature' => true]);
+            }
+        } elseif (DocumentController::ACTIONS[$args['actionId']] == 'REF' && $workflow['mode'] == 'sign' && $loadedXml->docaposteSignature->enable == 'true') {
+            DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
         }
 
         $set = ['process_date' => 'CURRENT_TIMESTAMP', 'status' => DocumentController::ACTIONS[$args['actionId']]];
