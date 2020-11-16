@@ -43,12 +43,11 @@ export class SearchComponent implements OnInit {
         public alertController: AlertController,
     ) { }
 
-    ngOnInit(): void {
-        this.menu.enable(true, 'left-menu');
-        this.menu.enable(true, 'right-menu');
-    }
+    ngOnInit(): void { }
 
     ionViewWillEnter() {
+        this.menu.enable(true, 'left-menu');
+        this.menu.enable(true, 'right-menu');
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
     }
 

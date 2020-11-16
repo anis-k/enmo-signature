@@ -18,3 +18,11 @@
 .no-background {
     --background: none;
 }
+
+::ng-deep.alert-info-no-msg .alert-message {
+    display: none;
+}
+
+::ng-deep.alert-info-no-msg .alert-title {
+    color: var(--ion-color-primary);
+}

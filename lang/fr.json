@@ -165,7 +165,7 @@
 		"noResult": "Aucun résultat",
 		"circuit": "Circuit",
 		"actions": "Actions",
-		"addNote": "Ajouter un commentaire",
+		"addNote": "Ajouter une annotation",
 		"filterInfo": "Filtrer par objet / référence",
 		"attachment": "annexe",
 		"deleteSubstitution": "Supprimer la délégation",
@@ -321,6 +321,8 @@
 		"rgs_2starsUser": "Signataire (rgs**)",
 		"inca_card": "Carte agent",
 		"eidas": "Eidas",
-		"rgs_2stars": "Rgs**"
+		"rgs_2stars": "Rgs**",
+		"docToSign": "Document à signer",
+		"attachDocToSign": "Annexe attaché au(x) document(s) à signer"
 	}
 }

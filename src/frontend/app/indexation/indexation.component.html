@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-back-button></ion-back-button>
+            <ion-menu-button></ion-menu-button>
         </ion-buttons>
         <ion-title class="ion-text-center">{{'lang.newDocumentToVisa' | translate}}</ion-title>
     </ion-toolbar>
@@ -15,15 +15,20 @@
             <ion-item *ngFor="let file of filesToUpload;let i=index">
                 <ion-buttons slot="start">
                     <ion-button fill="clear" slot="icon-only" shape="round" color="primary"
-                        [title]="file.mainDocument ? 'Document à signer' : 'Pièce jointe'"
+                        [title]="file.mainDocument ? ('lang.docToSign' | translate) : ('lang.attachDocToSign' | translate)"
                         (click)="file.mainDocument=!file.mainDocument">
                         <ion-icon *ngIf="file.mainDocument" slot="icon-only" name="pencil-outline"></ion-icon>
                         <ion-icon *ngIf="!file.mainDocument" slot="icon-only" name="document-attach-outline"></ion-icon>
                     </ion-button>
                 </ion-buttons>
-                <ion-icon *ngIf="file.type === 'attachment'" color="primary" slot="start" name="document-attach-outline"
-                    title="Pièce jointe"></ion-icon>
-                <ion-input placeholder="Nom du fichier" matInput type="text" [(ngModel)]="file.title"></ion-input>
+                <ion-item style="width: 100%;">
+                    <ion-label position="floating" color="secondary">{{'lang.reference' | translate}}</ion-label>
+                    <ion-input placeholder="Référence du fichier" matInput type="text" [(ngModel)]="file.reference" [disabled]="!file.mainDocument"></ion-input>
+                </ion-item>
+                <ion-item style="width: 100%;">
+                    <ion-label position="floating" color="secondary">{{'lang.label' | translate}} *</ion-label>
+                    <ion-input placeholder="Nom du fichier" matInput type="text" [(ngModel)]="file.title"></ion-input>
+                </ion-item>
                 <ion-buttons slot="end">
                     <ion-button fill="clear" slot="icon-only" shape="round" color="danger"
                         [title]="'lang.delete' | translate" (click)="deleteFile(i)">

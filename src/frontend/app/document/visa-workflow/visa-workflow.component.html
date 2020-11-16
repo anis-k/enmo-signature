@@ -44,6 +44,14 @@
                 <img [src]="diffusion.userPicture">
             </ion-avatar>
             <ion-label>
+                <p *ngIf="diffusion.processDate !== null" [title]="diffusion.processDate"
+                    class="processDate">
+                    {{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
+                    {{diffusion.processDate}}
+                </p>
+                <p class="secondary" *ngIf="diffusion.current && diffusion.userId !== authService.user.id">{{'lang.substituteMsg' | translate}}</p>
+                <h2 [title]="diffusion.userDisplay" *ngIf="diffusion.userDisplay !== ''">{{diffusion.userDisplay}}</h2>
+                <h2 [title]="diffusion.userDisplay" class="danger" *ngIf="diffusion.userDisplay === ''">{{'lang.userDeleted' | translate}}</h2>
                 <p *ngIf="diffusion.processDate === null" style="display: flex;justify-content: start;">
                     <ion-select  [(ngModel)]="diffusion.role"
                         [title]="'lang.' + diffusion.role + 'User' | translate" interface="popover"
@@ -54,19 +62,13 @@
                         </ion-select-option>
                     </ion-select>
                 </p>
-                <p *ngIf="diffusion.processDate !== null" [title]="diffusion.processDate"
-                    class="processDate">
-                    {{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
-                    {{diffusion.processDate}}
-                </p>
-                <p class="secondary" *ngIf="diffusion.current && diffusion.userId !== authService.user.id">{{'lang.substituteMsg' | translate}}</p>
-                <h2 [title]="diffusion.userDisplay" *ngIf="diffusion.userDisplay !== ''">{{diffusion.userDisplay}}</h2>
-                <h2 [title]="diffusion.userDisplay" class="danger" *ngIf="diffusion.userDisplay === ''">{{'lang.userDeleted' | translate}}</h2>
             </ion-label>
             <ion-icon *ngIf="!editMode && diffusion.current" color="success" slot="end" name="caret-back-outline"></ion-icon>
-            <ion-button *ngIf="editMode" fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
-                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-            </ion-button>
+            <ion-buttons slot="end">
+                <ion-button style="z-index: 9999" *ngIf="editMode" fill="clear" slot="icon-only" shape="round" color="danger" (click)="$event.stopPropagation();removeUser(i)">
+                    <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                </ion-button>
+            </ion-buttons>
         </ion-item>
     </ion-reorder-group>
 </ion-content>

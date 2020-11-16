@@ -39,14 +39,12 @@ export class IndexationComponent implements OnInit {
         public datePipe: DatePipe,
     ) { }
 
-    ngOnInit(): void {
-        this.menu.enable(true, 'left-menu');
-        // this.menu.open('left-menu');
-        this.menu.enable(true, 'right-menu');
-        // this.menu.open('right-menu');
-    }
+    ngOnInit(): void { }
 
     ionViewWillEnter() {
+        this.menu.enable(true, 'left-menu');
+        this.menu.enable(true, 'right-menu');
+
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
     }
 
@@ -62,9 +60,8 @@ export class IndexationComponent implements OnInit {
 
     async promptSaveDoc() {
         const alert = await this.alertController.create({
-            cssClass: 'custom-alert-info',
-            header: this.translate.instant('lang.warning'),
-            message: this.translate.instant('lang.areYouSure'),
+            cssClass: 'alert-info-no-msg',
+            header: this.translate.instant('lang.areYouSure'),
             inputs: [
                 {
                     name: 'note',
@@ -121,25 +118,33 @@ export class IndexationComponent implements OnInit {
     }
 
     formatData(note: string) {
+        const today: Date = new Date();
         let noteObj: any = null;
+        let linkId: string = null;
 
         if (note !== '') {
-            const today: Date = new Date();
             noteObj =  {
                 value : note,
                 creator : `${this.authService.user.firstname} ${this.authService.user.lastname}`,
                 creationDate : this.datePipe.transform(today, 'dd-MM-y')
             };
         }
+
         const formattedObj: any[] = [];
         const signedFiles = this.filesToUpload.filter((item: any) => item.mainDocument);
         const attachFiles = this.filesToUpload.filter((item: any) => !item.mainDocument);
 
+        if (signedFiles.length > 1) {
+            linkId = this.datePipe.transform(today, 'ddMMYhmmss') + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
         signedFiles.forEach((file: any) => {
             formattedObj.push({
                 title: file.title,
+                reference : this.datePipe.transform(today, 'y/MM/dd') + '/' + file.reference,
                 encodedDocument: file.content,
                 isZipped: false,
+                linkId: linkId,
                 sender: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
                 notes: noteObj,
                 attachments: attachFiles.map((item: any) => {
@@ -177,6 +182,7 @@ export class IndexationComponent implements OnInit {
             for (let index = 0; index < fileInput.target.files.length; index++) {
                 let file = {
                     title: fileInput.target.files[index].name,
+                    reference: fileInput.target.files[index].name,
                     mainDocument: true,
                     content: ''
                 };
@@ -184,6 +190,7 @@ export class IndexationComponent implements OnInit {
                 reader.readAsArrayBuffer(fileInput.target.files[index]);
                 reader.onload = (value: any) => {
                     file.mainDocument = this.filesToUpload.length === 0;
+                    file.reference = this.filesToUpload.length === 0 ? file.reference : '',
                     file.content = this.getBase64Document(value.target.result);
                     this.filesToUpload.push(file);
                 };
