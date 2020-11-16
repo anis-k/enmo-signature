@@ -315,6 +315,12 @@
 		"chooseDocuments": "Choisir des fichiers (pdf uniquement)",
 		"dndDocuments": "ou glisser-déposer des fichiers",
 		"stamp": "Signature avec griffe",
-		"stampUser": "Signataire (griffe)"
+		"stampUser": "Signataire (griffe)",
+		"inca_cardUser": "Signataire (carte agent)",
+		"eidasUser": "Signataire (eidas)",
+		"rgs_2starsUser": "Signataire (rgs**)",
+		"inca_card": "Carte agent",
+		"eidas": "Eidas",
+		"rgs_2stars": "Rgs**"
 	}
 }
