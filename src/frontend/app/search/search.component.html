@@ -1,0 +1,105 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center">{{'lang.search' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-virtual-scroll [items]="ressources" approxItemHeight="110px">
+            <ion-item *virtualItem="let element">
+                <ion-label>
+                    <ion-toolbar color="light">
+                        <ion-title size="small">
+                            <p style="display: flex;align-items: center;white-space: pre;overflow: auto;">
+                                <span class="workflow-item success">Bernard Blier&nbsp;<ion-badge color="medium">viseur
+                                    </ion-badge></span>
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                                <span class="workflow-item success">Bernard Blier&nbsp;<ion-badge color="medium">viseur
+                                    </ion-badge></span>
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                                <span class="workflow-item" style="font-weight:bold">Bernard Blier&nbsp;<ion-badge
+                                        color="medium">viseur</ion-badge></span>
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                                <span class="workflow-item" style="opacity: 0.5;">Bernard Blier&nbsp;<ion-badge
+                                        color="medium">
+                                        viseur</ion-badge></span>
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                                <span class="workflow-item" style="opacity: 0.5;">Bernard Blier&nbsp;<ion-badge
+                                        color="medium">
+                                        signataire</ion-badge></span>
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                                <span class="workflow-item" style="opacity: 0.5;">Bernard Blier&nbsp;<ion-badge
+                                        color="medium">
+                                        viseur</ion-badge></span>
+                            </p>
+                        </ion-title>
+                    </ion-toolbar>
+                    <ion-item-sliding #slidingItem>
+                        <ion-item lines="none">
+                            <ion-icon color="primary" slot="start" name="checkmark-done-outline"></ion-icon>
+                            <ion-label>
+                                <p>MAARCH/2020A/1</p>
+                                <h2>Réservation Bal des basketteurs</h2>
+                            </ion-label>
+                            <ion-buttons slot="end">
+                                <ion-button slot="icon-only" fill="clear" shape="round"
+                                    (click)="slidingItem.open('end')">
+                                    <ion-icon color="medium" slot="icon-only" name="arrow-back-outline"></ion-icon>
+                                </ion-button>
+                            </ion-buttons>
+
+                        </ion-item>
+                        <ion-item-options>
+                            <ion-item-option color="primary">
+                                <ion-icon slot="bottom" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
+                                Télécharger Preuve
+                            </ion-item-option>
+                            <ion-item-option color="primary">
+                                <ion-icon slot="bottom" name="archive"></ion-icon>
+                                Actions
+                            </ion-item-option>
+                        </ion-item-options>
+                    </ion-item-sliding>
+
+                </ion-label>
+            </ion-item>
+        </ion-virtual-scroll>
+    </ion-list>
+</ion-content>
+<ion-footer class="ion-no-border">
+    <div class="ion-text-center" style="background: white;">
+        <ion-button color="primary" shape="round" size="large" fill="outline">
+            <ion-label style="font-size: 13px;">{{'lang.search' | translate}}</ion-label>
+        </ion-button>
+    </div>
+</ion-footer>
+<ng-template #rightContent>
+    <ion-header [translucent]="true">
+        <ion-toolbar color="primary">
+            <ion-buttons slot="start">
+                <ion-back-button></ion-back-button>
+            </ion-buttons>
+            <ion-title class="ion-text-center">Filtre(s)</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+            <ion-item>
+                <ion-label position="floating" color="secondary">Référence</ion-label>
+                <ion-input></ion-input>
+              </ion-item>
+            <ion-item>
+              <ion-label position="floating" color="secondary">État du circuit</ion-label>
+              <ion-select placeholder="Select One">
+                <ion-select-option value="">Tous</ion-select-option>
+                <ion-select-option value="1">En cours</ion-select-option>
+                <ion-select-option value="2">Interrompu</ion-select-option>
+                <ion-select-option value="3">Terminé</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+    </ion-content>
+</ng-template>

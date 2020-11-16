@@ -20,6 +20,7 @@ import { PasswordModificationComponent } from './login/passwordModification/pass
 import { ProfileComponent } from './profile/profile.component';
 import { HomeComponent } from './home/home.component';
 import { IndexationComponent } from './indexation/indexation.component';
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
     imports: [
@@ -27,6 +28,7 @@ import { IndexationComponent } from './indexation/indexation.component';
     { path: 'home', canActivate: [AuthGuard], component: HomeComponent },
     { path: 'indexation', canActivate: [AuthGuard], component: IndexationComponent },
     { path: 'profile', canActivate: [AuthGuard], component: ProfileComponent },
+    { path: 'search', canActivate: [AuthGuard], component: SearchComponent },
     { path: 'administration', canActivate: [AuthGuard], component: AdministrationComponent },
     { path: 'administration/users', canActivate: [AuthGuard], component: UsersListComponent },
     { path: 'administration/users/new', canActivate: [AuthGuard], component: UserComponent },

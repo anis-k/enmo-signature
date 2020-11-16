@@ -21,7 +21,10 @@
             </ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-            <ion-button (click)="openIndexation()" [title]="'lang.newDocumentToVisa' | translate">
+            <ion-button (click)="openSearch()" [title]="'lang.search' | translate">
+                <ion-icon slot="icon-only" name="search-outline"></ion-icon>
+            </ion-button>
+            <ion-button *ngIf="canIndex()" (click)="openIndexation()" [title]="'lang.newDocumentToVisa' | translate">
                 <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
             </ion-button>
         </ion-buttons>

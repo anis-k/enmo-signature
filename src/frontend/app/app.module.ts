@@ -52,6 +52,7 @@ import { MainDocumentDetailComponent } from './document/main-document-detail/mai
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 import { PasswordModificationComponent } from './login/passwordModification/password-modification.component';
 import { VisaWorkflowModelsComponent } from './document/visa-workflow/models/visa-workflow-models.component';
+import { SearchComponent } from './search/search.component';
 
 // ADMINISTRATION
 import { AdminSidebarComponent } from './sidebar/administration/admin-sidebar.component';
@@ -128,7 +129,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     CheckConnectionComponent,
     CheckEmailConnectionComponent,
     IndexationComponent,
-    VisaWorkflowModelsComponent
+    VisaWorkflowModelsComponent,
+    SearchComponent
   ],
   imports: [
     FormsModule,

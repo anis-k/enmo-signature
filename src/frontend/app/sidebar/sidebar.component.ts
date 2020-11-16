@@ -97,6 +97,10 @@ export class SidebarComponent implements OnInit {
         this.router.navigate(['/indexation']);
     }
 
+    openSearch() {
+        this.router.navigate(['/search']);
+    }
+
     search() {
         this.searchMode = true;
         this.signaturesService.mode = '';
@@ -153,5 +157,9 @@ export class SidebarComponent implements OnInit {
 
     isAdminRoute() {
         return this.router.url.split('/').indexOf('administration') > -1;
+    }
+
+    canIndex() {
+        return this.authService.user.appPrivileges.map((item: any) => item.id).indexOf('indexation') > -1;
     }
 }

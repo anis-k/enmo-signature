@@ -1,0 +1,19 @@
+.line-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-gap: 10px;
+    width: 100%;
+}
+
+.line-workflow {
+    font-size: 12px;
+}
+
+.success {
+    color : var(--ion-color-success);
+}
+
+.workflow-item {
+    display: flex;
+    align-items: center;
+}
