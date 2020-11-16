@@ -14,35 +14,39 @@
                     <ion-toolbar color="light">
                         <ion-title size="small">
                             <p style="display: flex;align-items: center;white-space: pre;overflow: auto;">
-                                <span class="workflow-item success">Bernard Blier&nbsp;<ion-badge color="medium">viseur
-                                    </ion-badge></span>
-                                <ion-icon name="chevron-forward-outline"></ion-icon>
-                                <span class="workflow-item success">Bernard Blier&nbsp;<ion-badge color="medium">viseur
-                                    </ion-badge></span>
-                                <ion-icon name="chevron-forward-outline"></ion-icon>
-                                <span class="workflow-item" style="font-weight:bold">Bernard Blier&nbsp;<ion-badge
-                                        color="medium">viseur</ion-badge></span>
-                                <ion-icon name="chevron-forward-outline"></ion-icon>
-                                <span class="workflow-item" style="opacity: 0.5;">Bernard Blier&nbsp;<ion-badge
-                                        color="medium">
-                                        viseur</ion-badge></span>
-                                <ion-icon name="chevron-forward-outline"></ion-icon>
-                                <span class="workflow-item" style="opacity: 0.5;">Bernard Blier&nbsp;<ion-badge
-                                        color="medium">
-                                        signataire</ion-badge></span>
-                                <ion-icon name="chevron-forward-outline"></ion-icon>
-                                <span class="workflow-item" style="opacity: 0.5;">Bernard Blier&nbsp;<ion-badge
-                                        color="medium">
-                                        viseur</ion-badge></span>
+                                <ng-container *ngFor="let itemW of element.workflow;let i=index;">
+                                    <ion-icon *ngIf="i>0" name="chevron-forward-outline"></ion-icon>
+                                    <span class="workflow-item success" [class.success]="itemW.processDate!==null"
+                                        [class.typist-interrupt]="itemW.status==='REF'"
+                                        [class.interrupt]="itemW.processDate===null && itemW.status==='END'"
+                                        [class.current]="itemW.current"
+                                        [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">Bernard
+                                        Blier&nbsp;
+                                        <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF'"
+                                            name="thumbs-up-outline"></ion-icon>
+                                        <ion-icon *ngIf="itemW.processDate!==null && itemW.status==='REF'"
+                                            name="thumbs-down-outline"></ion-icon>
+                                        <ion-badge
+                                            *ngIf="itemW.processDate===null && (itemW.status===null || itemW.status==='END')"
+                                            color="medium">{{itemW.mode}}</ion-badge>
+                                    </span>
+                                </ng-container>
                             </p>
                         </ion-title>
                     </ion-toolbar>
                     <ion-item-sliding #slidingItem>
                         <ion-item lines="none">
-                            <ion-icon color="primary" slot="start" name="checkmark-done-outline"></ion-icon>
+                            <ion-icon *ngIf="element.mode == 'sign'" color="primary" slot="start" name="pencil-outline">
+                            </ion-icon>
+                            <ion-icon *ngIf="element.mode == 'visa'" color="primary" slot="start"
+                                name="checkmark-done-outline">
+                            </ion-icon>
+                            <ion-icon *ngIf="element.mode == 'note'" color="primary" slot="start"
+                                name="chatbubble-ellipses-outline">
+                            </ion-icon>
                             <ion-label>
-                                <p>MAARCH/2020A/1</p>
-                                <h2>Réservation Bal des basketteurs</h2>
+                                <p>{{element.reference}}</p>
+                                <h2>{{element.title}}</h2>
                             </ion-label>
                             <ion-buttons slot="end">
                                 <ion-button slot="icon-only" fill="clear" shape="round"
@@ -90,16 +94,16 @@
             <ion-item>
                 <ion-label position="floating" color="secondary">Référence</ion-label>
                 <ion-input></ion-input>
-              </ion-item>
-            <ion-item>
-              <ion-label position="floating" color="secondary">État du circuit</ion-label>
-              <ion-select placeholder="Select One">
-                <ion-select-option value="">Tous</ion-select-option>
-                <ion-select-option value="1">En cours</ion-select-option>
-                <ion-select-option value="2">Interrompu</ion-select-option>
-                <ion-select-option value="3">Terminé</ion-select-option>
-              </ion-select>
             </ion-item>
-          </ion-list>
+        </ion-list>
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary">État du circuit</ion-label>
+            </ion-list-header>
+            <ion-item *ngFor="let val of worfklowState">
+                <ion-label>{{val}}</ion-label>
+                <ion-checkbox slot="end"></ion-checkbox>
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ng-template>

@@ -21,11 +21,242 @@ export class SearchComponent implements OnInit {
     filesToUpload: any[] = [];
     errors: any[] = [];
 
-    ressources = Array.from({ length: 5000 }).map((_, i) => {
+    worfklowState: any[] = [
+        'VAL', 'END', 'INTERRUPT', 'INPROGRESS'
+    ];
+
+    /* ressources = Array.from({ length: 1 }).map((_, i) => {
         return {
-          resId: i
+            'id': 36,
+            'title': 'recommande_2D_000_000_0003_1.pdf',
+            'reference': 'blabla',
+            'mode': 'sign',
+            'workflow': [
+                {
+                  'userId': 3,
+                  'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                  'mode': 'visa',
+                  'processDate': null,
+                  'current': true,
+                  'signatureMode': 'stamp',
+                  'userSignatureModes': [
+                    'stamp'
+                  ]
+                },
+                {
+                  'userId': 1,
+                  'userDisplay': 'Jenny JANE-SUR-SAINT-ETIENNE',
+                  'mode': 'sign',
+                  'processDate': null,
+                  'current': false,
+                  'signatureMode': 'stamp',
+                  'userSignatureModes': [
+                    'stamp',
+                    'eidas',
+                    'inca_card',
+                    'rgs_2stars'
+                  ]
+                }
+              ],
         };
-      });
+      }); */
+
+    ressources: any[] = [
+        {
+            'id': 36,
+            'title': 'recommande_2D_000_000_0003_1.pdf',
+            'reference': 'blabla',
+            'mode': 'sign',
+            'workflow': [
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': null,
+                    'status': null,
+                    'current': true,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 1,
+                    'userDisplay': 'Jenny JANE-SUR-SAINT-ETIENNE',
+                    'mode': 'sign',
+                    'processDate': null,
+                    'status': null,
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp',
+                        'eidas',
+                        'inca_card',
+                        'rgs_2stars'
+                    ]
+                }
+            ],
+        },
+        {
+            'id': 2,
+            'title': 'bidule',
+            'reference': 'efzfefe',
+            'mode': 'visa',
+            'workflow': [
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'VAL',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 1,
+                    'userDisplay': 'Jenny JANE-SUR-SAINT-ETIENNE',
+                    'mode': 'sign',
+                    'processDate': null,
+                    'status': null,
+                    'current': true,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp',
+                        'eidas',
+                        'inca_card',
+                        'rgs_2stars'
+                    ]
+                }
+            ],
+        },
+        {
+            'id': 2,
+            'title': 'bidule',
+            'reference': 'efzfefe',
+            'mode': 'visa',
+            'workflow': [
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'VAL',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'VAL',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'VAL',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+            ],
+        },
+        {
+            'id': 2,
+            'title': 'bidule',
+            'reference': 'efzfefe',
+            'mode': 'visa',
+            'workflow': [
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'VAL',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'VAL',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': '2020-11-13 19:11:52.066616',
+                    'status': 'REF',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': null,
+                    'status': 'END',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': null,
+                    'status': 'END',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                },
+                {
+                    'userId': 3,
+                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
+                    'mode': 'visa',
+                    'processDate': null,
+                    'status': 'END',
+                    'current': false,
+                    'signatureMode': 'stamp',
+                    'userSignatureModes': [
+                        'stamp'
+                    ]
+                }
+            ],
+        },
+    ];
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;

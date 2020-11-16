@@ -17,3 +17,22 @@
     display: flex;
     align-items: center;
 }
+
+.no-visa {
+    opacity: 0.3;
+}
+
+.current {
+    font-weight: bold;
+    color: var(--ion-color-primary);
+    font-size: 130%;
+}
+
+.typist-interrupt {
+    color: var(--ion-color-danger);
+}
+
+.interrupt {
+    color: var(--ion-color-danger);
+    text-decoration: line-through;
+}
