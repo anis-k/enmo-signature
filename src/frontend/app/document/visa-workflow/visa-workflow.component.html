@@ -55,7 +55,7 @@
                 <p *ngIf="diffusion.processDate === null" style="display: flex;justify-content: start;">
                     <ion-select  [(ngModel)]="diffusion.role"
                         [title]="'lang.' + diffusion.role + 'User' | translate" interface="popover"
-                        [interfaceOptions]="customPopoverOptions" [style.color]="getRole(diffusion.role).color"
+                        [interfaceOptions]="customPopoverOptions" [style.color]="getRole(diffusion.role)?.color"
                         [disabled]="!editMode" style="width: auto;max-width: 100%;padding-left:0px;">
                         <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">
                             {{'lang.' + mode + 'User' | translate}}

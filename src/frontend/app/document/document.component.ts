@@ -308,16 +308,14 @@ export class DocumentComponent implements OnInit {
                             this.mainDocument = data.document;
 
                             this.mainDocument.workflow = this.mainDocument.workflow.map((item: any) => {
+                                item.userSignatureModes.unshift('visa');
                                 return {
                                     ...item,
                                     'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
-                                    'modes': [
-                                        'visa',
-                                        'sign',
-                                        'stamp',
-                                    ]
+                                    'modes': item.userSignatureModes
                                 };
                             });
+                            console.log(this.mainDocument.workflow);
 
                             this.totalPages = this.mainDocument.pages;
 

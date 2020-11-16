@@ -350,7 +350,7 @@ class DocumentController
             $body['workflow'][$key]['userId'] = $processingUser['id'];
         }
 
-        $isZipped = !isset($body['isZipped']) || $body['isZipped'] ? true : false;
+        $isZipped = (!isset($body['isZipped']) || $body['isZipped']) ? true : false;
 
         if ($isZipped) {
             $encodedDocument = DocumentController::getEncodedDocumentFromEncodedZip(['encodedZipDocument' => $body['encodedDocument']]);

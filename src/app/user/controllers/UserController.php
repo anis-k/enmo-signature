@@ -199,11 +199,13 @@ class UserController
             if (!Validator::arrayType()->validate($body['signatureModes'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
             }
-            foreach ($body['signatureModes'] as $key => $signatureMode) {
-                if (!SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
-                    return $response->withStatus(400)->withJson(['errors' => "Body signatureModes[{$key}] is not a valid signature mode"]);
+            $modes = [];
+            foreach ($body['signatureModes'] as $signatureMode) {
+                if (SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
+                    $modes[] = $signatureMode;
                 }
             }
+            $set['signature_modes'] = $modes;
             WorkflowModel::update([
                 'set'   => ['signature_mode' => 'stamp'],
                 'where' => ['user_id = ?', 'signature_mode not in (?)', 'process_date is null', 'signature_mode != ?'],
@@ -664,7 +666,7 @@ class UserController
             $user['preferences']                = json_decode($user['preferences'], true);
             $user['availableLanguages']         = LanguageController::getAvailableLanguages();
             $user['administrativePrivileges']   = PrivilegeController::getPrivilegesByUserId(['userId' => $args['id'], 'type' => 'admin']);
-            $user['appPrivileges'] = PrivilegeController::getPrivilegesByUserId(['userId' => $args['id'], 'type' => 'simple']);
+            $user['appPrivileges']              = PrivilegeController::getPrivilegesByUserId(['userId' => $args['id'], 'type' => 'simple']);
             if (!empty($user['substitute'])) {
                 $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
             }

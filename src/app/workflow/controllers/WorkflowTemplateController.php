@@ -20,6 +20,7 @@ use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowTemplateItemModel;
@@ -49,20 +50,21 @@ class WorkflowTemplateController
             return $response->withStatus(403)->withJson(['errors' => 'Workflow template out of perimeter']);
         }
 
+        $validSignatureModes = CoreConfigModel::getSignatureModes();
+        $validSignatureModes = array_column($validSignatureModes, 'id');
+
         $rawWorkflowTemplatesUsers = WorkflowTemplateItemModel::get(['select' => ['*'], 'where' => ['workflow_template_id = ?'], 'data' => [$args['id']], 'orderBy' => ['order']]);
         $workflowTemplatesUsers = [];
         foreach ($rawWorkflowTemplatesUsers as $value) {
-            $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $value['user_id']]);
-
-            $userSignaturesModes = UserModel::getById(['id' => $value['user_id'], 'select' => ['signature_modes']]);
+            $user = UserModel::getById(['id' => $value['user_id'], 'select' => ['signature_modes']]);
 
             $workflowTemplatesUsers[] = [
                 'userId'             => $value['user_id'],
                 'userLabel'          => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                 'mode'               => $value['mode'],
-                'signatureMode'      => $value['signature_mode'],
+                'signatureMode'      => in_array($value['signature_mode'], $validSignatureModes) ? $value['signature_mode'] : 'stamp',
                 'order'              => $value['order'],
-                'userSignatureModes' => json_decode($userSignaturesModes['signature_modes'], true)
+                'userSignatureModes' => array_intersect(json_decode($user['signature_modes'], true), $validSignatureModes)
             ];
         }
 

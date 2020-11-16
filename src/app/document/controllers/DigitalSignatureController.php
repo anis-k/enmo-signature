@@ -18,8 +18,6 @@ use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\models\DocumentModel;
-use Slim\Http\Request;
-use Slim\Http\Response;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\CurlModel;
 use User\models\UserModel;

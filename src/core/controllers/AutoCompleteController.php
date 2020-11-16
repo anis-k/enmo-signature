@@ -17,6 +17,7 @@ namespace SrcCore\controllers;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 
@@ -49,9 +50,11 @@ class AutoCompleteController
             'limit'     => self::LIMIT
         ]);
 
+        $validSignatureModes = CoreConfigModel::getSignatureModes();
+        $validSignatureModes = array_column($validSignatureModes, 'id');
         foreach ($users as $key => $user) {
-            $users[$key]['substitute'] = !empty($user['substitute']);
-            $users[$key]['signatureModes'] = json_decode($user['signature_modes'], true);
+            $users[$key]['substitute']     = !empty($user['substitute']);
+            $users[$key]['signatureModes'] = array_intersect(json_decode($user['signature_modes'], true), $validSignatureModes);
             unset($users[$key]['signature_modes']);
         }
         
