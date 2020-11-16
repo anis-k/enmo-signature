@@ -178,13 +178,16 @@ class DocumentController
                 $date = new \DateTime($value['process_date']);
                 $value['process_date'] = $date->format('d-m-Y H:i');
             }
+            $userSignaturesModes = UserModel::getById(['id' => $value['user_id'], 'select' => ['signature_modes']]);
+
             $formattedDocument['workflow'][] = [
-                'userId'        => $value['user_id'],
-                'userDisplay'   => UserModel::getLabelledUserById(['id' => $value['user_id']]),
-                'mode'          => $value['mode'],
-                'processDate'   => $value['process_date'],
-                'current'       => !$currentFound && empty($value['process_date']),
-                'signatureMode' => $value['signature_mode']
+                'userId'                => $value['user_id'],
+                'userDisplay'           => UserModel::getLabelledUserById(['id' => $value['user_id']]),
+                'mode'                  => $value['mode'],
+                'processDate'           => $value['process_date'],
+                'current'               => !$currentFound && empty($value['process_date']),
+                'signatureMode'         => $value['signature_mode'],
+                'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true)
             ];
             if (empty($value['process_date'])) {
                 $currentFound = true;
