@@ -9,6 +9,8 @@ SET search_path = public, pg_catalog;
 SET default_tablespace = '';
 SET default_with_oids = false;
 
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
 
 DROP TABLE IF EXISTS adr_attachments;
 CREATE TABLE adr_attachments
