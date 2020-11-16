@@ -233,40 +233,11 @@ class DocumentController
         }
 
         $queryParams = $request->getQueryParams();
-
-        if ($queryParams['eSignDocument']) {
-            $adr = AdrModel::getDocumentsAdr([
-                'select'    => ['path', 'filename', 'fingerprint', 'type'],
-                'where'     => ['main_document_id = ?', 'type = ?'],
-                'data'      => [$args['id'], 'ESIGN']
-            ]);
+        $content = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $queryParams['eSignDocument']]);
+        if (!empty($content['errors'])) {
+            return $response->withStatus($content['code'])->withJson(['errors' => $content['errors']]);
         }
-        if (empty($adr)) {
-            $adr = AdrModel::getDocumentsAdr([
-                'select'    => ['path', 'filename', 'fingerprint', 'type'],
-                'where'     => ['main_document_id = ?', 'type = ?'],
-                'data'      => [$args['id'], 'DOC']
-            ]);
-        }
-
-        if (empty($adr[0])) {
-            return $response->withJson(['encodedDocument' => null]);
-        }
-
-        $docserver = DocserverModel::getByType(['type' => $adr[0]['type'], 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-        }
-
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!is_file($pathToDocument)) {
-            return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver']);
-        }
-
-        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
-        if ($adr[0]['fingerprint'] != $fingerprint) {
-            return $response->withStatus(400)->withJson(['errors' => 'Fingerprints do not match']);
-        }
+        $pathToDocument = $content['path'];
 
         $document = DocumentModel::getById(['select' => ['title'], 'id' => $args['id']]);
 
@@ -292,6 +263,45 @@ class DocumentController
             $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch.{$pathInfo['extension']}");
             return $response->withHeader('Content-Type', $mimeType);
         }
+    }
+
+    public static function getContentPath($args = [])
+    {
+        if ($args['eSignDocument']) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'    => ['path', 'filename', 'fingerprint', 'type'],
+                'where'     => ['main_document_id = ?', 'type = ?'],
+                'data'      => [$args['id'], 'ESIGN']
+            ]);
+        }
+        if (empty($adr)) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'    => ['path', 'filename', 'fingerprint', 'type'],
+                'where'     => ['main_document_id = ?', 'type = ?'],
+                'data'      => [$args['id'], 'DOC']
+            ]);
+        }
+
+        if (empty($adr[0])) {
+            return null;
+        }
+
+        $docserver = DocserverModel::getByType(['type' => $adr[0]['type'], 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            return ['errors' => 'Docserver does not exist', 'code' => 400];
+        }
+
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToDocument)) {
+            return ['errors' => 'Document not found on docserver', 'code' => 404];
+        }
+
+        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+        if ($adr[0]['fingerprint'] != $fingerprint) {
+            return ['errors' => 'Fingerprints do not match', 'code' => 400];
+        }
+
+        return ['path' => $pathToDocument];
     }
 
     public function create(Request $request, Response $response)

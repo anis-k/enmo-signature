@@ -17,11 +17,7 @@ namespace Document\controllers;
 use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
-use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
-use Group\controllers\PrivilegeController;
-use History\controllers\HistoryController;
-use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\CoreConfigModel;
@@ -416,35 +412,6 @@ class DigitalSignatureController
         }
 
         return (string)$curlResponse['response'];
-    }
-
-    public function getProofByDocumentId(Request $request, Response $response, array $args)
-    {
-        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
-        }
-
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-        }
-
-        $proofDocument = DigitalSignatureController::proof(['documentId' => $args['id']]);
-        if (!empty($proofDocument['errors'])) {
-            return $response->withStatus(403)->withJson(['errors' => $proofDocument['errors'][0]]);
-        }
-
-        if (!empty($proofDocument)) {
-            HistoryController::add([
-                'code'          => 'OK',
-                'objectType'    => 'history',
-                'objectId'      => $args['id'],
-                'type'          => 'VIEW',
-                'message'       => '{documentProofViewed}',
-                'data'          => ['objectType' => 'main_documents']
-            ]);
-        }
-
-        return $response->withJson(['encodedProofDocument' => base64_encode($proofDocument)]);
     }
 
     public static function terminate($args = [])
