@@ -14,8 +14,6 @@
 
 namespace Group\controllers;
 
-use Slim\Http\Request;
-use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
 use Group\models\GroupPrivilegeModel;
@@ -32,10 +30,11 @@ class PrivilegeController
         ['id' => 'indexation',                  'type' => 'simple']
     ];
 
-    public static function getAdministrativePrivilegesByUserId(array $args)
+    public static function getPrivilegesByUserId(array $args)
     {
-        ValidatorModel::notEmpty($args, ['userId']);
+        ValidatorModel::notEmpty($args, ['userId', 'type']);
         ValidatorModel::intVal($args, ['userId']);
+        ValidatorModel::stringType($args, ['type']);
 
         $groups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['userId']]]);
 
@@ -48,7 +47,7 @@ class PrivilegeController
 
             if (!empty($privileges)) {
                 foreach (PrivilegeController::PRIVILEGES as $value) {
-                    if ($value['type'] == 'admin' && in_array($value['id'], $privileges)) {
+                    if ($value['type'] == $args['type'] && in_array($value['id'], $privileges)) {
                         $administrativePrivileges[] = $value;
                     }
                 }
