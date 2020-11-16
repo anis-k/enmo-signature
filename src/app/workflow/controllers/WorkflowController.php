@@ -17,6 +17,7 @@ namespace Workflow\controllers;
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
 use Group\controllers\PrivilegeController;
+use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use User\models\UserModel;
@@ -53,8 +54,12 @@ class WorkflowController
         return $response->withJson(['workflow' => $workflow]);
     }
 
-    public function suspend(Request $request, Response $response, array $args)
+    public function interrupt(Request $request, Response $response, array $args)
     {
+        if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
         $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['id']]);
         if (empty($document)) {
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);

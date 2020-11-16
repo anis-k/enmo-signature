@@ -33,6 +33,8 @@ use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
+use Workflow\models\WorkflowTemplateItemModel;
+use Workflow\models\WorkflowTemplateModel;
 
 class UserController
 {
@@ -193,17 +195,27 @@ class UserController
             'signature_modes' => []
         ];
 
-       if (!empty($body['signatureModes'])) {
-            if (!empty($body['signatureModes']) && !Validator::arrayType()->validate($body['signatureModes'])) {
+        if (!empty($body['signatureModes'])) {
+            if (!Validator::arrayType()->validate($body['signatureModes'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
-            } else {
-                foreach ($body['signatureModes'] as $key => $signatureMode) {
-                    if (!SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
-                        return $response->withStatus(400)->withJson(['errors' => "Body signatureModes[{$key}] is not a valid signature mode"]);
-                    }
-                }
-                $set['signature_modes'] = $body['signatureModes'];
             }
+            foreach ($body['signatureModes'] as $key => $signatureMode) {
+                if (!SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
+                    return $response->withStatus(400)->withJson(['errors' => "Body signatureModes[{$key}] is not a valid signature mode"]);
+                }
+            }
+            WorkflowModel::update([
+                'set'   => ['signature_mode' => 'stamp'],
+                'where' => ['user_id = ?', 'signature_mode not in (?)', 'process_date is null', 'signature_mode != ?'],
+                'data'  => [$args['id'], $body['signatureModes'], 'stamp']
+            ]);
+            WorkflowTemplateItemModel::update([
+                'set'   => ['signature_mode' => 'stamp'],
+                'where' => ['user_id = ?', 'signature_mode not in (?)', 'signature_mode != ?'],
+                'data'  => [$args['id'], $body['signatureModes'], 'stamp']
+            ]);
+
+            $set['signature_modes'] = $body['signatureModes'];
         }
         $set['signature_modes'] = json_encode($set['signature_modes']);
 
