@@ -38,10 +38,12 @@
             <ion-list-header>
                 <ion-label color="secondary">{{'lang.signatureModes' | translate}}</ion-label>
             </ion-list-header>
-            <ion-item *ngFor="let signMode of signatureModes">
-                <ion-label [style.color]="signMode.color">{{'lang.' + signMode.id | translate}}</ion-label>
-                <ion-checkbox slot="start" [checked]="user.signatureModes.indexOf(signMode.id) > -1" (ionChange)="toggleSignMode(signMode, $event.detail.checked)" [disabled]="signMode.id === 'stamp'"></ion-checkbox>
-            </ion-item>
+            <ng-container *ngFor="let signMode of authService.signatureRoles">
+                <ion-item *ngIf="signMode.id !=='visa'">
+                    <ion-label [style.color]="signMode.color">{{'lang.' + signMode.id | translate}}</ion-label>
+                    <ion-checkbox slot="start" [checked]="user.signatureModes.indexOf(signMode.id) > -1" (ionChange)="toggleSignMode(signMode, $event.detail.checked)" [disabled]="signMode.id === 'stamp'"></ion-checkbox>
+                </ion-item>
+            </ng-container>
         </ion-list>
         <ion-item style="align-items: center;" *ngIf="user.isRest">
             <ion-button slot="end" fill="clear" color="primary" (click)="hideNewPassword = !hideNewPassword">

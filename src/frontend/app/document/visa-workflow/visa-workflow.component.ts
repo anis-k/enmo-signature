@@ -47,17 +47,7 @@ export class VisaWorkflowComponent implements OnInit {
     }
 
     doReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-        // Before complete is called with the items they will remain in the
-        // order before the drag
-        console.log('Before complete', this.visaWorkflow);
-
-        // Finish the reorder and position the item in the DOM based on
-        // where the gesture ended. Update the items variable to the
-        // new order of items
         this.visaWorkflow = ev.detail.complete(this.visaWorkflow);
-
-        // After complete is called the items will be in the new order
-        console.log('After complete', this.visaWorkflow);
     }
 
     drop(event: CdkDragDrop<string[]>) {
@@ -133,7 +123,6 @@ export class VisaWorkflowComponent implements OnInit {
         popover.onDidDismiss()
             .then((result: any) => {
                 if (result.role !== 'backdrop') {
-                    console.log(result.data);
                     this.visaWorkflow = this.visaWorkflow.concat(result.data);
                     this.visaWorkflow.forEach((element: any, index: number) => {
                         this.getAvatarUser(index);

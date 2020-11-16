@@ -59,8 +59,11 @@
                     {{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
                     {{diffusion.processDate}}
                 </p>
-                <h2 [title]="diffusion.userDisplay">{{diffusion.userDisplay}}</h2>
+                <p class="secondary" *ngIf="diffusion.current && diffusion.userId !== authService.user.id">{{'lang.substituteMsg' | translate}}</p>
+                <h2 [title]="diffusion.userDisplay" *ngIf="diffusion.userDisplay !== ''">{{diffusion.userDisplay}}</h2>
+                <h2 [title]="diffusion.userDisplay" class="danger" *ngIf="diffusion.userDisplay === ''">{{'lang.userDeleted' | translate}}</h2>
             </ion-label>
+            <ion-icon *ngIf="!editMode && diffusion.current" color="success" slot="end" name="caret-back-outline"></ion-icon>
             <ion-button *ngIf="editMode" fill="clear" slot="end" shape="round" color="danger" (click)="removeUser(i)">
                 <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button>

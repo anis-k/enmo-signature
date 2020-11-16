@@ -140,11 +140,7 @@ export class VisaWorkflowModelsComponent implements OnInit {
                         'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
                         'processDate': null,
                         'current': false,
-                        'modes': [
-                            'visa',
-                            'sign',
-                            'stamp',
-                        ]
+                        'modes': ['visa'].concat(item.userSignatureModes)
                     };
                     return obj;
                 });

@@ -233,6 +233,13 @@ class SignatureController
         return $response->withStatus(204);
     }
 
+    public function getSignatureModes(Request $request, Response $response)
+    {
+        $modes = CoreConfigModel::getSignatureModes();
+
+        return $response->withJson($modes);
+    }
+
     public static function isValidSignatureMode(array $args)
     {
         ValidatorModel::stringType($args, ['mode']);

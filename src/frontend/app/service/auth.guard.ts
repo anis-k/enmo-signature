@@ -47,6 +47,23 @@ export class AuthGuard implements CanActivate {
                     this.translate.use(this.authService.user.preferences.lang);
                     this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
 
+                    if (this.authService.signatureRoles.length === 0) {
+                        this.http.get('../rest/signatureModes')
+                            .subscribe((dataModes: any) => {
+                                this.authService.signatureRoles = [{
+                                    'id': 'visa',
+                                    'type': 'visa',
+                                    'color': '#135F7F'
+                                }];
+                                this.authService.signatureRoles = this.authService.signatureRoles.concat(dataModes.map((item: any) => {
+                                    return {
+                                        ...item,
+                                        type: 'sign'
+                                    };
+                                }));
+                            });
+                    }
+
                     if (this.signaturesService.signaturesList.length === 0) {
                         this.http.get('../rest/users/' + this.authService.user.id + '/signatures')
                             .subscribe((dataSign: any) => {
@@ -60,34 +77,6 @@ export class AuthGuard implements CanActivate {
                                 this.authService.user.picture = dataPic.picture;
                             });
                     }
-
-                    this.authService.signatureRoles = [
-                        {
-                            'id': 'rgs_2stars',
-                            'type': 'sign',
-                            'color': '#FF0000'
-                        },
-                        {
-                            'id': 'inca_card',
-                            'type': 'sign',
-                            'color': '#FFA500'
-                        },
-                        {
-                            'id': 'eidas',
-                            'type': 'sign',
-                            'color': '#00FF00'
-                        },
-                        {
-                            'id': 'stamp',
-                            'type': 'sign',
-                            'color': '#808080'
-                        },
-                        {
-                            'id': 'visa',
-                            'type': 'visa',
-                            'color': '#135F7F'
-                        }
-                    ];
                 }
 
                 return true;
@@ -95,34 +84,6 @@ export class AuthGuard implements CanActivate {
                 return this.http.get('../rest/authenticationInformations')
                     .pipe(
                         map((data: any) => {
-                            // FOR TEST
-                            this.authService.signatureRoles = [
-                                {
-                                    'id': 'rgs_2stars',
-                                    'type': 'sign',
-                                    'color': '#FF0000'
-                                },
-                                {
-                                    'id': 'inca_card',
-                                    'type': 'sign',
-                                    'color': '#FFA500'
-                                },
-                                {
-                                    'id': 'eidas',
-                                    'type': 'sign',
-                                    'color': '#00FF00'
-                                },
-                                {
-                                    'id': 'stamp',
-                                    'type': 'sign',
-                                    'color': '#808080'
-                                },
-                                {
-                                    'id': 'visa',
-                                    'type': 'visa',
-                                    'color': '#135F7F'
-                                }
-                            ];
                             this.authService.authMode = data.connection;
                             this.authService.changeKey = data.changeKey;
                             this.localStorage.setAppSession(data.instanceId);
@@ -133,6 +94,23 @@ export class AuthGuard implements CanActivate {
 
                                 this.translate.use(this.authService.user.preferences.lang);
                                 this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
+
+                                if (this.authService.signatureRoles.length === 0) {
+                                    this.http.get('../rest/signatureModes')
+                                        .subscribe((dataModes: any) => {
+                                            this.authService.signatureRoles = [{
+                                                'id': 'visa',
+                                                'type': 'visa',
+                                                'color': '#135F7F'
+                                            }];
+                                            this.authService.signatureRoles = this.authService.signatureRoles.concat(dataModes.map((item: any) => {
+                                                return {
+                                                    ...item,
+                                                    type: 'sign'
+                                                };
+                                            }));
+                                        });
+                                }
 
                                 if (this.signaturesService.signaturesList.length === 0) {
                                     this.http.get('../rest/users/' + this.authService.user.id + '/signatures')

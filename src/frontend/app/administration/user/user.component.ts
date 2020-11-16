@@ -3,12 +3,11 @@ import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { map, finalize, catchError, tap } from 'rxjs/operators';
+import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
-import { of } from 'rxjs';
 
 
 export interface User {
@@ -42,7 +41,6 @@ export class UserComponent implements OnInit {
         isRest: false,
         signatureModes: ['stamp']
     };
-    signatureModes: any[] = [];
     userClone: User;
     title: string = '';
     hideCurrentPassword: Boolean = true;
@@ -85,7 +83,6 @@ export class UserComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.getSignatureModes();
         this.route.params.subscribe((params: any) => {
             if (params['id'] === undefined) {
                 this.creationMode = true;
@@ -120,18 +117,6 @@ export class UserComponent implements OnInit {
                     });
             }
         });
-    }
-
-    getSignatureModes() {
-        this.http.get('../rest/signatureModes').pipe(
-            tap((data: any) => {
-                this.signatureModes = data;
-            }),
-            catchError((err: any) => {
-                this.notificationService.handleErrors(err);
-                return of(false);
-            })
-        ).subscribe();
     }
 
     canValidate() {

@@ -30,7 +30,7 @@
         <ion-item lines="none" *ngIf="!creationMode">
             <ion-label color="secondary">{{'lang.linkedUsers' | translate}} :</ion-label>
         </ion-item>
-        <ion-card style="height: 400px;">
+        <ion-card *ngIf="!creationMode" style="height: 400px;">
             <ion-list>
                 <ion-item style="display: flex;">
                     <!--<ion-checkbox slot="start"></ion-checkbox>-->

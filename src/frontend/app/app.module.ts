@@ -15,9 +15,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { DragScrollModule } from 'ngx-drag-scroll';
-import { ScrollEventModule } from 'ngx-scroll-event';
 import { AngularDraggableModule } from 'angular2-draggable';
-import { DndModule } from 'ng2-dnd';
 import { CookieService } from 'ngx-cookie-service';
 import { NgPipesModule } from 'ngx-pipes';
 import { LatinisePipe } from 'ngx-pipes';
@@ -148,9 +146,7 @@ import { SortPipe } from './plugins/sorting.pipe';
     }),
     SignaturePadModule,
     NgxExtendedPdfViewerModule,
-    ScrollEventModule,
     DragScrollModule,
-    DndModule.forRoot(),
     NgPipesModule,
     AngularDraggableModule,
     AppMaterialModule,

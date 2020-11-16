@@ -13,7 +13,7 @@
             <ion-button (click)="authService.logout()">
                 <ion-icon slot="icon-only" name="power"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="!isAdminRoute()" (click)="openAdmin()">
+            <ion-button *ngIf="!isAdminRoute() && authService.user.administrativePrivileges.length > 0" (click)="openAdmin()">
                 <ion-icon slot="icon-only" name="build-outline"></ion-icon>
             </ion-button>
             <ion-button *ngIf="isAdminRoute()" (click)="openHome()">
