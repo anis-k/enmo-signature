@@ -91,6 +91,8 @@
 		"receiveNotif"                       : "Recevoir les notifications",
 		"red"                                : "Rouge",
 		"reference"                          : "Référence",
+		"fileReference"                      : "Référence du fichier",
+		"filename"                           : "Nom du fichier",
 		"refuseDocumentWithoutSignature"     : "Vous êtes sur le point de refuser ce document sans annotation !",
 		"reject"                             : "Refuser",
 		"rejectDocument"                     : "Refuser ce document",

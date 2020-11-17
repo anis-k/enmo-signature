@@ -91,6 +91,8 @@
 		"receiveNotif"                       : "Receive notifications",
 		"red"                                : "Red",
 		"reference"                          : "Reference",
+		"fileReference"                      : "File reference",
+		"filename"                           : "Filename",
 		"refuseDocumentWithoutSignature"     : "You are about to refuse this document without annotation!",
 		"reject"                             : "Reject",
 		"rejectDocument"                     : "Reject this document",

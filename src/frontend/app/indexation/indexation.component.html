@@ -23,11 +23,11 @@
                 </ion-buttons>
                 <ion-item style="width: 100%;">
                     <ion-label position="floating" color="secondary">{{'lang.reference' | translate}}</ion-label>
-                    <ion-input placeholder="Référence du fichier" matInput type="text" [(ngModel)]="file.reference" [disabled]="!file.mainDocument"></ion-input>
+                    <ion-input placeholder="{{'lang.fileReference' | translate}}" matInput type="text" [(ngModel)]="file.reference" [disabled]="!file.mainDocument"></ion-input>
                 </ion-item>
                 <ion-item style="width: 100%;">
-                    <ion-label position="floating" color="secondary">{{'lang.label' | translate}} *</ion-label>
-                    <ion-input placeholder="Nom du fichier" matInput type="text" [(ngModel)]="file.title"></ion-input>
+                    <ion-label position="floating" color="secondary">{{'lang.subject' | translate}} *</ion-label>
+                    <ion-input placeholder="{{'lang.filename' | translate}}" matInput type="text" [(ngModel)]="file.title"></ion-input>
                 </ion-item>
                 <ion-buttons slot="end">
                     <ion-button fill="clear" slot="icon-only" shape="round" color="danger"
