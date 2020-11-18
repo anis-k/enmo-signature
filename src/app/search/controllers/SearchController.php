@@ -16,14 +16,17 @@ namespace Search\controllers;
 
 use Group\controllers\PrivilegeController;
 use Document\models\DocumentModel;
+use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use User\models\UserModel;
 use Workflow\models\WorkflowModel;
 
 class SearchController
 {
     public function getDocuments(Request $request, Response $response)
     {
+        $body = $request->getParsedBody();
         $queryParams = $request->getQueryParams();
 
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
@@ -32,19 +35,42 @@ class SearchController
         $where = [];
         $data = [];
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
-            $where[] = 'typist = ?';
-            $data[] = $GLOBALS['id'];
+            $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$GLOBALS['id']]]);
+            $users = [$GLOBALS['id']];
+            foreach ($substitutedUsers as $value) {
+                $users[] = $value['id'];
+            }
+
+            $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
+            $workflowSelect = "SELECT main_document_id FROM workflows WHERE user_id in (?) AND id in ({$workflowSelect})";
+            $where = ["id in ({$workflowSelect}) OR typist = ?"];
+            $data = [$users, $GLOBALS['id']];
         }
 
         $whereWorkflow = [];
         $dataWorkflow = [];
-        if (!empty($queryParams['statuses'])) {
-            $whereWorkflow[] = 'status in (?)';
-            $dataWorkflow[] = $queryParams['statuses'];
+        if (Validator::arrayType()->notEmpty()->validate($body['statuses'])) {
+            $whereStatuses = [];
+            if (in_array('VAL', $body['statuses'])) {
+                $whereStatuses[] = "(status = 'VAL' AND main_document_id not in (SELECT main_document_id FROM workflows WHERE status is null OR status in ('REF', 'END', 'STOP')))";
+            }
+            if (in_array('VAL', $body['statuses'])) {
+                $whereStatuses[] = "status = 'REF'";
+            }
+            if (in_array('STOP', $body['statuses'])) {
+                $whereStatuses[] = "status = 'STOP'";
+            }
+            if (in_array('PROG', $body['statuses'])) {
+                $whereStatuses[] = "status is null";
+            }
+            if (!empty($whereStatuses)) {
+                $whereStatuses = implode(' OR ', $whereStatuses);
+                $whereWorkflow[] = "({$whereStatuses})";
+            }
         }
-        if (!empty($queryParams['users'])) {
+        if (!empty($body['users'])) {
             $whereWorkflow[] = 'user_id in (?)';
-            $dataWorkflow[] = $queryParams['statuses'];
+            $dataWorkflow[] = $body['users'];
         }
 
         if (!empty($whereWorkflow)) {
@@ -62,14 +88,14 @@ class SearchController
             $data[] = $documentIds;
         }
 
-        if (!empty($queryParams['search'])) {
+        if (Validator::stringType()->notEmpty()->validate($body['search'])) {
             $where[] = '(reference ilike ? OR unaccent(title) ilike unaccent(?::text))';
-            $data[] = "%{$queryParams['search']}%";
-            $data[] = "%{$queryParams['search']}%";
+            $data[] = "%{$body['search']}%";
+            $data[] = "%{$body['search']}%";
         }
 
         $documents = DocumentModel::get([
-            'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
+            'select'    => ['id', 'title', 'reference', 'typist', 'count(1) OVER()'],
             'where'     => $where,
             'data'      => $data,
             'limit'     => $queryParams['limit'],
@@ -79,9 +105,31 @@ class SearchController
 
         $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
+            $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode'], 'documentId' => $document['id'], 'orderBy' => ['"order"']]);
+            $currentFound = false;
+            $formattedWorkflow = [];
+            foreach ($workflow as $value) {
+                if (!empty($value['process_date'])) {
+                    $date = new \DateTime($value['process_date']);
+                    $value['process_date'] = $date->format('d-m-Y H:i');
+                }
+
+                $formattedWorkflow[] = [
+                    'userId'                => $value['user_id'],
+                    'userDisplay'           => UserModel::getLabelledUserById(['id' => $value['user_id']]),
+                    'mode'                  => $value['mode'],
+                    'processDate'           => $value['process_date'],
+                    'current'               => !$currentFound && empty($value['process_date']),
+                    'signatureMode'         => $value['signature_mode']
+                ];
+                if (empty($value['process_date'])) {
+                    $currentFound = true;
+                }
+            }
+            $documents[$key]['workflow'] = $formattedWorkflow;
             unset($documents[$key]['count']);
         }
-
+        
         return $response->withJson(['documents' => $documents, 'count' => $count]);
     }
 }

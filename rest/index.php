@@ -121,7 +121,7 @@ $app->post('/password', \User\controllers\UserController::class . ':forgotPasswo
 $app->put('/password', \User\controllers\UserController::class . ':updateForgottenPassword');
 
 //Search
-$app->get('/search/documents', \Search\controllers\SearchController::class . ':getDocuments');
+$app->post('/search/documents', \Search\controllers\SearchController::class . ':getDocuments');
 
 //Signatures
 $app->get('/users/{id}/signatures', \User\controllers\SignatureController::class . ':get');
