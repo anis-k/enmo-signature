@@ -7,7 +7,7 @@ import { NotificationService } from '../service/notification.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime, switchMap, distinctUntilChanged, tap, finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
-import { ModalController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular';
 import { ProfileComponent } from '../profile/profile.component';
 
 
@@ -33,6 +33,7 @@ export class SidebarComponent implements OnInit {
         public signaturesService: SignaturesContentService,
         private route: ActivatedRoute,
         public router: Router,
+        private menu: MenuController,
         public notificationService: NotificationService,
         public authService: AuthService,
         public modalController: ModalController,
@@ -86,6 +87,7 @@ export class SidebarComponent implements OnInit {
     }
 
     openAdmin() {
+        this.menu.close('left-menu');
         this.router.navigate(['/administration/']);
     }
 
@@ -94,10 +96,12 @@ export class SidebarComponent implements OnInit {
     }
 
     openIndexation() {
+        this.menu.close('left-menu');
         this.router.navigate(['/indexation']);
     }
 
     openSearch() {
+        this.menu.close('left-menu');
         this.router.navigate(['/search']);
     }
 

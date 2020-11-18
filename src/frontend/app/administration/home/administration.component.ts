@@ -24,7 +24,6 @@ export class AdministrationComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.menu.close('left-menu');
         this.menu.enable(false, 'right-menu');
     }
 }

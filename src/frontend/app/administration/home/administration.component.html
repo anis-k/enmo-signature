@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-menu-button menu="left-menu"></ion-menu-button>
     </ion-buttons>
     <ion-title>{{'lang.administration' | translate}}</ion-title>
   </ion-toolbar>
@@ -10,42 +10,16 @@
   <ion-grid>
     <ion-row>
       <ion-col *ngFor="let privilege of authService.user.administrativePrivileges">
-        <ion-button [routerLink]="privilege.route" expand="block" size="large" fill="outline" color="secondary" style="height: 200px;">
+        <ion-button [routerLink]="privilege.route" expand="block" size="large" fill="outline" color="secondary"
+          style="height: 200px;">
           <div class="admin-content">
-            <ion-icon style="font-size: 70px;"[name]="privilege.icon" color="primary"></ion-icon>
+            <ion-icon style="font-size: 70px;" [name]="privilege.icon" color="primary"></ion-icon>
             <ion-label color="primary" style="white-space: normal;">{{'lang.' + privilege.id | translate}}</ion-label>
-            <ion-note style="font-size: 8px;white-space: normal;padding: 10px;">{{'lang.' + privilege.id + 'Desc' | translate}}</ion-note>
+            <ion-note style="font-size: 8px;white-space: normal;padding: 10px;">
+              {{'lang.' + privilege.id + 'Desc' | translate}}</ion-note>
           </div>
         </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-content>
-<!--<mat-sidenav-container autosize>
-  <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
-    [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
-    [opened]="!signaturesService.mobileMode" [style.width.px]="350">
-    <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
-  </mat-sidenav>
-  <mat-sidenav-content class="mainView">
-    <header class="header">
-      <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
-        <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
-      </button> {{'lang.administration' | translate}}
-    </header>
-    <div class="container">
-      <div class="admin-item" *ngFor="let privilege of authService.user.administrativePrivileges">
-        <button mat-stroked-button color="primary" [routerLink]="privilege.route">
-          <mat-icon color="primary" [class]="privilege.icon"></mat-icon>
-          <span>{{'lang.' + privilege.id | translate}}</span>
-          <span class="admin-desc">
-            {{'lang.' + privilege.id + 'Desc' | translate}}
-          </span>
-        </button>
-      </div>
-    </div>
-  </mat-sidenav-content>
-  <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
-    fixedInViewport="true" position='end'>
-  </mat-sidenav>
-</mat-sidenav-container>-->

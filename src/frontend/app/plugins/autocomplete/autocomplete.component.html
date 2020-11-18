@@ -11,8 +11,8 @@
     <ion-item lines="none">
         <ion-label *ngIf="currentItems.length === 0" color="medium" style="font-style: italic;">Aucun élément</ion-label>
         <p>
-            <ion-chip *ngFor="let item of currentItems;let i=index" (click)="removeItem(i)">
-                <ion-label>{{ item.firstname }} {{ item.lastname }}</ion-label>
+            <ion-chip *ngFor="let item of currentItems;let i=index" (click)="removeItem(i)" style="height: auto;">
+                <ion-label class="ion-text-wrap">{{ item.firstname }} {{ item.lastname }}</ion-label>
                 <ion-icon name="close-circle"></ion-icon>
             </ion-chip>
         </p>

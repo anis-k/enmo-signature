@@ -143,7 +143,7 @@ export class SearchComponent implements OnInit {
             });
         });
         const actionSheet = await this.actionSheetController.create({
-            header: this.translate.instant('lang.action') + ' - ' + item.reference,
+            header: this.translate.instant('lang.actions') + ' - ' + item.reference,
             buttons: buttons
         });
         await actionSheet.present();

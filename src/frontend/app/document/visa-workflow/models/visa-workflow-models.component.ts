@@ -5,6 +5,7 @@ import { NotificationService } from '../../../service/notification.service';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { AuthService } from '../../../service/auth.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-visa-workflow-models',
@@ -19,6 +20,7 @@ export class VisaWorkflowModelsComponent implements OnInit {
 
     constructor(
         public http: HttpClient,
+        private translate: TranslateService,
         public popoverController: PopoverController,
         public alertController: AlertController,
         public notificationService: NotificationService,
@@ -37,23 +39,22 @@ export class VisaWorkflowModelsComponent implements OnInit {
                 {
                     name: 'title',
                     type: 'text',
-                    placeholder: 'Label'
+                    placeholder: this.translate.instant('lang.label') + ' *',
                 },
             ],
             buttons: [
                 {
-                    text: 'Cancel',
+                    text: this.translate.instant('lang.cancel'),
                     role: 'cancel',
-                    cssClass: 'secondary',
                     handler: () => { }
                 }, {
-                    text: 'Ok',
+                    text: this.translate.instant('lang.validate'),
                     handler: (data: any) => {
                         if (data.title !== '') {
                             this.saveModel(data.title);
                             return true;
                         } else {
-                            this.notificationService.error('Label mandatory');
+                            this.notificationService.error(this.translate.instant('lang.label') + ' ' + this.translate.instant('lang.mandatory'));
                             return false;
                         }
                     }
@@ -93,12 +94,11 @@ export class VisaWorkflowModelsComponent implements OnInit {
             message: 'Supprimer le modèle ?',
             buttons: [
                 {
-                    text: 'Non',
+                    text: this.translate.instant('lang.no'),
                     role: 'cancel',
-                    cssClass: 'secondary',
                     handler: () => { }
                 }, {
-                    text: 'Oui',
+                    text: this.translate.instant('lang.yes'),
                     handler: () => {
                         this.http.delete(`../rest/workflowTemplates/${model.id}`).pipe(
                             tap(() => {
