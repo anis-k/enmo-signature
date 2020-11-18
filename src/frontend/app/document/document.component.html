@@ -118,8 +118,6 @@
 </ion-footer>
 
 <ng-template #rightContent>
-    <app-my-profile *ngIf="signaturesService.sideNavRigtDatas.mode == 'profile'" [snavLeftComponent]="this.snav"
-        [snavRightComponent]="this.snavRight"></app-my-profile>
     <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
         *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'" style="display: contents;">
     </app-visa-workflow>
