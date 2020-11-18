@@ -1,14 +1,24 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-menu-button></ion-menu-button>
+            <ion-menu-button menu="left-menu"></ion-menu-button>
         </ion-buttons>
         <ion-title class="ion-text-center">{{'lang.search' | translate}}</ion-title>
+        <ion-buttons slot="end">
+            <ion-menu-button menu="right-menu">
+                <ion-icon name="funnel-outline"></ion-icon>
+            </ion-menu-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-list>
-        <ion-virtual-scroll [items]="ressources" approxItemHeight="110px">
+    <ion-list class="no-result" *ngIf="ressources.length === 0">
+        <ion-item lines="none">
+            <ion-label class="no-result-label" color="light">{{'lang.noResult' | translate}}</ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf="ressources.length > 0">
+        <ion-virtual-scroll [items]="ressources" approxItemHeight="165px">
             <ion-item *virtualItem="let element">
                 <ion-label>
                     <ion-toolbar color="light">
@@ -36,17 +46,26 @@
                     </ion-toolbar>
                     <ion-item-sliding #slidingItem>
                         <ion-item lines="none">
-                            <ion-icon *ngIf="element.mode == 'sign'" color="primary" slot="start" name="pencil-outline">
+                            <ion-icon *ngIf="element.status == 'SIGN'" color="primary" slot="start" name="pencil-outline">
                             </ion-icon>
-                            <ion-icon *ngIf="element.mode == 'visa'" color="primary" slot="start"
+                            <ion-icon *ngIf="element.status == 'VISA'" color="primary" slot="start"
                                 name="checkmark-done-outline">
                             </ion-icon>
-                            <ion-icon *ngIf="element.mode == 'note'" color="primary" slot="start"
+                            <ion-icon *ngIf="element.status == 'NOTE'" color="primary" slot="start"
                                 name="chatbubble-ellipses-outline">
+                            </ion-icon>
+                            <ion-icon *ngIf="element.status == 'VAL'" color="success" slot="start"
+                                name="thumbs-up-outline">
+                            </ion-icon>
+                            <ion-icon *ngIf="element.status == 'REF'" color="danger" slot="start"
+                                name="thumbs-down-outline">
                             </ion-icon>
                             <ion-label>
                                 <p>{{element.reference}}</p>
                                 <h2>{{element.title}}</h2>
+                                <p *ngIf="element.reason !== null" class="primary">
+                                    <ion-icon name="chatbox-outline"></ion-icon> {{element.reason}}
+                                </p>
                             </ion-label>
                             <ion-buttons slot="end">
                                 <ion-button slot="icon-only" fill="clear" shape="round"
@@ -54,16 +73,15 @@
                                     <ion-icon color="medium" slot="icon-only" name="arrow-back-outline"></ion-icon>
                                 </ion-button>
                             </ion-buttons>
-
                         </ion-item>
                         <ion-item-options>
-                            <ion-item-option color="primary">
-                                <ion-icon slot="bottom" ios="ellipsis-horizontal" md="ellipsis-vertical"></ion-icon>
-                                Télécharger Preuve
+                            <ion-item-option color="primary" (click)="openPromptProof(element)">
+                                <ion-icon slot="bottom" name="ribbon-sharp"></ion-icon>
+                                {{'lang.proof' | translate}}
                             </ion-item-option>
-                            <ion-item-option color="primary">
-                                <ion-icon slot="bottom" name="archive"></ion-icon>
-                                Actions
+                            <ion-item-option color="primary" (click)="openActions(element)">
+                                <ion-icon slot="bottom" name="settings-sharp"></ion-icon>
+                                {{'lang.actions' | translate}}
                             </ion-item-option>
                         </ion-item-options>
                     </ion-item-sliding>
@@ -73,13 +91,6 @@
         </ion-virtual-scroll>
     </ion-list>
 </ion-content>
-<ion-footer class="ion-no-border">
-    <div class="ion-text-center" style="background: white;">
-        <ion-button color="primary" shape="round" size="large" fill="outline">
-            <ion-label style="font-size: 13px;">{{'lang.search' | translate}}</ion-label>
-        </ion-button>
-    </div>
-</ion-footer>
 <ng-template #rightContent>
     <ion-header [translucent]="true">
         <ion-toolbar color="primary">
@@ -90,20 +101,37 @@
         </ion-toolbar>
     </ion-header>
     <ion-content>
-        <ion-list>
-            <ion-item>
-                <ion-label position="floating" color="secondary">Référence</ion-label>
-                <ion-input></ion-input>
-            </ion-item>
-        </ion-list>
-        <ion-list>
-            <ion-list-header>
-                <ion-label color="secondary">État du circuit</ion-label>
-            </ion-list-header>
-            <ion-item *ngFor="let val of worfklowState">
-                <ion-label>{{val}}</ion-label>
-                <ion-checkbox slot="end"></ion-checkbox>
-            </ion-item>
+        <ion-list *ngFor="let filter of filters">
+            <ng-container *ngIf="filter.type === 'text'">
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{'lang.' + filter.id + 'Search' | translate}}
+                    </ion-label>
+                    <ion-input [(ngModel)]="filter.val"></ion-input>
+                </ion-item>
+            </ng-container>
+            <ng-container *ngIf="filter.type === 'checkbox'">
+                <ion-list-header>
+                    <ion-label color="secondary">{{'lang.' + filter.id + 'Search' | translate}}</ion-label>
+                </ion-list-header>
+                <ion-item *ngFor="let val of filter.values;let i=index;">
+                    <ion-label>{{val.label | translate}}</ion-label>
+                    <ion-checkbox (ionChange)="toggleItem(filter, val, $event.detail.checked)"
+                        [checked]="filter.val.indexOf(val.id) > -1" slot="end"></ion-checkbox>
+                </ion-item>
+            </ng-container>
+            <ng-container *ngIf="filter.type === 'autocompleteUsers'">
+                <ion-list-header>
+                    <ion-label color="secondary">{{'lang.' + filter.id + 'Search' | translate}}</ion-label>
+                </ion-list-header>
+                <plugin-autocomplete [currentItems]="filter.val"></plugin-autocomplete>
+            </ng-container>
         </ion-list>
     </ion-content>
+    <ion-footer class="ion-no-border">
+        <div class="ion-text-center" style="background: white;">
+            <ion-button color="primary" shape="round" size="large" fill="outline" (click)="onSubmit()">
+                <ion-label style="font-size: 13px;">{{'lang.search' | translate}}</ion-label>
+            </ion-button>
+        </div>
+    </ion-footer>
 </ng-template>

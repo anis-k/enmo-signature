@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { isNgTemplate } from '@angular/compiler';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, LoadingController, MenuController } from '@ionic/angular';
+import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
@@ -21,242 +22,58 @@ export class SearchComponent implements OnInit {
     filesToUpload: any[] = [];
     errors: any[] = [];
 
-    worfklowState: any[] = [
-        'VAL', 'END', 'INTERRUPT', 'INPROGRESS'
+    filters: any[] = [
+        {
+            id: 'title',
+            type: 'text',
+            val: '',
+            values: []
+        },
+        {
+            id: 'reference',
+            type: 'text',
+            val: '',
+            values: []
+        },
+        {
+            id: 'workflowState',
+            type: 'checkbox',
+            val: [],
+            values: [
+                {
+                    id: 'INPROGRESS',
+                    label: 'lang.inprogress'
+                },
+                {
+                    id: 'INTERRUPT',
+                    label: 'lang.interrupt'
+                },
+                {
+                    id: 'END',
+                    label: 'lang.end'
+                }
+            ]
+        },
+        {
+            id: 'usersWorkflow',
+            type: 'autocompleteUsers',
+            val: [],
+            values: []
+        }
     ];
 
-    /* ressources = Array.from({ length: 1 }).map((_, i) => {
-        return {
-            'id': 36,
-            'title': 'recommande_2D_000_000_0003_1.pdf',
-            'reference': 'blabla',
-            'mode': 'sign',
-            'workflow': [
-                {
-                  'userId': 3,
-                  'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                  'mode': 'visa',
-                  'processDate': null,
-                  'current': true,
-                  'signatureMode': 'stamp',
-                  'userSignatureModes': [
-                    'stamp'
-                  ]
-                },
-                {
-                  'userId': 1,
-                  'userDisplay': 'Jenny JANE-SUR-SAINT-ETIENNE',
-                  'mode': 'sign',
-                  'processDate': null,
-                  'current': false,
-                  'signatureMode': 'stamp',
-                  'userSignatureModes': [
-                    'stamp',
-                    'eidas',
-                    'inca_card',
-                    'rgs_2stars'
-                  ]
-                }
-              ],
-        };
-      }); */
-
-    ressources: any[] = [
+    actions: any[] = [
         {
-            'id': 36,
-            'title': 'recommande_2D_000_000_0003_1.pdf',
-            'reference': 'blabla',
-            'mode': 'sign',
-            'workflow': [
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': null,
-                    'status': null,
-                    'current': true,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 1,
-                    'userDisplay': 'Jenny JANE-SUR-SAINT-ETIENNE',
-                    'mode': 'sign',
-                    'processDate': null,
-                    'status': null,
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp',
-                        'eidas',
-                        'inca_card',
-                        'rgs_2stars'
-                    ]
-                }
-            ],
+            icon: 'hand-left-outline',
+            id: 'interruptWorkflow'
         },
         {
-            'id': 2,
-            'title': 'bidule',
-            'reference': 'efzfefe',
-            'mode': 'visa',
-            'workflow': [
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'VAL',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 1,
-                    'userDisplay': 'Jenny JANE-SUR-SAINT-ETIENNE',
-                    'mode': 'sign',
-                    'processDate': null,
-                    'status': null,
-                    'current': true,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp',
-                        'eidas',
-                        'inca_card',
-                        'rgs_2stars'
-                    ]
-                }
-            ],
-        },
-        {
-            'id': 2,
-            'title': 'bidule',
-            'reference': 'efzfefe',
-            'mode': 'visa',
-            'workflow': [
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'VAL',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'VAL',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'VAL',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-            ],
-        },
-        {
-            'id': 2,
-            'title': 'bidule',
-            'reference': 'efzfefe',
-            'mode': 'visa',
-            'workflow': [
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'VAL',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'VAL',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': '2020-11-13 19:11:52.066616',
-                    'status': 'REF',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': null,
-                    'status': 'END',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': null,
-                    'status': 'END',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                },
-                {
-                    'userId': 3,
-                    'userDisplay': 'Bernard De la MOTTE-SUR-BIDULE',
-                    'mode': 'visa',
-                    'processDate': null,
-                    'status': 'END',
-                    'current': false,
-                    'signatureMode': 'stamp',
-                    'userSignatureModes': [
-                        'stamp'
-                    ]
-                }
-            ],
+            icon: 'document-outline',
+            id: 'newWorkflow'
         },
     ];
+
+    ressources: any[] = [];
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
@@ -272,6 +89,7 @@ export class SearchComponent implements OnInit {
         public authService: AuthService,
         public loadingController: LoadingController,
         public alertController: AlertController,
+        public actionSheetController: ActionSheetController
     ) { }
 
     ngOnInit(): void { }
@@ -280,9 +98,188 @@ export class SearchComponent implements OnInit {
         this.menu.enable(true, 'left-menu');
         this.menu.enable(true, 'right-menu');
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
+        setTimeout(() => {
+            this.menu.open('right-menu');
+        }, 500);
     }
 
     ionViewWillLeave() {
         this.signaturesService.detachTemplate('rightContent');
+    }
+
+    onSubmit() {
+        console.log(this.formatDatas());
+        this.search();
+        this.menu.close('right-menu');
+    }
+
+    toggleItem(filter: any, item: any, state: boolean) {
+        if (!state) {
+            const index = filter.val.indexOf(item.id);
+            filter.val.splice(index, 1);
+        } else {
+            filter.val.push(item.id);
+        }
+    }
+
+    formatDatas() {
+        return this.filters.map((filter: any) => {
+            return {
+                id: filter.id,
+                val: filter.val
+            };
+        }).filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0));
+    }
+
+    async openActions(item: any) {
+        const buttons: any[] = [];
+        this.actions.forEach(element => {
+            buttons.push({
+                text: this.translate.instant('lang.' + element.id),
+                icon: element.icon,
+                handler: () => {
+                    this[element.id]();
+                }
+            });
+        });
+        const actionSheet = await this.actionSheetController.create({
+            header: this.translate.instant('lang.action') + ' - ' + item.reference,
+            buttons: buttons
+        });
+        await actionSheet.present();
+    }
+
+    search() {
+        this.loadingController.create({
+            message: this.translate.instant('lang.processing') + ' ...',
+            spinner: 'dots'
+        }).then(async (load: HTMLIonLoadingElement) => {
+            load.present();
+            await this.launchSearch();
+            load.dismiss();
+        });
+    }
+
+    launchSearch() {
+        this.ressources = [];
+        return new Promise((resolve) => {
+            this.http.post(`../rest/search/documents`, {})
+                .pipe(
+                    tap((data: any) => {
+                        this.ressources = data.documents;
+                        resolve(true);
+                    }),
+                    catchError((err: any) => {
+                        this.notificationService.handleErrors(err);
+                        resolve(false);
+                        return of(false);
+                    })
+                ).subscribe();
+        });
+    }
+
+    async interruptWorkflow() {
+        const alert = await this.alertController.create({
+            header: this.translate.instant('lang.warning'),
+            message: this.translate.instant('lang.areYouSure'),
+            buttons: [
+                {
+                    text: this.translate.instant('lang.cancel'),
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => { }
+                },
+                {
+                    text: this.translate.instant('lang.validate'),
+                    handler: () => {
+                        this.loadingController.create({
+                            message: this.translate.instant('lang.processing') + ' ...',
+                            spinner: 'dots'
+                        }).then(async (load: HTMLIonLoadingElement) => {
+                            load.present();
+                            // DO SOMETHING
+                            setTimeout(() => {
+                                load.dismiss();
+                            }, 3000);
+                        });
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    async newWorkflow() {
+        const alert = await this.alertController.create({
+            header: this.translate.instant('lang.warning'),
+            message: this.translate.instant('lang.areYouSure'),
+            buttons: [
+                {
+                    text: this.translate.instant('lang.cancel'),
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => { }
+                },
+                {
+                    text: this.translate.instant('lang.validate'),
+                    handler: () => {
+                        this.router.navigate(['/indexation']);
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    async openPromptProof(item: any) {
+        const alert = await this.alertController.create({
+            header: this.translate.instant('lang.proof'),
+            inputs: [
+                {
+                    name: 'option1',
+                    type: 'checkbox',
+                    label: 'Option 1',
+                    value: 'value1',
+                },
+                {
+                    name: 'option2',
+                    type: 'checkbox',
+                    label: 'Option 2',
+                    value: 'value2'
+                },
+            ],
+            buttons: [
+                {
+                    text: this.translate.instant('lang.cancel'),
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => { }
+                },
+                {
+                    text: this.translate.instant('lang.validate'),
+                    handler: async () => {
+                        await this.downloadProof(item);
+                        alert.dismiss();
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    }
+
+    downloadProof(item: any) {
+        return new Promise((resolve) => {
+            this.http.get(`../rest/documents/${item.id}/proof`)
+                .pipe(
+                    tap(() => {
+                        resolve(true);
+                    }),
+                    catchError((err: any) => {
+                        this.notificationService.handleErrors(err);
+                        resolve(false);
+                        return of(false);
+                    })
+                ).subscribe();
+        });
     }
 }

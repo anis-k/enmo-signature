@@ -9,8 +9,12 @@
     font-size: 12px;
 }
 
+.primary {
+    color: var(--ion-color-primary);
+}
+
 .success {
-    color : var(--ion-color-success);
+    color: var(--ion-color-success);
 }
 
 .workflow-item {
@@ -35,4 +39,20 @@
 .interrupt {
     color: var(--ion-color-danger);
     text-decoration: line-through;
+}
+
+.no-result {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-result .item {
+    width: 100%;
+    text-align: center;
+}
+
+.no-result-label {
+    font-size: 50px;
 }

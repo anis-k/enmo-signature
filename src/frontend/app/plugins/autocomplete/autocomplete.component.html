@@ -1,26 +1,25 @@
-<form>
-    <mat-form-field [appearance]="singleMode !== undefined ? 'standard' : 'outline'">
-        <mat-label *ngIf="singleMode !== undefined">{{placeholder}}</mat-label>
-        <mat-icon color="primary" class="fa fa-search" matPrefix></mat-icon>
-        <input type="text" #autoCompleteInput [placeholder]="singleMode !== undefined ? '' : placeholder"
-            aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto"
-            (click)="$event.stopPropagation();" (focus)="resetAutocomplete()" [required]="required">
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectOpt($event)">
-            <mat-option *ngIf="autoCompleteInput.textLength <= 2 && !loading" disabled [innerHTML]="'lang.autocompleteInfo' | translate"></mat-option>
-            <mat-option *ngFor="let option of filteredOptions | async | sortBy: key[0]" [value]="option"
-                [disabled]="option.disabled">
-                <mat-icon *ngIf="type[option['type']]" class="autcompleteIcon fas {{type[option['type']]}}"
-                    color="primary">
-                </mat-icon>&nbsp;<span>
-                    <ng-container *ngFor="let k of key">
-                        {{option[k]}}
-                    </ng-container>
-                </span>&nbsp;<small>{{option[subInfoKey]}}</small>
-            </mat-option>
-            <mat-option *ngIf="autoCompleteInput.textLength > 2 && (filteredOptions | async)?.length === 0 && !loading" disabled>{{'lang.noAvailableValue' | translate}}</mat-option>
-            <mat-option *ngIf="loading" disabled>
-                <mat-spinner diameter="20"></mat-spinner>
-            </mat-option>
-        </mat-autocomplete>
-    </mat-form-field>
-</form>
+<ion-searchbar *ngIf="editMode" #searchInput [(ngModel)]="searchValue" (ionChange)="getDatas($event)" [placeholder]="'lang.search' | translate"></ion-searchbar>
+<ion-list *ngIf="itemList.length > 0" class="item-list">
+    <ion-item *ngFor="let item of itemList">
+        <ion-checkbox color="primary" slot="start" [value]="item"
+            (ionChange)="selectItem($event.detail.value)"></ion-checkbox>
+        <ion-label>{{ item.firstname }} {{ item.lastname }}</ion-label>
+        <ion-note slot="end">{{ item.email }}</ion-note>
+    </ion-item>
+</ion-list>
+<ion-list>
+    <ion-item lines="none">
+        <ion-label *ngIf="currentItems.length === 0" color="medium" style="font-style: italic;">Aucun élément</ion-label>
+        <p>
+            <ion-chip *ngFor="let item of currentItems;let i=index" (click)="removeItem(i)">
+                <ion-label>{{ item.firstname }} {{ item.lastname }}</ion-label>
+                <ion-icon name="close-circle"></ion-icon>
+            </ion-chip>
+        </p>
+        <ion-buttons slot="end" *ngIf="!editMode">
+            <ion-button size="small" (click)="toggleEdit()">
+                <ion-label color="medium">{{'lang.edit' | translate}}</ion-label>
+            </ion-button>
+        </ion-buttons>
+    </ion-item>
+</ion-list>

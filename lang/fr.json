@@ -325,6 +325,18 @@
 		"eidas": "Eidas",
 		"rgs_2stars": "Rgs**",
 		"docToSign": "Document à signer",
-		"attachDocToSign": "Annexe attaché au(x) document(s) à signer"
+		"attachDocToSign": "Annexe attaché au(x) document(s) à signer",
+		"titleSearch": "Sujet du document à signer",
+		"referenceSearch": "Référence du document à signer",
+		"workflowStateSearch": "État du circuit",
+		"usersWorkflowSearch": "Personne du circuit",
+		"end": "Terminé",
+		"interrupt": "Interrompu",
+		"inprogress": "En cours",
+		"edit": "Editer",
+		"interruptWorkflow": "Interrompre le circuit",
+		"newWorkflow": "Nouveau circuit...",
+		"proof": "Faisceau de preuve",
+		"processing": "Traitement"
 	}
 }
