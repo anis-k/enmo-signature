@@ -361,6 +361,13 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
 
+        $data     = base64_decode($encodedDocument['encodedDocument']);
+        $finfo    = finfo_open();
+        $mimeType = finfo_buffer($finfo, $data, FILEINFO_MIME_TYPE);
+        if (strtolower($mimeType) != 'application/pdf') {
+            return $response->withStatus(400)->withJson(['errors' => 'Document is not a pdf']);
+        }
+
         $libDir = CoreConfigModel::getLibrariesDirectory();
         if (!empty($libDir) && is_file($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php')) {
             require_once($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');

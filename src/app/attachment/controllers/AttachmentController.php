@@ -90,6 +90,13 @@ class AttachmentController
             $encodedDocument['encodedDocument'] = $args['encodedDocument'];
         }
 
+        $data     = base64_decode($encodedDocument['encodedDocument']);
+        $finfo    = finfo_open();
+        $mimeType = finfo_buffer($finfo, $data, FILEINFO_MIME_TYPE);
+        if (strtolower($mimeType) != 'application/pdf') {
+            return ['errors' => 'Document is not a pdf'];
+        }
+
         $storeInfos = DocserverController::storeResourceOnDocServer([
             'encodedFile'       => $encodedDocument['encodedDocument'],
             'format'            => 'pdf',
