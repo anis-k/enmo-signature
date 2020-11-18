@@ -30,8 +30,7 @@
                                         [class.typist-interrupt]="itemW.status==='REF'"
                                         [class.interrupt]="itemW.processDate===null && itemW.status==='END'"
                                         [class.current]="itemW.current"
-                                        [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">Bernard
-                                        Blier&nbsp;
+                                        [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{itemW.userDisplay}}&nbsp;
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF'"
                                             name="thumbs-up-outline"></ion-icon>
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status==='REF'"
