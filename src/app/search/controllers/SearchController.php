@@ -91,11 +91,11 @@ class SearchController
 
         if (Validator::stringType()->notEmpty()->validate($body['title'])) {
             $where[] = 'unaccent(title) ilike unaccent(?::text)';
-            $data[] = "%{$body['search']}%";
+            $data[] = "%{$body['title']}%";
         }
         if (Validator::stringType()->notEmpty()->validate($body['reference'])) {
             $where[] = 'reference ilike ?';
-            $data[] = "%{$body['search']}%";
+            $data[] = "%{$body['reference']}%";
         }
 
         $documents = DocumentModel::get([
@@ -108,6 +108,7 @@ class SearchController
         ]);
 
         $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
+        $hasIndexation = PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation']);
         foreach ($documents as $key => $document) {
             $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'note', 'status'], 'documentId' => $document['id'], 'orderBy' => ['"order"']]);
             $currentFound = false;
@@ -129,7 +130,7 @@ class SearchController
                     'status'                => $value['status'],
                     'reason'                => $value['note']
                 ];
-                if (empty($value['process_date'])) {
+                if (empty($value['status'])) {
                     $currentFound = true;
                 }
 
@@ -139,6 +140,7 @@ class SearchController
                 }
             }
             $documents[$key]['canInterrupt'] = ($document['typist'] == $GLOBALS['id'] || $hasFullRights);
+            $documents[$key]['canReaffect'] = ($document['typist'] == $GLOBALS['id'] || $hasFullRights) && $hasIndexation;
             $documents[$key]['workflow'] = $formattedWorkflow;
             $documents[$key]['state'] = $state;
             unset($documents[$key]['count']);
