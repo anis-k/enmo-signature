@@ -1,135 +1,96 @@
-<mat-sidenav-container autosize class="maarch-container">
-    <mat-sidenav #snav [disableClose]="!signaturesService.mobileMode"
-                 [mode]="signaturesService.mobileMode ? 'over': 'side'" fixedInViewport="true"
-                 [opened]="!signaturesService.mobileMode" [style.width.px]="350">
-        <app-admin-sidebar [snavLeftComponent]="this.snav" [snavRightComponent]="this.snavRight"></app-admin-sidebar>
-    </mat-sidenav>
-    <mat-sidenav-content>
-        <header class="header">
-            <div class="header-title">
-                <button *ngIf="signaturesService.mobileMode" mat-icon-button (click)="this.snav.toggle();">
-                    <mat-icon fontSet="fas" fontIcon="fa-bars" style="font-size: 24px;"></mat-icon>
-                </button>
-                <span *ngIf="!loading">{{'lang.manage_password_rules' | translate}}</span>
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{'lang.manage_password_rules' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<form style="display: contents;" id="passwordForm" (ngSubmit)="onSubmit()" #passwordForm="ngForm">
+    <ion-content>
+        <ion-row>
+            <ion-col>
+                <ion-item>
+                    <ion-label color="secondary">{{passwordRules['complexityUpper'].label}}</ion-label>
+                    <ion-toggle slot="start" name="complexityUpper"
+                        [(ngModel)]="passwordRules['complexityUpper'].enabled"
+                        (ngModelChange)="toggleRule(passwordRules['complexityUpper'])"
+                        [checked]="passwordRules['complexityUpper'].enabled"></ion-toggle>
+                </ion-item>
+            </ion-col>
+            <ion-col>
+                <ion-item>
+                    <ion-label color="secondary">{{passwordRules['complexityNumber'].label}}</ion-label>
+                    <ion-toggle slot="start" name="complexityNumber"
+                        [(ngModel)]="passwordRules['complexityNumber'].enabled"
+                        (ngModelChange)="toggleRule(passwordRules['complexityNumber'])"
+                        [checked]="passwordRules['complexityNumber'].enabled"></ion-toggle>
+                </ion-item>
+            </ion-col>
+            <ion-col>
+                <ion-item>
+                    <ion-label color="secondary">{{passwordRules['complexitySpecial'].label}}</ion-label>
+                    <ion-toggle slot="start" name="complexitySpecial"
+                        [(ngModel)]="passwordRules['complexitySpecial'].enabled"
+                        (ngModelChange)="toggleRule(passwordRules['complexitySpecial'])"
+                        [checked]="passwordRules['complexitySpecial'].enabled"></ion-toggle>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-item>
+            <ion-toggle slot="start" name="minLengthToggle" [(ngModel)]="passwordRules['minLength'].enabled"
+                (ngModelChange)="toggleRule(passwordRules['minLength'])" [checked]="passwordRules['minLength'].enabled">
+            </ion-toggle>
+            <ion-label color="secondary" position="floating">{{passwordRules['minLength'].label}}</ion-label>
+            <ion-input [disabled]="!passwordRules['minLength'].enabled" name="minLength"
+                [(ngModel)]="passwordRules['minLength'].value" min="1" pattern="^[1-9][0-9]*"></ion-input>
+            <ion-note slot="end">{{'lang.chars' | translate}}</ion-note>
+        </ion-item>
+        <ion-row>
+            <ion-col>
+                <ion-item>
+                    <ion-toggle slot="start" name="lockAttemptsToggle"
+                        [(ngModel)]="passwordRules['lockAttempts'].enabled"
+                        (ngModelChange)="toggleRule(passwordRules['lockAttempts'])"
+                        [checked]="passwordRules['lockAttempts'].enabled"></ion-toggle>
+                    <ion-label color="secondary" position="floating">{{passwordRules['lockAttempts'].label}}</ion-label>
+                    <ion-input [disabled]="!passwordRules['lockAttempts'].enabled" name="lockAttempts"
+                        [(ngModel)]="passwordRules['lockAttempts'].value" min="1" pattern="^[1-9][0-9]*"></ion-input>
+                </ion-item>
+            </ion-col>
+            <ion-col>
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{passwordRules['lockTime'].label}}</ion-label>
+                    <ion-input [disabled]="!passwordRules['lockTime'].enabled" name="lockTime"
+                        [(ngModel)]="passwordRules['lockTime'].value" min="1" pattern="^[1-9][0-9]*"></ion-input>
+                    <ion-note slot="end">{{'lang.minutes' | translate}}</ion-note>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-item>
+            <ion-toggle slot="start" name="renewalToggle" [(ngModel)]="passwordRules['renewal'].enabled"
+                (ngModelChange)="toggleRule(passwordRules['renewal'])" [checked]="passwordRules['renewal'].enabled">
+            </ion-toggle>
+            <ion-label color="secondary" position="floating">{{passwordRules['renewal'].label}}</ion-label>
+            <ion-input [disabled]="!passwordRules['renewal'].enabled" name="renewal"
+                [(ngModel)]="passwordRules['renewal'].value" min="1" pattern="^[1-9][0-9]*"></ion-input>
+            <ion-note slot="end">{{'lang.days' | translate}}</ion-note>
+        </ion-item>
+        <ion-item>
+            <ion-toggle slot="start" name="historyLastUseToggle" [(ngModel)]="passwordRules['historyLastUse'].enabled"
+                (ngModelChange)="toggleRule(passwordRules['historyLastUse'])"
+                [checked]="passwordRules['historyLastUse'].enabled"></ion-toggle>
+            <ion-label color="secondary" position="floating">{{passwordRules['historyLastUse'].label}}</ion-label>
+            <ion-input [disabled]="!passwordRules['historyLastUse'].enabled" name="historyLastUse"
+                [(ngModel)]="passwordRules['historyLastUse'].value" min="1" pattern="^[1-9][0-9]*"></ion-input>
+        </ion-item>
+        <ion-item text-center lines="none" style="position: sticky;bottom:0px;z-index:1;">
+            <div style="display: flex;align-items: center;justify-content: center;width: 100%;background: white;">
+                <ion-button type="submit" shape="round" size="large" fill="outline" color="primary"
+                    [disabled]="(!passwordForm.valid && !disabledForm()) || checkModif()">
+                    <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+                </ion-button>
             </div>
-        </header>
-        <div class="container">
-            <div *ngIf="loading" style="display:flex;height:100%;">
-                <mat-spinner style="margin:auto;"></mat-spinner>
-            </div>
-            <mat-card *ngIf="!loading" class="card-app-content">
-                <mat-tab-group>
-                    <mat-tab label="{{'lang.password' | translate}}">
-                        <form (ngSubmit)="onSubmit()" #passwordForm="ngForm">
-                            <mat-list>
-                                <p style="margin-bottom: 40px;text-align: center;">
-                                    <mat-slide-toggle [name]="passwordRules['complexityUpper'].label"
-                                        [checked]="passwordRules['complexityUpper'].enabled" color="primary"
-                                        (change)="toggleRule(passwordRules['complexityUpper']);"
-                                        style="padding-left:10px;padding-right:10px;">
-                                        {{passwordRules['complexityUpper'].label}}</mat-slide-toggle>
-                                    <mat-slide-toggle [name]="passwordRules['complexityNumber'].label"
-                                        [checked]="passwordRules['complexityNumber'].enabled" color="primary"
-                                        (change)="toggleRule(passwordRules['complexityNumber']);"
-                                        style="padding-left:10px;padding-right:10px;">
-                                        {{passwordRules['complexityNumber'].label}}</mat-slide-toggle>
-                                    <mat-slide-toggle [name]="passwordRules['complexitySpecial'].label"
-                                        [checked]="passwordRules['complexitySpecial'].enabled" color="primary"
-                                        (change)="toggleRule(passwordRules['complexitySpecial']);"
-                                        style="padding-left:10px;padding-right:10px;">
-                                        {{passwordRules['complexitySpecial'].label}}</mat-slide-toggle>
-                                </p>
-                                <mat-list-item style="margin-top: 15px;margin-bottom: 15px;">
-                                    <mat-icon mat-list-icon>
-                                        <mat-slide-toggle style="position: relative;top:-10px;"
-                                            [checked]="passwordRules['minLength'].enabled" color="primary"
-                                            (change)="toggleRule(passwordRules['minLength']);"></mat-slide-toggle>
-                                    </mat-icon>
-                                    <p mat-line>
-                                        <mat-form-field style="width: 100%">
-                                            <input type="number" [disabled]="!passwordRules['minLength'].enabled"
-                                                [name]="passwordRules['minLength'].label"
-                                                [(ngModel)]="passwordRules['minLength'].value" min="1"
-                                                pattern="^[1-9][0-9]*" matInput
-                                                placeholder="{{passwordRules['minLength'].label}}" required>
-                                            <span matSuffix>&nbsp;{{'lang.chars' | translate}}</span>
-                                        </mat-form-field>
-                                    </p>
-                                </mat-list-item>
-                                <mat-list-item style="margin-top: 15px;margin-bottom: 15px;">
-                                    <mat-icon mat-list-icon>
-                                        <mat-slide-toggle style="position: relative;top:-10px;"
-                                            [checked]="passwordRules['lockAttempts'].enabled" color="primary"
-                                            (change)="toggleRule(passwordRules['lockAttempts']);">
-                                        </mat-slide-toggle>
-                                    </mat-icon>
-                                    <p mat-line style="display:flex;">
-                                        <mat-form-field style="flex:1;padding-right: 10px;">
-                                            <input type="number" [disabled]="!passwordRules['lockAttempts'].enabled"
-                                                [name]="passwordRules['lockAttempts'].label"
-                                                [(ngModel)]="passwordRules['lockAttempts'].value" min="1"
-                                                pattern="^[1-9][0-9]*" matInput
-                                                placeholder="{{passwordRules['lockAttempts'].label}}" required>
-                                        </mat-form-field>
-                                        <mat-form-field style="flex:1;">
-                                            <input type="number" [disabled]="!passwordRules['lockTime'].enabled"
-                                                [name]="passwordRules['lockTime'].label"
-                                                [(ngModel)]="passwordRules['lockTime'].value" min="1"
-                                                pattern="^[1-9][0-9]*" matInput
-                                                placeholder="{{passwordRules['lockTime'].label}}" required>
-                                            <span matSuffix>&nbsp;{{'lang.minutes' | translate}}</span>
-                                        </mat-form-field>
-                                    </p>
-                                </mat-list-item>
-                                <mat-list-item style="margin-top: 15px;margin-bottom: 15px;">
-                                    <mat-icon mat-list-icon>
-                                        <mat-slide-toggle style="position: relative;top:-10px;"
-                                            [checked]="passwordRules['renewal'].enabled" color="primary"
-                                            (change)="toggleRule(passwordRules['renewal']);"></mat-slide-toggle>
-                                    </mat-icon>
-                                    <p mat-line>
-                                        <mat-form-field style="width: 100%">
-                                            <input type="number" [disabled]="!passwordRules['renewal'].enabled"
-                                                [name]="passwordRules['renewal'].label"
-                                                [(ngModel)]="passwordRules['renewal'].value" min="1"
-                                                pattern="^[1-9][0-9]*" matInput
-                                                placeholder="{{passwordRules['renewal'].label}}" required>
-                                            <span matSuffix>&nbsp;{{'lang.days' | translate}}</span>
-                                        </mat-form-field>
-                                    </p>
-                                </mat-list-item>
-                                <mat-list-item style="margin-top: 15px;margin-bottom: 15px;">
-                                    <mat-icon mat-list-icon>
-                                        <mat-slide-toggle style="position: relative;top:-10px;"
-                                            [checked]="passwordRules['historyLastUse'].enabled" color="primary"
-                                            (change)="toggleRule(passwordRules['historyLastUse']);">
-                                        </mat-slide-toggle>
-                                    </mat-icon>
-                                    <p mat-line>
-                                        <mat-form-field style="width: 100%;">
-                                            <input type="number"
-                                                [disabled]="!passwordRules['historyLastUse'].enabled"
-                                                [name]="passwordRules['historyLastUse'].label"
-                                                [(ngModel)]="passwordRules['historyLastUse'].value" min="1"
-                                                pattern="^[1-9][0-9]*" matInput
-                                                placeholder="{{passwordRules['historyLastUse'].label}}" required>
-                                        </mat-form-field>
-                                    </p>
-                                </mat-list-item>
-                            </mat-list>
-                            <div class="col-md-12 text-center" style="padding:10px; text-align: center">
-                                <button mat-raised-button type="submit" color="primary" style="margin: 10px"
-                                    [disabled]="(!passwordForm.valid && !disabledForm()) || checkModif()">{{'lang.validate' | translate}}</button>
-                                <button mat-raised-button type="button" color="default" [disabled]="checkModif()"
-                                    (click)="cancelModification()">{{'lang.cancel' | translate}}</button>
-                            </div>
-                        </form>
-                    </mat-tab>
-                </mat-tab-group>
-            </mat-card>
-        </div>
-    </mat-sidenav-content>
-    <mat-sidenav #snavRight disableClose [mode]="signaturesService.mobileMode ? 'over': 'side'" [opened]="false"
-                 fixedInViewport="true" position='end'>
-    </mat-sidenav>
-</mat-sidenav-container>
+        </ion-item>
+    </ion-content>
+</form>

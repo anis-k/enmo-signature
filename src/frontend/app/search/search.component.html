@@ -38,7 +38,7 @@
                                             name="thumbs-down-outline"></ion-icon>
                                         <ion-badge
                                             *ngIf="itemW.processDate===null && (itemW.status===null || ['END','STOP'].indexOf(itemW.status) > -1)"
-                                            color="medium">{{itemW.mode}}</ion-badge>
+                                            color="medium">{{'lang.' + itemW.mode + 'User' | translate}}</ion-badge>
                                     </span>
                                 </ng-container>
                             </p>
