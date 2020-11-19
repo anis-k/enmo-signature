@@ -126,7 +126,7 @@ class SearchController
                     'processDate'           => $value['process_date'],
                     'current'               => !$currentFound && empty($value['process_date']),
                     'signatureMode'         => $value['signature_mode'],
-                    'note'                  => $value['note']
+                    'reason'                => $value['note']
                 ];
                 if (empty($value['process_date'])) {
                     $currentFound = true;
