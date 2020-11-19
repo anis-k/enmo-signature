@@ -9,74 +9,107 @@
         </ion-avatar>
     </ion-toolbar>
 </ion-header>
-<form style="display: contents;" id="adminForm" (ngSubmit)="onSubmit()" #adminForm="ngForm">
-    <ion-content>
-        <ion-item>
-            <ion-label color="secondary" position="floating">{{'lang.login' | translate}} *</ion-label>
-            <ion-input name="login" [readonly]="!creationMode" [(ngModel)]="user.login" required pattern="^[\w.@-]*$">
-            </ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label color="secondary" position="floating">{{'lang.firstname' | translate}} *</ion-label>
-            <ion-input name="firstname" [(ngModel)]="user.firstname" required></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}} *</ion-label>
-            <ion-input name="lastname" [(ngModel)]="user.lastname" required></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label color="secondary" position="floating">{{'lang.email' | translate}} *</ion-label>
-            <ion-input type="email" name="email" [(ngModel)]="user.email" required
-                pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"></ion-input>
-        </ion-item>
-        <ion-item>
-            <ion-label>{{'lang.restUser' | translate}}</ion-label>
-            <ion-toggle slot="start" color="primary" [disabled]="!creationMode" name="isRest" [(ngModel)]="user.isRest"
-                [checked]="user.isRest" (ionChange)="getPassRules($event)"></ion-toggle>
-        </ion-item>
-        <ion-list>
-            <ion-list-header>
-                <ion-label color="secondary">{{'lang.signatureModes' | translate}}</ion-label>
-            </ion-list-header>
-            <ng-container *ngFor="let signMode of authService.signatureRoles">
-                <ion-item *ngIf="signMode.id !=='visa'">
-                    <ion-label [style.color]="signMode.color">{{'lang.' + signMode.id | translate}}</ion-label>
-                    <ion-checkbox slot="start" [checked]="user.signatureModes.indexOf(signMode.id) > -1" (ionChange)="toggleSignMode(signMode, $event.detail.checked)" [disabled]="signMode.id === 'stamp'"></ion-checkbox>
-                </ion-item>
-            </ng-container>
-        </ion-list>
-        <ion-item style="align-items: center;" *ngIf="user.isRest">
-            <ion-button slot="end" fill="clear" color="primary" (click)="hideNewPassword = !hideNewPassword">
-                <ion-icon color="primary" [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'">
-                </ion-icon>
-            </ion-button>
-            <ion-label color="secondary" position="floating">{{'lang.newPassword' | translate}}</ion-label>
-            <ion-input [type]="hideNewPassword ? 'password' : 'text'" name="newPasswordRest"
-                [(ngModel)]="passwordRest.newPassword" (ionChange)="checkPasswordValidity(passwordRest.newPassword)">
-            </ion-input>
-        </ion-item>
-        <ion-item style="align-items: center;" *ngIf="user.isRest">
-            <ion-button slot="end" fill="clear" color="primary"
-                (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm">
-                <ion-icon color="primary" [name]="hideNewPasswordConfirm ? 'eye-outline' : 'eye-off-outline'">
-                </ion-icon>
-            </ion-button>
-            <ion-label color="secondary" position="floating">{{'lang.passwordConfirmation' | translate}}</ion-label>
-            <ion-input [type]="hideNewPasswordConfirm ? 'password' : 'text'" name="passwordConfirmation"
-                [(ngModel)]="passwordRest.passwordConfirmation"></ion-input>
-            <ion-note color="danger" *ngIf="passwordRest.passwordConfirmation !== passwordRest.newPassword">
-                {{'lang.passwordNotMatch' | translate}}</ion-note>
-            <ion-note color="success"
-                *ngIf="passwordRest.passwordConfirmation === passwordRest.newPassword && passwordRest.newPassword.length > 0 && passwordRest.passwordConfirmation.length> 0">
-                {{'lang.samePassword' | translate}}</ion-note>
-        </ion-item>
-        <ion-item text-center lines="none" style="position: sticky;bottom:0px;z-index:1;">
-            <div style="display: flex;align-items: center;justify-content: center;width: 100%;background: white;">
-                <ion-button type="submit" shape="round" size="large" fill="outline" color="primary"
-                    [disabled]="!adminForm.form.valid || !canValidate()">
-                    <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+
+<ion-header>
+    <ion-toolbar>
+        <ion-segment [value]="currentTool" (ionChange)="initTab($event.detail.value)">
+            <ion-segment-button value="info">
+                <ion-label>{{'lang.informations' | translate}}</ion-label>
+                <ion-icon name="information-circle"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="groups">
+                <ion-label>{{'lang.manage_groups' | translate}}</ion-label>
+                <ion-icon name="people-sharp"></ion-icon>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ng-container *ngIf="currentTool === 'info'">
+    <form style="display: contents;" id="adminForm" (ngSubmit)="onSubmit()" #adminForm="ngForm">
+        <ion-content>
+            <ion-item>
+                <ion-label color="secondary" position="floating">{{'lang.login' | translate}} *</ion-label>
+                <ion-input name="login" [readonly]="!creationMode" [(ngModel)]="user.login" required pattern="^[\w.@-]*$">
+                </ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label color="secondary" position="floating">{{'lang.firstname' | translate}} *</ion-label>
+                <ion-input name="firstname" [(ngModel)]="user.firstname" required></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}} *</ion-label>
+                <ion-input name="lastname" [(ngModel)]="user.lastname" required></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label color="secondary" position="floating">{{'lang.email' | translate}} *</ion-label>
+                <ion-input type="email" name="email" [(ngModel)]="user.email" required
+                    pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>{{'lang.restUser' | translate}}</ion-label>
+                <ion-toggle slot="start" color="primary" [disabled]="!creationMode" name="isRest" [(ngModel)]="user.isRest"
+                    [checked]="user.isRest" (ionChange)="getPassRules($event)"></ion-toggle>
+            </ion-item>
+            <ion-list>
+                <ion-list-header>
+                    <ion-label color="secondary">{{'lang.signatureModes' | translate}}</ion-label>
+                </ion-list-header>
+                <ng-container *ngFor="let signMode of authService.signatureRoles">
+                    <ion-item *ngIf="signMode.id !=='visa'">
+                        <ion-label [style.color]="signMode.color">{{'lang.' + signMode.id | translate}}</ion-label>
+                        <ion-checkbox slot="start" [checked]="user.signatureModes.indexOf(signMode.id) > -1" (ionChange)="toggleSignMode(signMode, $event.detail.checked)" [disabled]="signMode.id === 'stamp'"></ion-checkbox>
+                    </ion-item>
+                </ng-container>
+            </ion-list>
+            <ion-item style="align-items: center;" *ngIf="user.isRest">
+                <ion-button slot="end" fill="clear" color="primary" (click)="hideNewPassword = !hideNewPassword">
+                    <ion-icon color="primary" [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'">
+                    </ion-icon>
                 </ion-button>
-            </div>
-        </ion-item>
+                <ion-label color="secondary" position="floating">{{'lang.newPassword' | translate}}</ion-label>
+                <ion-input [type]="hideNewPassword ? 'password' : 'text'" name="newPasswordRest"
+                    [(ngModel)]="passwordRest.newPassword" (ionChange)="checkPasswordValidity(passwordRest.newPassword)">
+                </ion-input>
+            </ion-item>
+            <ion-item style="align-items: center;" *ngIf="user.isRest">
+                <ion-button slot="end" fill="clear" color="primary"
+                    (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm">
+                    <ion-icon color="primary" [name]="hideNewPasswordConfirm ? 'eye-outline' : 'eye-off-outline'">
+                    </ion-icon>
+                </ion-button>
+                <ion-label color="secondary" position="floating">{{'lang.passwordConfirmation' | translate}}</ion-label>
+                <ion-input [type]="hideNewPasswordConfirm ? 'password' : 'text'" name="passwordConfirmation"
+                    [(ngModel)]="passwordRest.passwordConfirmation"></ion-input>
+                <ion-note color="danger" *ngIf="passwordRest.passwordConfirmation !== passwordRest.newPassword">
+                    {{'lang.passwordNotMatch' | translate}}</ion-note>
+                <ion-note color="success"
+                    *ngIf="passwordRest.passwordConfirmation === passwordRest.newPassword && passwordRest.newPassword.length > 0 && passwordRest.passwordConfirmation.length> 0">
+                    {{'lang.samePassword' | translate}}</ion-note>
+            </ion-item>
+            <ion-item text-center lines="none" style="position: sticky;bottom:0px;z-index:1;">
+                <div style="display: flex;align-items: center;justify-content: center;width: 100%;background: white;">
+                    <ion-button type="submit" shape="round" size="large" fill="outline" color="primary"
+                        [disabled]="!adminForm.form.valid || !canValidate()">
+                        <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+                    </ion-button>
+                </div>
+            </ion-item>
+        </ion-content>
+    </form>
+</ng-container>
+
+<ng-container *ngIf="currentTool === 'groups'">
+    <ion-content>
+        <ion-list *ngIf="user.groups.length > 0">
+            <ion-item *ngFor="let group of user.groups">
+                <ion-label>{{group.label}}</ion-label>
+            </ion-item>
+        </ion-list>
+        <ion-list class="no-result" *ngIf="user.groups.length === 0">
+            <ion-item lines="none">
+                <ion-label class="no-result-label" color="medium">{{'lang.noAssociatedGroup' | translate}}</ion-label>
+            </ion-item>
+        </ion-list>
     </ion-content>
-</form>
+</ng-container>

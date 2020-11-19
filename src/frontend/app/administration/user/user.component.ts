@@ -46,6 +46,7 @@ export class UserComponent implements OnInit {
     hideCurrentPassword: Boolean = true;
     hideNewPassword: Boolean = true;
     hideNewPasswordConfirm: Boolean = true;
+    currentTool = 'info';
 
     // HANDLE PASSWORD
     passwordRules: any = {
@@ -304,5 +305,9 @@ export class UserComponent implements OnInit {
         } else {
             this.user.signatureModes = this.user.signatureModes.filter((item: any) => item !== signMode.id);
         }
+    }
+
+    initTab(val: any) {
+        this.currentTool = val;
     }
 }

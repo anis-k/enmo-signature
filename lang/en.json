@@ -308,6 +308,7 @@
 		"passwordValid": "Password is valid",
 		"wrongCurrentPassword": "Wrong current password",
 		"alreadyUsedPassword": "The password has already been used",
+		"noAssociatedGroup": "The user does not belong to any group",
 		"homePage": "Home page"
 	}
 }

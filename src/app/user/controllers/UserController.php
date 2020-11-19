@@ -86,7 +86,7 @@ class UserController
         $user['groups'] = [];
 
         $userGroups = UserGroupModel::get(['select' => ['group_id'], 'where' => ['user_id = ?'], 'data' => [$args['id']]]);
-        $groupsIds = array_column($userGroups, 'group_id');
+        $groupsIds  = array_column($userGroups, 'group_id');
         if (!empty($groupsIds)) {
             $groups = GroupModel::get(['select' => ['label'], 'where' => ['id in (?)'], 'data' => [$groupsIds]]);
             $user['groups'] = $groups;

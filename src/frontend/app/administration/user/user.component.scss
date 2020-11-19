@@ -11,3 +11,18 @@
   transition: all 0.2s;
 }
 
+.no-result {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-result .item {
+  width: 100%;
+  text-align: center;
+}
+
+.no-result-label {
+  font-size: 30px;
+}
