@@ -79,7 +79,7 @@ export class VisaWorkflowComponent implements OnInit {
         const userObj: any = {
             'userId': user.id,
             'userDisplay': `${user.firstname} ${user.lastname}`,
-            'role': 'visa',
+            'role': user.signatureModes[user.signatureModes.length - 1],
             'processDate': null,
             'current': false,
             'modes': user.signatureModes
