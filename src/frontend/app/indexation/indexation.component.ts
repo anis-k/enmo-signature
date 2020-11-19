@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Route, Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -21,6 +21,7 @@ export class IndexationComponent implements OnInit {
     loading: boolean = false;
     filesToUpload: any[] = [];
     errors: any[] = [];
+    fromDocument: number = null;
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
@@ -46,6 +47,81 @@ export class IndexationComponent implements OnInit {
         this.menu.enable(true, 'right-menu');
 
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
+
+        if (window.history.state.documentId !== undefined) {
+            this.fromDocument = window.history.state.documentId;
+            this.getDocumentData(this.fromDocument);
+        }
+    }
+
+    getDocumentData(resId: number) {
+        return new Promise((resolve) => {
+            this.http.get(`../rest/documents/${resId}`).pipe(
+                tap((data: any) => {
+                    this.filesToUpload.push({
+                        title: data.document.title,
+                        reference: '',
+                        mainDocument: true,
+                        content: '',
+                        linkId : data.document.linkId,
+                        metadata : data.document.metadata,
+                    });
+                    this.getDocumentContent(resId);
+                    this.appVisaWorkflow.loadWorkflow(data.document.workflow.map((item: any) => {
+                        item.userSignatureModes.unshift('visa');
+                        return {
+                            ...item,
+                            'processDate': null,
+                            'current': false,
+                            'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
+                            'modes': item.userSignatureModes
+                        };
+                    }));
+                    for (let index = 0; index < data.document.attachments.length; index++) {
+                        this.getAttachment(data.document.attachments[index].id);
+                    }
+                    resolve(true);
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        });
+    }
+
+    getDocumentContent(resId: number) {
+        return new Promise((resolve) => {
+            this.http.get(`../rest/documents/${resId}/content`).pipe(
+                tap((data: any) => {
+                    this.filesToUpload[0].content = data.encodedDocument;
+                    resolve(true);
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        });
+    }
+
+    getAttachment(attachId: number) {
+        return new Promise((resolve) => {
+            this.http.get(`../rest/attachments/${attachId}`).pipe(
+                tap((data: any) => {
+                    this.filesToUpload.push({
+                        title: data.attachment.title,
+                        mainDocument: false,
+                        content: data.attachment.encodedDocument
+                    });
+                    resolve(true);
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        });
     }
 
     ionViewWillLeave() {
@@ -123,10 +199,10 @@ export class IndexationComponent implements OnInit {
         let linkId: string = null;
 
         if (note !== '') {
-            noteObj =  {
-                value : note,
-                creator : `${this.authService.user.firstname} ${this.authService.user.lastname}`,
-                creationDate : this.datePipe.transform(today, 'dd-MM-y')
+            noteObj = {
+                value: note,
+                creator: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
+                creationDate: this.datePipe.transform(today, 'dd-MM-y')
             };
         }
 
@@ -141,10 +217,10 @@ export class IndexationComponent implements OnInit {
         signedFiles.forEach((file: any) => {
             formattedObj.push({
                 title: file.title,
-                reference : this.datePipe.transform(today, 'y/MM/dd') + '/' + file.reference,
+                reference: this.datePipe.transform(today, 'y/MM/dd') + '/' + file.reference,
                 encodedDocument: file.content,
                 isZipped: false,
-                linkId: linkId,
+                linkId: this.fromDocument !== null ? file.linkId : linkId,
                 sender: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
                 notes: noteObj,
                 attachments: attachFiles.map((item: any) => {
@@ -159,7 +235,8 @@ export class IndexationComponent implements OnInit {
                         mode: this.authService.getWorkflowMode(item.role),
                         signatureMode: this.authService.getSignatureMode(item.role)
                     };
-                })
+                }),
+                metadata : this.fromDocument !== null ? file.metadata : []
             });
         });
 
@@ -191,7 +268,7 @@ export class IndexationComponent implements OnInit {
                 reader.onload = (value: any) => {
                     file.mainDocument = this.filesToUpload.length === 0;
                     file.reference = this.filesToUpload.length === 0 ? file.reference : '',
-                    file.content = this.getBase64Document(value.target.result);
+                        file.content = this.getBase64Document(value.target.result);
                     this.filesToUpload.push(file);
                 };
             }

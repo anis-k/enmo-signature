@@ -36,26 +36,30 @@ export class SearchComponent implements OnInit {
             values: []
         },
         {
-            id: 'workflowState',
+            id: 'workflowStates',
             type: 'checkbox',
             val: [],
             values: [
                 {
-                    id: 'INPROGRESS',
+                    id: 'PROG',
                     label: 'lang.inprogress'
                 },
                 {
-                    id: 'INTERRUPT',
+                    id: 'STOP',
                     label: 'lang.interrupt'
                 },
                 {
-                    id: 'END',
+                    id: 'VAL',
                     label: 'lang.end'
+                },
+                {
+                    id: 'REF',
+                    label: 'lang.refused'
                 }
             ]
         },
         {
-            id: 'usersWorkflow',
+            id: 'workflowUsers',
             type: 'autocompleteUsers',
             val: [],
             values: []
@@ -138,7 +142,7 @@ export class SearchComponent implements OnInit {
                 text: this.translate.instant('lang.' + element.id),
                 icon: element.icon,
                 handler: () => {
-                    this[element.id]();
+                    this[element.id](item);
                 }
             });
         });
@@ -209,26 +213,8 @@ export class SearchComponent implements OnInit {
         await alert.present();
     }
 
-    async newWorkflow() {
-        const alert = await this.alertController.create({
-            header: this.translate.instant('lang.warning'),
-            message: this.translate.instant('lang.areYouSure'),
-            buttons: [
-                {
-                    text: this.translate.instant('lang.cancel'),
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: () => { }
-                },
-                {
-                    text: this.translate.instant('lang.validate'),
-                    handler: () => {
-                        this.router.navigate(['/indexation']);
-                    }
-                }
-            ]
-        });
-        await alert.present();
+    async newWorkflow(item: any) {
+        this.router.navigate(['/indexation'], { state: { documentId: item.id } });
     }
 
     async openPromptProof(item: any) {

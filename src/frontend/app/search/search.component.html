@@ -28,7 +28,7 @@
                                     <ion-icon *ngIf="i>0" name="chevron-forward-outline"></ion-icon>
                                     <span class="workflow-item success" [class.success]="itemW.processDate!==null"
                                         [class.typist-interrupt]="itemW.status==='REF'"
-                                        [class.interrupt]="itemW.processDate===null && itemW.status==='END'"
+                                        [class.interrupt]="itemW.processDate===null && ['END','STOP'].indexOf(itemW.status) > -1"
                                         [class.current]="itemW.current"
                                         [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{itemW.userDisplay}}&nbsp;
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF'"
@@ -36,7 +36,7 @@
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status==='REF'"
                                             name="thumbs-down-outline"></ion-icon>
                                         <ion-badge
-                                            *ngIf="itemW.processDate===null && (itemW.status===null || itemW.status==='END')"
+                                            *ngIf="itemW.processDate===null && (itemW.status===null || ['END','STOP'].indexOf(itemW.status) > -1)"
                                             color="medium">{{itemW.mode}}</ion-badge>
                                     </span>
                                 </ng-container>
@@ -45,18 +45,15 @@
                     </ion-toolbar>
                     <ion-item-sliding #slidingItem>
                         <ion-item lines="none">
-                            <ion-icon *ngIf="element.status == 'SIGN'" color="primary" slot="start" name="pencil-outline">
+                            <ion-icon *ngIf="element.state == 'PROG'" color="primary" slot="start" name="hourglass-outline">
                             </ion-icon>
-                            <ion-icon *ngIf="element.status == 'VISA'" color="primary" slot="start"
-                                name="checkmark-done-outline">
+                            <ion-icon *ngIf="element.state == 'STOP'" color="primary" slot="start"
+                                name="hand-left-outline">
                             </ion-icon>
-                            <ion-icon *ngIf="element.status == 'NOTE'" color="primary" slot="start"
-                                name="chatbubble-ellipses-outline">
-                            </ion-icon>
-                            <ion-icon *ngIf="element.status == 'VAL'" color="success" slot="start"
+                            <ion-icon *ngIf="element.state == 'VAL'" color="success" slot="start"
                                 name="thumbs-up-outline">
                             </ion-icon>
-                            <ion-icon *ngIf="element.status == 'REF'" color="danger" slot="start"
+                            <ion-icon *ngIf="element.state == 'REF'" color="danger" slot="start"
                                 name="thumbs-down-outline">
                             </ion-icon>
                             <ion-label>

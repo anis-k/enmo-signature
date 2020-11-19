@@ -138,4 +138,10 @@ export class VisaWorkflowComponent implements OnInit {
     getRole(id: string) {
         return this.authService.signatureRoles.filter((mode: any) => mode.id === id)[0];
     }
+
+    loadWorkflow(workflow: any) {
+        console.log('loadWorkflow', workflow);
+        
+        this.visaWorkflow = workflow;
+    }
 }

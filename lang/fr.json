@@ -328,8 +328,8 @@
 		"attachDocToSign": "Annexe attaché au(x) document(s) à signer",
 		"titleSearch": "Sujet du document à signer",
 		"referenceSearch": "Référence du document à signer",
-		"workflowStateSearch": "État du circuit",
-		"usersWorkflowSearch": "Personne du circuit",
+		"workflowStatesSearch": "État du circuit",
+		"workflowUsersSearch": "Personne du circuit",
 		"end": "Terminé",
 		"interrupt": "Interrompu",
 		"inprogress": "En cours",
@@ -338,6 +338,8 @@
 		"newWorkflow": "Nouveau circuit...",
 		"proof": "Faisceau de preuve",
 		"processing": "Traitement",
-		"mandatory": "Obligatoire"
+		"mandatory": "Obligatoire",
+		"addReason": "Saisir un motif",
+		"refused": "Refusé"
 	}
 }

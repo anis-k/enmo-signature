@@ -315,7 +315,6 @@ export class DocumentComponent implements OnInit {
                                     'modes': item.userSignatureModes
                                 };
                             });
-                            console.log(this.mainDocument.workflow);
 
                             this.totalPages = this.mainDocument.pages;
 
@@ -574,12 +573,11 @@ export class DocumentComponent implements OnInit {
             header: this.translate.instant('lang.warning'),
             message: this.translate.instant('lang.areYouSure'),
             inputs: [
-                // multiline input.
                 {
                     name: 'paragraph',
                     id: 'paragraph',
                     type: 'textarea',
-                    placeholder: this.translate.instant('lang.addNote')
+                    placeholder: this.translate.instant('lang.addReason')
                 },
             ],
             buttons: [
@@ -587,7 +585,7 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.rejectDocument'),
                     handler: () => {
                         this.loadingController.create({
-                            message: 'Envoi ...',
+                            message: this.translate.instant('lang.processing') + ' ...',
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
@@ -614,12 +612,20 @@ export class DocumentComponent implements OnInit {
             cssClass: 'custom-alert-success',
             header: this.translate.instant('lang.warning'),
             message: this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0 ? this.translate.instant('lang.validateDocumentWithoutSignOrNote') : this.translate.instant('lang.areYouSure'),
+            inputs: [
+                {
+                    name: 'paragraph',
+                    id: 'paragraph',
+                    type: 'textarea',
+                    placeholder: this.translate.instant('lang.addReason')
+                },
+            ],
             buttons: [
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: () => {
                         this.loadingController.create({
-                            message: 'Envoi ...',
+                            message: this.translate.instant('lang.processing') + ' ...',
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
