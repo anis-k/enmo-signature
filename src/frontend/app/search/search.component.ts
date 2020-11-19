@@ -78,6 +78,9 @@ export class SearchComponent implements OnInit {
     ];
 
     ressources: any[] = [];
+    offset: number = 0;
+    limit: number = 10;
+    count: number = 0;
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
@@ -127,24 +130,31 @@ export class SearchComponent implements OnInit {
     }
 
     formatDatas() {
-        return this.filters.map((filter: any) => {
-            return {
-                id: filter.id,
-                val: filter.val
-            };
-        }).filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0));
+        const objToSend: any = {};
+        const tmpArr = this.filters.filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0));
+
+        tmpArr.forEach((filter: any) => {
+            if (filter.id === 'workflowUsers') {
+                objToSend[filter.id] = filter.val.map((item: any) => item.id);
+            } else {
+                objToSend[filter.id] = filter.val;
+            }
+        });
+        return objToSend;
     }
 
     async openActions(item: any) {
         const buttons: any[] = [];
         this.actions.forEach(element => {
-            buttons.push({
-                text: this.translate.instant('lang.' + element.id),
-                icon: element.icon,
-                handler: () => {
-                    this[element.id](item);
-                }
-            });
+            if (this.canShowButton(element.id, item)) {
+                buttons.push({
+                    text: this.translate.instant('lang.' + element.id),
+                    icon: element.icon,
+                    handler: () => {
+                        this[element.id](item);
+                    }
+                });
+            }
         });
         const actionSheet = await this.actionSheetController.create({
             header: this.translate.instant('lang.actions') + ' - ' + item.reference,
@@ -153,9 +163,19 @@ export class SearchComponent implements OnInit {
         await actionSheet.present();
     }
 
+    canShowButton(id: string, item: any) {
+        if (id === 'interruptWorkflow' && item.canInterrupt) {
+            return true;
+        } else if (id === 'newWorkflow' && item.canReaffect) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     search() {
         this.loadingController.create({
-            message: this.translate.instant('lang.processing') + ' ...',
+            message: this.translate.instant('lang.processing'),
             spinner: 'dots'
         }).then(async (load: HTMLIonLoadingElement) => {
             load.present();
@@ -167,10 +187,16 @@ export class SearchComponent implements OnInit {
     launchSearch() {
         this.ressources = [];
         return new Promise((resolve) => {
-            this.http.post(`../rest/search/documents`, {})
+            this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
                 .pipe(
                     tap((data: any) => {
-                        this.ressources = data.documents;
+                        this.ressources = data.documents.map((res: any) => {
+                            return {
+                                ...res,
+                                reason : this.getReason(res)
+                            };
+                        });
+                        this.count = data.count;
                         resolve(true);
                     }),
                     catchError((err: any) => {
@@ -180,6 +206,25 @@ export class SearchComponent implements OnInit {
                     })
                 ).subscribe();
         });
+    }
+
+    loadData(event: any) {
+        this.offset = this.offset + this.limit;
+
+        this.http.post('../rest/search/documents?limit=' + this.limit + '&offset=' + this.offset, this.formatDatas()).pipe(
+            tap((data: any) => {
+                this.ressources = this.ressources.concat(data.documents.map((res: any) => {
+                    return {
+                        ...res,
+                        reason : this.getReason(res)
+                    };
+                }));
+                event.target.complete();
+                if (this.count === this.ressources.length) {
+                    event.target.disabled = true;
+                }
+            })
+        ).subscribe();
     }
 
     async interruptWorkflow() {
@@ -197,7 +242,7 @@ export class SearchComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: () => {
                         this.loadingController.create({
-                            message: this.translate.instant('lang.processing') + ' ...',
+                            message: this.translate.instant('lang.processing'),
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
@@ -267,5 +312,9 @@ export class SearchComponent implements OnInit {
                     })
                 ).subscribe();
         });
+    }
+
+    getReason(item: any) {
+        return item.workflow.map((line: any) => line.reason).filter((reason: any) => reason !== null);
     }
 }

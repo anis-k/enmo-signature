@@ -4,6 +4,7 @@
             <ion-menu-button menu="left-menu"></ion-menu-button>
         </ion-buttons>
         <ion-title class="ion-text-center">{{'lang.search' | translate}}</ion-title>
+        <ion-label slot="end" color="secondary">{{count}} {{'lang.results' | translate}}</ion-label>
         <ion-buttons slot="end">
             <ion-menu-button menu="right-menu">
                 <ion-icon name="funnel-outline"></ion-icon>
@@ -14,7 +15,7 @@
 <ion-content>
     <ion-list class="no-result" *ngIf="ressources.length === 0">
         <ion-item lines="none">
-            <ion-label class="no-result-label" color="light">{{'lang.noResult' | translate}}</ion-label>
+            <ion-label class="no-result-label" color="medium">{{'lang.noResult' | translate}}</ion-label>
         </ion-item>
     </ion-list>
     <ion-list *ngIf="ressources.length > 0">
@@ -59,8 +60,10 @@
                             <ion-label>
                                 <p>{{element.reference}}</p>
                                 <h2>{{element.title}}</h2>
-                                <p *ngIf="element.reason !== null" class="primary">
-                                    <ion-icon name="chatbox-outline"></ion-icon> {{element.reason}}
+                                <p *ngIf="element.reason.length > 0" class="primary">
+                                    <ng-container *ngFor="let note of element.reason">
+                                        <ion-icon name="chatbox-outline"></ion-icon> {{note}}
+                                    </ng-container>
                                 </p>
                             </ion-label>
                             <ion-buttons slot="end">
@@ -86,6 +89,10 @@
             </ion-item>
         </ion-virtual-scroll>
     </ion-list>
+    <ion-infinite-scroll *ngIf="count > 0" threshold="100px" (ionInfinite)="loadData($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>
 <ng-template #rightContent>
     <ion-header [translucent]="true">

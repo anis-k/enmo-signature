@@ -340,6 +340,7 @@
 		"processing": "Traitement",
 		"mandatory": "Obligatoire",
 		"addReason": "Saisir un motif",
-		"refused": "Refusé"
+		"refused": "Refusé",
+		"results": "résultat(s)"
 	}
 }
