@@ -34,7 +34,8 @@ class SearchController
 
         $where = [];
         $data = [];
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
+        $hasFullRights = PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents']);
+        if (!$hasFullRights) {
             $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$GLOBALS['id']]]);
             $users = [$GLOBALS['id']];
             foreach ($substitutedUsers as $value) {
@@ -49,18 +50,18 @@ class SearchController
 
         $whereWorkflow = [];
         $dataWorkflow = [];
-        if (Validator::arrayType()->notEmpty()->validate($body['statuses'])) {
+        if (Validator::arrayType()->notEmpty()->validate($body['workflowStates'])) {
             $whereStatuses = [];
-            if (in_array('VAL', $body['statuses'])) {
+            if (in_array('VAL', $body['workflowStates'])) {
                 $whereStatuses[] = "(status = 'VAL' AND main_document_id not in (SELECT main_document_id FROM workflows WHERE status is null OR status in ('REF', 'END', 'STOP')))";
             }
-            if (in_array('VAL', $body['statuses'])) {
+            if (in_array('REF', $body['workflowStates'])) {
                 $whereStatuses[] = "status = 'REF'";
             }
-            if (in_array('STOP', $body['statuses'])) {
+            if (in_array('STOP', $body['workflowStates'])) {
                 $whereStatuses[] = "status = 'STOP'";
             }
-            if (in_array('PROG', $body['statuses'])) {
+            if (in_array('PROG', $body['workflowStates'])) {
                 $whereStatuses[] = "status is null";
             }
             if (!empty($whereStatuses)) {
@@ -68,9 +69,9 @@ class SearchController
                 $whereWorkflow[] = "({$whereStatuses})";
             }
         }
-        if (!empty($body['users'])) {
+        if (!empty($body['workflowUsers'])) {
             $whereWorkflow[] = 'user_id in (?)';
-            $dataWorkflow[] = $body['users'];
+            $dataWorkflow[] = $body['workflowUsers'];
         }
 
         if (!empty($whereWorkflow)) {
@@ -88,9 +89,12 @@ class SearchController
             $data[] = $documentIds;
         }
 
-        if (Validator::stringType()->notEmpty()->validate($body['search'])) {
-            $where[] = '(reference ilike ? OR unaccent(title) ilike unaccent(?::text))';
+        if (Validator::stringType()->notEmpty()->validate($body['title'])) {
+            $where[] = 'unaccent(title) ilike unaccent(?::text)';
             $data[] = "%{$body['search']}%";
+        }
+        if (Validator::stringType()->notEmpty()->validate($body['reference'])) {
+            $where[] = 'reference ilike ?';
             $data[] = "%{$body['search']}%";
         }
 
@@ -105,9 +109,10 @@ class SearchController
 
         $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         foreach ($documents as $key => $document) {
-            $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode'], 'documentId' => $document['id'], 'orderBy' => ['"order"']]);
+            $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'note', 'status'], 'documentId' => $document['id'], 'orderBy' => ['"order"']]);
             $currentFound = false;
             $formattedWorkflow = [];
+            $state = null;
             foreach ($workflow as $value) {
                 if (!empty($value['process_date'])) {
                     $date = new \DateTime($value['process_date']);
@@ -120,16 +125,24 @@ class SearchController
                     'mode'                  => $value['mode'],
                     'processDate'           => $value['process_date'],
                     'current'               => !$currentFound && empty($value['process_date']),
-                    'signatureMode'         => $value['signature_mode']
+                    'signatureMode'         => $value['signature_mode'],
+                    'note'                  => $value['note']
                 ];
                 if (empty($value['process_date'])) {
                     $currentFound = true;
                 }
+
+                $state = str_replace(['END'], ['REF'], $value['status']);
+                if (empty($value['status'])) {
+                    $state = 'PROG';
+                }
             }
+            $documents[$key]['canInterrupt'] = ($document['typist'] == $GLOBALS['id'] || $hasFullRights);
             $documents[$key]['workflow'] = $formattedWorkflow;
+            $documents[$key]['state'] = $state;
             unset($documents[$key]['count']);
         }
-        
+
         return $response->withJson(['documents' => $documents, 'count' => $count]);
     }
 }
