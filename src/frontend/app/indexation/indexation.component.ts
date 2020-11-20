@@ -301,11 +301,14 @@ export class IndexationComponent implements OnInit {
     }
 
     isValid() {
-        if (this.filesToUpload.filter((item: any) => item.mainDocument).length === 0) {
-            this.notificationService.error('Veuillez choisir un document à signer');
+        if (this.filesToUpload.filter((item: any) => item.title === '').length > 0) {
+            this.notificationService.error('lang.subjectMandatory');
+            return false;
+        } else if (this.filesToUpload.filter((item: any) => item.mainDocument).length === 0) {
+            this.notificationService.error('lang.mainDocumentMandatory');
             return false;
         } else if (this.appVisaWorkflow.getCurrentWorkflow().length === 0) {
-            this.notificationService.error('Veuillez choisir des utilisateurs pour le circuit');
+            this.notificationService.error('lang.workflowUserstMandatory');
             this.menu.open('right-menu');
             return false;
         } else {
