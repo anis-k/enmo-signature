@@ -83,7 +83,7 @@
                             </ion-buttons>
                         </ion-item>
                         <ion-item-options>
-                            <ion-item-option color="primary" (click)="openPromptProof(element)">
+                            <ion-item-option *ngIf="element.state !== 'PROG'" color="primary" (click)="openPromptProof(element)">
                                 <ion-icon slot="bottom" name="ribbon-sharp"></ion-icon>
                                 {{'lang.proof' | translate}}
                             </ion-item-option>

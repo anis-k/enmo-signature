@@ -349,6 +349,7 @@
 		"workflowUserstMandatory": "Veuillez choisir des utilisateurs pour le circuit",
 		"accessDocument": "Accéder au document",
 		"warnInterrupt": "Vous êtes sur le point d'interrompre le traitement de ce document.",
-		"documentInterrupted": "Circuit interrompu"
+		"documentInterrupted": "Circuit interrompu",
+		"download": "Télécharger"
 	}
 }

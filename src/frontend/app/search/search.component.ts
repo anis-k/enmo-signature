@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { catchError, exhaustMap, finalize, tap } from 'rxjs/operators';
 import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.component';
 import { AuthService } from '../service/auth.service';
 import { NotificationService } from '../service/notification.service';
@@ -15,6 +15,7 @@ import { SignaturesContentService } from '../service/signatures.service';
 @Component({
     templateUrl: 'search.component.html',
     styleUrls: ['search.component.scss'],
+    providers: [DatePipe]
 })
 export class SearchComponent implements OnInit {
 
@@ -97,7 +98,8 @@ export class SearchComponent implements OnInit {
         public authService: AuthService,
         public loadingController: LoadingController,
         public alertController: AlertController,
-        public actionSheetController: ActionSheetController
+        public actionSheetController: ActionSheetController,
+        public datePipe: DatePipe,
     ) { }
 
     ngOnInit(): void { }
@@ -289,7 +291,7 @@ export class SearchComponent implements OnInit {
                 .pipe(
                     tap(() => {
                         this.notificationService.success('lang.documentInterrupted'),
-                        resolve(true);
+                            resolve(true);
                     }),
                     catchError((err: any) => {
                         this.notificationService.handleErrors(err);
@@ -309,20 +311,23 @@ export class SearchComponent implements OnInit {
 
     async openPromptProof(item: any) {
         const alert = await this.alertController.create({
-            header: this.translate.instant('lang.proof'),
+            cssClass : 'promptProof',
+            header: this.translate.instant('lang.download'),
             inputs: [
                 {
                     name: 'option1',
-                    type: 'checkbox',
-                    label: 'Option 1',
-                    value: 'value1',
+                    type: 'radio',
+                    label: 'Faisceau de preuve',
+                    value: 'onlyProof',
+                    checked: true
                 },
                 {
-                    name: 'option2',
-                    type: 'checkbox',
-                    label: 'Option 2',
-                    value: 'value2'
+                    name: 'option1',
+                    type: 'radio',
+                    label: 'Dossier complet',
+                    value: 'all',
                 },
+
             ],
             buttons: [
                 {
@@ -333,8 +338,8 @@ export class SearchComponent implements OnInit {
                 },
                 {
                     text: this.translate.instant('lang.validate'),
-                    handler: async () => {
-                        await this.downloadProof(item);
+                    handler: async (mode) => {
+                        await this.downloadProof(item, mode);
                         alert.dismiss();
                     }
                 }
@@ -343,11 +348,25 @@ export class SearchComponent implements OnInit {
         await alert.present();
     }
 
-    downloadProof(item: any) {
+    downloadProof(item: any, mode: string) {
+        let format = null;
+        const onlyProof = mode === 'onlyProof' ? '&onlyProof=true' : '';
+
         return new Promise((resolve) => {
-            this.http.get(`../rest/documents/${item.id}/proof`)
+            this.http.get(`../rest/documents/${item.id}/proof?mode=base64${onlyProof}`)
                 .pipe(
-                    tap(() => {
+                    tap((data: any) => {
+                        format = data.format;
+                    }),
+                    exhaustMap(() => this.http.get(`../rest/documents/${item.id}/proof?mode=stream${onlyProof}`, { responseType: 'blob' })),
+                    tap((data: any) => {
+                        const today = new Date();
+                        const filename = 'proof_' + item.id + '_' + this.datePipe.transform(today, 'dd-MM-y') + '.' + format;
+                        const downloadLink = document.createElement('a');
+                        downloadLink.href = window.URL.createObjectURL(data);
+                        downloadLink.setAttribute('download', filename);
+                        document.body.appendChild(downloadLink);
+                        downloadLink.click();
                         resolve(true);
                     }),
                     catchError((err: any) => {
