@@ -24,7 +24,8 @@
                 <ion-label>
                     <ion-toolbar color="light">
                         <ion-title size="small">
-                            <p style="display: flex;align-items: center;white-space: pre;overflow: auto;">
+                            <p
+                                style="display: flex;align-items: center;white-space: pre;overflow-x: auto;overflow-y: hidden;">
                                 <ng-container *ngFor="let itemW of element.workflow;let i=index;">
                                     <ion-icon *ngIf="i>0" name="chevron-forward-outline"></ion-icon>
                                     <span class="workflow-item success" [class.success]="itemW.processDate!==null"
@@ -44,9 +45,10 @@
                             </p>
                         </ion-title>
                     </ion-toolbar>
-                    <ion-item-sliding #slidingItem>
+                    <ion-item-sliding #slidingItem (ionDrag)="onSliding($event, element.id)">
                         <ion-item lines="none">
-                            <ion-icon *ngIf="element.state == 'PROG'" color="primary" slot="start" name="hourglass-outline">
+                            <ion-icon *ngIf="element.state == 'PROG'" color="primary" slot="start"
+                                name="hourglass-outline">
                             </ion-icon>
                             <ion-icon *ngIf="element.state == 'STOP'" color="primary" slot="start"
                                 name="hand-left-outline">
@@ -67,8 +69,12 @@
                                 </p>
                             </ion-label>
                             <ion-buttons slot="end">
-                                <ion-button slot="icon-only" fill="clear" shape="round"
-                                    (click)="slidingItem.open('end')">
+                                <ion-button *ngIf="openedLine===element.id" slot="icon-only" fill="clear" shape="round"
+                                    (click)="toggleSlide(slidingItem, element.id)">
+                                    <ion-icon color="medium" slot="icon-only" name="arrow-forward-outline"></ion-icon>
+                                </ion-button>
+                                <ion-button *ngIf="openedLine!==element.id" slot="icon-only" fill="clear" shape="round"
+                                    (click)="toggleSlide(slidingItem, element.id)">
                                     <ion-icon color="medium" slot="icon-only" name="arrow-back-outline"></ion-icon>
                                 </ion-button>
                             </ion-buttons>

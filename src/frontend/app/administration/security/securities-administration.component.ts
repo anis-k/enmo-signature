@@ -73,7 +73,6 @@ export class SecuritiesAdministrationComponent implements OnInit {
     }
 
     toggleRule(rule: any) {
-        console.log('toggleRule');
         this.passwordRulesList.forEach((rule2: any) => {
             if (rule.id === 'lockAttempts' && (rule2.label === 'lockTime' || rule2.label === 'lockAttempts')) {
                 rule2.enabled = rule.enabled;

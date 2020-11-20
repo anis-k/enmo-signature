@@ -81,6 +81,7 @@ export class SearchComponent implements OnInit {
     offset: number = 0;
     limit: number = 10;
     count: number = 0;
+    openedLine = '';
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
@@ -112,6 +113,27 @@ export class SearchComponent implements OnInit {
 
     ionViewWillLeave() {
         this.signaturesService.detachTemplate('rightContent');
+    }
+
+    toggleSlide(slidingItem: any, resId: any) {
+        slidingItem.getOpenAmount()
+        .then((res: any) => {
+            if (res === 0) {
+                this.openedLine = resId;
+                slidingItem.open('end');
+            } else {
+                this.openedLine = '';
+                slidingItem.close('end');
+            }
+        });
+    }
+
+    onSliding(ev: any, resId: any) {
+        if (ev.detail.ratio === 1) {
+            this.openedLine = resId;
+        } else {
+            this.openedLine = '';
+        }
     }
 
     onSubmit() {
@@ -186,6 +208,7 @@ export class SearchComponent implements OnInit {
 
     launchSearch() {
         this.ressources = [];
+        this.offset = 0;
         return new Promise((resolve) => {
             this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
                 .pipe(
