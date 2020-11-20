@@ -180,7 +180,7 @@ export class SearchComponent implements OnInit {
         this.actions.forEach(element => {
             if (this.canShowButton(element.id, item)) {
                 buttons.push({
-                    text: this.translate.instant('lang.' + element.id),
+                    text: item.state === 'PROG' && element.id === 'newWorkflow' ? this.translate.instant('lang.' + element.id + 'Prog') : this.translate.instant('lang.' + element.id),
                     icon: element.icon,
                     handler: () => {
                         this[element.id](item);
@@ -250,38 +250,60 @@ export class SearchComponent implements OnInit {
         ).subscribe();
     }
 
-    async interruptWorkflow() {
-        const alert = await this.alertController.create({
-            header: this.translate.instant('lang.warning'),
-            message: this.translate.instant('lang.areYouSure'),
-            buttons: [
-                {
-                    text: this.translate.instant('lang.cancel'),
-                    role: 'cancel',
-                    cssClass: 'secondary',
-                    handler: () => { }
-                },
-                {
-                    text: this.translate.instant('lang.validate'),
-                    handler: () => {
-                        this.loadingController.create({
-                            message: this.translate.instant('lang.processing'),
-                            spinner: 'dots'
-                        }).then(async (load: HTMLIonLoadingElement) => {
-                            load.present();
-                            // DO SOMETHING
-                            setTimeout(() => {
+    async interruptWorkflow(item: any) {
+        return new Promise(async (resolve) => {
+            const confirm = await this.alertController.create({
+                header: this.translate.instant('lang.warning'),
+                message: this.translate.instant('lang.warnInterrupt'),
+                buttons: [
+                    {
+                        text: this.translate.instant('lang.cancel'),
+                        role: 'cancel',
+                        cssClass: 'secondary',
+                        handler: () => { }
+                    },
+                    {
+                        text: this.translate.instant('lang.validate'),
+                        handler: () => {
+                            this.loadingController.create({
+                                message: this.translate.instant('lang.processing'),
+                                spinner: 'dots'
+                            }).then(async (load: HTMLIonLoadingElement) => {
+                                load.present();
+                                await this.launchInterrupt(item);
+                                this.launchSearch();
+                                resolve(true);
                                 load.dismiss();
-                            }, 3000);
-                        });
+                            });
+                        }
                     }
-                }
-            ]
+                ]
+            });
+            await confirm.present();
         });
-        await alert.present();
+    }
+
+    launchInterrupt(item: any) {
+        return new Promise((resolve) => {
+            this.http.put(`../rest/documents/${item.id}/workflows/interrupt`, {})
+                .pipe(
+                    tap(() => {
+                        this.notificationService.success('lang.documentInterrupted'),
+                        resolve(true);
+                    }),
+                    catchError((err: any) => {
+                        this.notificationService.handleErrors(err);
+                        resolve(false);
+                        return of(false);
+                    })
+                ).subscribe();
+        });
     }
 
     async newWorkflow(item: any) {
+        if (item.state === 'PROG') {
+            await this.interruptWorkflow(item);
+        }
         this.router.navigate(['/indexation'], { state: { documentId: item.id } });
     }
 

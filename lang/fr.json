@@ -336,7 +336,8 @@
 		"inprogress": "En cours",
 		"edit": "Editer",
 		"interruptWorkflow": "Interrompre le circuit",
-		"newWorkflow": "Nouveau circuit...",
+		"newWorkflow": "Renvoyer le document",
+		"newWorkflowProg": "Interrompre le circuit et renvoyer le document",
 		"proof": "Faisceau de preuve",
 		"processing": "Traitement",
 		"mandatory": "Obligatoire",
@@ -346,6 +347,8 @@
 		"subjectMandatory": "Veuillez renseigner tous les objets des documents",
 		"mainDocumentMandatory": "Veuillez choisir un document à signer",
 		"workflowUserstMandatory": "Veuillez choisir des utilisateurs pour le circuit",
-		"accessDocument": "Accéder au document"
+		"accessDocument": "Accéder au document",
+		"warnInterrupt": "Vous êtes sur le point d'interrompre le traitement de ce document.",
+		"documentInterrupted": "Circuit interrompu"
 	}
 }
