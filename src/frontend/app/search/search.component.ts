@@ -117,15 +117,15 @@ export class SearchComponent implements OnInit {
 
     toggleSlide(slidingItem: any, resId: any) {
         slidingItem.getOpenAmount()
-        .then((res: any) => {
-            if (res === 0) {
-                this.openedLine = resId;
-                slidingItem.open('end');
-            } else {
-                this.openedLine = '';
-                slidingItem.close('end');
-            }
-        });
+            .then((res: any) => {
+                if (res === 0) {
+                    this.openedLine = resId;
+                    slidingItem.open('end');
+                } else {
+                    this.openedLine = '';
+                    slidingItem.close('end');
+                }
+            });
     }
 
     onSliding(ev: any, resId: any) {
@@ -163,6 +163,16 @@ export class SearchComponent implements OnInit {
             }
         });
         return objToSend;
+    }
+
+    formatListDatas(data: any) {
+        return data.map((res: any) => {
+            return {
+                ...res,
+                reason: this.getReason(res),
+                currentUser: this.getCurrentUser(res)
+            };
+        });
     }
 
     async openActions(item: any) {
@@ -213,12 +223,7 @@ export class SearchComponent implements OnInit {
             this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
                 .pipe(
                     tap((data: any) => {
-                        this.ressources = data.documents.map((res: any) => {
-                            return {
-                                ...res,
-                                reason : this.getReason(res)
-                            };
-                        });
+                        this.ressources = this.formatListDatas(data.documents);
                         this.count = data.count;
                         resolve(true);
                     }),
@@ -236,12 +241,7 @@ export class SearchComponent implements OnInit {
 
         this.http.post('../rest/search/documents?limit=' + this.limit + '&offset=' + this.offset, this.formatDatas()).pipe(
             tap((data: any) => {
-                this.ressources = this.ressources.concat(data.documents.map((res: any) => {
-                    return {
-                        ...res,
-                        reason : this.getReason(res)
-                    };
-                }));
+                this.ressources = this.ressources.concat(this.formatListDatas(data.documents));
                 event.target.complete();
                 if (this.count === this.ressources.length) {
                     event.target.disabled = true;
@@ -339,5 +339,14 @@ export class SearchComponent implements OnInit {
 
     getReason(item: any) {
         return item.workflow.map((line: any) => line.reason).filter((reason: any) => reason !== null);
+    }
+
+    getCurrentUser(item: any) {
+        const currentUserWorkflow = item.workflow.filter((line: any) => line.current === true);
+        return currentUserWorkflow.length > 0 ? currentUserWorkflow[0].userId : null;
+    }
+
+    goTo(resId: number) {
+        this.router.navigate([`/documents/${resId}`]);
     }
 }

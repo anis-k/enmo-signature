@@ -345,7 +345,7 @@
 		"results": "résultat(s)",
 		"subjectMandatory": "Veuillez renseigner tous les objets des documents",
 		"mainDocumentMandatory": "Veuillez choisir un document à signer",
-		"workflowUserstMandatory": "Veuillez choisir des utilisateurs pour le circuit"
-
+		"workflowUserstMandatory": "Veuillez choisir des utilisateurs pour le circuit",
+		"accessDocument": "Accéder au document"
 	}
 }
