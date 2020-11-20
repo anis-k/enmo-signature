@@ -17,6 +17,7 @@ namespace Workflow\controllers;
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
 use Group\controllers\PrivilegeController;
+use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -60,7 +61,7 @@ class WorkflowController
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         }
 
-        $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['id']]);
+        $document = DocumentModel::getById(['select' => ['typist', 'title'], 'id' => $args['id']]);
         if (empty($document)) {
             return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
         } elseif ($document['typist'] != $GLOBALS['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
@@ -81,6 +82,14 @@ class WorkflowController
             'set'   => ['status' => 'STOP', 'process_date' => 'CURRENT_TIMESTAMP'],
             'where' => ['id in (?)'],
             'data'  => [$workflowsId]
+        ]);
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'workflow',
+            'objectId'      => $args['id'],
+            'type'          => 'MODIFICATION',
+            'message'       => "{workflowInterrupted} : {$document['title']}"
         ]);
 
         return $response->withStatus(204);

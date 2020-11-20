@@ -19,6 +19,7 @@ use Document\models\DocumentModel;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
 
@@ -53,16 +54,16 @@ class SearchController
         if (Validator::arrayType()->notEmpty()->validate($body['workflowStates'])) {
             $whereStatuses = [];
             if (in_array('VAL', $body['workflowStates'])) {
-                $whereStatuses[] = "(status = 'VAL' AND main_document_id not in (SELECT main_document_id FROM workflows WHERE status is null OR status in ('REF', 'END', 'STOP')))";
+                $whereStatuses[] = "main_document_id not in (SELECT DISTINCT main_document_id FROM workflows WHERE status is null OR status in ('REF', 'END', 'STOP'))";
             }
             if (in_array('REF', $body['workflowStates'])) {
-                $whereStatuses[] = "status = 'REF'";
+                $whereStatuses[] = "main_document_id in (SELECT DISTINCT main_document_id FROM workflows WHERE status = 'REF')";
             }
             if (in_array('STOP', $body['workflowStates'])) {
-                $whereStatuses[] = "status = 'STOP'";
+                $whereStatuses[] = "main_document_id in (SELECT DISTINCT main_document_id FROM workflows WHERE status = 'STOP')";
             }
             if (in_array('PROG', $body['workflowStates'])) {
-                $whereStatuses[] = "status is null";
+                $whereStatuses[] = "main_document_id in (SELECT DISTINCT main_document_id FROM workflows WHERE status is null)";
             }
             if (!empty($whereStatuses)) {
                 $whereStatuses = implode(' OR ', $whereStatuses);
@@ -90,8 +91,17 @@ class SearchController
         }
 
         if (Validator::stringType()->notEmpty()->validate($body['title'])) {
-            $where[] = 'unaccent(title) ilike unaccent(?::text)';
-            $data[] = "%{$body['title']}%";
+            $requestData = SearchController::getDataForRequest([
+                'search'        => $body['title'],
+                'fields'        => 'unaccent(title) ilike unaccent(?::text)',
+                'where'         => [],
+                'data'          => [],
+                'fieldsNumber'  => 1,
+                'longField'     => true
+            ]);
+            $where[] = implode(' AND ', $requestData['where']);
+            $data = array_merge($data, $requestData['data']);
+
         }
         if (Validator::stringType()->notEmpty()->validate($body['reference'])) {
             $where[] = 'reference ilike ?';
@@ -125,7 +135,7 @@ class SearchController
                     'userDisplay'           => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                     'mode'                  => $value['mode'],
                     'processDate'           => $value['process_date'],
-                    'current'               => !$currentFound && empty($value['process_date']),
+                    'current'               => !$currentFound && empty($value['status']),
                     'signatureMode'         => $value['signature_mode'],
                     'status'                => $value['status'],
                     'reason'                => $value['note']
@@ -147,5 +157,40 @@ class SearchController
         }
 
         return $response->withJson(['documents' => $documents, 'count' => $count]);
+    }
+
+    public static function getDataForRequest(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['search', 'fields', 'fieldsNumber']);
+        ValidatorModel::stringType($args, ['search', 'fields']);
+        ValidatorModel::arrayType($args, ['where', 'data']);
+        ValidatorModel::intType($args, ['fieldsNumber']);
+
+        $searchItems = explode(' ', $args['search']);
+
+        foreach ($searchItems as $keyItem => $item) {
+            if (strlen($item) >= 2) {
+                $args['where'][] = $args['fields'];
+
+                $isIncluded = false;
+                foreach ($searchItems as $key => $value) {
+                    if ($keyItem == $key) {
+                        continue;
+                    }
+                    if (strpos($value, $item) === 0) {
+                        $isIncluded = true;
+                    }
+                }
+                for ($i = 0; $i < $args['fieldsNumber']; $i++) {
+                    if (!empty($args['longField'])) {
+                        $args['data'][] = ($isIncluded ? "%{$item} %" : "%{$item}%");
+                    } else {
+                        $args['data'][] = ($isIncluded ? "%{$item}" : "%{$item}%");
+                    }
+                }
+            }
+        }
+
+        return ['where' => $args['where'], 'data' => $args['data']];
     }
 }
