@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>Annoter le document</ion-title>
+    <ion-title>{{'lang.annotateDocument' | translate}}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismissModal()">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
@@ -23,15 +23,14 @@
     </ion-fab-button>
     <ion-fab-list side="bottom">
       <ion-fab-button [color]="editMode ? 'danger' : 'success'"
-        [title]="editMode ? 'Verrouiller l\'édition' : 'Déverrouiller l\'édition'"
+        [title]="editMode ? ('lang.lockEdition' | translate) : ('lang.unlockEdition' | translate)"
         (click)="$event.stopPropagation();editMode=!editMode">
-        <ion-icon [name]="editMode ? 'lock-closed-outline' : 'lock-open-outline'" [title]="'Verouiller l\'édition'">
+        <ion-icon [name]="editMode ? 'lock-closed-outline' : 'lock-open-outline'">
         </ion-icon>
       </ion-fab-button>
-      <ion-fab-button [title]="originalSize ? 'taille originale' : 'taille écran'"
+      <ion-fab-button [title]="originalSize ? ('lang.originalSize' | translate) : ('lang.screenSize' | translate)"
         (click)="$event.stopPropagation();getImageDimensions(!originalSize)">
-        <ion-icon [name]="originalSize ? 'scan-outline' : 'crop-outline'"
-          [title]="originalSize ? 'taille originale' : 'taille écran'"></ion-icon>
+        <ion-icon [name]="originalSize ? 'scan-outline' : 'crop-outline'"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>
@@ -47,14 +46,10 @@
     </drag-scroll>
   </div>
 </ion-content>
-<ion-footer class="ion-no-border">
-  <ion-toolbar>
-    <ion-buttons class="ion-justify-content-center">
-      <ion-button color="primary" (click)="validateAnnotation()">
-        <ion-label>{{'lang.save' | translate}}</ion-label>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+<ion-footer class="ion-no-border footer-buttons">
+  <ion-button color="success" (click)="validateAnnotation()" shape="round" fill="outline" size="large">
+    <ion-label style="font-size: 13px;">{{'lang.save' | translate}}</ion-label>
+  </ion-button>
 </ion-footer>
 <!--<div *ngIf="signaturesService.annotationMode" [style.width.px]="this.areaWidth*this.signaturesService.scale" [style.height.px]="this.areaHeight*this.signaturesService.scale"
   style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{

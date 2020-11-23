@@ -10,13 +10,13 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-button (click)="authService.logout()">
+            <ion-button (click)="authService.logout()" [title]="'lang.logout' | translate">
                 <ion-icon slot="icon-only" name="power"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="!isAdminRoute() && authService.user.administrativePrivileges.length > 0" (click)="openAdmin()">
+            <ion-button *ngIf="!isAdminRoute() && authService.user.administrativePrivileges.length > 0" (click)="openAdmin()" [title]="'lang.administration' | translate">
                 <ion-icon slot="icon-only" name="build-outline"></ion-icon>
             </ion-button>
-            <ion-button *ngIf="isAdminRoute()" (click)="openHome()">
+            <ion-button *ngIf="isAdminRoute()" (click)="openHome()" [title]="'lang.homePage' | translate">
                 <ion-icon slot="icon-only" name="home"></ion-icon>
             </ion-button>
         </ion-buttons>
@@ -35,7 +35,7 @@
 </ion-avatar>
 <ion-header *ngIf="!isAdminRoute()">
     <ion-toolbar color="light">
-        <ion-title *ngIf="!searchMode" (click)="search();" [title]="'lang.search' | translate" style="text-align: center;font-size: 14px;">
+        <ion-title *ngIf="!searchMode" (click)="search();" [title]="'lang.filterInfo' | translate" style="text-align: center;font-size: 14px;">
             <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount.current}}</span>
             {{'lang.documents' | translate}}
             <span class="primary"

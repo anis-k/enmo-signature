@@ -97,3 +97,13 @@
     transform: scale(1.5);
   }
 }
+
+.footer-buttons {
+  display: grid;
+  padding: 10px;
+
+  ion-button {
+    margin: auto;
+    width: 150px;
+  }
+}
