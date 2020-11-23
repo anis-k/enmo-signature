@@ -48,7 +48,7 @@
     <ion-label style="font-size: 13px;">{{'lang.convertingDocument' | translate}}</ion-label>
 </ion-toolbar>
 <ion-content *ngIf="!loadingdocument" #mainContent>
-    <ng-container *ngIf="mainDocument.notes !== undefined && mainDocument.notes !== null">
+    <ng-container *ngIf="(mainDocument.notes !== undefined && mainDocument.notes !== null) || hasWorkflowNotes">
         <ion-fab-button *ngIf="!expandedNote" ngDraggable [bounds]="myBounds" [inBounds]="true"
             (movingOffset)="signaturesService.dragging=true" (endOffset)="signaturesService.dragging=false"
             [title]="'lang.expandNote' | translate" (click)="expandedNote = true;"
@@ -63,12 +63,24 @@
                 <i class="fa fa-minus-square" style="cursor: pointer;" (click)="expandedNote = false;"
                     [title]="'lang.collapseNote' | translate"></i>
             </div>
-            <div class="note-creator">
-                {{mainDocument.notes.creator}} :
-            </div>
-            <div class="note-content">
-                {{mainDocument.notes.value}}
-            </div>
+            <ng-container *ngIf="mainDocument.notes !== undefined && mainDocument.notes !== null">
+                <div class="note-creator">
+                    {{mainDocument.notes.creator}} ({{mainDocument.notes.creationDate}}) :
+                </div>
+                <div class="note-content">
+                    {{mainDocument.notes.value}}
+                </div>
+            </ng-container>
+            <ng-container *ngFor="let step of mainDocument.workflow">
+                <div *ngIf="step.note">
+                    <div class="note-creator">
+                        {{step.userDisplay}} ({{step.processDate}}) :
+                    </div>
+                    <div class="note-content">
+                        {{step.note}}
+                    </div>
+                </div>
+            </ng-container>
         </div>
     </ng-container>
     <div style="display: contents;">

@@ -324,7 +324,7 @@
 		"inca_card": "Carte agent",
 		"eidas": "Eidas",
 		"rgs_2stars": "Rgs**",
-		"noAssociatedGroup": "L'utilisateur appartient à aucun groupe",
+		"noAssociatedGroup": "L'utilisateur n'appartient à aucun groupe",
 		"docToSign": "Document à signer",
 		"attachDocToSign": "Annexe attaché au(x) document(s) à signer",
 		"titleSearch": "Sujet du document à signer",

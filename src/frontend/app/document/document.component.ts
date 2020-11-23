@@ -10,9 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import { DocumentNotePadComponent } from '../documentNotePad/document-note-pad.component';
-import { WarnModalComponent } from '../modal/warn-modal.component';
 import { RejectInfoBottomSheetComponent } from '../modal/reject-info.component';
-import { ConfirmModalComponent } from '../modal/confirm-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 import { TranslateService } from '@ngx-translate/core';
 import { DocumentListComponent } from './document-list/document-list.component';
@@ -20,9 +18,8 @@ import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import { catchError, finalize, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-
 
 @Component({
     selector: 'app-document',
@@ -78,6 +75,7 @@ export class DocumentComponent implements OnInit {
     loadingUI: any = false;
 
     expandedNote: boolean = true;
+    hasWorkflowNotes: boolean = false;
     currentTool = 'info';
     load: HTMLIonLoadingElement = null;
     dragging: boolean = false;
@@ -308,6 +306,9 @@ export class DocumentComponent implements OnInit {
                             this.mainDocument = data.document;
 
                             this.mainDocument.workflow = this.mainDocument.workflow.map((item: any) => {
+                                if (item.note) {
+                                    this.hasWorkflowNotes = true;
+                                }
                                 item.userSignatureModes.unshift('visa');
                                 return {
                                     ...item,
@@ -583,13 +584,13 @@ export class DocumentComponent implements OnInit {
             buttons: [
                 {
                     text: this.translate.instant('lang.rejectDocument'),
-                    handler: () => {
+                    handler: (data: any) => {
                         this.loadingController.create({
                             message: this.translate.instant('lang.processing') + ' ...',
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
-                            const res = await this.sendDocument();
+                            const res = await this.sendDocument({'note': data.paragraph});
                             if (res) {
                                 const config: MatBottomSheetConfig = {
                                     disableClose: true,
@@ -623,13 +624,13 @@ export class DocumentComponent implements OnInit {
             buttons: [
                 {
                     text: this.translate.instant('lang.validate'),
-                    handler: () => {
+                    handler: (data: any) => {
                         this.loadingController.create({
                             message: this.translate.instant('lang.processing') + ' ...',
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
-                            const res = await this.sendDocument();
+                            const res = await this.sendDocument({'note': data.paragraph});
                             if (res) {
                                 const config: MatBottomSheetConfig = {
                                     disableClose: true,
@@ -648,7 +649,7 @@ export class DocumentComponent implements OnInit {
         await alert.present();
     }
 
-    sendDocument() {
+    sendDocument(data: any) {
         return new Promise((resolve) => {
             const signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
@@ -683,7 +684,7 @@ export class DocumentComponent implements OnInit {
                     }
                 }
 
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, { 'signatures': signatures })
+                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, { 'signatures': signatures, 'note': data.note })
                     .pipe(
                         tap(() => {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {

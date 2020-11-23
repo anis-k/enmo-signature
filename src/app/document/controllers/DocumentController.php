@@ -171,7 +171,7 @@ class DocumentController
             }
         }
 
-        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status', 'note'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
         $currentFound = false;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
@@ -187,7 +187,8 @@ class DocumentController
                 'processDate'           => $value['process_date'],
                 'current'               => !$currentFound && empty($value['status']),
                 'signatureMode'         => $value['signature_mode'],
-                'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true)
+                'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true),
+                'note'                  => $value['note']
             ];
             if (empty($value['status'])) {
                 $currentFound = true;
@@ -239,6 +240,8 @@ class DocumentController
         $content = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $queryParams['eSignDocument']]);
         if (!empty($content['errors'])) {
             return $response->withStatus($content['code'])->withJson(['errors' => $content['errors']]);
+        } elseif (empty($content['path'])) {
+            return $response->withStatus(404)->withJson(['encodedDocument' => null]);
         }
         $pathToDocument = $content['path'];
 
