@@ -183,7 +183,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
-        $user = UserModel::getById(['id' => $args['id'], 'select' => [1]]);
+        $user = UserModel::getById(['id' => $args['id'], 'select' => ['signature_modes']]);
         if (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
         }
@@ -205,19 +205,27 @@ class UserController
                     $modes[] = $signatureMode;
                 }
             }
-            $set['signature_modes'] = $modes;
+            $validModes = CoreConfigModel::getSignatureModes();
+            $higherMode = 'stamp';
+            foreach ($validModes as $validMode) {
+                if (in_array($validMode['id'], $modes)) {
+                    $higherMode = $validMode['id'];
+                    break;
+                }
+            }
+
             WorkflowModel::update([
-                'set'   => ['signature_mode' => 'stamp'],
+                'set'   => ['signature_mode' => $higherMode],
                 'where' => ['user_id = ?', 'signature_mode not in (?)', 'process_date is null', 'signature_mode != ?'],
-                'data'  => [$args['id'], $body['signatureModes'], 'stamp']
+                'data'  => [$args['id'], $modes, $higherMode]
             ]);
             WorkflowTemplateItemModel::update([
-                'set'   => ['signature_mode' => 'stamp'],
+                'set'   => ['signature_mode' => $higherMode],
                 'where' => ['user_id = ?', 'signature_mode not in (?)', 'signature_mode != ?'],
-                'data'  => [$args['id'], $body['signatureModes'], 'stamp']
+                'data'  => [$args['id'], $modes, $higherMode]
             ]);
 
-            $set['signature_modes'] = $body['signatureModes'];
+            $set['signature_modes'] = $modes;
         }
         $set['signature_modes'] = json_encode($set['signature_modes']);
 

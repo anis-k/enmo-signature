@@ -57,14 +57,23 @@ class WorkflowTemplateController
         $workflowTemplatesUsers = [];
         foreach ($rawWorkflowTemplatesUsers as $value) {
             $user = UserModel::getById(['id' => $value['user_id'], 'select' => ['signature_modes']]);
+            $user['signature_modes'] = json_decode($user['signature_modes'], true);
+
+            $higherMode = 'stamp';
+            foreach ($validSignatureModes as $validMode) {
+                if (in_array($validMode, $user['signature_modes'])) {
+                    $higherMode = $validMode['id'];
+                    break;
+                }
+            }
 
             $workflowTemplatesUsers[] = [
                 'userId'             => $value['user_id'],
                 'userLabel'          => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                 'mode'               => $value['mode'],
-                'signatureMode'      => in_array($value['signature_mode'], $validSignatureModes) ? $value['signature_mode'] : 'stamp',
+                'signatureMode'      => in_array($value['signature_mode'], $validSignatureModes) ? $value['signature_mode'] : $higherMode,
                 'order'              => $value['order'],
-                'userSignatureModes' => array_intersect(json_decode($user['signature_modes'], true), $validSignatureModes)
+                'userSignatureModes' => array_intersect($user['signature_modes'], $validSignatureModes)
             ];
         }
 
