@@ -349,7 +349,7 @@ export class SearchComponent implements OnInit {
     }
 
     downloadProof(item: any, mode: string) {
-        let format = null;
+        let format: any = null;
         const onlyProof = mode === 'onlyProof' ? '&onlyProof=true' : '';
 
         return new Promise((resolve) => {
