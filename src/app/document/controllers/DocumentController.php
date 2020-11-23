@@ -822,7 +822,7 @@ class DocumentController
             ]);
             $pathToThumbnail = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
             if (!is_file($pathToThumbnail) || !is_readable($pathToThumbnail)) {
-                return $response->withStatus(400)->withJson(['errors' => 'Document not found on docserver or not readable']);
+                return $response->withStatus(400)->withJson(['errors' => 'Thumbnail not found on docserver or not readable', 'lang' => 'thumbnailNotFound']);
             }
         }
 

@@ -309,6 +309,7 @@
 		"wrongCurrentPassword": "Wrong current password",
 		"alreadyUsedPassword": "The password has already been used",
 		"noAssociatedGroup": "The user does not belong to any group",
+		"thumbnailNotFound": "Thumbnail not found or not readable.<br>Check docservers or ImageMagick configuration",
 		"homePage": "Home page"
 	}
 }
