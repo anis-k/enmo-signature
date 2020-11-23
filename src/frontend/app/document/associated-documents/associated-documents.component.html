@@ -1,0 +1,24 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button disabled>
+                <ion-icon slot="icon-only" name="link-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title class="ion-text-center"><b class="secondary">{{associatedDocuments?.length}}</b>&nbsp;{{'lang.associatedDocuments' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div style="display: flex;flex-direction: column;height: 100%;">
+        <ion-list>
+            <ion-item *ngFor="let document of associatedDocuments" class="doc-item" (click)="goTo(document.id)">
+                <div>
+                    <ion-label class="sub-label">{{document.reference}}</ion-label>
+                    <ion-label class="ion-text-wrap" color="primary">{{document.title | shorten: 50: '...'}}</ion-label>
+                </div>
+                <ion-icon slot="end" color="medium" name="arrow-forward-outline"></ion-icon>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

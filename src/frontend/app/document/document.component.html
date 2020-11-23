@@ -16,9 +16,9 @@
                     {{mainDocument.attachments.length + 1}}
                 </ion-badge>
             </ion-segment-button>
-            <ion-segment-button value="linkeddoc"
+            <ion-segment-button value="associatedDocuments"
                 *ngIf="mainDocument.linkedDocuments !== undefined && mainDocument.linkedDocuments.length > 0"
-                (click)="openDocumentList();">
+                (click)="openAssociatedDocuments();">
                 <ion-label color="primary">{{'lang.associatedDocuments' | translate | ucfirst}}</ion-label>
                 <ion-icon color="primary" name="link-outline"></ion-icon>
                 <ion-badge color="danger" style="position: absolute;top: 10px;right: 40%;">
@@ -136,6 +136,9 @@
     <app-document-list #appDocumentList [currentDocId]="currentDoc" [snavRightComponent]="this.snavRight"
         [docList]="docList" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
         (triggerEvent)="loadDoc($event)" style="display: contents;"></app-document-list>
+    <app-associated-documents #appAssociatedDocuments [snavRightComponent]="this.snavRight"
+        [associatedDocuments]="mainDocument.linkedDocuments" *ngIf="signaturesService.sideNavRigtDatas.mode == 'associatedDocuments'"
+        style="display: contents;"></app-associated-documents>
     <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight" [mainDocument]="mainDocument"
         *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'" style="display: contents;">
     </app-main-document-detail>

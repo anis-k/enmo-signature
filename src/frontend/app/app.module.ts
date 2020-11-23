@@ -49,6 +49,7 @@ import { OverlayComponent } from './overlay/overlay.component';
 import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.component';
 import { DocumentListComponent } from './document/document-list/document-list.component';
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
+import { AssociatedDocumentsComponent } from './document/associated-documents/associated-documents.component';
 import { UpdatePasswordComponent } from './login/updatePassword/updatePassword.component';
 import { PasswordModificationComponent } from './login/passwordModification/password-modification.component';
 import { VisaWorkflowModelsComponent } from './document/visa-workflow/models/visa-workflow-models.component';
@@ -109,6 +110,7 @@ import { SortPipe } from './plugins/sorting.pipe';
     VisaWorkflowComponent,
     DocumentListComponent,
     MainDocumentDetailComponent,
+    AssociatedDocumentsComponent,
     AdministrationComponent,
     UsersListComponent,
     UserComponent,

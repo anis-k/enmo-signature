@@ -63,21 +63,6 @@ export class SidebarComponent implements OnInit {
         this.filter('');
     }
 
-
-    gotTo(documentId: number, i: any) {
-        this.router.navigate(['/documents/' + documentId]);
-        this.signaturesService.mainDocumentId = documentId;
-        this.signaturesService.indexDocumentsList = i;
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'mainDocumentDetail',
-            width: '450px',
-            locked: false,
-        };
-        if (this.signaturesService.mobileMode) {
-            // this.sidenav.close();
-        }
-    }
-
     async openProfile() {
         const modal = await this.modalController.create({
             component: ProfileComponent,

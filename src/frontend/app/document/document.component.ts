@@ -815,6 +815,15 @@ export class DocumentComponent implements OnInit {
         };
     }
 
+    openAssociatedDocuments() {
+        this.menu.open('right-menu');
+        this.signaturesService.sideNavRigtDatas = {
+            mode: 'associatedDocuments',
+            width: '450px',
+            locked: false,
+        };
+    }
+
     openMainDocumentDetail() {
         this.menu.open('right-menu');
         this.signaturesService.sideNavRigtDatas = {
@@ -842,17 +851,6 @@ export class DocumentComponent implements OnInit {
                     this.notificationService.success('lang.substitutionDeleted');
                 });
         }
-    }
-
-    gotTo(documentId: number, i: any) {
-        this.router.navigate(['/documents/' + documentId]);
-        this.signaturesService.mainDocumentId = documentId;
-        // this.signaturesService.indexDocumentsList = i;
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'mainDocumentDetail',
-            width: '450px',
-            locked: false,
-        };
     }
 
     ionViewWillLeave() {
