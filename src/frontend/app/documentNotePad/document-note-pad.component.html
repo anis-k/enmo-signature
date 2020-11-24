@@ -1,11 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-title>{{'lang.annotateDocument' | translate}}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="dismissModal()">
-        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content #mainContent>
@@ -18,8 +13,8 @@
     <i class="fa fa-undo fa-2x undo" (click)="undo()"></i>
   </div>
   <ion-fab vertical="top" horizontal="start" slot="fixed" activated>
-    <ion-fab-button>
-      <ion-icon name="settings"></ion-icon>
+    <ion-fab-button close-icon="chevron-up">
+      <ion-icon name="chevron-down"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="bottom">
       <ion-fab-button [color]="editMode ? 'danger' : 'success'"
@@ -47,9 +42,14 @@
   </div>
 </ion-content>
 <ion-footer class="ion-no-border footer-buttons">
-  <ion-button color="success" (click)="validateAnnotation()" shape="round" fill="outline" size="large">
-    <ion-label style="font-size: 13px;">{{'lang.save' | translate}}</ion-label>
-  </ion-button>
+  <div style="text-align: center">
+    <ion-button color="danger" (click)="dismissModal()" shape="round" fill="outline" size="large">
+      <ion-label style="font-size: 13px;">{{'lang.cancel' | translate}}</ion-label>
+    </ion-button>
+    <ion-button color="success" (click)="validateAnnotation()" shape="round" fill="outline" size="large" style="margin-left: 50px">
+      <ion-label style="font-size: 13px;">{{'lang.save' | translate}}</ion-label>
+    </ion-button>
+  </div>
 </ion-footer>
 <!--<div *ngIf="signaturesService.annotationMode" [style.width.px]="this.areaWidth*this.signaturesService.scale" [style.height.px]="this.areaHeight*this.signaturesService.scale"
   style="top:0;position: absolute;border: dashed 1px grey;overflow: hidden;" [ngClass]="{
