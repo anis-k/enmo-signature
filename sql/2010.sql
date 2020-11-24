@@ -57,8 +57,8 @@ ALTER TABLE users ADD COLUMN signature_modes jsonb DEFAULT '["stamp"]';
 ALTER TABLE workflows DROP COLUMN IF EXISTS signature_positions;
 ALTER TABLE workflows ADD COLUMN signature_positions jsonb DEFAULT '[]';
 
--- ALTER TABLE workflows DROP COLUMN IF EXISTS digital_signature_id;
--- ALTER TABLE workflows ADD COLUMN digital_signature_id text;
+ALTER TABLE workflows DROP COLUMN IF EXISTS digital_signature_id;
+ALTER TABLE workflows ADD COLUMN digital_signature_id text;
 
--- ALTER TABLE main_documents DROP COLUMN IF EXISTS digital_signature_transaction_id;
--- ALTER TABLE main_documents ADD COLUMN digital_signature_transaction_id text;
+ALTER TABLE main_documents DROP COLUMN IF EXISTS digital_signature_transaction_id;
+ALTER TABLE main_documents ADD COLUMN digital_signature_transaction_id text;

@@ -153,6 +153,7 @@ CREATE TABLE main_documents
   modification_date timestamp without time zone DEFAULT NOW(),
   typist INTEGER,
   status CHARACTER VARYING(10),
+  digital_signature_transaction_id text,
   CONSTRAINT main_documents_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
@@ -241,6 +242,7 @@ CREATE TABLE workflows
     status CHARACTER VARYING(16) DEFAULT NULL,
     note text DEFAULT NULL,
     process_date timestamp without time zone DEFAULT NULL,
+    digital_signature_id text,
     CONSTRAINT workflow_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);

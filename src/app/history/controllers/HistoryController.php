@@ -180,7 +180,7 @@ class HistoryController
 
         $workflow = WorkflowModel::get([
             'select' => [1],
-            'where'  => ['main_document_id = ?', 'process_date is null'],
+            'where'  => ['main_document_id = ?', 'status is null'],
             'data'   => [$args['id']]
         ]);
         if (!empty($workflow)) {
@@ -225,7 +225,7 @@ class HistoryController
             if (!empty($mainDocument['errors'])) {
                 return $response->withStatus($mainDocument['code'])->withJson(['errors' => $mainDocument['errors']]);
             }
-            $documentPathToZip[] = ['path' => $mainDocument['path'], 'filename' => 'signedDocument.pdf'];
+            $documentPathToZip[] = ['path' => $mainDocument['path'], 'filename' => 'mainDocument.pdf'];
 
             $attachments = AttachmentModel::getByDocumentId(['select' => ['id', 'title'], 'documentId' => $args['id']]);
             foreach ($attachments as $key => $attachment) {
