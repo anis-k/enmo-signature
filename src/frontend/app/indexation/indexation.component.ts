@@ -236,7 +236,13 @@ export class IndexationComponent implements OnInit {
                         userId: item.userId,
                         mode: this.authService.getWorkflowMode(item.role),
                         signatureMode: this.authService.getSignatureMode(item.role),
-                        signaturePositions: file.signPos !== undefined ? file.signPos.filter((userItem: any) => userItem.sequence === index) : []
+                        signaturePositions: file.signPos !== undefined ? file.signPos.filter((userItem: any) => userItem.sequence === index).map((item: any) => {
+                            return {
+                                page: item.page,
+                                positionX: item.position.positionX,
+                                positionY: item.position.positionY,
+                            };
+                        }) : []
                     };
                 }),
                 metadata: this.fromDocument !== null ? file.metadata : []
@@ -324,7 +330,6 @@ export class IndexationComponent implements OnInit {
             if (data !== undefined) {
                 this.filesToUpload[index].signPos = data;
             }
-            console.log(this.filesToUpload);
         } else {
             this.notificationService.error('Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures.');
         }

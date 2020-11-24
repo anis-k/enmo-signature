@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
-        <ion-title>{{'lang.signatures' | translate}}</ion-title>
+        <ion-title>{{'lang.signatures' | translate}} <small class="secondary" *ngIf="signPosMode">{{this.currentWorflow.signaturePositions.length}} pré-positionnement(s)</small></ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="dismissModal()">
                 <ion-icon slot="icon-only" name="close-outline"></ion-icon>

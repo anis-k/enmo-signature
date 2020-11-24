@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -19,8 +19,13 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
     styleUrls: ['signatures.component.scss'],
 })
 export class SignaturesComponent implements OnInit {
+
+    @Input() currentWorflow: any;
+
     loading: boolean = true;
     scrolling: boolean = false;
+    signPosMode: boolean = false;
+    title: string = 'lang.signatures';
     slideOpts = {
         initialSlide: 0,
         speed: 400,
@@ -65,6 +70,7 @@ export class SignaturesComponent implements OnInit {
 
     ngOnInit() {
         this.initSignatures();
+        this.signPosMode = this.currentWorflow.signaturePositions.length > 0 && this.emptySigns();
     }
 
     initSignatures() {
@@ -114,20 +120,53 @@ export class SignaturesComponent implements OnInit {
 
     selectSignature(signature: any, img: any) {
 
-        signature.positionX = 60;
-        signature.positionY = 80;
-
         const percentWidth = 25;
-
         signature.width = percentWidth;
 
-        if (!this.signaturesService.signaturesContent[this.signaturesService.currentPage]) {
-            this.signaturesService.signaturesContent[this.signaturesService.currentPage] = [];
+        const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
+        const signPosOtherPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
+
+        if (!this.signPosMode || (signPosCurrentPage.length === 0 && signPosOtherPage.length === 0)) {
+            signature.positionX = 60;
+            signature.positionY = 80;
+            this.storeSignature(signature, this.signaturesService.currentPage);
+            this.notificationService.success('lang.signatureInDocAdded');
+            this.modalController.dismiss('success');
+        } else {
+            if (signPosCurrentPage.length > 0) {
+                signature.positionX = signPosCurrentPage[0].positionX;
+                signature.positionY = signPosCurrentPage[0].positionY;
+                this.storeSignature(signature, this.signaturesService.currentPage);
+            }
+
+            signPosOtherPage.forEach((postion: any) => {
+                signature.positionX = postion.positionX;
+                signature.positionY = postion.positionY;
+                this.storeSignature(signature, postion.page);
+            });
+
+            if (this.currentWorflow.signaturePositions.length === 1) {
+                this.notificationService.success('lang.signatureInDocAddedAlt');
+            } else {
+                this.translate.get('lang.signaturesInDocAdded', { 0: this.currentWorflow.signaturePositions.map((item: any) => item.page) }).subscribe((res: string) => {
+                    this.notificationService.success(res);
+                });
+            }
+
+            if (signPosCurrentPage.length === 0 && signPosOtherPage.length > 0) {
+                this.modalController.dismiss({ redirectPage: signPosOtherPage[0].page });
+            } else {
+                this.modalController.dismiss('success');
+            }
         }
-        this.signaturesService.signaturesContent[this.signaturesService.currentPage].push(JSON.parse(JSON.stringify(signature)));
+    }
+
+    storeSignature(signature: any, page: number) {
+        if (!this.signaturesService.signaturesContent[page]) {
+            this.signaturesService.signaturesContent[page] = [];
+        }
+        this.signaturesService.signaturesContent[page].push(JSON.parse(JSON.stringify(signature)));
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
-        this.notificationService.success('lang.signatureInDocAdded');
-        this.modalController.dismiss('success');
     }
 
     removeSignature(signature: any, i: any) {
@@ -200,5 +239,18 @@ export class SignaturesComponent implements OnInit {
         } else {
             this.notificationService.error('lang.maxFileSizeReached');
         }
+    }
+
+    emptySigns() {
+        let state = true;
+        for (let pageNum = 1; pageNum <= this.signaturesService.totalPage; pageNum++) {
+            if (this.signaturesService.signaturesContent[pageNum]) {
+                if (this.signaturesService.signaturesContent[pageNum].length > 0) {
+                    state = false;
+                    break;
+                }
+            }
+        }
+        return state;
     }
 }

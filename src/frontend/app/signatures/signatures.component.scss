@@ -1,5 +1,9 @@
 @import '../../css/vars.scss';
 
+.secondary {
+    color: var(--ion-color-secondary);
+}
+
 .signatures {
     display: flex;
     flex-direction: column;

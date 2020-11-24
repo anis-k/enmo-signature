@@ -232,7 +232,10 @@ export class DocumentComponent implements OnInit {
     async openSignatures() {
         const modal = await this.modalController.create({
             component: SignaturesComponent,
-            cssClass: 'my-custom-class'
+            cssClass: 'my-custom-class',
+            componentProps: {
+                currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
+            }
         });
         await modal.present();
         const { data } = await modal.onWillDismiss();
@@ -240,6 +243,8 @@ export class DocumentComponent implements OnInit {
         if (data === 'success') {
             this.scrollToElem();
             // this.addSignature();
+        } else if (data.redirectPage !== undefined) {
+            this.goTo(data.redirectPage);
         }
         // console.log('dissmiss');
     }
@@ -279,7 +284,13 @@ export class DocumentComponent implements OnInit {
     }
 
     scrollToElem() {
-        document.getElementsByClassName('drag-scroll-content')[0].scrollTo(1000, 1000);
+        const pageY = this.signaturesService.signaturesContent[this.pageNum][this.signaturesService.signaturesContent[this.pageNum].length - 1].positionY;
+        const offsetTop = -($('#myBounds')[0].getBoundingClientRect().top - 70);
+        const realPosY = ( pageY - 75) + offsetTop;
+
+        const scrollY = (realPosY - $(window).height());
+
+        document.getElementsByClassName('drag-scroll-content')[0].scrollTo(1000, -scrollY);
     }
 
     ionViewWillEnter() {
@@ -517,6 +528,25 @@ export class DocumentComponent implements OnInit {
         } else {
             this.pageNum++;
         }
+
+        // only for main document
+        if (this.currentDoc === 0) {
+            this.signaturesService.currentPage = this.pageNum;
+        }
+        // this.exportAsImage();
+        this.renderImage();
+    }
+
+    goTo(page: number) {
+        this.loadingController.create({
+            message: 'Chargement du document',
+            spinner: 'dots'
+        }).then((load: HTMLIonLoadingElement) => {
+            this.load = load;
+            this.load.present();
+        });
+        this.loadingImage = true;
+        this.pageNum = page;
 
         // only for main document
         if (this.currentDoc === 0) {
