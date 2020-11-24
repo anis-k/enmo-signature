@@ -4,7 +4,6 @@ import { HttpClient } from '@angular/common/http';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import { NotificationService } from '../../service/notification.service';
 import { ModalController } from '@ionic/angular';
-import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
     templateUrl: 'signature-position.component.html',
@@ -21,7 +20,7 @@ export class SignaturePositionComponent implements OnInit {
     pages: number[] = [];
 
     currentUser: number = 0;
-    currentPage: number = null;
+    currentPage: number = 0;
     currentSignature: any = {
         positionX: 0,
         positionY: 0
@@ -43,8 +42,6 @@ export class SignaturePositionComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        console.log(this.workflow);
-        console.log(this.signPos);
         if (this.signPos !== undefined) {
             this.initSignPos();
         }
@@ -112,6 +109,7 @@ export class SignaturePositionComponent implements OnInit {
                 }
             }
         );
+        document.getElementsByClassName('signatureContainer')[0].scrollTo(0, 0);
     }
 
     getUserSignPosPage(workflowIndex: number) {
@@ -127,9 +125,6 @@ export class SignaturePositionComponent implements OnInit {
     }
 
     goToSignUserPage(workflowIndex: number, page: number) {
-        console.log('goToSignUserPage', workflowIndex, page);
-        console.log(this.signList);
-
         this.currentUser = workflowIndex;
         this.currentPage = page;
         this.exportAsImage();

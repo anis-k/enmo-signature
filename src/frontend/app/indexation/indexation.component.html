@@ -36,9 +36,9 @@
                 </ion-item>
                 <ion-buttons slot="end">
                     <ion-button [disabled]="!file.mainDocument" fill="clear" slot="icon-only" shape="round" color="primary"
-                        [title]="'lang.signPos' | translate" (click)="signPos(i)">
+                        [title]="'lang.setSignaturesPosition' | translate" (click)="signPos(i)">
                         <i *ngIf="filesToUpload[i].signPos !== undefined && filesToUpload[i].signPos.length > 0" class="badge-sign-pos"></i>
-                        <ion-icon slot="icon-only" name="scan-outline"></ion-icon>
+                        <ion-icon slot="icon-only" name="contract-outline"></ion-icon>
                     </ion-button>
                     <ion-button fill="clear" slot="icon-only" shape="round" color="danger"
                         [title]="'lang.delete' | translate" (click)="deleteFile(i)">

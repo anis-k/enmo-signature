@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
-        <ion-title>Gérer les positions de signatures</ion-title>
+        <ion-title>{{'lang.adminSignaturesPositions' | translate}}</ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -8,8 +8,8 @@
         <div style="flex: 1;">
             <ion-list>
                 <ion-item>
-                    <ion-label>Page</ion-label>
-                    <ion-select interface="popover" [(ngModel)]="currentPage"
+                    <ion-label>{{'lang.page' | translate | titlecase}}</ion-label>
+                    <ion-select interface="popover" [(ngModel)]="currentPage" [selectedText]="currentPage + '/' + pages.length"
                         (ionChange)="changePage($event.detail.value)">
                         <ion-select-option *ngFor="let page of pages" [value]="page">{{page}}</ion-select-option>
                     </ion-select>
@@ -26,6 +26,7 @@
                             <p>
                                 <ng-container *ngFor="let sign of signList">
                                     <ion-chip style="z-index: 9999;" *ngIf="sign.sequence === i" outline
+                                        [title]="('lang.accessToPage' | translate) + ' ' + sign.page"
                                         [color]="(i=== currentUser && sign.page === currentPage) ? 'primary' : 'medium'"
                                         (click)="goToSignUserPage(i,sign.page)">
                                         <ion-label>{{sign.page}}</ion-label>
@@ -37,7 +38,7 @@
                 </ion-radio-group>
             </ion-list>
             <div style="text-align: center;">
-                <ion-button color="primary" *ngIf="emptySign()" (click)="initSign()">Positionner la signature</ion-button>
+                <ion-button color="primary" *ngIf="emptySign()" (click)="initSign()">{{'lang.createSignaturePosition' | translate}}</ion-button>
             </div>
         </div>
         <div class="signatureContainer">
@@ -58,10 +59,10 @@
                             </ion-button>
                         </ion-buttons>
                         <span class="signUserName">{{getUserName(sign.sequence)}}</span>
-                        SIGNATURE
+                        {{'lang.signature' | translate | uppercase}}
                     </div>
                 </ng-container>
-                <img class="img-content" [src]="imgContent" />
+                <ion-img class="img-content" [src]="imgContent"></ion-img>
             </div>
         </div>
     </div>
@@ -81,72 +82,3 @@
         </ion-buttons>
     </ion-toolbar>
 </ion-footer>
-
-
-<!--<div class="mat-dialog-content-container">
-    <h1 mat-dialog-title>Gérer les positions de signatures</h1>
-    <div mat-dialog-content>
-        <div *ngIf="loading" class="loading" style="display:flex;height:100%;">
-            <mat-spinner style="margin:auto;"></mat-spinner>
-        </div>
-        <div style="display: flex;height: 100%;">
-            <div style="padding-right: 10px;">
-                <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
-                    [(ngModel)]="currentUser" class="example-radio-group">
-                    <mat-radio-button *ngFor="let user of data.workflow;let i=index" [value]="i"
-                        class="example-radio-button" (change)="selectUser(i)">
-                        <div>{{user.labelToDisplay}} <sup
-                                color="primary">({{user.requested_signature ? ('lang.signUser' | translate):  ('lang.visaUser' | translate)}})</sup>
-                        </div>
-                        <div>
-                            <mat-chip-list aria-label="Fish selection">
-                                <ng-container *ngFor="let sign of signList">
-                                    <mat-chip *ngIf="sign.sequence === i" color="accent" style="font-size: 10px;
-                                    padding-top: 0px;
-                                    padding-bottom: 0px;
-                                    min-height: 20px;cursor: pointer;" (click)="goToSignUserPage(i,sign.page)">Page
-                                        {{sign.page}}</mat-chip>
-                                </ng-container>
-                            </mat-chip-list>
-                        </div>
-                    </mat-radio-button>
-                </mat-radio-group>
-                <mat-form-field>
-                    <mat-label>Page :</mat-label>
-                    <mat-select [(ngModel)]="currentPage" (selectionChange)="changePage($event.value)">
-                        <mat-option *ngFor="let page of pages" [value]="page">{{page}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <button *ngIf="emptySign()" mat-raised-button color="primary" type="button"
-                    (click)="initSign()">Positionner la
-                    signature</button>
-            </div>
-            <div class="signatureContainer">
-                <div id="myBounds" #myBounds style="position: absolute;position: absolute;"
-                    [style.width.px]="workingAreaWidth" [style.height.px]="workingAreaHeight">
-                    <ng-container *ngFor="let sign of signList">
-                        <div *ngIf="sign.page === currentPage" [class.signDisabled]="currentUser!==sign.sequence"
-                            [position]="{x: (sign.position.positionX*workingAreaWidth)/100, y:(sign.position.positionY*workingAreaHeight)/100}"
-                            [style.width.%]="25" [ngDraggable]="currentUser===sign.sequence"
-                            (endOffset)="moveSign($event, i);" [preventDefaultEvent]="false" [bounds]="myBounds"
-                            [inBounds]="true" class="signature">
-                            <span>{{getUserName(sign.sequence)}}</span>
-                            SIGNATURE
-                        </div>
-                    </ng-container>
-                </div>
-                <img class="img-content" [src]="imgContent" />
-            </div>
-        </div>
-        <ngx-extended-pdf-viewer style="display: none;" [src]="pdfContent" [useBrowserLocale]="true" [textLayer]="false"
-            (pdfLoaded)="onPagesLoaded($event)">
-        </ngx-extended-pdf-viewer>
-    </div>
-    <span class="divider-modal"></span>
-    <div mat-dialog-actions class="actions">
-        <button mat-raised-button mat-button color="primary"
-            (click)="onSubmit()">{{'lang.validate' | translate}}</button>
-        <button mat-raised-button mat-button [disabled]="loading"
-            [mat-dialog-close]="">{{'lang.cancel' | translate}}</button>
-    </div>
-</div>-->

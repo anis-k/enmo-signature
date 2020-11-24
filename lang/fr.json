@@ -361,6 +361,11 @@
 		"documentInterrupted": "Circuit interrompu",
 		"download": "Télécharger",
 		"signaturesInDocAdded": "Signature(s) apposée(s) au(x) page(s) {{0}}",
-		"signatureInDocAddedAlt" : "Signature apposée"
+		"signatureInDocAddedAlt" : "Signature apposée",
+		"setSignaturesPosition" : "Pré-positionner les signatures",
+		"adminSignaturesPositions" : "Gérer les positions de signatures",
+		"accessToPage": "Accéder à la page",
+		"createSignaturePosition": "Positionner la signature",
+		"prePositionings": "pré-positionnement(s)"
 	}
 }
