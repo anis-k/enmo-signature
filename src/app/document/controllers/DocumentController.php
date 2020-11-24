@@ -171,7 +171,7 @@ class DocumentController
             }
         }
 
-        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status', 'note'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status', 'note', 'signature_positions'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
         $currentFound = false;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
@@ -187,6 +187,7 @@ class DocumentController
                 'processDate'           => $value['process_date'],
                 'current'               => !$currentFound && empty($value['status']),
                 'signatureMode'         => $value['signature_mode'],
+                'signaturePositions'    => json_decode($value['signature_positions'], true),
                 'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true),
                 'note'                  => $value['note']
             ];
@@ -271,45 +272,6 @@ class DocumentController
         }
     }
 
-    public static function getContentPath($args = [])
-    {
-        if ($args['eSignDocument']) {
-            $adr = AdrModel::getDocumentsAdr([
-                'select'    => ['path', 'filename', 'fingerprint', 'type'],
-                'where'     => ['main_document_id = ?', 'type = ?'],
-                'data'      => [$args['id'], 'ESIGN']
-            ]);
-        }
-        if (empty($adr)) {
-            $adr = AdrModel::getDocumentsAdr([
-                'select'    => ['path', 'filename', 'fingerprint', 'type'],
-                'where'     => ['main_document_id = ?', 'type = ?'],
-                'data'      => [$args['id'], 'DOC']
-            ]);
-        }
-
-        if (empty($adr[0])) {
-            return null;
-        }
-
-        $docserver = DocserverModel::getByType(['type' => $adr[0]['type'], 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return ['errors' => 'Docserver does not exist', 'code' => 400];
-        }
-
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!is_file($pathToDocument)) {
-            return ['errors' => 'Document not found on docserver', 'code' => 404];
-        }
-
-        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
-        if ($adr[0]['fingerprint'] != $fingerprint) {
-            return ['errors' => 'Fingerprints do not match', 'code' => 400];
-        }
-
-        return ['path' => $pathToDocument];
-    }
-
     public function create(Request $request, Response $response)
     {
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation'])) {
@@ -349,6 +311,16 @@ class DocumentController
                 return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] processingUser/userId is empty or does not exist"]);
             } elseif (!Validator::stringType()->notEmpty()->validate($workflow['mode']) || !in_array($workflow['mode'], DocumentController::MODES)) {
                 return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] mode is empty or not a string in ('visa', 'sign', 'note')"]);
+            }
+            if (!empty($workflow['signaturePositions'])) {
+                if (!Validator::arrayType()->validate($workflow['signaturePositions'])) {
+                    return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] signaturePositions is not an array"]);
+                }
+                foreach ($workflow['signaturePositions'] as $keySP => $signaturePosition) {
+                    if (empty($signaturePosition['positionX']) || empty($signaturePosition['positionY']) || empty($signaturePosition['page'])) {
+                        return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}][signaturePositions][{$keySP}] is wrong formatted"]);
+                    }
+                }
             }
             $body['workflow'][$key]['userId'] = $processingUser['id'];
         }
@@ -438,11 +410,12 @@ class DocumentController
                     $workflow['signatureMode'] = 'stamp';
                 }
                 WorkflowModel::create([
-                    'userId'            => $workflow['userId'],
-                    'mainDocumentId'    => $id,
-                    'mode'              => $workflow['mode'],
-                    'order'             => $key + 1,
-                    'signatureMode'     => $workflow['signatureMode']
+                    'userId'                => $workflow['userId'],
+                    'mainDocumentId'        => $id,
+                    'mode'                  => $workflow['mode'],
+                    'order'                 => $key + 1,
+                    'signatureMode'         => $workflow['signatureMode'],
+                    'signaturePositions'    => empty($workflow['signaturePositions']) ? '[]' : json_encode($workflow['signaturePositions'])
                 ]);
             }
 
@@ -926,6 +899,45 @@ class DocumentController
         }
 
         return $linkedDocuments;
+    }
+
+    public static function getContentPath($args = [])
+    {
+        if ($args['eSignDocument']) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'    => ['path', 'filename', 'fingerprint', 'type'],
+                'where'     => ['main_document_id = ?', 'type = ?'],
+                'data'      => [$args['id'], 'ESIGN']
+            ]);
+        }
+        if (empty($adr)) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'    => ['path', 'filename', 'fingerprint', 'type'],
+                'where'     => ['main_document_id = ?', 'type = ?'],
+                'data'      => [$args['id'], 'DOC']
+            ]);
+        }
+
+        if (empty($adr[0])) {
+            return null;
+        }
+
+        $docserver = DocserverModel::getByType(['type' => $adr[0]['type'], 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            return ['errors' => 'Docserver does not exist', 'code' => 400];
+        }
+
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToDocument)) {
+            return ['errors' => 'Document not found on docserver', 'code' => 404];
+        }
+
+        $fingerprint = DocserverController::getFingerPrint(['path' => $pathToDocument]);
+        if ($adr[0]['fingerprint'] != $fingerprint) {
+            return ['errors' => 'Fingerprints do not match', 'code' => 400];
+        }
+
+        return ['path' => $pathToDocument];
     }
 
     public static function getPdfCertificate(array $args)

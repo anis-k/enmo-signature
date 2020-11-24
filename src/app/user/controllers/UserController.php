@@ -183,7 +183,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
-        $user = UserModel::getById(['id' => $args['id'], 'select' => ['signature_modes']]);
+        $user = UserModel::getById(['id' => $args['id'], 'select' => [1]]);
         if (empty($user)) {
             return $response->withStatus(400)->withJson(['errors' => 'User does not exist']);
         }

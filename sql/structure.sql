@@ -236,6 +236,7 @@ CREATE TABLE workflows
     main_document_id INTEGER NOT NULL,
     mode CHARACTER VARYING(16) NOT NULL,
     signature_mode CHARACTER VARYING(64) NOT NULL,
+    signature_positions jsonb DEFAULT '[]',
     "order" INTEGER NOT NULL,
     status CHARACTER VARYING(16) DEFAULT NULL,
     note text DEFAULT NULL,
