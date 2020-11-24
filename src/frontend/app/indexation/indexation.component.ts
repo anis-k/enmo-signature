@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Route, Router } from '@angular/router';
-import { AlertController, LoadingController, MenuController } from '@ionic/angular';
+import { AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.c
 import { AuthService } from '../service/auth.service';
 import { NotificationService } from '../service/notification.service';
 import { SignaturesContentService } from '../service/signatures.service';
+import { SignaturePositionComponent } from './signature-position/signature-position.component';
 
 @Component({
     templateUrl: 'indexation.component.html',
@@ -38,6 +39,7 @@ export class IndexationComponent implements OnInit {
         public loadingController: LoadingController,
         public alertController: AlertController,
         public datePipe: DatePipe,
+        public modalController: ModalController
     ) { }
 
     ngOnInit(): void { }
@@ -63,8 +65,8 @@ export class IndexationComponent implements OnInit {
                         reference: '',
                         mainDocument: true,
                         content: '',
-                        linkId : data.document.linkId,
-                        metadata : data.document.metadata,
+                        linkId: data.document.linkId,
+                        metadata: data.document.metadata,
                     });
                     this.getDocumentContent(resId);
                     this.appVisaWorkflow.loadWorkflow(data.document.workflow.map((item: any) => {
@@ -236,7 +238,7 @@ export class IndexationComponent implements OnInit {
                         signatureMode: this.authService.getSignatureMode(item.role)
                     };
                 }),
-                metadata : this.fromDocument !== null ? file.metadata : []
+                metadata: this.fromDocument !== null ? file.metadata : []
             });
         });
 
@@ -298,6 +300,33 @@ export class IndexationComponent implements OnInit {
 
     deleteFile(index: number) {
         this.filesToUpload.splice(index, 1);
+    }
+
+    async signPos(index: number) {
+        if (this.appVisaWorkflow.getCurrentWorkflow().length > 0) {
+            const modal = await this.modalController.create({
+                component: SignaturePositionComponent,
+                cssClass: 'custom-alert-fullscreen',
+                componentProps: {
+                    'workflow': this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => {
+                        return {
+                            userDisplay: item.userDisplay,
+                            mode: this.authService.getWorkflowMode(item.role),
+                        };
+                    }),
+                    'signPos': this.filesToUpload[index].signPos,
+                    'pdfContent': 'data:application/pdf;base64,' + this.filesToUpload[index].content,
+                }
+            });
+            await modal.present();
+            const { data } = await modal.onWillDismiss();
+            if (data !== undefined) {
+                this.filesToUpload[index].signPos = data;
+            }
+            console.log(this.filesToUpload);
+        } else {
+            this.notificationService.error('Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures.')
+        }
     }
 
     isValid() {

@@ -1,0 +1,52 @@
+.signatureContainer {
+    position: relative;
+    overflow: auto;
+    width: 1050px;
+    display: flex;
+    justify-content: center;
+}
+
+.posSignButton {
+    position: sticky;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.signature {
+    z-index: 2;
+    position: absolute;
+    border: dashed 1px var(--ion-color-danger);
+    background: rgba(var(--ion-color-danger-rgb), 0.6) none repeat scroll 0% 0%;
+    font-weight: bold;
+    font-size: 20px;
+    color: white;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*.example-radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+}
+
+.example-radio-button {
+    margin: 5px;
+}*/
+
+.signDisabled {
+    z-index: 1;
+    opacity: 0.2;
+    cursor: pointer;
+}
+
+.signUserName {
+    position: absolute;
+    font-size: 10px;
+    bottom: -25px;
+    font-weight: normal;
+    color: var(--ion-color-medium);
+}

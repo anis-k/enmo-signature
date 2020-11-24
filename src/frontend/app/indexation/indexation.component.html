@@ -35,6 +35,11 @@
                     <ion-input placeholder="{{'lang.filename' | translate}}" matInput type="text" [(ngModel)]="file.title"></ion-input>
                 </ion-item>
                 <ion-buttons slot="end">
+                    <ion-button [disabled]="!file.mainDocument" fill="clear" slot="icon-only" shape="round" color="primary"
+                        [title]="'lang.signPos' | translate" (click)="signPos(i)">
+                        <i *ngIf="filesToUpload[i].signPos !== undefined && filesToUpload[i].signPos.length > 0" class="badge-sign-pos"></i>
+                        <ion-icon slot="icon-only" name="scan-outline"></ion-icon>
+                    </ion-button>
                     <ion-button fill="clear" slot="icon-only" shape="round" color="danger"
                         [title]="'lang.delete' | translate" (click)="deleteFile(i)">
                         <ion-icon slot="icon-only" name="trash-outline"></ion-icon>

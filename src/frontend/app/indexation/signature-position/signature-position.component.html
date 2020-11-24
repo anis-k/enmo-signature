@@ -1,0 +1,152 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-title>Gérer les positions de signatures</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div style="display: flex;height: 100%;">
+        <div style="flex: 1;">
+            <ion-list>
+                <ion-item>
+                    <ion-label>Page</ion-label>
+                    <ion-select interface="popover" [(ngModel)]="currentPage"
+                        (ionChange)="changePage($event.detail.value)">
+                        <ion-select-option *ngFor="let page of pages" [value]="page">{{page}}</ion-select-option>
+                    </ion-select>
+                </ion-item>
+            </ion-list>
+            <ion-list>
+                <ion-radio-group [(ngModel)]="currentUser" (ionChange)="selectUser($event.detail.value)">
+                    <ion-item *ngFor="let user of workflow;let i=index">
+                        <ion-radio slot="start" [value]="i"></ion-radio>
+                        <ion-label>
+                            <h2>{{user.userDisplay}} <sup class="primary"
+                                    color="primary">({{user.mode === 'sign' ? ('lang.signUser' | translate):  ('lang.visaUser' | translate)}})</sup>
+                            </h2>
+                            <p>
+                                <ng-container *ngFor="let sign of signList">
+                                    <ion-chip style="z-index: 9999;" *ngIf="sign.sequence === i" outline
+                                        [color]="(i=== currentUser && sign.page === currentPage) ? 'primary' : 'medium'"
+                                        (click)="goToSignUserPage(i,sign.page)">
+                                        <ion-label>{{sign.page}}</ion-label>
+                                    </ion-chip>
+                                </ng-container>
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                </ion-radio-group>
+            </ion-list>
+            <div style="text-align: center;">
+                <ion-button color="primary" *ngIf="emptySign()" (click)="initSign()">Positionner la signature</ion-button>
+            </div>
+        </div>
+        <div class="signatureContainer">
+            <div id="myBounds" #myBounds
+                style="position: absolute;position: absolute;box-shadow: 0px 0px 5px 0px #656565;"
+                [style.width.px]="workingAreaWidth" [style.height.px]="workingAreaHeight">
+                <ng-container *ngFor="let sign of signList;let indexSign=index;">
+                    <div *ngIf="sign.page === currentPage" [class.signDisabled]="currentUser!==sign.sequence"
+                        [position]="{x: (sign.position.positionX*workingAreaWidth)/100, y:(sign.position.positionY*workingAreaHeight)/100}"
+                        [style.width.%]="25" [ngDraggable]="currentUser===sign.sequence"
+                        (endOffset)="moveSign($event, i);" [preventDefaultEvent]="false" [bounds]="myBounds"
+                        [inBounds]="true" class="signature"
+                        (click)="currentUser!=sign.sequence ? goToSignUserPage(sign.sequence, currentPage) : false">
+                        <ion-buttons style="position: absolute;top: -50px;right: 0px;">
+                            <ion-button fill="clear" slot="icon-only" shape="round" size="small" color="danger"
+                                [title]="'lang.delete' | translate" (click)="deleteSign(indexSign)">
+                                <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+                            </ion-button>
+                        </ion-buttons>
+                        <span class="signUserName">{{getUserName(sign.sequence)}}</span>
+                        SIGNATURE
+                    </div>
+                </ng-container>
+                <img class="img-content" [src]="imgContent" />
+            </div>
+        </div>
+    </div>
+    <ngx-extended-pdf-viewer style="display: none;" [src]="pdfContent" [useBrowserLocale]="true" [textLayer]="false"
+        (pdfLoaded)="onPagesLoaded($event)">
+    </ngx-extended-pdf-viewer>
+</ion-content>
+<ion-footer class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons class="ion-justify-content-center">
+            <ion-button type="button" color="primary" fill="outline" shape="round" (click)="onSubmit()">
+                <ion-label>{{'lang.save' | translate}}</ion-label>
+            </ion-button>
+            <ion-button type="button" color="medium" fill="outline" shape="round" (click)="modalController.dismiss()">
+                <ion-label>{{'lang.cancel' | translate}}</ion-label>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>
+
+
+<!--<div class="mat-dialog-content-container">
+    <h1 mat-dialog-title>Gérer les positions de signatures</h1>
+    <div mat-dialog-content>
+        <div *ngIf="loading" class="loading" style="display:flex;height:100%;">
+            <mat-spinner style="margin:auto;"></mat-spinner>
+        </div>
+        <div style="display: flex;height: 100%;">
+            <div style="padding-right: 10px;">
+                <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                    [(ngModel)]="currentUser" class="example-radio-group">
+                    <mat-radio-button *ngFor="let user of data.workflow;let i=index" [value]="i"
+                        class="example-radio-button" (change)="selectUser(i)">
+                        <div>{{user.labelToDisplay}} <sup
+                                color="primary">({{user.requested_signature ? ('lang.signUser' | translate):  ('lang.visaUser' | translate)}})</sup>
+                        </div>
+                        <div>
+                            <mat-chip-list aria-label="Fish selection">
+                                <ng-container *ngFor="let sign of signList">
+                                    <mat-chip *ngIf="sign.sequence === i" color="accent" style="font-size: 10px;
+                                    padding-top: 0px;
+                                    padding-bottom: 0px;
+                                    min-height: 20px;cursor: pointer;" (click)="goToSignUserPage(i,sign.page)">Page
+                                        {{sign.page}}</mat-chip>
+                                </ng-container>
+                            </mat-chip-list>
+                        </div>
+                    </mat-radio-button>
+                </mat-radio-group>
+                <mat-form-field>
+                    <mat-label>Page :</mat-label>
+                    <mat-select [(ngModel)]="currentPage" (selectionChange)="changePage($event.value)">
+                        <mat-option *ngFor="let page of pages" [value]="page">{{page}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button *ngIf="emptySign()" mat-raised-button color="primary" type="button"
+                    (click)="initSign()">Positionner la
+                    signature</button>
+            </div>
+            <div class="signatureContainer">
+                <div id="myBounds" #myBounds style="position: absolute;position: absolute;"
+                    [style.width.px]="workingAreaWidth" [style.height.px]="workingAreaHeight">
+                    <ng-container *ngFor="let sign of signList">
+                        <div *ngIf="sign.page === currentPage" [class.signDisabled]="currentUser!==sign.sequence"
+                            [position]="{x: (sign.position.positionX*workingAreaWidth)/100, y:(sign.position.positionY*workingAreaHeight)/100}"
+                            [style.width.%]="25" [ngDraggable]="currentUser===sign.sequence"
+                            (endOffset)="moveSign($event, i);" [preventDefaultEvent]="false" [bounds]="myBounds"
+                            [inBounds]="true" class="signature">
+                            <span>{{getUserName(sign.sequence)}}</span>
+                            SIGNATURE
+                        </div>
+                    </ng-container>
+                </div>
+                <img class="img-content" [src]="imgContent" />
+            </div>
+        </div>
+        <ngx-extended-pdf-viewer style="display: none;" [src]="pdfContent" [useBrowserLocale]="true" [textLayer]="false"
+            (pdfLoaded)="onPagesLoaded($event)">
+        </ngx-extended-pdf-viewer>
+    </div>
+    <span class="divider-modal"></span>
+    <div mat-dialog-actions class="actions">
+        <button mat-raised-button mat-button color="primary"
+            (click)="onSubmit()">{{'lang.validate' | translate}}</button>
+        <button mat-raised-button mat-button [disabled]="loading"
+            [mat-dialog-close]="">{{'lang.cancel' | translate}}</button>
+    </div>
+</div>-->

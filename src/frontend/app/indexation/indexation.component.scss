@@ -26,3 +26,14 @@
 ::ng-deep.alert-info-no-msg .alert-title {
     color: var(--ion-color-primary);
 }
+
+
+.badge-sign-pos {
+    width: 10px;
+    height: 10px;
+    background: var(--ion-color-danger);
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-radius: 5px;
+}
