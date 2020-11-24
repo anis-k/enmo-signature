@@ -7,8 +7,8 @@
   [inBounds]="true" style="position:absolute;border: dashed 1px grey;background: rgba(255, 255, 255, 0.6) none repeat scroll 0% 0%;" [style.height]="fix" #test>
   <ion-item style="position: absolute;--background: none;right: 0;--border-width: 0;">
     <ion-select (click)="$event.stopPropagation();" selectedText=" " value="" interface="popover" (ionChange)="select($event,i)">
-      <ion-select-option value="deleteSignature">{{'lang.delete' | translate}}</ion-select-option>
-      <ion-select-option [disabled]="signature.inAllPage" value="cloneSign">{{'lang.replicate' | translate}}</ion-select-option>
+      <ion-select-option class="action-item"value="deleteSignature">{{'lang.delete' | translate}}</ion-select-option>
+      <ion-select-option class="action-item" [disabled]="signature.inAllPage" value="cloneSign">{{'lang.replicate' | translate}}</ion-select-option>
     </ion-select>
   </ion-item>
   <img class="img-content" [src]="sanitization.bypassSecurityTrustUrl('data:image/png;base64,' + signature.encodedSignature)"  [style.width.%]="100">
