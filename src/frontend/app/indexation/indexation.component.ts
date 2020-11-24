@@ -231,11 +231,12 @@ export class IndexationComponent implements OnInit {
                         encodedDocument: item.content
                     };
                 }),
-                workflow: this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => {
+                workflow: this.appVisaWorkflow.getCurrentWorkflow().map((item: any, index: number) => {
                     return {
                         userId: item.userId,
                         mode: this.authService.getWorkflowMode(item.role),
-                        signatureMode: this.authService.getSignatureMode(item.role)
+                        signatureMode: this.authService.getSignatureMode(item.role),
+                        signaturePositions: file.signPos !== undefined ? file.signPos.filter((userItem: any) => userItem.sequence === index) : []
                     };
                 }),
                 metadata: this.fromDocument !== null ? file.metadata : []
@@ -325,7 +326,7 @@ export class IndexationComponent implements OnInit {
             }
             console.log(this.filesToUpload);
         } else {
-            this.notificationService.error('Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures.')
+            this.notificationService.error('Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures.');
         }
     }
 
