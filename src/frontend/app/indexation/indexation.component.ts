@@ -279,6 +279,11 @@ export class IndexationComponent implements OnInit {
                     file.reference = this.filesToUpload.length === 0 ? file.reference : '',
                         file.content = this.getBase64Document(value.target.result);
                     this.filesToUpload.push(file);
+                    if (this.filesToUpload.length === 1) {
+                        setTimeout(() => {
+                            this.menu.open('right-menu');
+                        }, 500);
+                    }
                 };
             }
         } else {
@@ -327,6 +332,7 @@ export class IndexationComponent implements OnInit {
             });
             await modal.present();
             const { data } = await modal.onWillDismiss();
+            console.log(data);
             if (data !== undefined) {
                 this.filesToUpload[index].signPos = data;
             }

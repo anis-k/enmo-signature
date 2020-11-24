@@ -2,8 +2,8 @@ import { Component, Input, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import { NotificationService } from '../../service/notification.service';
-import { ModalController } from '@ionic/angular';
+import { LoadingController, ModalController } from '@ionic/angular';
+import { SignaturesContentService } from '../../service/signatures.service';
 
 @Component({
     templateUrl: 'signature-position.component.html',
@@ -16,6 +16,7 @@ export class SignaturePositionComponent implements OnInit {
     @Input() pdfContent: any = null;
 
     loading: boolean = false;
+    dragging: boolean = false;
 
     pages: number[] = [];
 
@@ -31,17 +32,25 @@ export class SignaturePositionComponent implements OnInit {
     signList: any[] = [];
 
     imgContent: any = null;
+    load: HTMLIonLoadingElement = null;
 
     constructor(
         public translate: TranslateService,
         public http: HttpClient,
-        private notify: NotificationService,
+        public signaturesService: SignaturesContentService,
         private pdfViewerService: NgxExtendedPdfViewerService,
-        public modalController: ModalController
-
+        public modalController: ModalController,
+        public loadingController: LoadingController,
     ) { }
 
     ngOnInit(): void {
+        this.loadingController.create({
+            message: this.translate.instant('lang.processing'),
+            spinner: 'dots'
+        }).then((load: HTMLIonLoadingElement) => {
+            this.load = load;
+            this.load.present();
+        });
         if (this.signPos !== undefined) {
             this.initSignPos();
         }
@@ -92,6 +101,7 @@ export class SignaturePositionComponent implements OnInit {
         const percenty = (event.y * 100) / this.workingAreaHeight;
         this.signList.filter((item: any) => item.sequence === this.currentUser && item.page === this.currentPage)[0].position.positionX = percentx;
         this.signList.filter((item: any) => item.sequence === this.currentUser && item.page === this.currentPage)[0].position.positionY = percenty;
+        this.dragging = false;
     }
 
     emptySign() {
@@ -109,15 +119,15 @@ export class SignaturePositionComponent implements OnInit {
                 }
             }
         );
-        document.getElementsByClassName('signatureContainer')[0].scrollTo(0, 0);
+        document.getElementsByClassName('drag-scroll-content')[0].scrollTo(0, 0);
     }
 
     getUserSignPosPage(workflowIndex: number) {
         return this.signList.filter((item: any) => item.sequence === workflowIndex);
     }
 
-    selectUser(workflowIndex: number) {
-        this.currentUser = workflowIndex;
+    selectUser(workflowIndex: string) {
+        this.currentUser = +workflowIndex;
     }
 
     getUserName(workflowIndex: number) {
@@ -142,5 +152,9 @@ export class SignaturePositionComponent implements OnInit {
             }
         });
         return objToSend;
+    }
+
+    imageLoaded(ev: any) {
+        this.load.dismiss();
     }
 }

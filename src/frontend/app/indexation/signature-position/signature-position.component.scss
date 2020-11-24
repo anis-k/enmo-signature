@@ -1,3 +1,20 @@
+.containerMobile {
+    flex-direction: column;
+
+    .signPosForm {
+        flex: none !important;
+        height: auto;
+    }
+
+    .signatureContainer {
+        flex: 1;
+    }
+}
+
+.signPosForm {
+    flex: 1;
+}
+
 .signatureContainer {
     position: relative;
     overflow: auto;
@@ -49,4 +66,26 @@
     bottom: -25px;
     font-weight: normal;
     color: var(--ion-color-medium);
+}
+.chip-item-content {
+    z-index: 9999;
+    position: absolute;
+    margin: 0px;
+    bottom: 0px;
+}
+.chip-item {
+    font-size: 7px;
+    width: 15px;
+    height: 15px;
+    padding: 0px;
+    margin: 0px;
+    margin-left: 5px;
+    margin-right: 5px;
+    color: white;
+    border-color: white;
+    justify-content: center;
+}
+
+img {
+    pointer-events: none;
 }
