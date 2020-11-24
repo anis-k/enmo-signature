@@ -39,7 +39,6 @@ export class VisaWorkflowComponent implements OnInit {
         public popoverController: PopoverController
     ) { }
 
-
     ngOnInit(): void {
         this.visaWorkflow.forEach((element: any, index: number) => {
             this.getAvatarUser(index);
@@ -140,8 +139,6 @@ export class VisaWorkflowComponent implements OnInit {
     }
 
     loadWorkflow(workflow: any) {
-        console.log('loadWorkflow', workflow);
-        
         this.visaWorkflow = workflow;
     }
 }

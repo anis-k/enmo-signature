@@ -32,7 +32,7 @@
     </ng-container>
     <ion-list *ngIf="visaWorkflow.length === 0">
         <ion-item lines="none">
-            <ion-label class="ion-text-center" color="medium">Aucune personne dans le circuit</ion-label>
+            <ion-label class="ion-text-center" color="medium">{{'lang.noUserInWorkflow' | translate}}</ion-label>
         </ion-item>
     </ion-list>
     <ion-reorder-group (ionItemReorder)="doReorder($event)" [disabled]="!editMode">

@@ -33,8 +33,8 @@ export class VisaWorkflowModelsComponent implements OnInit {
 
     async createModel() {
         const alert = await this.alertController.create({
-            header: 'Nouveau modèle',
-            message: 'Le circuit en cours sera sauvegardé.',
+            header: this.translate.instant('lang.newTemplate'),
+            message: this.translate.instant('lang.newTemplateDesc'),
             inputs: [
                 {
                     name: 'title',
@@ -90,8 +90,8 @@ export class VisaWorkflowModelsComponent implements OnInit {
 
     async removeModel(model: any) {
         const alert = await this.alertController.create({
-            header: 'Supprimer',
-            message: 'Supprimer le modèle ?',
+            header: this.translate.instant('lang.delete'),
+            message: this.translate.instant('lang.deleteTemplate'),
             buttons: [
                 {
                     text: this.translate.instant('lang.no'),

@@ -314,6 +314,10 @@
 		"alreadyUsedPassword": "The password has already been used",
 		"noAssociatedGroup": "The user does not belong to any group",
 		"thumbnailNotFound": "Thumbnail not found or not readable.<br>Check docservers or ImageMagick configuration",
+		"noUserInWorkflow": "No user found in workflow",
+		"newTemplate": "New template",
+		"newTemplateDesc": "Current workflow will be saved",
+		"deleteTemplate": "So you really want to delete this template ?",
 		"homePage": "Home page"
 	}
 }

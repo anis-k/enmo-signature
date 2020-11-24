@@ -242,7 +242,7 @@ export class GroupComponent implements OnInit {
     }
 
     async togglePrivilege(privilege: any) {
-        if (privilege.id === 'manage_groups') {
+        if (privilege.id === 'manage_groups' && privilege.checked) {
             const alert = await this.alertController.create({
                 // cssClass: 'custom-alert-danger',
                 header: this.translate.instant('lang.confirmMsg'),
@@ -252,13 +252,12 @@ export class GroupComponent implements OnInit {
                         text: this.translate.instant('lang.no'),
                         role: 'cancel',
                         cssClass: 'secondary',
-                        handler: () => {
-                            privilege.checked = !privilege.checked;
-                        }
+                        handler: () => {}
                     },
                     {
                         text: this.translate.instant('lang.yes'),
                         handler: () => {
+                            privilege.checked = !privilege.checked;
                             this.updatePrivilege(privilege);
                         }
                     }
@@ -267,6 +266,7 @@ export class GroupComponent implements OnInit {
             await alert.present();
 
         } else {
+            privilege.checked = !privilege.checked;
             this.updatePrivilege(privilege);
         }
     }

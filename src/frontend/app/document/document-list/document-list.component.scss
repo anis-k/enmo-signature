@@ -10,35 +10,6 @@
     border: solid 1px #E0E0E0;
 }
 
-.infosPj {
-    background: #F9F9F9;
-    border-top: solid 1px rgba(0, 0, 0, 0.12);
-    position: absolute;
-    width: 100%;
-    bottom: 0;
-    padding: 5px;
-
-    ::ng-deep.mat-expansion-panel-body {
-        padding: 0px;
-    }
-
-    ::ng-deep.mat-form-field-label {
-        color: $primary;
-    }
-}
-
-.subInfos {
-    display: block;
-    font-size: 12px;
-    color: $primary;
-    font-weight: bold;
-}
-
-.subInfosBottom {
-    font-size: 12px;
-    color: #666;
-}
-
 .mat-icon {
     height: auto;
 }
@@ -70,24 +41,13 @@
     font-size: 20px;
     align-items: center;
 }
-.pjListContent {
-    padding-left: 30px;
-    padding-right: 30px;
-    flex: 1;
-    overflow: auto;
-}
+
 .panel-content {
     display: flex;
     flex-direction: column;
     position: relative;
     height: 100%;
     overflow: hidden;
-}
-
-.closePanel {
-    position: absolute;
-    left: 0px;
-    font-size: 24px;
 }
 
 img {
