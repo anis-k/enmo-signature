@@ -205,8 +205,13 @@ class HistoryController
         if (!$queryParams['onlyProof'] || empty($proofDocument)) {
             $formattedHistory = HistoryController::getFormattedHistory(['id' => $args['id']]);
             $historyXml       = HistoryController::arrayToXml(['data' => $formattedHistory['formattedHistory'], 'xml' => false]);
-            $historyXmlPath = $tmpPath . 'docaposteProof' . $GLOBALS['id'] . "_" . rand() . '.xml';
+            $historyXmlPath = $tmpPath . 'maarchProof' . $GLOBALS['id'] . "_" . rand() . '.xml';
             file_put_contents($historyXmlPath, $historyXml);
+
+            $loadedXml  = simplexml_load_file($historyXmlPath);
+            $historyXml = HistoryController::formatXml($loadedXml);
+            file_put_contents($historyXmlPath, $historyXml);
+
             $documentPathToZip[] = ['path' => $historyXmlPath, 'filename' => 'maarchProof.xml'];
         }
 
@@ -306,17 +311,30 @@ class HistoryController
         }
     }
 
-    public static function arrayToxml($args = [])
+    public function formatXml($simpleXMLElement)
+    {
+        $xmlDocument = new \DOMDocument('1.0');
+        $xmlDocument->preserveWhiteSpace = false;
+        $xmlDocument->formatOutput = true;
+        $xmlDocument->loadXML($simpleXMLElement->asXML());
+
+        return $xmlDocument->saveXML();
+    }
+
+    public static function arrayToXml($args = [])
     {
         if ($args['xml'] === false) {
-            $args['xml'] = new \SimpleXMLElement('<root/>');
+            $args['xml'] = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><root></root>', null, false);
+            $historyNode = 'History';
         }
     
         foreach ($args['data'] as $key => $value) {
+            $node = $historyNode ?? $key;
+
             if (is_array($value)) {
-                HistoryController::arrayToxml(['data' => $value, 'xml' => $args['xml']->addChild($key)]);
+                HistoryController::arrayToXml(['data' => $value, 'xml' => $args['xml']->addChild($node)]);
             } else {
-                $args['xml']->addChild($key, $value);
+                $args['xml']->addChild($node, $value);
             }
         }
     
