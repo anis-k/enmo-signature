@@ -9,7 +9,8 @@
         </ion-item>
     </ion-toolbar>
     <ion-toolbar color="primary">
-        <ion-segment color="warning" scrollable [value]="currentUser" (ionChange)="selectUser($event.detail.value)">
+        <ion-segment color="warning" scrollable [value]="currentUser" (ionChange)="selectUser($event.detail.value)"
+            style="justify-content: center;">
             <ion-segment-button *ngFor="let user of workflow;let i=index" [value]="i" layout="icon-start">
                 <ion-label>
                     <h2>{{user.userDisplay}}</h2>
@@ -62,15 +63,14 @@
         (pdfLoaded)="onPagesLoaded($event)">
     </ngx-extended-pdf-viewer>
 </ion-content>
-<ion-footer class="ion-no-border">
-    <ion-toolbar>
-        <ion-buttons class="ion-justify-content-center">
-            <ion-button type="button" color="primary" fill="outline" shape="round" (click)="onSubmit()">
-                <ion-label>{{'lang.save' | translate}}</ion-label>
-            </ion-button>
-            <ion-button type="button" color="medium" fill="outline" shape="round" (click)="modalController.dismiss()">
-                <ion-label>{{'lang.cancel' | translate}}</ion-label>
-            </ion-button>
-        </ion-buttons>
-    </ion-toolbar>
+<ion-footer class="ion-no-border footer-buttons">
+    <div>
+        <ion-button type="button" color="primary" fill="outline" shape="round" size="large" (click)="onSubmit()">
+            <ion-label>{{'lang.save' | translate}}</ion-label>
+        </ion-button>
+        <ion-button type="button" color="medium" fill="outline" shape="round" size="large"
+            (click)="modalController.dismiss()">
+            <ion-label>{{'lang.cancel' | translate}}</ion-label>
+        </ion-button>
+    </div>
 </ion-footer>

@@ -28,12 +28,12 @@
                                 style="display: flex;align-items: center;white-space: pre;overflow-x: auto;overflow-y: hidden;">
                                 <ng-container *ngFor="let itemW of element.workflow;let i=index;">
                                     <ion-icon *ngIf="i>0" name="chevron-forward-outline"></ion-icon>
-                                    <span class="workflow-item success" [class.success]="itemW.processDate!==null"
+                                    <span class="workflow-item success" [class.success]="itemW.processDate!==null && itemW.status!=='STOP'"
                                         [class.typist-interrupt]="itemW.status==='REF'"
-                                        [class.interrupt]="itemW.processDate===null && ['END','STOP'].indexOf(itemW.status) > -1"
+                                        [class.interrupt]="(itemW.processDate===null && itemW.statu === 'END') || itemW.status === 'STOP'"
                                         [class.current]="itemW.current"
                                         [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{itemW.userDisplay}}&nbsp;
-                                        <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF'"
+                                        <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF' && itemW.status!=='STOP'"
                                             name="thumbs-up-outline"></ion-icon>
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status==='REF'"
                                             name="thumbs-down-outline"></ion-icon>
