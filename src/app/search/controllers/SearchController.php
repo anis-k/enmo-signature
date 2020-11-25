@@ -34,7 +34,7 @@ class SearchController
         $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
         $where = [];
-        $data = [];
+        $data  = [];
         $hasFullRights = PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents']);
         if (!$hasFullRights) {
             $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$GLOBALS['id']]]);
@@ -45,8 +45,8 @@ class SearchController
 
             $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
             $workflowSelect = "SELECT main_document_id FROM workflows WHERE user_id in (?) AND id in ({$workflowSelect})";
-            $where = ["id in ({$workflowSelect}) OR typist = ?"];
-            $data = [$users, $GLOBALS['id']];
+            $where          = ["id in ({$workflowSelect}) OR typist = ?"];
+            $data           = [$users, $GLOBALS['id']];
         }
 
         $whereWorkflow = [];
@@ -66,28 +66,28 @@ class SearchController
                 $whereStatuses[] = "main_document_id in (SELECT DISTINCT main_document_id FROM workflows WHERE status is null)";
             }
             if (!empty($whereStatuses)) {
-                $whereStatuses = implode(' OR ', $whereStatuses);
+                $whereStatuses   = implode(' OR ', $whereStatuses);
                 $whereWorkflow[] = "({$whereStatuses})";
             }
         }
         if (!empty($body['workflowUsers'])) {
             $whereWorkflow[] = 'user_id in (?)';
-            $dataWorkflow[] = $body['workflowUsers'];
+            $dataWorkflow[]  = $body['workflowUsers'];
         }
 
         if (!empty($whereWorkflow)) {
             $workflows = WorkflowModel::get([
-                'select'    => ['main_document_id'],
-                'where'     => $whereWorkflow,
-                'data'      => $dataWorkflow,
-                'groupBy'   => ['main_document_id']
+                'select'  => ['main_document_id'],
+                'where'   => $whereWorkflow,
+                'data'    => $dataWorkflow,
+                'groupBy' => ['main_document_id']
             ]);
             $documentIds = array_column($workflows, 'main_document_id');
             if (empty($documentIds)) {
                 $documentIds = [0];
             }
             $where[] = 'id in (?)';
-            $data[] = $documentIds;
+            $data[]  = $documentIds;
         }
 
         if (Validator::stringType()->notEmpty()->validate($body['title'])) {
@@ -100,8 +100,7 @@ class SearchController
                 'longField'     => true
             ]);
             $where[] = implode(' AND ', $requestData['where']);
-            $data = array_merge($data, $requestData['data']);
-
+            $data    = array_merge($data, $requestData['data']);
         }
         if (Validator::stringType()->notEmpty()->validate($body['reference'])) {
             $where[] = 'reference ilike ?';
@@ -109,21 +108,21 @@ class SearchController
         }
 
         $documents = DocumentModel::get([
-            'select'    => ['id', 'title', 'reference', 'typist', 'count(1) OVER()'],
-            'where'     => $where,
-            'data'      => $data,
-            'limit'     => $queryParams['limit'],
-            'offset'    => $queryParams['offset'],
-            'orderBy'   => ['creation_date desc']
+            'select'  => ['id', 'title', 'reference', 'typist', 'count(1) OVER()'],
+            'where'   => $where,
+            'data'    => $data,
+            'limit'   => $queryParams['limit'],
+            'offset'  => $queryParams['offset'],
+            'orderBy' => ['creation_date desc']
         ]);
 
         $count = empty($documents[0]['count']) ? 0 : $documents[0]['count'];
         $hasIndexation = PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation']);
         foreach ($documents as $key => $document) {
-            $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'note', 'status'], 'documentId' => $document['id'], 'orderBy' => ['"order"']]);
-            $currentFound = false;
+            $workflow          = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'note', 'status'], 'documentId' => $document['id'], 'orderBy' => ['"order"']]);
+            $currentFound      = false;
             $formattedWorkflow = [];
-            $state = null;
+            $state             = null;
             foreach ($workflow as $value) {
                 if (!empty($value['process_date'])) {
                     $date = new \DateTime($value['process_date']);
@@ -131,14 +130,14 @@ class SearchController
                 }
 
                 $formattedWorkflow[] = [
-                    'userId'                => $value['user_id'],
-                    'userDisplay'           => UserModel::getLabelledUserById(['id' => $value['user_id']]),
-                    'mode'                  => $value['mode'],
-                    'processDate'           => $value['process_date'],
-                    'current'               => !$currentFound && empty($value['status']),
-                    'signatureMode'         => $value['signature_mode'],
-                    'status'                => $value['status'],
-                    'reason'                => $value['note']
+                    'userId'        => $value['user_id'],
+                    'userDisplay'   => UserModel::getLabelledUserById(['id' => $value['user_id']]),
+                    'mode'          => $value['mode'],
+                    'processDate'   => $value['process_date'],
+                    'current'       => !$currentFound && empty($value['status']),
+                    'signatureMode' => $value['signature_mode'],
+                    'status'        => $value['status'],
+                    'reason'        => $value['note']
                 ];
                 if (empty($value['status'])) {
                     $currentFound = true;
@@ -149,10 +148,10 @@ class SearchController
                     $state = 'PROG';
                 }
             }
-            $documents[$key]['canInterrupt'] = ($document['typist'] == $GLOBALS['id'] || $hasFullRights);
-            $documents[$key]['canReaffect'] = ($document['typist'] == $GLOBALS['id'] || $hasFullRights) && $hasIndexation;
-            $documents[$key]['workflow'] = $formattedWorkflow;
-            $documents[$key]['state'] = $state;
+            $documents[$key]['canInterrupt'] = ($document['typist'] == $GLOBALS['id'] || $hasFullRights) && $state == 'PROG';
+            $documents[$key]['canReaffect']  = ($document['typist'] == $GLOBALS['id'] || $hasFullRights) && $hasIndexation;
+            $documents[$key]['workflow']     = $formattedWorkflow;
+            $documents[$key]['state']        = $state;
             unset($documents[$key]['count']);
         }
 
