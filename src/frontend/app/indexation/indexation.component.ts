@@ -48,6 +48,7 @@ export class IndexationComponent implements OnInit {
         this.menu.enable(true, 'left-menu');
         this.menu.enable(true, 'right-menu');
 
+        this.filesToUpload = [];
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
 
         if (window.history.state.documentId !== undefined) {
