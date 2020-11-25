@@ -301,7 +301,9 @@ export class UserComponent implements OnInit {
 
     toggleSignMode(signMode: any, state: boolean) {
         if (state) {
-            this.user.signatureModes.push(signMode.id);
+            if (this.user.signatureModes.indexOf(signMode.id) === -1) {
+                this.user.signatureModes.push(signMode.id);
+            }
         } else {
             this.user.signatureModes = this.user.signatureModes.filter((item: any) => item !== signMode.id);
         }

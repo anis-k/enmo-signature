@@ -34,7 +34,6 @@ use User\models\UserGroupModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
 use Workflow\models\WorkflowTemplateItemModel;
-use Workflow\models\WorkflowTemplateModel;
 
 class UserController
 {
@@ -141,6 +140,7 @@ class UserController
             if (!Validator::arrayType()->validate($body['signatureModes'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
             } else {
+                $body['signatureModes'] = array_unique($body['signatureModes']);
                 foreach ($body['signatureModes'] as $key => $signatureMode) {
                     if (!SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {
                         return $response->withStatus(400)->withJson(['errors' => "Body signatureModes[{$key}] is not a valid signature mode"]);
@@ -199,6 +199,7 @@ class UserController
             if (!Validator::arrayType()->validate($body['signatureModes'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body signatureModes is not an array']);
             }
+            $body['signatureModes'] = array_unique($body['signatureModes']);
             $modes = [];
             foreach ($body['signatureModes'] as $signatureMode) {
                 if (SignatureController::isValidSignatureMode(['mode' => $signatureMode])) {

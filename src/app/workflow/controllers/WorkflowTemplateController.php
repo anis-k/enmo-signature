@@ -62,7 +62,7 @@ class WorkflowTemplateController
             $higherMode = 'stamp';
             foreach ($validSignatureModes as $validMode) {
                 if (in_array($validMode, $user['signature_modes'])) {
-                    $higherMode = $validMode['id'];
+                    $higherMode = $validMode;
                     break;
                 }
             }
@@ -73,7 +73,7 @@ class WorkflowTemplateController
                 'mode'               => $value['mode'],
                 'signatureMode'      => in_array($value['signature_mode'], $validSignatureModes) ? $value['signature_mode'] : $higherMode,
                 'order'              => $value['order'],
-                'userSignatureModes' => array_intersect($user['signature_modes'], $validSignatureModes)
+                'userSignatureModes' => array_reverse(array_values(array_intersect($validSignatureModes, $user['signature_modes'])))
             ];
         }
 

@@ -54,7 +54,7 @@ class AutoCompleteController
         $validSignatureModes = array_column($validSignatureModes, 'id');
         foreach ($users as $key => $user) {
             $users[$key]['substitute']     = !empty($user['substitute']);
-            $users[$key]['signatureModes'] = array_intersect(json_decode($user['signature_modes'], true), $validSignatureModes);
+            $users[$key]['signatureModes'] = array_reverse(array_values(array_intersect($validSignatureModes, json_decode($user['signature_modes'], true))));
             unset($users[$key]['signature_modes']);
         }
         
