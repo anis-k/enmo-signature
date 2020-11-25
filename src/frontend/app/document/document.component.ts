@@ -240,11 +240,13 @@ export class DocumentComponent implements OnInit {
         await modal.present();
         const { data } = await modal.onWillDismiss();
         this.dragging = false;
-        if (data === 'success') {
-            this.scrollToElem();
-            // this.addSignature();
-        } else if (data.redirectPage !== undefined) {
-            this.goTo(data.redirectPage);
+        if (data !== undefined) {
+            if (data === 'success') {
+                this.scrollToElem();
+                // this.addSignature();
+            } else if (data.redirectPage !== undefined) {
+                this.goTo(data.redirectPage);
+            }
         }
         // console.log('dissmiss');
     }
