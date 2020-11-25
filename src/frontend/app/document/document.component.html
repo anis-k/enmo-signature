@@ -33,7 +33,7 @@
                 </ion-badge>
             </ion-segment-button>
         </ion-segment>
-        <ion-buttons slot="end">
+        <ion-buttons slot="end" *ngIf="!detailMode">
             <ion-button color="primary" (click)="openAction()">
               <ion-icon slot="icon-only" name="settings-sharp"></ion-icon>
             </ion-button>
@@ -87,7 +87,7 @@
         <drag-scroll style="overflow:auto;height: 100%;width: 100%;margin: auto;"
             [drag-scroll-disabled]="(signaturesService.dragging || signaturesService.resizing) && signaturesService.mobileMode"
             [drag-disabled]="(signaturesService.dragging || signaturesService.resizing) && !signaturesService.mobileMode"
-            [style.maxWidth.px]="signaturesService.workingAreaWidth" #nav (click)="currentDoc == 0 ? openAction() : false"  (dblclick)="currentDoc == 0 ? openNoteEditor($event) : false">
+            [style.maxWidth.px]="signaturesService.workingAreaWidth" #nav (click)="currentDoc == 0 && !detailMode ? openAction() : false">
             <div style="position:relative;cursor: grab;" [style.width.px]="signaturesService.workingAreaWidth"
                 [style.height.px]="signaturesService.workingAreaHeight" id="myBounds" #myBounds>
                 <app-document-note-list *ngIf="currentDoc == 0 && !loadingImage">

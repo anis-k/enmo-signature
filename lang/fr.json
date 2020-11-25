@@ -366,6 +366,7 @@
 		"adminSignaturesPositions" : "Gérer les positions de signatures",
 		"accessToPage": "Accéder à la page",
 		"createSignaturePosition": "Positionner la signature",
-		"prePositionings": "pré-positionnement(s)"
+		"prePositionings": "pré-positionnement(s)",
+		"back": "Retour"
 	}
 }

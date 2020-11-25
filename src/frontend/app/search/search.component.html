@@ -30,7 +30,7 @@
                                     <ion-icon *ngIf="i>0" name="chevron-forward-outline"></ion-icon>
                                     <span class="workflow-item success" [class.success]="itemW.processDate!==null && itemW.status!=='STOP'"
                                         [class.typist-interrupt]="itemW.status==='REF'"
-                                        [class.interrupt]="(itemW.processDate===null && itemW.statu === 'END') || itemW.status === 'STOP'"
+                                        [class.interrupt]="(itemW.processDate===null && itemW.status === 'END') || itemW.status === 'STOP'"
                                         [class.current]="itemW.current"
                                         [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{itemW.userDisplay}}&nbsp;
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF' && itemW.status!=='STOP'"
@@ -69,7 +69,7 @@
                                 </p>
                             </ion-label>
                             <ion-buttons slot="end">
-                                <ion-button *ngIf="element.currentUser === authService.user.id" [title]="'lang.accessDocument' | translate" slot="icon-only" fill="clear" shape="round" (click)="goTo(element.id)">
+                                <ion-button [title]="'lang.accessDocument' | translate" slot="icon-only" fill="clear" shape="round" (click)="goTo(element.id)">
                                     <ion-icon color="primary" slot="icon-only" name="reader-outline"></ion-icon>
                                 </ion-button>
                                 <ion-button *ngIf="openedLine===element.id" slot="icon-only" fill="clear" shape="round"

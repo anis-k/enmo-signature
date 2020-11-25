@@ -16,7 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { DocumentListComponent } from './document-list/document-list.component';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
-import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
+import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController, NavController } from '@ionic/angular';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -29,6 +29,7 @@ import { of } from 'rxjs';
 export class DocumentComponent implements OnInit {
 
     enterApp: boolean = true;
+    detailMode: boolean = false;
     pageNum: number = 1;
     signaturesContent: any = [];
     totalPages: number;
@@ -112,6 +113,7 @@ export class DocumentComponent implements OnInit {
         public modalController: ModalController,
         private pdfViewerService: NgxExtendedPdfViewerService,
         public alertController: AlertController,
+        public navCtrl: NavController
     ) {
         this.draggable = false;
     }
@@ -337,16 +339,29 @@ export class DocumentComponent implements OnInit {
                             this.menu.enable(true, 'right-menu');
                             this.initDoc();
 
-                            const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
+                            const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true);
 
-                            if (realUserWorkflow.userId !== this.authService.user.id) {
-                                this.http.get('../rest/users/' + realUserWorkflow.userId + '/signatures')
-                                    .subscribe((dataSign: any) => {
-                                        this.signaturesService.signaturesListSubstituted = dataSign.signatures;
-                                        this.signaturesService.loadingSign = false;
-                                    });
+                            if (realUserWorkflow.length === 0) {
+                                this.actionsList = [
+                                    {
+                                        id: 4,
+                                        label: 'lang.back',
+                                        color: 'medium',
+                                        logo: 'chevron-back-outline',
+                                        event: 'back'
+                                    },
+                                ];
+                                this.detailMode = true;
                             } else {
-                                this.signaturesService.signaturesListSubstituted = [];
+                                if (realUserWorkflow[0].userId !== this.authService.user.id) {
+                                    this.http.get('../rest/users/' + realUserWorkflow[0].userId + '/signatures')
+                                        .subscribe((dataSign: any) => {
+                                            this.signaturesService.signaturesListSubstituted = dataSign.signatures;
+                                            this.signaturesService.loadingSign = false;
+                                        });
+                                } else {
+                                    this.signaturesService.signaturesListSubstituted = [];
+                                }
                             }
 
                             this.docList.push({ 'id': this.mainDocument.id, 'title': this.mainDocument.title, 'pages': this.mainDocument.pages, 'imgContent': [], 'imgUrl': '../rest/documents/' + this.mainDocument.id + '/thumbnails' });
@@ -359,7 +374,7 @@ export class DocumentComponent implements OnInit {
                             this.loadingdocument = false;
                         }),
                         catchError((err: any) => {
-                            // console.log('error');
+                            console.log('error', err);
                             setTimeout(() => {
                                 this.load.dismiss();
                             }, 200);
@@ -883,6 +898,10 @@ export class DocumentComponent implements OnInit {
                     this.notificationService.success('lang.substitutionDeleted');
                 });
         }
+    }
+
+    back() {
+        this.navCtrl.back();
     }
 
     ionViewWillLeave() {
