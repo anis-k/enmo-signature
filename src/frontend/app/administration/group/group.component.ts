@@ -241,10 +241,12 @@ export class GroupComponent implements OnInit {
         await alert.present();
     }
 
-    async togglePrivilege(privilege: any) {
+    async togglePrivilege(privilege: any, toggle: boolean) {
         if (privilege.id === 'manage_groups' && privilege.checked) {
+            if (!toggle) {
+                privilege.checked = !privilege.checked;
+            }
             const alert = await this.alertController.create({
-                // cssClass: 'custom-alert-danger',
                 header: this.translate.instant('lang.confirmMsg'),
                 message: this.translate.instant('lang.groupWarnMsg'),
                 buttons: [
@@ -252,21 +254,23 @@ export class GroupComponent implements OnInit {
                         text: this.translate.instant('lang.no'),
                         role: 'cancel',
                         cssClass: 'secondary',
-                        handler: () => {}
+                        handler: () => {
+                            privilege.checked = !privilege.checked;
+                        }
                     },
                     {
                         text: this.translate.instant('lang.yes'),
                         handler: () => {
-                            privilege.checked = !privilege.checked;
                             this.updatePrivilege(privilege);
                         }
                     }
                 ]
             });
             await alert.present();
-
         } else {
-            privilege.checked = !privilege.checked;
+            if (!toggle) {
+                privilege.checked = !privilege.checked;
+            }
             this.updatePrivilege(privilege);
         }
     }

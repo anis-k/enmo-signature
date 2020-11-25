@@ -62,3 +62,10 @@ ALTER TABLE workflows ADD COLUMN digital_signature_id text;
 
 ALTER TABLE main_documents DROP COLUMN IF EXISTS digital_signature_transaction_id;
 ALTER TABLE main_documents ADD COLUMN digital_signature_transaction_id text;
+
+DO $$ BEGIN
+    IF (SELECT count(1) from docservers where type = 'ESIGN') = 0 THEN
+        INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+        VALUES ('ESIGN', 'Document avec signatures électronique', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/esigned_documents/');
+    END IF;
+END$$;

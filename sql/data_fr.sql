@@ -60,7 +60,8 @@ INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size
 VALUES ('ATTACH', 'Documents joints', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/attachments/');
 INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
 VALUES ('SIGNATURE', 'Signatures utilisateurs', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/signatures/');
-
+INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+VALUES ('ESIGN', 'Document avec signatures électronique', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/esigned_documents/');
 
 -----
 -- Password management

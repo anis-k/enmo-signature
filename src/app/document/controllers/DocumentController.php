@@ -769,7 +769,7 @@ class DocumentController
 
     public function getThumbnailContent(Request $request, Response $response, array $args)
     {
-        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']]) && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 

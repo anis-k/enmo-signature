@@ -19,10 +19,10 @@
         <ion-grid *ngIf="!creationMode">
             <ion-row>
                 <ion-col size="4" *ngFor="let privilege of group.privileges">
-                    <ion-item (click)="$event.preventDefault();togglePrivilege(privilege)" style="cursor: pointer">
+                    <ion-item  style="cursor: pointer">
                         <ion-toggle slot="start" [name]="privilege.id" color="primary" [checked]="privilege.checked"
-                            [(ngModel)]="privilege.checked"></ion-toggle>
-                        <ion-label>{{'lang.' + privilege.id + 'Admin' | translate}}</ion-label>
+                            [(ngModel)]="privilege.checked" (click)="togglePrivilege(privilege, true)"></ion-toggle>
+                        <ion-label (click)="togglePrivilege(privilege, false)">{{'lang.' + privilege.id + 'Admin' | translate}}</ion-label>
                     </ion-item>
                 </ion-col>
             </ion-row>
