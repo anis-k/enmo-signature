@@ -218,6 +218,12 @@ export class IndexationComponent implements OnInit {
         }
 
         signedFiles.forEach((file: any) => {
+            const metadata = {};
+            if (this.fromDocument !== null) {
+                file.metadata.forEach((element: any) => {
+                    metadata[element.label] = element.value;
+                });
+            }
             formattedObj.push({
                 title: file.title,
                 reference: this.datePipe.transform(today, 'y/MM/dd') + '/' + file.reference,
@@ -246,7 +252,7 @@ export class IndexationComponent implements OnInit {
                         }) : []
                     };
                 }),
-                metadata: this.fromDocument !== null ? file.metadata : []
+                metadata: metadata
             });
         });
 

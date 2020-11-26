@@ -31,7 +31,7 @@
             <ion-input [value]="mainDocument.title" readonly></ion-input>
         </ion-item>
         <ion-item *ngFor="let data of mainDocument.metadata;">
-            <ion-label color="secondary" position="floating">{{data.value | translate}}</ion-label>
+            <ion-label color="secondary" position="floating">{{data.label | translate}}</ion-label>
             <ion-input [value]="data.value" readonly></ion-input>
         </ion-item>
     </ion-list>
