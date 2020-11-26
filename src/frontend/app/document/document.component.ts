@@ -75,6 +75,8 @@ export class DocumentComponent implements OnInit {
 
     loadingUI: any = false;
 
+    status: string;
+
     expandedNote: boolean = true;
     hasWorkflowNotes: boolean = false;
     currentTool = 'info';
@@ -319,7 +321,7 @@ export class DocumentComponent implements OnInit {
                     this.http.get('../rest/documents/' + params['id']).pipe(
                         tap((data: any) => {
                             this.mainDocument = data.document;
-
+                            this.status = this.mainDocument.status;
                             this.mainDocument.workflow = this.mainDocument.workflow.map((item: any) => {
                                 if (item.note) {
                                     this.hasWorkflowNotes = true;

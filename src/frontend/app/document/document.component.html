@@ -123,7 +123,7 @@
 
 </ion-content>
 <ion-footer *ngIf="!loadingImage && currentDoc === 0" class="ion-no-border footer-buttons">
-    <ion-button *ngFor="let action of actionsList" [color]="action.color" shape="round" size="large" fill="outline" (click)="launchEvent(action)">
+    <ion-button [disabled]="this.status === 'CONVERTING'" *ngFor="let action of actionsList" [color]="action.color" shape="round" size="large" fill="outline" (click)="launchEvent(action)">
         <ion-icon *ngIf="action.logo !== ''" [slot]="'start'" [name]="action.logo"></ion-icon>
         <ion-label style="font-size: 13px;">{{action.label | translate}}</ion-label>
     </ion-button>
