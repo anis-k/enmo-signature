@@ -31,6 +31,7 @@ use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
+use setasign\Fpdi\Tcpdf\Fpdi;
 
 class HistoryController
 {
@@ -260,7 +261,28 @@ class HistoryController
                 $documentPathToZip[] = ['path' => $pathToDocument, 'filename' => 'attachment_' . $key . '.pdf'];
             }
 
-            // TODO get note in pdf
+            $document = DocumentModel::getById(['select' => ['sender', 'creation_date', 'notes'], 'id' => $args['id']]);
+            
+            $notes = [];
+            $documentNotes = json_decode($document['notes'], true);
+            if (!empty($documentNotes)) {
+                $notes[] = $documentNotes;
+            }
+
+            $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'process_date', 'note'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+            foreach ($workflow as $step) {
+                if (!empty($step['note'])) {
+                    $notes[] = [
+                        'creator'      => UserModel::getLabelledUserById(['id' => $step['user_id']]),
+                        'creationDate' => $step['process_date'],
+                        'value'        => $step['note']
+                    ];
+                }
+            }
+
+            if (!empty($notes)) {
+                $documentPathToZip[] = HistoryController::createNotesFile(['notes' => $notes]);
+            }
 
             $content = HistoryController::createZip(['documents' => $documentPathToZip]);
             if (!empty($content['errors'])) {
@@ -339,6 +361,47 @@ class HistoryController
         }
     
         return $args['xml']->asXML();
+    }
+
+    public static function createNotesFile($args = [])
+    {
+        $pdf = new Fpdi('P', 'pt');
+        $pdf->setPrintHeader(false);
+
+        $pdf->AddPage();
+        $dimensions     = $pdf->getPageDimensions();
+        $widthNoMargins = $dimensions['w'] - $dimensions['rm'] - $dimensions['lm'];
+        $bottomHeight   = $dimensions['h'] - $dimensions['bm'];
+        $widthNotes     = $widthNoMargins / 2;
+
+        if (($pdf->GetY() + 80) > $bottomHeight) {
+            $pdf->AddPage();
+        }
+
+        $pdf->SetFont('', 'B', 11);
+        $pdf->Cell(0, 15, 'Notes', 0, 2, 'L', false);
+
+        $pdf->SetY($pdf->GetY() + 2);
+        $pdf->SetFont('', '', 10);
+
+        foreach ($args['notes'] as $note) {
+            if (($pdf->GetY() + 65) > $bottomHeight) {
+                $pdf->AddPage();
+            }
+            $pdf->SetFont('', 'B', 10);
+            $pdf->Cell($widthNotes, 20, $note['creator'], 1, 0, 'L', false);
+            $pdf->SetFont('', '', 10);
+            $pdf->Cell($widthNotes, 20, $note['creationDate'], 1, 1, 'L', false);
+            $pdf->MultiCell(0, 40, $note['value'], 1, 'L', false);
+            $pdf->SetY($pdf->GetY() + 5);
+        }
+
+        $noteFileContent = $pdf->Output('', 'S');
+        $notesFilePath   = $tmpPath . 'notes' . $GLOBALS['id'] . "_" . rand() . '.pdf';
+        file_put_contents($notesFilePath, $noteFileContent);
+        $documentPathToZip = ['path' => $notesFilePath, 'filename' => 'notes.pdf'];
+
+        return $documentPathToZip;
     }
 
     public function getByUserId(Request $request, Response $response, array $args)
