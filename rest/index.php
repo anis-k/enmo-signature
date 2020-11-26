@@ -89,6 +89,8 @@ $app->post('/emails', \Email\controllers\EmailController::class . ':send');
 
 //Languages
 $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
+$app->get('/dev/languages', \SrcCore\controllers\LanguageController::class . ':getAvailableCoreLanguages');
+$app->put('/dev/languages', \SrcCore\controllers\LanguageController::class . ':generateLang');
 
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');

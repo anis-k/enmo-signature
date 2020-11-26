@@ -13,6 +13,7 @@
 
 namespace SrcCore\controllers;
 
+use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\CoreConfigModel;
@@ -94,5 +95,46 @@ class LanguageController
         }
 
         return $language;
+    }
+
+    public function generateLang(Request $request, Response $response)
+    {
+        $body = $request->getParsedBody();
+
+        if (!Validator::stringType()->notEmpty()->validate($body['langId'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body langId is empty or not a string']);
+        }
+
+        $path = "lang/{$body['langId']}.json";
+
+        if (!is_file($path) || !is_writable($path)) {
+            return $response->withStatus(400)->withJson(['errors' => "lang/{$body['langId']}.json is not a file or is not writable"]);
+        }
+
+        $file = @fopen($path, 'w');
+        if ($file === false) {
+            return $response->withStatus(400)->withJson(['errors' => "Cannot open file : lang/{$body['langId']}.json"]);
+        }
+
+        $content = json_encode($body['jsonContent'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        fwrite($file, $content);
+        fclose($file);
+
+        return $response->withStatus(204);
+    }
+
+    public static function getAvailableCoreLanguages(Request $request, Response $response)
+    {
+        $files = array_diff(scandir('lang'), ['..', '.']);
+        $languages = [];
+        foreach ($files as $value) {
+            $path = 'lang/' . $value;
+            $langName = str_replace('.json', '', $value) ;
+            $fileContent = file_get_contents($path);
+            $fileContent = json_decode($fileContent, true);
+            $languages[$langName] = $fileContent;
+        }
+        return $response->withJson(['languages' => $languages]);
     }
 }
