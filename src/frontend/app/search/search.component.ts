@@ -1,12 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { isNgTemplate } from '@angular/compiler';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
-import { catchError, exhaustMap, finalize, tap } from 'rxjs/operators';
+import { catchError, exhaustMap, tap } from 'rxjs/operators';
 import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.component';
 import { AuthService } from '../service/auth.service';
 import { NotificationService } from '../service/notification.service';

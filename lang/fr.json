@@ -367,6 +367,9 @@
 		"accessToPage": "Accéder à la page",
 		"createSignaturePosition": "Positionner la signature",
 		"prePositionings": "pré-positionnement(s)",
-		"back": "Retour"
+		"back": "Retour",
+		"documentsImported": "Document(s) importé(s)",
+		"onlyPdfAuthorized": "Seul des fichiers pdf sont autorisés",
+		"mustSetWorkflowBeforeSignPositions": "Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures."
 	}
 }

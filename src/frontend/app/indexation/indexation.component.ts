@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -160,7 +160,7 @@ export class IndexationComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: (data: any) => {
                         this.loadingController.create({
-                            message: 'Enregistrement ...',
+                            message: this.translate.instant('lang.processing'),
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
@@ -170,7 +170,7 @@ export class IndexationComponent implements OnInit {
                             }
                             load.dismiss();
                             if (this.errors.length === 0) {
-                                this.notificationService.success('Document(s) importé(s)');
+                                this.notificationService.success('lang.documentsImported');
                                 this.router.navigate(['/home']);
                             }
                         });
@@ -295,7 +295,7 @@ export class IndexationComponent implements OnInit {
     isExtensionAllowed(files: any[]) {
         for (let index = 0; index < files.length; index++) {
             if (files[index].name.toLowerCase().split('.').pop() !== 'pdf') {
-                this.notificationService.error('Seul des fichiers pdf sont autorisés');
+                this.notificationService.error('lang.onlyPdfAuthorized');
                 return false;
             }
         }
@@ -338,7 +338,7 @@ export class IndexationComponent implements OnInit {
                 this.filesToUpload[index].signPos = data;
             }
         } else {
-            this.notificationService.error('Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures.');
+            this.notificationService.error('lang.mustSetWorkflowBeforeSignPositions');
         }
     }
 
