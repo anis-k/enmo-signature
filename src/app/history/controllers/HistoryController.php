@@ -397,6 +397,7 @@ class HistoryController
         }
 
         $noteFileContent = $pdf->Output('', 'S');
+        $tmpPath         = CoreConfigModel::getTmpPath();
         $notesFilePath   = $tmpPath . 'notes' . $GLOBALS['id'] . "_" . rand() . '.pdf';
         file_put_contents($notesFilePath, $noteFileContent);
         $documentPathToZip = ['path' => $notesFilePath, 'filename' => 'notes.pdf'];
