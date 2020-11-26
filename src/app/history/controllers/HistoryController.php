@@ -190,7 +190,7 @@ class HistoryController
 
         $proofDocument = DigitalSignatureController::proof(['documentId' => $args['id']]);
         if (!empty($proofDocument['errors'])) {
-            return $response->withStatus(403)->withJson(['errors' => $proofDocument['errors'][0]]);
+            return $response->withStatus(403)->withJson(['errors' => $proofDocument['errors']]);
         }
 
         $documentPathToZip = [];

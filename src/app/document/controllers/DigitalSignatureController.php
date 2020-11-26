@@ -282,6 +282,8 @@ class DigitalSignatureController
             unlink($signedDocumentPath);
 
             return true;
+        } else {
+            return ['errors' => 'SetaPDF-Signer library is not installed'];
         }
     }
 
@@ -406,7 +408,8 @@ class DigitalSignatureController
             ]
         ]);
         if ($curlResponse['code'] != 200) {
-            return ['errors' => $curlResponse['response']->message ?? 'Error with proof function'];
+            $response = simplexml_load_string($curlResponse['response']);
+            return ['errors' => (string)$response->message ?? 'Error with proof function'];
         }
 
         return (string)$curlResponse['response'];

@@ -444,13 +444,26 @@ class DocumentController
 
         $loadedXml = CoreConfigModel::getConfig();
         $workflow  = WorkflowModel::get([
-            'select'  => ['id', 'user_id'],
+            'select'  => ['id', 'user_id', 'signature_mode'],
             'where'   => ['mode = ?', 'main_document_id = ?'],
             'data'    => ['sign', $id],
             'orderBy' => ['"order" asc']
         ]);
-        if ($loadedXml->docaposteSignature->enable == 'true' && !empty($workflow)) {
-            DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
+
+        $hasEidas = false;
+        foreach ($workflow as $step) {
+            if ($step['signature_mode'] == 'eidas') {
+                $hasEidas = true;
+                break;
+            }
+        }
+        if ($loadedXml->docaposteSignature->enable == 'true' && $hasEidas) {
+            $libDir = CoreConfigModel::getLibrariesDirectory();
+            if (!empty($libDir) && is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
+                DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
+            } else {
+                return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
+            }
         }
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 

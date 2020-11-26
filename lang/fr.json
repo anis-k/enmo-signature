@@ -360,6 +360,7 @@
 		"warnInterrupt": "Vous êtes sur le point d'interrompre le traitement de ce document.",
 		"documentInterrupted": "Circuit interrompu",
 		"download": "Télécharger",
+		"setAPdfSignerError": "La librairie SetaPDF-Signer n'est pas installée",
 		"signaturesInDocAdded": "Signature(s) apposée(s) au(x) page(s) {{0}}",
 		"signatureInDocAddedAlt" : "Signature apposée",
 		"setSignaturesPosition" : "Pré-positionner les signatures",

@@ -308,6 +308,7 @@
 		"changePasswordInfo": "you must change your password",
 		"requiredField": "Required field",
 		"logout": "Log out",
+		"setAPdfSignerError": "SetaPDF-Signer library is not installed",
 		"passwordMatch": "The passwords match",
 		"passwordValid": "Password is valid",
 		"wrongCurrentPassword": "Wrong current password",
