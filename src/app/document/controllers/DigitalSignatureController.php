@@ -67,6 +67,10 @@ class DigitalSignatureController
             'docserverType'     => 'ESIGN'
         ]);
 
+        if (!empty($storeInfos['errors'])) {
+            return ['errors' => $storeInfos['errors']];
+        }
+
         AdrModel::createDocumentAdr([
             'documentId'     => $args['documentId'],
             'type'           => 'ESIGN',
@@ -74,6 +78,8 @@ class DigitalSignatureController
             'filename'       => $storeInfos['filename'],
             'fingerprint'    => $storeInfos['fingerprint']
         ]);
+
+        return true;
     }
     public static function getConfig()
     {
@@ -267,6 +273,10 @@ class DigitalSignatureController
                 'format'        => 'pdf',
                 'docserverType' => 'ESIGN'
             ]);
+
+            if (!empty($storeInfos['errors'])) {
+                return ['errors' => $storeInfos['errors']];
+            }
     
             AdrModel::deleteDocumentAdr([
                 'where' => ['main_document_id = ?', 'type = ?'],

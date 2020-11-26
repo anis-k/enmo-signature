@@ -460,7 +460,10 @@ class DocumentController
         if ($loadedXml->docaposteSignature->enable == 'true' && $hasEidas) {
             $libDir = CoreConfigModel::getLibrariesDirectory();
             if (!empty($libDir) && is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
-                DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
+                $result = DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
+                if (!empty($result['errors'])) {
+                    return $response->withStatus(500)->withJson(['errors' => $result['errors']]);
+                }
             } else {
                 return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
             }
