@@ -31,7 +31,7 @@ export class DevToolComponent implements OnInit {
     openLangTool() {
         const dialogRef =  this.dialog.open(DevLangComponent, {
             panelClass: 'maarch-modal',
-            height: '99%',
+            height: '80%',
             width: '80%',
             data: {
                 countMissingLang : this.countMissingLang

@@ -60,11 +60,10 @@ export class DevLangComponent implements OnInit {
         this.currentLang = ev.detail.value;
     }
 
-    generateMissingLang(ignoreToTranslate = false) {
+    generateMissingLang(ignoreToTranslate: boolean) {
         let newLang = {};
         let mergedLang = this.allLang[this.currentLang];
         const regex = /__TO_TRANSLATE$/g;
-
         this.missingLang[this.currentLang].forEach((element: any) => {
             if (element.value.match(regex) === null && ignoreToTranslate) {
                 newLang[element.id] = element.value;
@@ -72,8 +71,7 @@ export class DevLangComponent implements OnInit {
                 newLang[element.id] = element.value;
             }
         });
-        mergedLang = { ...mergedLang, ...newLang };
-
+        mergedLang.lang = {...mergedLang.lang, ...newLang};
         this.http.put('../rest/languages', { langId: this.currentLang, jsonContent: mergedLang }).pipe(
             tap((data: any) => {
                 Object.keys(newLang).forEach(keyLang => {
