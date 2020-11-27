@@ -138,8 +138,8 @@ class DocumentController
 
         $adr = AdrModel::getDocumentsAdr([
             'select'  => ['count(1)'],
-            'where'   => ['main_document_id = ?', 'type != ?'],
-            'data'    => [$args['id'], 'DOC']
+            'where'   => ['main_document_id = ?', 'type != ?', 'type != ?'],
+            'data'    => [$args['id'], 'DOC', 'ESIGN']
         ]);
         if (empty($adr[0]['count'])) {
             $configPath = CoreConfigModel::getConfigPath();
