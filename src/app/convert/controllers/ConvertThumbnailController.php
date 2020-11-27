@@ -172,13 +172,20 @@ class ConvertThumbnailController
 
         unlink("{$tmpPath}{$fileNameOnTmp}.png");
 
-        AdrModel::createDocumentAdr([
-            'documentId'    => $args['id'],
-            'type'          => 'TNL' . $args['page'],
-            'path'          => $storeInfos['path'],
-            'filename'      => $storeInfos['filename'],
-            'fingerprint'   => $storeInfos['fingerprint']
+        $alreadyConverted = AdrModel::getDocumentsAdr([
+            'select'  => [1],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'TNL' . $args['page']]
         ]);
+        if (empty($alreadyConverted)) {
+            AdrModel::createDocumentAdr([
+                'documentId'    => $args['id'],
+                'type'          => 'TNL' . $args['page'],
+                'path'          => $storeInfos['path'],
+                'filename'      => $storeInfos['filename'],
+                'fingerprint'   => $storeInfos['fingerprint']
+            ]);
+        }
 
         return true;
     }

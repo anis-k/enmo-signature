@@ -141,7 +141,7 @@ class DocumentController
             'where'   => ['main_document_id = ?', 'type != ?', 'type != ?'],
             'data'    => [$args['id'], 'DOC', 'ESIGN']
         ]);
-        if (empty($adr[0]['count'])) {
+        if (empty($adr[0]['count']) && $document['status'] != 'CONVERTING') {
             $configPath = CoreConfigModel::getConfigPath();
             exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' > /dev/null");
         }
