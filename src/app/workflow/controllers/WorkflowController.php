@@ -86,7 +86,7 @@ class WorkflowController
 
         HistoryController::add([
             'code'          => 'OK',
-            'objectType'    => 'workflow',
+            'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'MODIFICATION',
             'message'       => "{workflowInterrupted} : {$document['title']}"

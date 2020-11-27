@@ -354,9 +354,9 @@ class HistoryController
             $node = $historyNode ?? $key;
 
             if (is_array($value)) {
-                HistoryController::arrayToXml(['data' => $value, 'xml' => $args['xml']->addChild($node)]);
+                HistoryController::arrayToXml(['data' => $value, 'xml' => $args['xml']->addChild(str_replace(' ', '', $node))]);
             } else {
-                $args['xml']->addChild($node, $value);
+                $args['xml']->addChild(str_replace(' ', '', $node), $value);
             }
         }
     

@@ -429,12 +429,20 @@ class DocumentController
                 }
             }
 
+            $data = empty($body['reference']) ? [] : ['reference' => $body['reference']];
+            if (!empty($body['metadata'])) {
+                foreach ($body['metadata'] as $key => $metadata) {
+                    $data[ucwords($key)] = $metadata;
+                }
+            }
+
             HistoryController::add([
                 'code'          => 'OK',
                 'objectType'    => 'main_documents',
                 'objectId'      => $id,
                 'type'          => 'CREATION',
-                'message'       => "{documentAdded} : {$body['title']}"
+                'message'       => "{documentAdded} : {$body['title']}",
+                'data'          => empty($data) ? [] : $data
             ]);
 
             DatabaseModel::commitTransaction();

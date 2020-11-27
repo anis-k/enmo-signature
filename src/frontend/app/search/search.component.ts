@@ -316,14 +316,14 @@ export class SearchComponent implements OnInit {
                 {
                     name: 'option1',
                     type: 'radio',
-                    label: 'Faisceau de preuve',
+                    label: this.translate.instant('lang.proof'),
                     value: 'onlyProof',
                     checked: true
                 },
                 {
                     name: 'option1',
                     type: 'radio',
-                    label: 'Dossier complet',
+                    label: this.translate.instant('lang.completeFolder'),
                     value: 'all',
                 },
 
