@@ -10,6 +10,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { AuthService } from './service/auth.service';
 import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { environment } from '../core/environments/environment';
 
 @Component({
     selector: 'app-root',
@@ -19,6 +20,7 @@ import { Router } from '@angular/router';
 })
 
 export class AppComponent {
+    debugMode: boolean = false;
     showLeftContent: boolean = false;
     showRightContent: boolean = false;
     constructor(private translate: TranslateService,
@@ -40,6 +42,9 @@ export class AppComponent {
         } else {
             this.cookieService.set('maarchParapheurLang', 'fr');
             translate.setDefaultLang('fr');
+        }
+        if (!environment.production) {
+            this.debugMode = true;
         }
     }
 

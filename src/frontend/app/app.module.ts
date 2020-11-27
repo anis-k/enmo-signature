@@ -55,6 +55,8 @@ import { PasswordModificationComponent } from './login/passwordModification/pass
 import { VisaWorkflowModelsComponent } from './document/visa-workflow/models/visa-workflow-models.component';
 import { SearchComponent } from './search/search.component';
 import { SignaturePositionComponent } from './indexation/signature-position/signature-position.component';
+import { DevToolComponent } from './service/debug/dev-tool.component';
+import { DevLangComponent } from './service/debug/dev-lang.component';
 
 
 // ADMINISTRATION
@@ -135,7 +137,9 @@ import { SortPipe } from './plugins/sorting.pipe';
     IndexationComponent,
     VisaWorkflowModelsComponent,
     SearchComponent,
-    SignaturePositionComponent
+    SignaturePositionComponent,
+    DevToolComponent,
+    DevLangComponent
   ],
   imports: [
     FormsModule,

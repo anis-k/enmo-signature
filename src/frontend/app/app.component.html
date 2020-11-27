@@ -12,3 +12,4 @@
       </ion-menu>
     </ion-split-pane>
   </ion-app>
+  <app-dev-tool *ngIf="debugMode && authService.isAuth()"></app-dev-tool>
