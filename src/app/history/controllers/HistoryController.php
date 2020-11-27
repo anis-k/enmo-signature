@@ -24,14 +24,15 @@ use Document\models\DocumentModel;
 use Group\controllers\PrivilegeController;
 use History\models\HistoryModel;
 use Respect\Validation\Validator;
+use setasign\Fpdi\Tcpdf\Fpdi;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\controllers\LanguageController;
 use SrcCore\models\CoreConfigModel;
+use SrcCore\models\TextFormatModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
-use setasign\Fpdi\Tcpdf\Fpdi;
 
 class HistoryController
 {
@@ -231,7 +232,13 @@ class HistoryController
             if (!empty($mainDocument['errors'])) {
                 return $response->withStatus($mainDocument['code'])->withJson(['errors' => $mainDocument['errors']]);
             }
-            $documentPathToZip[] = ['path' => $mainDocument['path'], 'filename' => 'mainDocument.pdf'];
+
+            $document = DocumentModel::getById(['select' => ['sender', 'creation_date', 'notes', 'title'], 'id' => $args['id']]);
+            $filename = TextFormatModel::createFilename([
+                'label'     => $document['title'],
+                'extension' => 'pdf'
+            ]);
+            $documentPathToZip[] = ['path' => $mainDocument['path'], 'filename' => 'mainDocument_'.$filename];
 
             $attachments = AttachmentModel::getByDocumentId(['select' => ['id', 'title'], 'documentId' => $args['id']]);
             foreach ($attachments as $key => $attachment) {
@@ -258,10 +265,12 @@ class HistoryController
                 if ($adr[0]['fingerprint'] != $fingerprint) {
                     return $response->withStatus(400)->withJson(['errors' => 'Fingerprint do not match']);
                 }
-                $documentPathToZip[] = ['path' => $pathToDocument, 'filename' => 'attachment_' . $key . '.pdf'];
+                $filename = TextFormatModel::createFilename([
+                    'label'     => $attachment['title'],
+                    'extension' => 'pdf'
+                ]);
+                $documentPathToZip[] = ['path' => $pathToDocument, 'filename' => 'attachment_' . $key . '_' . $filename];
             }
-
-            $document = DocumentModel::getById(['select' => ['sender', 'creation_date', 'notes'], 'id' => $args['id']]);
             
             $notes = [];
             $documentNotes = json_decode($document['notes'], true);
