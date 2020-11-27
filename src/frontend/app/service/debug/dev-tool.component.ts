@@ -51,7 +51,7 @@ export class DevToolComponent implements OnInit {
     }
 
     getLangs() {
-        this.http.get('../rest/dev/languages').pipe(
+        this.http.get('../rest/languages').pipe(
             tap((data: any) => {
                 this.allLang = data.languages;
                 Object.keys(this.allLang).forEach(langName => {

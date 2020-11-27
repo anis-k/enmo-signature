@@ -33,7 +33,7 @@ export class DevLangComponent implements OnInit {
     }
 
     getLangs() {
-        this.http.get('../rest/dev/languages').pipe(
+        this.http.get('../rest/languages').pipe(
             tap((data: any) => {
                 this.allLang = data.languages;
                 Object.keys(this.allLang).forEach(langName => {
@@ -74,7 +74,7 @@ export class DevLangComponent implements OnInit {
         });
         mergedLang = { ...mergedLang, ...newLang };
 
-        this.http.put('../rest/dev/languages', { langId: this.currentLang, jsonContent: mergedLang }).pipe(
+        this.http.put('../rest/languages', { langId: this.currentLang, jsonContent: mergedLang }).pipe(
             tap((data: any) => {
                 Object.keys(newLang).forEach(keyLang => {
                     delete this.allLang[this.currentLang][keyLang];

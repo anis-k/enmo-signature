@@ -88,9 +88,9 @@ $app->put('/documents/{id}/workflows/interrupt', \Workflow\controllers\WorkflowC
 $app->post('/emails', \Email\controllers\EmailController::class . ':send');
 
 //Languages
+$app->get('/languages', \SrcCore\controllers\LanguageController::class . ':getAvailableCoreLanguages');
 $app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
-$app->get('/dev/languages', \SrcCore\controllers\LanguageController::class . ':getAvailableCoreLanguages');
-$app->put('/dev/languages', \SrcCore\controllers\LanguageController::class . ':generateLang');
+$app->put('/languages', \SrcCore\controllers\LanguageController::class . ':generateLang');
 
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
