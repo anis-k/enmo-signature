@@ -5,8 +5,7 @@
   </ion-fab-button>
   <ion-fab-list side="start">
     <ion-button color="light" (click)="openLangTool()">
-      <mat-icon color="primary" class="fas fa-language" style="height: auto;"></mat-icon>
-      <span>{{'lang.missingLang' | translate}}</span>&nbsp;&nbsp;<span [matBadge]="countMissingLang">&nbsp;</span>
+    <ion-label>{{'lang.missingLang' | translate}} <ion-badge color="secondary"> {{countMissingLang}}</ion-badge></ion-label>
     </ion-button>
   </ion-fab-list>
 </ion-fab>
