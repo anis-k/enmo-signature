@@ -224,9 +224,13 @@ export class IndexationComponent implements OnInit {
                     metadata[element.label] = element.value;
                 });
             }
+            let formattedReference = '';
+            if (file.reference !== '') {
+                formattedReference = this.datePipe.transform(today, 'y/MM/dd') + '/' + file.reference;
+            }
             formattedObj.push({
                 title: file.title,
-                reference: this.datePipe.transform(today, 'y/MM/dd') + '/' + file.reference,
+                reference: formattedReference,
                 encodedDocument: file.content,
                 isZipped: false,
                 linkId: this.fromDocument !== null ? file.linkId : linkId,
@@ -273,9 +277,10 @@ export class IndexationComponent implements OnInit {
     uploadTrigger(fileInput: any) {
         if (fileInput.target.files && fileInput.target.files[0] && this.isExtensionAllowed(fileInput.target.files)) {
             for (let index = 0; index < fileInput.target.files.length; index++) {
+                let filename = fileInput.target.files[index].name;
                 let file = {
-                    title: fileInput.target.files[index].name,
-                    reference: fileInput.target.files[index].name,
+                    title: filename.substr(0, filename.lastIndexOf('.')),
+                    reference: filename.substr(0, filename.lastIndexOf('.')),
                     mainDocument: true,
                     content: ''
                 };

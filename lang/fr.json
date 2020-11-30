@@ -376,8 +376,8 @@
 		"mustSetWorkflowBeforeSignPositions": "Veuillez paramétrer votre circuit avant de pouvoir positionner les signatures.",
 		"missingLang": "Langue(s) manquante(s)",
 		"langChecking": "Vérification de(s) langue(s)",
-		"generateLangVar": "Génerer les variables de langues",
-		"generateLangVarIgnoreTranslate": "Génerer les variables de langues (IGNORE __TO_TRANSLATE)",
+		"generateLangVar": "Générer les variables de langues",
+		"generateLangVarIgnoreTranslate": "Générer les variables de langues (IGNORE __TO_TRANSLATE)",
 		"close": "Fermer"
 	}
 }
