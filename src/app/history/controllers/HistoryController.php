@@ -155,7 +155,7 @@ class HistoryController
                 'code'     => $value['code'],
                 'type'     => $value['type'],
                 'user'     => $user,
-                'date'     => $date->format('d-m-Y H:i'),
+                'date'     => $date->format('c'),
                 'message'  => preg_replace($langKeys, $langValues, $value['message']),
                 'data'     => $data
             ];
@@ -180,12 +180,18 @@ class HistoryController
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
         }
 
-        $workflow = WorkflowModel::get([
-            'select' => [1],
-            'where'  => ['main_document_id = ?', 'status is null'],
-            'data'   => [$args['id']]
-        ]);
-        if (!empty($workflow)) {
+        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'process_date', 'note', 'status', 'signature_mode'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $hasEidas           = false;
+        $workflowTerminated = true;
+        foreach ($workflow as $step) {
+            if (!$hasEidas && $step['signature_mode'] == 'eidas') {
+                $hasEidas = true;
+            }
+            if (empty($step['status'])) {
+                $workflowTerminated = false;
+            }
+        }
+        if (empty($workflow) || !$workflowTerminated) {
             return $response->withStatus(403)->withJson(['errors' => 'The document is still being processed']);
         }
 
@@ -228,7 +234,9 @@ class HistoryController
                 $mimeType = 'application/xml';
             }
         } else {
-            $mainDocument = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $queryParams['eSignDocument']]);
+            $eSignDocument = $queryParams['eSignDocument'] ?? $hasEidas;
+
+            $mainDocument = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $eSignDocument]);
             if (!empty($mainDocument['errors'])) {
                 return $response->withStatus($mainDocument['code'])->withJson(['errors' => $mainDocument['errors']]);
             }
@@ -278,7 +286,6 @@ class HistoryController
                 $notes[] = $documentNotes;
             }
 
-            $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'process_date', 'note'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
             foreach ($workflow as $step) {
                 if (!empty($step['note'])) {
                     $notes[] = [
@@ -397,10 +404,12 @@ class HistoryController
             if (($pdf->GetY() + 65) > $bottomHeight) {
                 $pdf->AddPage();
             }
+
+            $date = new \DateTime($note['creationDate']);
             $pdf->SetFont('', 'B', 10);
             $pdf->Cell($widthNotes, 20, $note['creator'], 1, 0, 'L', false);
             $pdf->SetFont('', '', 10);
-            $pdf->Cell($widthNotes, 20, $note['creationDate'], 1, 1, 'L', false);
+            $pdf->Cell($widthNotes, 20, $date->format('d-m-Y H:i'), 1, 1, 'L', false);
             $pdf->MultiCell(0, 40, $note['value'], 1, 'L', false);
             $pdf->SetY($pdf->GetY() + 5);
         }

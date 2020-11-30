@@ -27,8 +27,7 @@ export class SignaturePadPageComponent implements AfterViewInit {
 
     pad$: Observable<boolean>;
 
-    @ViewChild(SignaturePad)
-    signaturePad: SignaturePad;
+    @ViewChild('signaturePad') signaturePad: SignaturePad;
 
     @Output()
     reloaded = new EventEmitter<string>();

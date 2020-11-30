@@ -271,7 +271,9 @@ export class GroupComponent implements OnInit {
             if (!toggle) {
                 privilege.checked = !privilege.checked;
             }
-            this.updatePrivilege(privilege);
+            setTimeout(() => {
+                this.updatePrivilege(privilege);
+            }, 200);
         }
     }
 

@@ -27,7 +27,7 @@
 <ion-content #padContent>
     <article class="pad">
         <section class="pad-draw">
-            <signature-pad class="padContent" [options]="signaturePadOptions" (onEndEvent)="drawComplete()"></signature-pad>
+            <signature-pad #signaturePad class="padContent" [options]="signaturePadOptions" (onEndEvent)="drawComplete()"></signature-pad>
         </section>
         <div class="draw"></div>
     </article>

@@ -118,7 +118,7 @@ export class SignaturesComponent implements OnInit {
         this.closeSignatures();
     }
 
-    selectSignature(signature: any, img: any) {
+    selectSignature(signature: any) {
 
         const percentWidth = 25;
         signature.width = percentWidth;
@@ -169,13 +169,13 @@ export class SignaturesComponent implements OnInit {
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
     }
 
-    removeSignature(signature: any, i: any) {
+    removeSignature(signature: any) {
         const r = confirm(this.translate.instant('lang.wantDeleteSignature'));
 
         if (r) {
             this.http.delete('../rest/users/' + this.authService.user.id + '/signatures/' + signature.id)
                 .subscribe(() => {
-                    this.signaturesService.signaturesList.splice(i, 1);
+                    this.signaturesService.signaturesList = this.signaturesService.signaturesList.filter((element) => element.id !== signature.id);
                     this.notificationService.success('lang.signatureDeleted');
                     this.initSignatures();
                 }, (err: any) => {
@@ -197,7 +197,7 @@ export class SignaturesComponent implements OnInit {
             } else if (this.count > 1) {
                 this.count = 0;
                 const id = mode === 'substitute' ? ('imgSignSub_' + i) : ('imgSign_' + i);
-                this.selectSignature(signature, id);
+                this.selectSignature(signature);
             }
         }, 250);
     }
