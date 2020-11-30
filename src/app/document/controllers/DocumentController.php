@@ -301,6 +301,7 @@ class DocumentController
             }
         }
 
+        $hasEidas = false;
         foreach ($body['workflow'] as $key => $workflow) {
             if (!empty($workflow['processingUser'])) {
                 $processingUser = UserModel::getByLogin(['select' => ['id'], 'login' => strtolower($workflow['processingUser'])]);
@@ -322,7 +323,16 @@ class DocumentController
                     }
                 }
             }
+            if ($workflow['signatureMode'] == 'eidas') {
+                $hasEidas = true;
+            }
             $body['workflow'][$key]['userId'] = $processingUser['id'];
+        }
+
+        $libDir    = CoreConfigModel::getLibrariesDirectory();
+        $loadedXml = CoreConfigModel::getConfig();
+        if ($loadedXml->docaposteSignature->enable == 'true' && $hasEidas && (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php'))) {
+            return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
         }
 
         $isZipped = (!isset($body['isZipped']) || $body['isZipped']) ? true : false;
@@ -343,7 +353,6 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document is not a pdf']);
         }
 
-        $libDir = CoreConfigModel::getLibrariesDirectory();
         if (!empty($libDir) && is_file($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php')) {
             require_once($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');
 
@@ -450,7 +459,6 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $e->getMessage()]);
         }
 
-        $loadedXml = CoreConfigModel::getConfig();
         $workflow  = WorkflowModel::get([
             'select'  => ['id', 'user_id', 'signature_mode'],
             'where'   => ['mode = ?', 'main_document_id = ?'],
@@ -458,22 +466,10 @@ class DocumentController
             'orderBy' => ['"order" asc']
         ]);
 
-        $hasEidas = false;
-        foreach ($workflow as $step) {
-            if ($step['signature_mode'] == 'eidas') {
-                $hasEidas = true;
-                break;
-            }
-        }
         if ($loadedXml->docaposteSignature->enable == 'true' && $hasEidas) {
-            $libDir = CoreConfigModel::getLibrariesDirectory();
-            if (!empty($libDir) && is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
-                $result = DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
-                if (!empty($result['errors'])) {
-                    return $response->withStatus(500)->withJson(['errors' => $result['errors']]);
-                }
-            } else {
-                return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
+            $result = DigitalSignatureController::createTransaction(['documentId' => $id, 'workflow' => $workflow, 'encodedDocument' => $encodedDocument['encodedDocument']]);
+            if (!empty($result['errors'])) {
+                return $response->withStatus(500)->withJson(['errors' => $result['errors']]);
             }
         }
         EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
@@ -495,9 +491,13 @@ class DocumentController
         }
 
         $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id', 'signature_mode', 'digital_signature_id'], 'documentId' => $args['id']]);
+        $libDir   = CoreConfigModel::getLibrariesDirectory();
+        $loadedXml = CoreConfigModel::getConfig();
+        if ($loadedXml->docaposteSignature->enable == 'true' && $workflow['signature_mode'] == 'eidas' && (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php'))) {
+            return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
+        }
 
         $body = $request->getParsedBody();
-        $loadedXml = CoreConfigModel::getConfig();
         if (!empty($body['signatures'])) {
             foreach ($body['signatures'] as $signature) {
                 foreach (['encodedImage', 'width', 'positionX', 'positionY', 'page', 'type'] as $value) {
@@ -677,19 +677,17 @@ class DocumentController
                 ]);
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
                 $imageSignature = false;
-    
-                $adr = AdrModel::getDocumentsAdr([
-                    'select'  => ['path', 'filename'],
-                    'where'   => ['main_document_id = ?', 'type = ?'],
-                    'data'    => [$args['id'], 'ESIGN']
-                ]);
-                $docserver      = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-                $libDir         = CoreConfigModel::getLibrariesDirectory();
-                $tmpPath        = CoreConfigModel::getTmpPath();
                 if (!empty($libDir) && is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
                     require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
-    
+                    
+                    $adr = AdrModel::getDocumentsAdr([
+                        'select'  => ['path', 'filename'],
+                        'where'   => ['main_document_id = ?', 'type = ?'],
+                        'data'    => [$args['id'], 'ESIGN']
+                    ]);
+                    $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+                    $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+                    $tmpPath            = CoreConfigModel::getTmpPath();
                     $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
                     $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
                     $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);

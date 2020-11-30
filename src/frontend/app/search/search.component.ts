@@ -356,19 +356,14 @@ export class SearchComponent implements OnInit {
     }
 
     downloadProof(item: any, mode: string) {
-        let format: any = null;
         const onlyProof = mode === 'onlyProof' ? '&onlyProof=true' : '';
 
         return new Promise((resolve) => {
-            this.http.get(`../rest/documents/${item.id}/proof?mode=base64${onlyProof}`)
+            this.http.get(`../rest/documents/${item.id}/proof?mode=stream${onlyProof}`, {responseType: 'blob' as 'json' })
                 .pipe(
                     tap((data: any) => {
-                        format = data.format;
-                    }),
-                    exhaustMap(() => this.http.get(`../rest/documents/${item.id}/proof?mode=stream${onlyProof}`, { responseType: 'blob' })),
-                    tap((data: any) => {
                         const today = new Date();
-                        const filename = 'proof_' + item.id + '_' + this.datePipe.transform(today, 'dd-MM-y') + '.' + format;
+                        const filename = 'proof_' + item.id + '_' + this.datePipe.transform(today, 'dd-MM-y') + '.' + data.type.replace('application/', '');
                         const downloadLink = document.createElement('a');
                         downloadLink.href = window.URL.createObjectURL(data);
                         downloadLink.setAttribute('download', filename);

@@ -181,8 +181,9 @@ class HistoryController
         }
 
         $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'process_date', 'note', 'status', 'signature_mode'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
-        $hasEidas           = false;
-        $workflowTerminated = true;
+        $hasEidas             = false;
+        $workflowTerminated   = true;
+        $canGetdocaposteProof = true;
         foreach ($workflow as $step) {
             if (!$hasEidas && $step['signature_mode'] == 'eidas') {
                 $hasEidas = true;
@@ -190,14 +191,19 @@ class HistoryController
             if (empty($step['status'])) {
                 $workflowTerminated = false;
             }
+            if (in_array($step['status'], ['REF', 'STOP'])) {
+                $canGetdocaposteProof = false;
+            }
         }
         if (empty($workflow) || !$workflowTerminated) {
             return $response->withStatus(403)->withJson(['errors' => 'The document is still being processed']);
         }
 
-        $proofDocument = DigitalSignatureController::proof(['documentId' => $args['id']]);
-        if (!empty($proofDocument['errors'])) {
-            return $response->withStatus(403)->withJson(['errors' => $proofDocument['errors']]);
+        if ($canGetdocaposteProof) {
+            $proofDocument = DigitalSignatureController::proof(['documentId' => $args['id']]);
+            if (!empty($proofDocument['errors'])) {
+                return $response->withStatus(403)->withJson(['errors' => $proofDocument['errors']]);
+            }
         }
 
         $documentPathToZip = [];

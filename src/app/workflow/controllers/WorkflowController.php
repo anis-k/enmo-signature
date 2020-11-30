@@ -14,6 +14,7 @@
 
 namespace Workflow\controllers;
 
+use Document\controllers\DigitalSignatureController;
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
 use Group\controllers\PrivilegeController;
@@ -69,9 +70,9 @@ class WorkflowController
         }
 
         $workflows = WorkflowModel::get([
-            'select'    => ['id'],
-            'where'     => ['main_document_id = ?', 'status is null'],
-            'data'      => [$args['id']]
+            'select' => ['id', 'digital_signature_id'],
+            'where'  => ['main_document_id = ?', 'status is null'],
+            'data'   => [$args['id']]
         ]);
         if (empty($workflows)) {
             return $response->withStatus(400)->withJson(['errors' => 'Workflow is over or already suspended']);
@@ -83,6 +84,13 @@ class WorkflowController
             'where' => ['id in (?)'],
             'data'  => [$workflowsId]
         ]);
+
+        foreach ($workflows as $step) {
+            if (!empty($step['digital_signature_id'])) {
+                DigitalSignatureController::abort(['signatureId' => $step['digital_signature_id'], 'documentId' => $args['id']]);
+                break;
+            }
+        }
 
         HistoryController::add([
             'code'          => 'OK',
