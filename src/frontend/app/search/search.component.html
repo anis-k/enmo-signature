@@ -59,7 +59,7 @@
                             <ion-icon *ngIf="element.state == 'REF'" color="danger" slot="start"
                                 name="thumbs-down-outline">
                             </ion-icon>
-                            <ion-label>
+                            <ion-label (click)="goTo(element.id)" [title]="'lang.accessDocument' | translate" style="cursor: pointer;">
                                 <p>{{element.reference}}</p>
                                 <h2>{{element.title}}</h2>
                                 <p *ngIf="element.reason.length > 0" class="primary">
@@ -69,15 +69,12 @@
                                 </p>
                             </ion-label>
                             <ion-buttons slot="end">
-                                <ion-button [title]="'lang.accessDocument' | translate" slot="icon-only" fill="clear" shape="round" (click)="goTo(element.id)">
-                                    <ion-icon color="primary" slot="icon-only" name="reader-outline"></ion-icon>
-                                </ion-button>
                                 <ion-button *ngIf="openedLine===element.id" slot="icon-only" fill="clear" shape="round"
-                                    (click)="toggleSlide(slidingItem, element.id)">
+                                    (click)="$event.stopPropagation();toggleSlide(slidingItem, element.id)">
                                     <ion-icon color="medium" slot="icon-only" name="arrow-forward-outline"></ion-icon>
                                 </ion-button>
                                 <ion-button *ngIf="openedLine!==element.id" slot="icon-only" fill="clear" shape="round"
-                                    (click)="toggleSlide(slidingItem, element.id)">
+                                    (click)="$event.stopPropagation();toggleSlide(slidingItem, element.id)">
                                     <ion-icon color="medium" slot="icon-only" name="arrow-back-outline"></ion-icon>
                                 </ion-button>
                             </ion-buttons>
