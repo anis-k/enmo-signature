@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { ActionSheetController, AlertController, LoadingController, MenuController } from '@ionic/angular';
+import { ActionSheetController, AlertController, IonInfiniteScroll, LoadingController, MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { catchError, exhaustMap, tap } from 'rxjs/operators';
@@ -82,9 +82,12 @@ export class SearchComponent implements OnInit {
     limit: number = 10;
     count: number = 0;
     openedLine = '';
+    reActiveInfinite: any;
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
+
+    @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
     constructor(
         public http: HttpClient,
@@ -138,7 +141,6 @@ export class SearchComponent implements OnInit {
     }
 
     onSubmit() {
-        console.log(this.formatDatas());
         this.search();
         this.menu.close('right-menu');
     }
@@ -226,6 +228,7 @@ export class SearchComponent implements OnInit {
                     tap((data: any) => {
                         this.ressources = this.formatListDatas(data.documents);
                         this.count = data.count;
+                        this.infiniteScroll.disabled = false;
                         resolve(true);
                     }),
                     catchError((err: any) => {
@@ -238,17 +241,22 @@ export class SearchComponent implements OnInit {
     }
 
     loadData(event: any) {
-        this.offset = this.offset + this.limit;
+        if (this.count <= this.limit) {
+            event.target.complete();
+            event.target.disabled = true;
+        } else {
+            this.offset = this.offset + this.limit;
 
-        this.http.post('../rest/search/documents?limit=' + this.limit + '&offset=' + this.offset, this.formatDatas()).pipe(
-            tap((data: any) => {
-                this.ressources = this.ressources.concat(this.formatListDatas(data.documents));
-                event.target.complete();
-                if (this.count === this.ressources.length) {
-                    event.target.disabled = true;
-                }
-            })
-        ).subscribe();
+            this.http.post('../rest/search/documents?limit=' + this.limit + '&offset=' + this.offset, this.formatDatas()).pipe(
+                tap((data: any) => {
+                    this.ressources = this.ressources.concat(this.formatListDatas(data.documents));
+                    event.target.complete();
+                    if (this.count === this.ressources.length) {
+                        event.target.disabled = true;
+                    }
+                })
+            ).subscribe();
+        }
     }
 
     async interruptWorkflow(item: any) {
