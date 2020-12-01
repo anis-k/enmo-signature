@@ -38,6 +38,7 @@ class ThumbnailScript
 
         $GLOBALS['id'] = $args['userId'];
 
+        $document = DocumentModel::getById(['select' => ['status'], 'id' => $args['id']]);
         DocumentModel::update([
             'set'   => ['status' => 'CONVERTING'],
             'where' => ['id = ?'],
@@ -65,11 +66,13 @@ class ThumbnailScript
                 'data'          => ['errors' => $isConverted['errors']]
             ]);
         } else {
-            DocumentModel::update([
-                'set'   => ['status' => 'READY'],
-                'where' => ['id = ?'],
-                'data'  => [$args['id']]
-            ]);
+            if ($document['status'] != 'CONVERTING') {
+                DocumentModel::update([
+                    'set'   => ['status' => 'READY'],
+                    'where' => ['id = ?'],
+                    'data'  => [$args['id']]
+                ]);
+            }
         }
 
         return $isConverted;

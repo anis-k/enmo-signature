@@ -38,16 +38,16 @@ class DocumentModel
         return $aDocuments;
     }
 
-    public static function getById(array $aArgs)
+    public static function getById(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['select', 'id']);
-        ValidatorModel::arrayType($aArgs, ['select']);
+        ValidatorModel::notEmpty($args, ['select', 'id']);
+        ValidatorModel::arrayType($args, ['select']);
 
         $document = DatabaseModel::select([
-            'select'    => $aArgs['select'],
+            'select'    => $args['select'],
             'table'     => ['main_documents'],
             'where'     => ['id = ?'],
-            'data'      => [$aArgs['id']]
+            'data'      => [$args['id']]
         ]);
 
         if (empty($document[0])) {
