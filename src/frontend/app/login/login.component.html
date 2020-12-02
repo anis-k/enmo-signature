@@ -15,6 +15,10 @@
                     class="forgot-password">{{'lang.forgotPassword' | translate}}</a>
                 <a href="" *ngIf="authService.authMode === 'ldap'"
                     class="forgot-password">{{'lang.ldapEnabled' | translate}}</a>
+                <a href="" *ngIf="authService.authMode === 'kerberos'"
+                    class="forgot-password">{{'lang.kerberosEnabled' | translate}}</a>
+                <a href="" *ngIf="authService.authMode === 'x509'"
+                    class="forgot-password">{{'lang.x509Enabled' | translate}}</a>  
                 <ion-button type="submit" expand="block" [disabled]="loginForm.invalid || loading">{{'lang.connect' | translate}}
                 </ion-button>
             </form>

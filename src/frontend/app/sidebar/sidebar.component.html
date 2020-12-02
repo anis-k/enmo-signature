@@ -10,7 +10,7 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
         <ion-buttons slot="start">
-            <ion-button (click)="authService.logout()" [title]="'lang.logout' | translate">
+            <ion-button (click)="authService.logout()" [title]="'lang.logout' | translate" *ngIf="authService.authMode !== 'x509' && authService.authMode !== 'kerberos'">
                 <ion-icon slot="icon-only" name="power"></ion-icon>
             </ion-button>
             <ion-button *ngIf="!isAdminRoute() && authService.user.administrativePrivileges.length > 0" (click)="openAdmin()" [title]="'lang.administration' | translate">

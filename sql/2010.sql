@@ -54,6 +54,9 @@ END$$;
 ALTER TABLE users DROP COLUMN IF EXISTS signature_modes;
 ALTER TABLE users ADD COLUMN signature_modes jsonb DEFAULT '["stamp"]';
 
+ALTER TABLE users DROP COLUMN IF EXISTS x509_fingerprint;
+ALTER TABLE users ADD COLUMN x509_fingerprint text;
+
 ALTER TABLE workflows DROP COLUMN IF EXISTS signature_positions;
 ALTER TABLE workflows ADD COLUMN signature_positions jsonb DEFAULT '[]';
 

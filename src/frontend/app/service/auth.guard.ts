@@ -34,6 +34,12 @@ export class AuthGuard implements CanActivate {
                 this.router.navigate(['/home']);
                 return false;
             } else {
+                this.http.get('../rest/authenticationInformations').pipe(
+                    map((data: any) => {
+                        this.authService.authMode = data.connection;
+                        this.authService.changeKey = data.changeKey;
+                    })
+                ). subscribe();
                 return true;
             }
         } else {

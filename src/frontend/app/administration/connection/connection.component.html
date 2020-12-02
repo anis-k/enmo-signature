@@ -9,8 +9,9 @@
 <ion-content #mainContent>
     <ion-item>
         <ion-label color="secondary">{{'lang.connectionMode' | translate}}</ion-label>
-        <ion-select *ngIf="currentConnection" [value]="currentConnection.id" cancelText="Annuler">
-            <ion-select-option *ngFor="let connection of connectionList" [value]="connection.id">
+        <ion-select *ngIf="currentConnection" [value]="currentConnection.id" cancelText="{{'lang.cancel' | translate}}" (ionChange)="changeConnection($event.detail.value)">
+            <ion-select-option *ngFor="let connection of connectionList" [value]="connection.id" 
+               [disabled]="!connection.allowed">
                 {{'lang.' + connection.id + 'Connection' | translate}}</ion-select-option>
         </ion-select>
     </ion-item>

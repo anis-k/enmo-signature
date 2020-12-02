@@ -24,7 +24,7 @@ use SrcCore\models\AuthenticationModel;
 
 class ConfigurationController
 {
-    const CONNECTION_MODES  = ['default', 'ldap'];
+    const CONNECTION_MODES  = ['default', 'ldap', 'kerberos', 'x509'];
 
     public function get(Request $request, Response $response)
     {
@@ -45,10 +45,15 @@ class ConfigurationController
 
         $configurations = ConfigurationModel::getByIdentifier(['identifier' => $queryParams['identifier'], 'select' => $select]);
         if ($queryParams['identifier'] == 'connection') {
-            $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
-            $configurations = $configurations[0];
+            $ldapConfigurations      = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => [1]]);
+            $configurations          = $configurations[0];
             $configurations['value'] = json_decode($configurations['value']);
-            $configurations['availableConnections'] = [['id' => 'default', 'allowed' => true], ['id' => 'ldap', 'allowed' => !empty($ldapConfigurations)]];
+            $configurations['availableConnections'] = [
+                ['id' => 'default',  'allowed' => true],
+                ['id' => 'kerberos', 'allowed' => true],
+                ['id' => 'x509',     'allowed' => true],
+                ['id' => 'ldap',     'allowed' => !empty($ldapConfigurations)]
+            ];
         }
 
         return $response->withJson(['configurations' => $configurations]);

@@ -58,6 +58,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
             this.showForm = true;
             this.fixAutoFill();
+            this.initConnection();
         }, 500);
     }
 
@@ -99,5 +100,13 @@ export class LoginComponent implements OnInit, AfterViewInit {
                 })
             )
             .subscribe();
+    }
+
+    initConnection() {
+        if (['kerberos', 'x509'].indexOf(this.authService.authMode) > -1) {
+            this.loginForm.disable();
+            this.loginForm.setValidators(null);
+            this.onSubmit();
+        }
     }
 }

@@ -77,14 +77,13 @@ export class ConnectionComponent implements OnInit {
         dialogRef.afterClosed().subscribe(result => {
             if (result === 'yes') {
                 this.loading = true;
-                this.http.patch('../rest/configurations/' + this.id, { label: this.label, value: connection.id })
+                this.http.patch('../rest/configurations/' + this.id, { label: this.label, value: connection })
                     .pipe(
                         finalize(() => this.loading = false)
                     )
                     .subscribe({
                         next: () => {
-                            this.authService.authMode = connection.id;
-                            this.currentConnection = connection;
+                            this.authService.authMode = connection;
                             this.notificationService.success('lang.connectionModeUpdated');
                         },
                     });

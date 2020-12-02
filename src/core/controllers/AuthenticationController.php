@@ -88,14 +88,15 @@ class AuthenticationController
     {
         $body = $request->getParsedBody();
 
-        $check = Validator::stringType()->notEmpty()->validate($body['login']);
-        $check = $check && Validator::stringType()->notEmpty()->validate($body['password']);
-        if (!$check) {
-            return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+        $connection = ConfigurationModel::getConnection();
+        if (in_array($connection, ['default', 'ldap'])) {
+            if (!Validator::stringType()->notEmpty()->validate($body['login']) || !Validator::stringType()->notEmpty()->validate($body['password'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Bad Request']);
+            }
         }
 
         $login = strtolower($body['login']);
-        $connection = ConfigurationModel::getConnection();
+        
         if ($connection == 'ldap') {
             $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => ['value']]);
             if (empty($ldapConfigurations)) {
@@ -131,6 +132,25 @@ class AuthenticationController
             if (empty($authenticated) && !empty($error) && $error != 'Invalid credentials') {
                 return $response->withStatus(400)->withJson(['errors' => $error]);
             }
+        } elseif ($connection == 'x509') {
+            if (!empty($_SERVER['SSL_CLIENT_CERT'])) {
+                $x509Fingerprint = openssl_x509_fingerprint($_SERVER["SSL_CLIENT_CERT"]);
+                $user = UserModel::get(['select' => ['login'], 'where' => ['x509_fingerprint = ?'], 'data' => [strtoupper(wordwrap($x509Fingerprint, 2, " ", true))]]);
+                if (empty($user)) {
+                    return $response->withStatus(401)->withJson(['errors' => 'Authentication unauthorized']);
+                }
+                $login = $user[0]['login'];
+            } else {
+                return $response->withStatus(401)->withJson(['errors' => 'No certificate detected']);
+            }
+            $authenticated = true;
+        } elseif ($connection == 'kerberos') {
+            if (!empty($_SERVER['REMOTE_USER']) && $_SERVER['AUTH_TYPE'] == 'Negotiate') {
+                $login = strtolower($_SERVER['REMOTE_USER']);
+            } else {
+                return $response->withStatus(401)->withJson(['errors' => 'No identifier detected for kerberos']);
+            }
+            $authenticated = true;
         } else {
             $authenticated = AuthenticationModel::authentication(['login' => $login, 'password' => $body['password']]);
         }
