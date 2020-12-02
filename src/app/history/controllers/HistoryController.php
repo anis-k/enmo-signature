@@ -312,7 +312,7 @@ class HistoryController
             }
             $content  = $content['fileContent'];
             $format   = 'zip';
-            $mimeType = 'application/xml';
+            $mimeType = 'application/zip';
         }
 
         HistoryController::add([
