@@ -38,7 +38,9 @@
     <ion-reorder-group (ionItemReorder)="doReorder($event)" [disabled]="!editMode">
         <ion-item class="no-ripple" *ngFor="let diffusion of visaWorkflow;let i=index"
             [class.current]="diffusion.current">
-            <ion-reorder slot="start"></ion-reorder>
+            <ion-reorder slot="start">
+                <i class="fas fa-bars" [title]="'lang.reorder' | translate"></i>
+            </ion-reorder>
             <ion-avatar slot="start" class="avatar-user" style="cursor: grab;"
                 (click)="$event.stopPropagation();">
                 <img [src]="diffusion.userPicture">

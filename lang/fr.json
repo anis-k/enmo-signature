@@ -382,6 +382,7 @@
 		"langChecking": "Vérification de(s) langue(s)",
 		"generateLangVar": "Générer les variables de langues",
 		"generateLangVarIgnoreTranslate": "Générer les variables de langues (IGNORE __TO_TRANSLATE)",
-		"close": "Fermer"
+		"close": "Fermer",
+		"reorder" : "Réorganiser"
 	}
 }
