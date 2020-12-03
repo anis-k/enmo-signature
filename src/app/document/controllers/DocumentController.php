@@ -171,7 +171,7 @@ class DocumentController
             }
         }
 
-        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status', 'note', 'signature_positions'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
+        $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status', 'note', 'signature_positions', 'date_positions'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
         $currentFound = false;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
@@ -188,6 +188,7 @@ class DocumentController
                 'current'               => !$currentFound && empty($value['status']),
                 'signatureMode'         => $value['signature_mode'],
                 'signaturePositions'    => json_decode($value['signature_positions'], true),
+                'datePositions'         => json_decode($value['date_positions'], true),
                 'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true),
                 'note'                  => $value['note']
             ];
@@ -320,6 +321,18 @@ class DocumentController
                 foreach ($workflow['signaturePositions'] as $keySP => $signaturePosition) {
                     if (empty($signaturePosition['positionX']) || empty($signaturePosition['positionY']) || empty($signaturePosition['page'])) {
                         return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}][signaturePositions][{$keySP}] is wrong formatted"]);
+                    }
+                }
+            }
+            if (!empty($workflow['datePositions'])) {
+                if (!Validator::arrayType()->validate($workflow['datePositions'])) {
+                    return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] datePositions is not an array"]);
+                }
+                foreach ($workflow['datePositions'] as $keyDP => $datePosition) {
+                    if (empty($datePosition['positionX']) || empty($datePosition['positionY']) || empty($datePosition['page'])) {
+                        return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}][datePositions][{$keyDP}] is wrong formatted"]);
+                    } elseif (empty($datePosition['color']) || empty($datePosition['font']) || empty($datePosition['format']) || empty($datePosition['size'])) {
+                        return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}][datePositions][{$keyDP}] is wrong formatted"]);
                     }
                 }
             }

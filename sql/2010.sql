@@ -59,6 +59,8 @@ ALTER TABLE users ADD COLUMN x509_fingerprint text;
 
 ALTER TABLE workflows DROP COLUMN IF EXISTS signature_positions;
 ALTER TABLE workflows ADD COLUMN signature_positions jsonb DEFAULT '[]';
+ALTER TABLE workflows DROP COLUMN IF EXISTS date_positions;
+ALTER TABLE workflows ADD COLUMN date_positions jsonb DEFAULT '[]';
 
 ALTER TABLE workflows DROP COLUMN IF EXISTS digital_signature_id;
 ALTER TABLE workflows ADD COLUMN digital_signature_id text;
