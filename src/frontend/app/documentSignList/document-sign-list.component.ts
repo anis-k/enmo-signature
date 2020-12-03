@@ -47,12 +47,27 @@ export class DocumentSignListComponent implements OnInit {
 
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionX = percentx;
         this.signaturesService.signaturesContent[this.signaturesService.currentPage][i].positionY = percenty;
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+        this.signaturesService.dragging = false;
+    }
+
+    moveDate(event: any, i: number) {
+        const percentx = (event.x * 100) / this.signaturesService.workingAreaWidth;
+        const percenty = (event.y * 100) / this.signaturesService.workingAreaHeight;
+
+        this.signaturesService.datesContent[this.signaturesService.currentPage][i].positionX = percentx;
+        this.signaturesService.datesContent[this.signaturesService.currentPage][i].positionY = percenty;
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
         this.signaturesService.dragging = false;
     }
 
     onResizing(event: any, index: number) {
         this.test.nativeElement.style.height = 'auto';
+    }
+
+    onResizeDateStop(event: any, index: number) {
+        this.signaturesService.datesContent[this.signaturesService.currentPage][index].height = (event.size.height * 100) / this.signaturesService.workingAreaHeight;
+        this.signaturesService.datesContent[this.signaturesService.currentPage][index].width = (event.size.width * 100) / this.signaturesService.workingAreaWidth;
     }
 
     onResizeStop(event: any, index: number) {

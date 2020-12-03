@@ -25,6 +25,7 @@ export class SignaturesComponent implements OnInit {
     loading: boolean = true;
     scrolling: boolean = false;
     signPosMode: boolean = false;
+    datePosMode: boolean = false;
     title: string = 'lang.signatures';
     slideOpts = {
         initialSlide: 0,
@@ -161,12 +162,93 @@ export class SignaturesComponent implements OnInit {
         }
     }
 
+    addNewDate() {
+        const dateBlock: any = {
+            width: (130 * 100) / this.signaturesService.workingAreaWidth,
+            height: (30 * 100) / this.signaturesService.workingAreaHeight,
+            positionX: 0,
+            positionY: 0
+        };
+        const datePosCurrentPage = this.currentWorflow.datePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
+        const datePosOtherPage = this.currentWorflow.datePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
+
+        if (!this.datePosMode || (datePosCurrentPage.length === 0 && datePosOtherPage.length === 0)) {
+            dateBlock.positionX = 130;
+            dateBlock.positionY = 30;
+            this.storeDate(dateBlock, this.signaturesService.currentPage);
+            this.notificationService.success('lang.dateInDocAdded');
+            setTimeout(() => {
+                const svg = document.getElementById('testSVG_' + (this.signaturesService.datesContent[this.signaturesService.currentPage].length - 1));
+                console.log(svg);
+            }, 200);
+            this.modalController.dismiss('success');
+        } else {
+            if (datePosCurrentPage.length > 0) {
+                dateBlock.positionX = datePosCurrentPage[0].positionX;
+                dateBlock.positionY = datePosCurrentPage[0].positionY;
+                this.storeDate(dateBlock, this.signaturesService.currentPage);
+            }
+
+            datePosOtherPage.forEach((postion: any) => {
+                dateBlock.positionX = postion.positionX;
+                dateBlock.positionY = postion.positionY;
+                this.storeDate(dateBlock, postion.page);
+            });
+
+            if (this.currentWorflow.signaturePositions.length === 1) {
+                this.notificationService.success('lang.dateInDocAddedAlt');
+            } else {
+                this.translate.get('lang.dateInDocAdded', { 0: this.currentWorflow.signaturePositions.map((item: any) => item.page) }).subscribe((res: string) => {
+                    this.notificationService.success(res);
+                });
+            }
+
+            if (datePosCurrentPage.length === 0 && datePosOtherPage.length > 0) {
+                this.modalController.dismiss({ redirectPage: datePosOtherPage[0].page });
+            } else {
+                this.modalController.dismiss('success');
+            }
+        }
+    }
+
+    getDateContent() {
+        const svg = document.getElementById('testSVG_' + (this.signaturesService.datesContent[this.signaturesService.currentPage].length - 1));
+        const data = new XMLSerializer().serializeToString(svg);
+        const blob = new Blob([data], { type: 'image/svg+xml' });
+
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function () {
+            var base64data = reader.result;
+            console.log(base64data);
+        }
+    }
+
     storeSignature(signature: any, page: number) {
         if (!this.signaturesService.signaturesContent[page]) {
             this.signaturesService.signaturesContent[page] = [];
         }
         this.signaturesService.signaturesContent[page].push(JSON.parse(JSON.stringify(signature)));
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+    }
+
+    storeDate(date: any, page: number) {
+        if (!this.signaturesService.datesContent[page]) {
+            this.signaturesService.datesContent[page] = [];
+        }
+        this.signaturesService.datesContent[page].push(JSON.parse(JSON.stringify(date)));
+        setTimeout(() => {
+            const svg = document.getElementById('testSVG_' + (this.signaturesService.datesContent[this.signaturesService.currentPage].length - 1));
+            const data = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([data], { type: 'image/svg+xml' });
+
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                this.signaturesService.datesContent[page][this.signaturesService.datesContent[page].length - 1].content = reader.result;
+                this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+            };
+        }, 200);
     }
 
     removeSignature(signature: any) {

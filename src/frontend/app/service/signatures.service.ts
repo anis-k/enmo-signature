@@ -6,6 +6,7 @@ export class SignaturesContentService {
 
     mainDocumentId = 0;
     signaturesContent: any[] = [];
+    datesContent: any[] = [];
     notesContent: any[] = [];
     signaturesList: any[] = [];
     signaturesListSubstituted: any[] = [];
@@ -69,6 +70,7 @@ export class SignaturesContentService {
     reset() {
         this.mainDocumentId = 0;
         this.signaturesContent = [];
+        this.datesContent = [];
         this.notesContent = [];
         this.signaturesList = [];
         this.signaturesListSubstituted = [];

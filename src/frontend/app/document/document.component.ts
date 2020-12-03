@@ -244,8 +244,7 @@ export class DocumentComponent implements OnInit {
         this.dragging = false;
         if (data !== undefined) {
             if (data === 'success') {
-                this.scrollToElem();
-                // this.addSignature();
+                // this.scrollToElem();
             } else if (data.redirectPage !== undefined) {
                 this.goTo(data.redirectPage);
             }
@@ -326,6 +325,7 @@ export class DocumentComponent implements OnInit {
                                 item.userSignatureModes.unshift('visa');
                                 return {
                                     ...item,
+                                    'datePositions': [],
                                     'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
                                     'modes': item.userSignatureModes
                                 };
@@ -443,6 +443,7 @@ export class DocumentComponent implements OnInit {
         this.docList = [];
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
+        this.signaturesService.datesContent = [];
         this.signaturesService.sideNavRigtDatas.mode = 'mainDocumentDetail';
 
         const notesContent = this.localStorage.get(this.mainDocument.id.toString());
@@ -451,6 +452,7 @@ export class DocumentComponent implements OnInit {
             const storageContent = JSON.parse(notesContent);
             this.signaturesService.notesContent = storageContent['note'];
             this.signaturesService.signaturesContent = storageContent['sign'];
+            this.signaturesService.datesContent = storageContent['date'];
         }
 
         this.signaturesService.currentAction = 0;
@@ -700,6 +702,20 @@ export class DocumentComponent implements OnInit {
             const signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
                 for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                    if (this.signaturesService.datesContent[index]) {
+                        this.signaturesService.datesContent[index].forEach((date: any) => {
+                            signatures.push(
+                                {
+                                    'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
+                                    'width': date.width,
+                                    'positionX': date.positionX,
+                                    'positionY': date.positionY,
+                                    'type': 'SVG',
+                                    'page': index,
+                                }
+                            );
+                        });
+                    }
                     if (this.signaturesService.signaturesContent[index]) {
                         this.signaturesService.signaturesContent[index].forEach((signature: any) => {
                             signatures.push(
@@ -729,7 +745,6 @@ export class DocumentComponent implements OnInit {
                         });
                     }
                 }
-
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, { 'signatures': signatures, 'note': data.note })
                     .pipe(
                         tap(() => {
@@ -778,6 +793,7 @@ export class DocumentComponent implements OnInit {
                     handler: () => {
                         this.signaturesService.signaturesContent = [];
                         this.signaturesService.notesContent = [];
+                        this.signaturesService.datesContent = [];
                         this.localStorage.remove(this.mainDocument.id.toString());
                         this.notificationService.success('lang.noteAndSignatureDeleted');
                     }
@@ -827,6 +843,12 @@ export class DocumentComponent implements OnInit {
     checkEmptiness() {
         let state = true;
         for (let pageNum = 1; pageNum <= this.signaturesService.totalPage; pageNum++) {
+            if (this.signaturesService.datesContent[pageNum]) {
+                if (this.signaturesService.datesContent[pageNum].length > 0) {
+                    state = false;
+                    break;
+                }
+            }
             if (this.signaturesService.notesContent[pageNum]) {
                 if (this.signaturesService.notesContent[pageNum].length > 0) {
                     state = false;

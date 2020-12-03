@@ -1,4 +1,28 @@
 ::ng-deep .action-item ion-radio {
-    --color:transparent;
+    --color: transparent;
     --color-checked: transparent;
+}
+
+.test {
+    position: absolute;
+    border: dashed 1px grey;
+    background: rgba(255, 255, 255, 0.6) none repeat scroll 0% 0%;
+    position: absolute;
+    // margin-right: 10px;
+    background: none;
+    font: sans-serif;
+    overflow: hidden;
+    // margin-bottom: 26px;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* so that you can resize the element */
+}
+
+text {
+    pointer-events: auto;
+    /* Cancel the svg’s pointer-events */
 }

@@ -37,6 +37,9 @@
           <ion-icon name="chevron-up-outline"></ion-icon>
         </ion-fab-button>
         <ion-fab-list side="top">
+            <ion-fab-button color="light" [title]="'lang.addNewDate' | translate" (click)="addNewDate()">
+                <ion-icon name="calendar-outline"></ion-icon>
+            </ion-fab-button>
           <ion-fab-button color="light" [title]="'lang.importNewSignature' | translate" (click)="uploadFile.click()">
             <ion-icon name="download-outline"></ion-icon>
           </ion-fab-button>
