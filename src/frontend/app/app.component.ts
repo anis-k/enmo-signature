@@ -11,7 +11,7 @@ import { AuthService } from './service/auth.service';
 import { MenuController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { environment } from '../core/environments/environment';
-
+import { Platform } from '@ionic/angular';
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
@@ -20,7 +20,8 @@ import { environment } from '../core/environments/environment';
 })
 
 export class AppComponent {
-    debugMode: boolean = false;
+    isPortrait: boolean;
+    debugMode: boolean;
     showLeftContent: boolean = false;
     showRightContent: boolean = false;
     constructor(private translate: TranslateService,
@@ -32,7 +33,8 @@ export class AppComponent {
         public dialog: MatDialog, iconReg: MatIconRegistry,
         public authService: AuthService,
         private menu: MenuController,
-        public router: Router
+        public router: Router,
+        public platform: Platform
     ) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
 
@@ -46,6 +48,10 @@ export class AppComponent {
         if (!environment.production) {
             this.debugMode = true;
         }
+
+        this.platform.resize.subscribe(async () => {
+                this.isPortrait = this.platform.isPortrait() ? true : false;
+        });
     }
 
     test() {
