@@ -244,12 +244,11 @@ export class ProfileComponent implements OnInit {
         }
     }
 
-    submitProfile() {
+    async submitProfile() {
         this.disableState = true;
         this.msgButton = 'lang.sending';
 
-        this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo).pipe(
-            exhaustMap(() => this.http.put('../rest/users/' + this.authService.user.id + '/preferences', this.preferenceInfo)),
+        this.http.put('../rest/users/' + this.authService.user.id + '/preferences', this.preferenceInfo).pipe(
             tap(() => {
                 this.disableState = false;
                 this.msgButton = 'lang.validate';
@@ -258,6 +257,7 @@ export class ProfileComponent implements OnInit {
                 // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
                 this.authService.updateUserInfoWithTokenRefresh();
             }),
+            exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) : null),
             exhaustMap(() => {
                 if (!this.showPassword) {
                     this.closeProfile();

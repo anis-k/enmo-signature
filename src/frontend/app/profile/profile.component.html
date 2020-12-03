@@ -41,15 +41,15 @@
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.email' | translate}}</ion-label>
                     <ion-input name="email" [(ngModel)]="profileInfo.email"
-                        pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" required></ion-input>
+                        pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.firstname' | translate}}</ion-label>
-                    <ion-input name="firstname" [(ngModel)]="profileInfo.firstname" required></ion-input>
+                    <ion-input name="firstname" [(ngModel)]="profileInfo.firstname" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}}</ion-label>
-                    <ion-input name="lastname" [(ngModel)]="profileInfo.lastname" required></ion-input>
+                    <ion-input name="lastname" [(ngModel)]="profileInfo.lastname" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-label color="secondary" position="stacked">Changer de mot passe</ion-label>

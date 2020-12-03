@@ -14,6 +14,7 @@
 
 namespace User\controllers;
 
+use Configuration\models\ConfigurationModel;
 use Email\controllers\EmailController;
 use Firebase\JWT\JWT;
 use Group\controllers\PrivilegeController;
@@ -167,7 +168,8 @@ class UserController
 
     public function update(Request $request, Response $response, array $args)
     {
-        if ($GLOBALS['id'] != $args['id'] && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
+        $connection = ConfigurationModel::getConnection();
+        if (($GLOBALS['id'] != $args['id'] || $connection != 'default') && !PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_users'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
