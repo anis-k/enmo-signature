@@ -1,10 +1,10 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { HttpClient } from '@angular/common/http';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { NotificationService } from '../notification.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ModalController } from '@ionic/angular';
 
 
 @Component({
@@ -18,18 +18,23 @@ export class DevLangComponent implements OnInit {
 
     currentLang = 'en';
 
+    data: any = {};
+
 
     constructor(
-        @Inject(MAT_DIALOG_DATA) public data: any,
-        public dialogRef: MatDialogRef<DevLangComponent>,
         public http: HttpClient,
         private notify: NotificationService,
         private translate: TranslateService,
+        public modalController: ModalController
     ) {
     }
 
     ngOnInit(): void {
         this.getLangs();
+    }
+
+    dismissModal() {
+        this.modalController.dismiss('cancel');
     }
 
     getLangs() {
@@ -80,7 +85,7 @@ export class DevLangComponent implements OnInit {
                     this.missingLang[this.currentLang] = this.missingLang[this.currentLang].filter((missLang: any) => missLang.id !== keyLang);
                     this.data.countMissingLang--;
                 });
-                this.dialogRef.close(this.data.countMissingLang);
+                this.modalController.dismiss('cancel');
             }),
             catchError((err: any) => {
                 this.notify.handleErrors(err);

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { DevLangComponent } from '../debug/dev-lang.component';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../notification.service';
 import { of } from 'rxjs';
 import { FunctionsService } from '../functions.service';
 import { catchError, filter, tap } from 'rxjs/operators';
+import { IonSlides, ModalController } from '@ionic/angular';
 
 @Component({
     selector: 'app-dev-tool',
@@ -19,35 +19,21 @@ export class DevToolComponent implements OnInit {
 
     constructor(
         private notify: NotificationService,
-        public dialog: MatDialog,
         public http: HttpClient,
-        private functionsService: FunctionsService
+        private functionsService: FunctionsService,
+        public modalController: ModalController,
     ) { }
 
     ngOnInit(): void {
         this.getLangs();
     }
 
-    openLangTool() {
-        const dialogRef =  this.dialog.open(DevLangComponent, {
-            panelClass: 'maarch-modal',
-            height: '80%',
-            width: '80%',
-            data: {
-                countMissingLang : this.countMissingLang
-            }
+    async openLangTool() {
+        const modal = await this.modalController.create({
+            component: DevLangComponent,
+            cssClass: 'my-custom-class'
         });
-
-        dialogRef.afterClosed().pipe(
-            filter((data: string) => !this.functionsService.empty(data)),
-            tap((data: any) => {
-                this.countMissingLang = data;
-            }),
-            catchError((err: any) => {
-                this.notify.handleErrors(err);
-                return of(false);
-            })
-        ).subscribe();
+        await modal.present();
     }
 
     getLangs() {

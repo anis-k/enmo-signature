@@ -1,14 +1,21 @@
   <ion-header translucent>
     <ion-toolbar color="primary">
       <ion-title>{{'lang.langChecking' | translate}}</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="dismissModal()">
+            <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+        </ion-button>
+    </ion-buttons>
     </ion-toolbar>
-      <ion-segment>
-        <span *ngFor="let langName of allLang | keyvalue" >
-          <ion-segment-button *ngIf="langName.key !== 'fr'" (ionChange)="setActiveLang($event)" [value]="currentLang">
-            <ion-label>{{langName.key}} <ion-badge color="secondary">{{missingLang[langName.key].length}}</ion-badge></ion-label>
-          </ion-segment-button>
-        </span>
-      </ion-segment>
+  </ion-header>
+  <ion-header>
+    <ion-segment>
+      <span *ngFor="let langName of allLang | keyvalue" >
+        <ion-segment-button *ngIf="langName.key !== 'fr'" (ionChange)="setActiveLang($event)" [value]="currentLang">
+          <ion-label>{{langName.key}} <ion-badge color="secondary">{{missingLang[langName.key].length}}</ion-badge></ion-label>
+        </ion-segment-button>
+      </span>
+    </ion-segment>
   </ion-header>
   <ion-content>
     <ng-container>
@@ -24,9 +31,8 @@
     </ng-container>
   </ion-content>
   <ion-footer [translucent]="true">
-    <ion-button (click)="generateMissingLang(false)" color="primary">{{'lang.generateLangVar' | translate}}</ion-button>
-    <ion-button (click)="generateMissingLang(true)" color="primary">{{'lang.generateLangVarIgnoreTranslate' | translate}}</ion-button>
-    <ion-button mat-dialog-close color="secondary">{{'lang.close' | translate}}</ion-button>    
+      <ion-button size="small" (click)="generateMissingLang(false)" color="primary">{{'lang.generateLangVar' | translate}}</ion-button>
+      <ion-button size="small" (click)="generateMissingLang(true)" color="primary">{{'lang.generateLangVarIgnoreTranslate' | translate}}</ion-button>
   </ion-footer>
 
 

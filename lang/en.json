@@ -382,6 +382,7 @@
         "generateLangVar": "Generate language variables",
         "generateLangVarIgnoreTranslate": "Generate language variables (IGNORE __TO_TRANSLATE)",
         "close": "Close",
-        "signatureInDocAddedAlt": "Signature affixed"
+        "signatureInDocAddedAlt": "Signature affixed",
+        "proof": "Body of evidence"
     }
 }
