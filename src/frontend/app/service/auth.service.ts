@@ -63,7 +63,10 @@ export class AuthService {
     updateUserInfo(token: string) {
         const currentPicture  = this.user.picture;
 
-        this.user = JSON.parse(atob(token.split('.')[1])).user;
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+
+        this.user = tokenData.user;
+        this.authMode = tokenData.connection;
 
         this.user.picture = currentPicture;
     }

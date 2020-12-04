@@ -253,8 +253,9 @@ class AuthenticationController
         unset($user['picture']);
 
         $token = [
-            'exp'   => time() + 60 * $sessionTime,
-            'user'  => $user
+            'exp'        => time() + 60 * $sessionTime,
+            'user'       => $user,
+            'connection' => ConfigurationModel::getConnection()
         ];
 
         $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
@@ -291,7 +292,8 @@ class AuthenticationController
             'exp'   => time() + 3600,
             'user'  => [
                 'id' => $GLOBALS['id']
-            ]
+            ],
+            'connection' => ConfigurationModel::getConnection()
         ];
 
         $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
