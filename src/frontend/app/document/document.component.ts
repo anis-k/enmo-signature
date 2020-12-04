@@ -180,7 +180,7 @@ export class DocumentComponent implements OnInit {
         }
 
         buttons.push({
-            text: 'Apposer une signature',
+            text: this.translate.instant('lang.affixSignature'),
             icon: 'ribbon-outline',
             handler: () => {
                 this.openSignatures();
@@ -188,7 +188,7 @@ export class DocumentComponent implements OnInit {
         });
 
         buttons.push({
-            text: 'Annoter le document',
+            text: this.translate.instant('lang.annotateDocument'),
             icon: 'receipt-outline',
             handler: () => {
                 this.openNoteEditor();
@@ -556,28 +556,25 @@ export class DocumentComponent implements OnInit {
     }
 
     goTo(page: number) {
-        setTimeout(() => {
-            this.loadingController.create({
-                message: this.translate.instant('lang.loadingDocument'),
-                spinner: 'dots'
-            }).then((load: HTMLIonLoadingElement) => {
-                this.load = load;
-                this.load.present();
-            });
-    
-            this.loadingImage = true;
-            if (page && page <= this.totalPages) {
-                this.pageNum = page;
-            } else {
-                this.pageNum = 1;
-            }
-            // only for main document
-            if (this.currentDoc === 0) {
-                this.signaturesService.currentPage = this.pageNum;
-            }
-            // this.exportAsImage();
-            this.renderImage();
-        }, 1000);
+        this.loadingController.create({
+            message: this.translate.instant('lang.loadingDocument'),
+            spinner: 'dots',
+        }).then((load: HTMLIonLoadingElement) => {
+            this.load = load;
+            this.load.present();
+        });
+        this.loadingImage = true;
+        this.pageNum = page;
+        // only for main document
+        if (this.currentDoc === 0) {
+            this.signaturesService.currentPage = this.pageNum;
+        }
+        // this.exportAsImage();
+        this.renderImage();
+    }
+
+    pagesArray(n: number): number[] {
+        return Array(n);
     }
 
     initWorkingArea() {

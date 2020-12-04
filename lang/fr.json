@@ -385,6 +385,7 @@
 		"close": "Fermer",
 		"reorder" : "Réorganiser",
 		"goToPage": "Aller à la page",
-		"loadingDocument": "Chargement du document"
+		"loadingDocument": "Chargement du document",
+		"affixSignature": "Apposer une signature"
 	}
 }

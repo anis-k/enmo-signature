@@ -384,6 +384,9 @@
         "close": "Close",
         "signatureInDocAddedAlt": "Signature affixed",
         "proof": "Body of evidence",
-        "loadingDocument": "Loading the document"
+        "loadingDocument": "Loading the document",
+        "affixSignature": "Affix a signature",
+        "goToPage": "Go to page",
+        "reorder": "Reorganize"
     }
 }
