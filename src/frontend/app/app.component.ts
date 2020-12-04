@@ -48,6 +48,7 @@ export class AppComponent {
         if (!environment.production) {
             this.debugMode = true;
         }
+        
     }
 
     test() {
