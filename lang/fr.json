@@ -383,6 +383,7 @@
 		"generateLangVar": "Générer les variables de langues",
 		"generateLangVarIgnoreTranslate": "Générer les variables de langues (IGNORE __TO_TRANSLATE)",
 		"close": "Fermer",
-		"reorder" : "Réorganiser"
+		"reorder" : "Réorganiser",
+		"goToPage": "Aller à la page"
 	}
 }

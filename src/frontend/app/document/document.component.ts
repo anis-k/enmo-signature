@@ -556,22 +556,28 @@ export class DocumentComponent implements OnInit {
     }
 
     goTo(page: number) {
-        this.loadingController.create({
-            message: 'Chargement du document',
-            spinner: 'dots'
-        }).then((load: HTMLIonLoadingElement) => {
-            this.load = load;
-            this.load.present();
-        });
-        this.loadingImage = true;
-        this.pageNum = page;
-
-        // only for main document
-        if (this.currentDoc === 0) {
-            this.signaturesService.currentPage = this.pageNum;
-        }
-        // this.exportAsImage();
-        this.renderImage();
+        setTimeout(() => {
+            this.loadingController.create({
+                message: 'Chargement du document',
+                spinner: 'dots'
+            }).then((load: HTMLIonLoadingElement) => {
+                this.load = load;
+                this.load.present();
+            });
+    
+            this.loadingImage = true;
+            if (page && page <= this.totalPages) {
+                this.pageNum = page;
+            } else {
+                this.pageNum = 1;
+            }
+            // only for main document
+            if (this.currentDoc === 0) {
+                this.signaturesService.currentPage = this.pageNum;
+            }
+            // this.exportAsImage();
+            this.renderImage();
+        }, 1000);
     }
 
     initWorkingArea() {

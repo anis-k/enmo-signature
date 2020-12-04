@@ -39,6 +39,9 @@
             </ion-button>
           </ion-buttons>
     </ion-toolbar>
+    <ion-toolbar *ngIf="(totalPages > 2) && (mainDocument.status !== 'CONVERTING')" color="light">
+        <ion-input max="{{totalPages}}" name="goToPage" [placeholder]="'lang.goToPage' | translate" (ionInput)="goTo($event.target.value)"></ion-input>
+    </ion-toolbar>
 </ion-header>
 <ion-toolbar class="ion-text-center" color="primary"
     *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
