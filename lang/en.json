@@ -192,7 +192,7 @@
         "no": "No",
         "ldapEnabled": "LDAP enabled",
         "kerberosEnabled": "Kerberos enabled",
-		"x509Enabled": "Certificate x509 enbaled",
+        "x509Enabled": "Certificate x509 enbaled",
         "userCreation": "Add a user",
         "manage_ldap_configurations": "Ldap",
         "manage_ldap_configurationsDesc": "Add / Update / Delete ldap entries in order to authenticate users.",
@@ -213,8 +213,8 @@
         "manage_connectionsDesc": "Manage all available connections modes in application.",
         "defaultConnection": "Default",
         "ldapConnection": "Ldap",
-        "kerberosConnection" : "Kerberos",
-		"x509Connection" : "Certificate x509",
+        "kerberosConnection": "Kerberos",
+        "x509Connection": "Certificate x509",
         "connectionMode": "Connection mode",
         "connectionModeUpdated": "Connection mode updated",
         "changeConnectionWarn": "This cause a change in login mechanics for users !",
@@ -383,6 +383,7 @@
         "generateLangVarIgnoreTranslate": "Generate language variables (IGNORE __TO_TRANSLATE)",
         "close": "Close",
         "signatureInDocAddedAlt": "Signature affixed",
-        "proof": "Body of evidence"
+        "proof": "Body of evidence",
+        "loadingDocument": "Loading the document"
     }
 }

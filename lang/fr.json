@@ -384,6 +384,7 @@
 		"generateLangVarIgnoreTranslate": "Générer les variables de langues (IGNORE __TO_TRANSLATE)",
 		"close": "Fermer",
 		"reorder" : "Réorganiser",
-		"goToPage": "Aller à la page"
+		"goToPage": "Aller à la page",
+		"loadingDocument": "Chargement du document"
 	}
 }

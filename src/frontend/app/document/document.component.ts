@@ -558,7 +558,7 @@ export class DocumentComponent implements OnInit {
     goTo(page: number) {
         setTimeout(() => {
             this.loadingController.create({
-                message: 'Chargement du document',
+                message: this.translate.instant('lang.loadingDocument'),
                 spinner: 'dots'
             }).then((load: HTMLIonLoadingElement) => {
                 this.load = load;
