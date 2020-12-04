@@ -82,6 +82,7 @@ import { SecuritiesAdministrationComponent } from './administration/security/sec
 import { NotificationService } from './service/notification.service';
 import { SignaturesContentService } from './service/signatures.service';
 import { FiltersService } from './service/filters.service';
+import { SignatureMethodModalComponent } from './service/signature-method/signature-method-modal.component';
 
 // OTHERS
 import { ConfirmComponent } from './plugins/confirm.component';
@@ -139,7 +140,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     SearchComponent,
     SignaturePositionComponent,
     DevToolComponent,
-    DevLangComponent
+    DevLangComponent,
+    SignatureMethodModalComponent
   ],
   imports: [
     FormsModule,

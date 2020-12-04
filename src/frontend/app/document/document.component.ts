@@ -20,6 +20,7 @@ import { ActionSheetController, AlertController, LoadingController, MenuControll
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { SignatureMethodService } from '../service/signature-method/signature-method.service';
 
 @Component({
     selector: 'app-document',
@@ -115,6 +116,7 @@ export class DocumentComponent implements OnInit {
         public modalController: ModalController,
         private pdfViewerService: NgxExtendedPdfViewerService,
         public alertController: AlertController,
+        public signatureMethodService: SignatureMethodService,
         public navCtrl: NavController
     ) {
         this.draggable = false;
@@ -291,7 +293,7 @@ export class DocumentComponent implements OnInit {
     scrollToElem() {
         const pageY = this.signaturesService.signaturesContent[this.pageNum][this.signaturesService.signaturesContent[this.pageNum].length - 1].positionY;
         const offsetTop = -($('#myBounds')[0].getBoundingClientRect().top - 70);
-        const realPosY = ( pageY - 75) + offsetTop;
+        const realPosY = (pageY - 75) + offsetTop;
 
         const scrollY = (realPosY - $(window).height());
 
@@ -643,7 +645,7 @@ export class DocumentComponent implements OnInit {
                             spinner: 'dots'
                         }).then(async (load: HTMLIonLoadingElement) => {
                             load.present();
-                            const res = await this.sendDocument({'note': data.paragraph});
+                            const res = await this.sendDocument({ 'note': data.paragraph });
                             if (res) {
                                 const config: MatBottomSheetConfig = {
                                     disableClose: true,
@@ -677,23 +679,29 @@ export class DocumentComponent implements OnInit {
             buttons: [
                 {
                     text: this.translate.instant('lang.validate'),
-                    handler: (data: any) => {
-                        this.loadingController.create({
-                            message: this.translate.instant('lang.processing') + ' ...',
-                            spinner: 'dots'
-                        }).then(async (load: HTMLIonLoadingElement) => {
-                            load.present();
-                            const res = await this.sendDocument({'note': data.paragraph});
-                            if (res) {
-                                const config: MatBottomSheetConfig = {
-                                    disableClose: true,
-                                    direction: 'ltr'
-                                };
-                                this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                                this.localStorage.remove(this.mainDocument.id.toString());
-                            }
-                            load.dismiss();
-                        });
+                    handler: async (data: any) => {
+                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
+                        const res = await this.signatureMethodService.checkAuthentication(currentUserWorkflow);
+                        console.log('result auth', res);
+                        if (res) {
+                            this.loadingController.create({
+                                message: this.translate.instant('lang.processing') + ' ...',
+                                spinner: 'dots'
+                            }).then(async (load: HTMLIonLoadingElement) => {
+                                load.present();
+                                const res = await this.sendDocument({ 'note': data.paragraph });
+                                if (res) {
+                                    const config: MatBottomSheetConfig = {
+                                        disableClose: true,
+                                        direction: 'ltr'
+                                    };
+                                    this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                                    this.localStorage.remove(this.mainDocument.id.toString());
+                                }
+                                load.dismiss();
+                            });
+                        }
+
                     }
                 }
             ]
