@@ -49,9 +49,12 @@ export class AppComponent {
             this.debugMode = true;
         }
 
-        this.platform.resize.subscribe(async () => {
-                this.isPortrait = this.platform.isPortrait() ? true : false;
-        });
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            this.signaturesService.mobileMode = true;
+        } else {
+            this.signaturesService.mobileMode = false;
+        }
+
     }
 
     test() {
