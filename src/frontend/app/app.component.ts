@@ -48,13 +48,6 @@ export class AppComponent {
         if (!environment.production) {
             this.debugMode = true;
         }
-
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            this.signaturesService.mobileMode = true;
-        } else {
-            this.signaturesService.mobileMode = false;
-        }
-
     }
 
     test() {
