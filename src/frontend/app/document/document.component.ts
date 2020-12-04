@@ -310,7 +310,7 @@ export class DocumentComponent implements OnInit {
         this.route.params.subscribe(params => {
             if (typeof params['id'] !== 'undefined') {
                 this.loadingController.create({
-                    message: 'Chargement du document',
+                    message: this.translate.instant('lang.loadingDocument'),
                     spinner: 'dots'
                 }).then((load: HTMLIonLoadingElement) => {
                     this.load = load;
@@ -513,7 +513,7 @@ export class DocumentComponent implements OnInit {
 
     prevPage() {
         this.loadingController.create({
-            message: 'Chargement du document',
+            message: this.translate.instant('lang.loadingDocument'),
             spinner: 'dots'
         }).then((load: HTMLIonLoadingElement) => {
             this.load = load;
@@ -536,7 +536,7 @@ export class DocumentComponent implements OnInit {
 
     nextPage() {
         this.loadingController.create({
-            message: 'Chargement du document',
+            message: this.translate.instant('lang.loadingDocument'),
             spinner: 'dots'
         }).then((load: HTMLIonLoadingElement) => {
             this.load = load;

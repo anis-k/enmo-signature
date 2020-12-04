@@ -387,6 +387,9 @@
 		"goToPage": "Aller à la page",
 		"loadingDocument": "Chargement du document",
 		"affixSignature": "Apposer une signature",
-		"changePassword": "Changer de mot de passe"
+		"changePassword": "Changer de mot de passe",
+		"circuitModels": "Modèles de circuit",
+		"addNewDate": "Ajouter une nouvelle date",
+		"add": "Ajouter"
 	}
 }

@@ -1,6 +1,6 @@
 <ion-list lines="none">
     <ion-list-header>
-        <ion-label color="secondary">Modèles de circuit</ion-label>
+        <ion-label color="secondary">{{'lang.circuitModels' | translate}}</ion-label>
     </ion-list-header>
     <ion-item button *ngFor="let model of visaWorkflowModels" (click)="loadVisaWorkflow(model)">
         <ion-label>{{model.title}}</ion-label>
