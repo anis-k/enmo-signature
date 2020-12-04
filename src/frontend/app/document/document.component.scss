@@ -176,16 +176,19 @@ canvas {
     height: 30px;
     width: auto;
     max-width: 70%;
-    color: #9B9B9B;
+    color: rgba(var(--ion-color-dark-rgb), 0.8);
     font-size: 12px;
     font-weight: 300;
     line-height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0.8;
+    opacity: 0.5;
     left: 50%;
     transform: translateX(-50%);
+    font-weight: 500;
+    transition: all 0.3s ease-in-out;
+
 
     &-doc {
       max-width: 80%;
@@ -199,6 +202,7 @@ canvas {
     }
 
     &-page {
+      cursor: pointer;
       text-align: center;
       border-radius: 0 14px 14px 0;
       padding: 0 20px;
@@ -207,7 +211,12 @@ canvas {
       margin-left: -15px;
       height: 28px;
       white-space: pre;
+      display: flex;
+      align-items: center;
     }
+  }
+  &-info:hover {
+    opacity: 1;
   }
 }
 
