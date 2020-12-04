@@ -26,6 +26,7 @@ import { of } from 'rxjs';
     templateUrl: 'document.component.html',
     styleUrls: ['document.component.scss'],
 })
+
 export class DocumentComponent implements OnInit {
 
     enterApp: boolean = true;
@@ -93,6 +94,7 @@ export class DocumentComponent implements OnInit {
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
+    @ViewChild('pagesList') pagesList: any;
 
     constructor(private translate: TranslateService,
         private router: Router,
@@ -930,5 +932,11 @@ export class DocumentComponent implements OnInit {
 
     ionViewWillLeave() {
         this.signaturesService.detachTemplate('rightContent');
+    }
+
+    openSelect() {
+        if (this.totalPages > 1) {
+            this.pagesList.open();
+        }
     }
 }
