@@ -58,7 +58,7 @@
                     <ion-label color="secondary" position="stacked">{{'lang.changePassword' | translate}}</ion-label>
                     <ion-input name="currentPassword" [(ngModel)]="password.currentPassword"
                         placeholder="{{'lang.currentPassword' | translate}}"
-                        [type]="hideCurrentPassword ? 'password' : 'text'"></ion-input>
+                        [type]="hideCurrentPassword ? 'password' : 'text'" [readonly]="authService.authMode !== 'default'"></ion-input>
                     <ion-button class="showpassButton" slot="end" color="light"
                         (click)="hideCurrentPassword = !hideCurrentPassword">
                         <ion-icon slot="icon-only" color="primary"
@@ -69,6 +69,7 @@
                     <ion-label color="secondary" position="stacked">{{'lang.newPassword' | translate}}</ion-label>
                     <ion-input name="newPassword" [(ngModel)]="password.newPassword"
                         placeholder="{{'lang.newPassword' | translate}}" [type]="hideNewPassword ? 'password' : 'text'"
+                        [readonly]="authService.authMode !== 'default'"
                         (keyup)="checkPasswordValidity(password.newPassword)"></ion-input>
                     <ion-button class="showpassButton" slot="end" color="light"
                         (click)="hideNewPassword = !hideNewPassword">
@@ -81,7 +82,8 @@
                     </ion-label>
                     <ion-input name="passwordConfirmation" [(ngModel)]="password.passwordConfirmation"
                         placeholder="{{'lang.passwordConfirmation' | translate}}"
-                        [type]="hideNewPasswordConfirm ? 'password' : 'text'"></ion-input>
+                        [type]="hideNewPasswordConfirm ? 'password' : 'text'"
+                        [readonly]="authService.authMode !== 'default'"></ion-input>
                     <ion-button class="showpassButton" slot="end" color="light"
                         (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm">
                         <ion-icon slot="icon-only" color="primary"

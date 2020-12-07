@@ -2,7 +2,6 @@ import { Component, OnInit, Input, ViewChild, Renderer2, ElementRef } from '@ang
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatSidenav } from '@angular/material/sidenav';
-import { MatTabGroup } from '@angular/material/tabs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
@@ -11,11 +10,10 @@ import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
 import { FiltersService } from '../service/filters.service';
 import { Router } from '@angular/router';
-import { tap, exhaustMap, filter, catchError, takeUntil, finalize, map } from 'rxjs/operators';
+import { tap, exhaustMap, filter, catchError, finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
-import { of, Subject } from 'rxjs';
-import { IonSlides, ModalController } from '@ionic/angular';
-import { data } from 'jquery';
+import { of } from 'rxjs';
+import { ModalController } from '@ionic/angular';
 
 @Component({
     selector: 'app-my-profile',
@@ -69,8 +67,6 @@ export class ProfileComponent implements OnInit {
     ruleText = '';
     otherRuleText = '';
 
-    showPassword = false;
-
     disableState = false;
     msgButton = 'lang.validate';
     loading: boolean = false;
@@ -97,6 +93,7 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit(): void {
         this.initProfileInfo();
+        this.getPassRules();
     }
 
     dismissModal() {
@@ -143,11 +140,6 @@ export class ProfileComponent implements OnInit {
             this.initProfileInfo();
         }, 200);
         this.dismissModal();
-    }
-
-    changePasswd() {
-        this.showPassword = true;
-        this.getPassRules();
     }
 
     getPassRules() {
@@ -237,7 +229,7 @@ export class ProfileComponent implements OnInit {
     allowValidate() {
         if (this.disableState) {
             return true;
-        } else if (this.showPassword && (this.handlePassword.error || this.password.newPassword !== this.password.passwordConfirmation || this.password.currentPassword.length === 0 || this.password.newPassword.length === 0 || this.password.passwordConfirmation.length === 0)) {
+        } else if (this.password.newPassword !== '' && (this.handlePassword.error || this.password.newPassword !== this.password.passwordConfirmation || this.password.currentPassword.length === 0 || this.password.newPassword.length === 0 || this.password.passwordConfirmation.length === 0)) {
             return true;
         } else {
             return false;
@@ -259,15 +251,22 @@ export class ProfileComponent implements OnInit {
             }),
             exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) : null),
             exhaustMap(() => {
-                if (!this.showPassword) {
+                if (this.authService.authMode === 'default') {
+                    this.authService.user.firstname = this.profileInfo.firstname;
+                    this.authService.user.lastname = this.profileInfo.lastname;
+                }
+
+                if (this.password.newPassword === '') {
                     this.closeProfile();
                     this.notificationService.success('lang.profileUpdated');
                     return of(false);
-                } else {
+                } else if (this.authService.authMode === 'default') {
                     const headers = new HttpHeaders({
                         'Authorization': 'Bearer ' + this.authService.getToken()
                     });
                     return this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers });
+                } else {
+                    return of(false);
                 }
             }),
             filter(data => !!data),

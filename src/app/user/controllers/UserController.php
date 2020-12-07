@@ -502,6 +502,11 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
+        $connection = ConfigurationModel::getConnection();
+        if ($connection != 'default') {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
         if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
         }
