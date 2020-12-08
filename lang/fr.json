@@ -391,6 +391,7 @@
 		"circuitModels": "Modèles de circuit",
 		"addNewDate": "Ajouter une nouvelle date",
 		"add": "Ajouter",
-		"dateInDocAdded": "Date ajoutée dans le document"
+		"dateInDocAdded": "Date ajoutée dans le document",
+		"rejectDocumentWarning": "Vous êtes sur le point de refuser ce document !"
 	}
 }

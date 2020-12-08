@@ -626,8 +626,8 @@ export class DocumentComponent implements OnInit {
     async refuseDocument(): Promise<void> {
         const alert = await this.alertController.create({
             cssClass: 'custom-alert-danger',
-            header: this.translate.instant('lang.warning'),
-            message: this.translate.instant('lang.areYouSure'),
+            header: this.translate.instant('lang.reject'),
+            message: this.translate.instant('lang.rejectDocumentWarning'),
             inputs: [
                 {
                     name: 'paragraph',
@@ -638,7 +638,7 @@ export class DocumentComponent implements OnInit {
             ],
             buttons: [
                 {
-                    text: this.translate.instant('lang.rejectDocument'),
+                    text: this.translate.instant('lang.reject'),
                     handler: (data: any) => {
                         this.loadingController.create({
                             message: this.translate.instant('lang.processing') + ' ...',
@@ -666,7 +666,7 @@ export class DocumentComponent implements OnInit {
     async validateDocument(mode: any): Promise<void> {
         const alert = await this.alertController.create({
             cssClass: 'custom-alert-success',
-            header: this.translate.instant('lang.warning'),
+            header: this.translate.instant('lang.validate'),
             message: this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0 ? this.translate.instant('lang.validateDocumentWithoutSignOrNote') : this.translate.instant('lang.areYouSure'),
             inputs: [
                 {
