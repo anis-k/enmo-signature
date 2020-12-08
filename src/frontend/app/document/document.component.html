@@ -92,7 +92,7 @@
                 [style.height.px]="signaturesService.workingAreaHeight" id="myBounds" #myBounds>
                 <app-document-note-list *ngIf="currentDoc == 0 && !loadingImage">
                 </app-document-note-list>
-                <app-document-sign-list *ngIf="currentDoc === 0 && !loadingImage" [bounds]="myBounds">
+                <app-document-sign-list *ngIf="currentDoc === 0 && !loadingImage && this.signaturesService.signaturesContent[pageNum]" [bounds]="myBounds">
                 </app-document-sign-list>
                 <ion-img
                     *ngIf="docList[currentDoc] !== undefined && !signaturesService.empty(docList[currentDoc].imgContent[pageNum])"

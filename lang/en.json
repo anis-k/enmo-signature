@@ -392,6 +392,7 @@
         "changePassword": "Change password",
         "addNewDate": "Add a new date",
         "add": "Add",
-        "dateInDocAdded": "Date added in document"
+        "dateInDocAdded": "Date added in document",
+        "rejectDocumentWarning": "You are about to decline this document!"
     }
 }
