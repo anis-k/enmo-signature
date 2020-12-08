@@ -55,7 +55,7 @@
                     <ion-label color="primary">{{'lang.changePassword' | translate}}</ion-label>
                 </ion-list-header>
                 <ion-item>
-                    <ion-label color="secondary" position="stacked">{{'lang.changePassword' | translate}}</ion-label>
+                    <ion-label color="secondary" position="stacked">{{'lang.currentPassword' | translate}}</ion-label>
                     <ion-input name="currentPassword" [(ngModel)]="password.currentPassword"
                         placeholder="{{'lang.currentPassword' | translate}}"
                         [type]="hideCurrentPassword ? 'password' : 'text'" [readonly]="authService.authMode !== 'default'"></ion-input>

@@ -391,6 +391,7 @@
         "circuitModels": "Circuit models",
         "changePassword": "Change password",
         "addNewDate": "Add a new date",
-        "add": "Add"
+        "add": "Add",
+        "dateInDocAdded": "Date added in document"
     }
 }

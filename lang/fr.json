@@ -390,6 +390,7 @@
 		"changePassword": "Changer de mot de passe",
 		"circuitModels": "Modèles de circuit",
 		"addNewDate": "Ajouter une nouvelle date",
-		"add": "Ajouter"
+		"add": "Ajouter",
+		"dateInDocAdded": "Date ajoutée dans le document"
 	}
 }
