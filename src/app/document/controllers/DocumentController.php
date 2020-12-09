@@ -659,7 +659,7 @@ class DocumentController
                 exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
             }
 
-            if ($workflow['signature_mode'] == 'rgs_2stars' ) {
+            if ($workflow['signature_mode'] == 'rgs_2stars') {
                 $hashInformations = CertificateSignatureController::getHashedCertificate(['document' => $fileContent, 'certificate' => $body['certificate']]);
                 return $response->withJson($hashInformations);
             }
@@ -766,6 +766,16 @@ class DocumentController
                 }
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'REF' && $workflow['mode'] == 'sign') {
                 DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
+            }
+        } elseif ($workflow['signature_mode'] == 'rgs_2stars') {
+            $return = CertificateSignatureController::signDocument([
+                'id'                     => $args['id'],
+                'certificate'            => $args['certificate'],
+                'signatureContentLength' => $args['signatureContentLength'],
+                'hashSignature'          => $args['hashSignature']
+            ]);
+            if (!empty($return['errors'])) {
+                return $response->withStatus(400)->withJson($return);
             }
         }
 
