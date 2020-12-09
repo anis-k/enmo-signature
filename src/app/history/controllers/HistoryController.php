@@ -57,6 +57,38 @@ class HistoryController
         return true;
     }
 
+    public function get(Request $request, Response $response, array $args)
+    {
+        //TODO privilege
+
+//        $history = HistoryModel::get([
+//            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip'],
+//            'where'     => ["(object_type = ? AND object_id = ?) OR (data->>'mainDocumentId' = ?)"],
+//            'data'      => ['main_documents', $args['id'], $args['id']],
+//            'orderBy'   => ['date']
+//        ]);
+//
+//
+//        HistoryController::add([
+//            'code'          => 'OK',
+//            'objectType'    => 'history',
+//            'objectId'      => $args['id'],
+//            'type'          => 'VIEW',
+//            'message'       => '{documentHistoryViewed}',
+//            'data'          => ['objectType' => 'main_documents']
+//        ]);
+//
+//        $queryParams = $request->getQueryParams();
+//        if (!isset($queryParams['mode']) || $queryParams['mode'] == 'json') {
+//            return $response->withJson(['history' => $formattedHistory['formattedHistory']]);
+//        } else {
+//            $historyXml = HistoryController::arrayToXml(['data' => $formattedHistory['formattedHistory'], 'xml' => false]);
+//            $response->write($historyXml);
+//            $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch_history.xml");
+//            return $response->withHeader('Content-Type', 'application/xml');
+//        }
+    }
+
     public function getByDocumentId(Request $request, Response $response, array $args)
     {
         if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
@@ -95,8 +127,6 @@ class HistoryController
             $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch_history.xml");
             return $response->withHeader('Content-Type', 'application/xml');
         }
-
-        return $response->withJson(['history' => $formattedHistory['formattedHistory']]);
     }
 
     public static function getFormattedHistory($args = [])
