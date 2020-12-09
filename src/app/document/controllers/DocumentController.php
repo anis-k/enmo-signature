@@ -660,7 +660,8 @@ class DocumentController
             }
 
             if ($workflow['signature_mode'] == 'rgs_2stars' ) {
-
+                $hashInformations = CertificateSignatureController::getHashedCertificate(['document' => $fileContent, 'certificate' => $body['certificate']]);
+                return $response->withJson($hashInformations);
             }
         }
 
