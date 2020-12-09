@@ -14,6 +14,7 @@
 
 namespace Document\controllers;
 
+use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use SrcCore\models\CoreConfigModel;
@@ -153,11 +154,34 @@ class CertificateSignatureController
         $signer->saveSignature($tmpDocument, $cms);
         try {
             $signer->saveSignature($tmpDocument, $cms);
-            unlink($tmpDocument->getWriter()->getPath());
+            // unlink($tmpDocument->getWriter()->getPath());
         } catch (\SetaPDF_Signer_Exception_ContentLength $e) {
-            unlink($tmpDocument->getWriter()->getPath());
+            // unlink($tmpDocument->getWriter()->getPath());
             $signatureContentLength = $signatureContentLength + 1000;
             return ['errors' => 'Not enought space for signature', 'newSignatureLength' => $signatureContentLength];
         }
+
+        $storeInfos = DocserverController::storeResourceOnDocServer([
+            'encodedFile'   => base64_encode(file_get_contents($signedDocumentPath)),
+            'format'        => 'pdf',
+            'docserverType' => 'ESIGN'
+        ]);
+
+        // if (!empty($storeInfos['errors'])) {
+        //     return ['errors' => $storeInfos['errors']];
+        // }
+
+        AdrModel::deleteDocumentAdr([
+            'where' => ['main_document_id = ?', 'type = ?'],
+            'data'  => [$args['id'], 'ESIGN']
+        ]);
+        AdrModel::createDocumentAdr([
+            'documentId'  => $args['id'],
+            'type'        => 'ESIGN',
+            'path'        => $storeInfos['path'],
+            'filename'    => $storeInfos['filename'],
+            'fingerprint' => $storeInfos['fingerprint']
+        ]);
+        // unlink($signedDocumentPath);
     }
 }
