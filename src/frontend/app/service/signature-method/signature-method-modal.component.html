@@ -1,11 +1,10 @@
 <ion-content>
-    <div class="content">
-<!--        <i *ngIf="status==='SUCCESS'" class="fas fa-check success"></i>-->
-<!--        <i *ngIf="status==='WAITING'" class="fas fa-plug bounce"></i>-->
-<!--        <i *ngIf="status==='ERROR'" class="fas fa-times danger"></i>-->
-<!--        <ion-label *ngIf="status==='WAITING'" style="padding: 10px;">En attente d'identification ...</ion-label>-->
-<!--        <ion-label *ngIf="status==='SUCCESS'" style="padding: 10px;">Identification réussie !</ion-label>-->
-<!--        <ion-label *ngIf="status==='ERROR'" style="padding: 10px;">Identification échouée !</ion-label>-->
-        <peculiar-fortify-certificates style="height: 100%" language="fr" [filters]="filters" (continue)="continueSignature($event)" (cancel)="cancelSign($event)"></peculiar-fortify-certificates>
-    </div>
+    <!--        <i *ngIf="status==='SUCCESS'" class="fas fa-check success"></i>-->
+    <!--        <i *ngIf="status==='WAITING'" class="fas fa-plug bounce"></i>-->
+    <!--        <i *ngIf="status==='ERROR'" class="fas fa-times danger"></i>-->
+    <!--        <ion-label *ngIf="status==='WAITING'" style="padding: 10px;">En attente d'identification ...</ion-label>-->
+    <!--        <ion-label *ngIf="status==='SUCCESS'" style="padding: 10px;">Identification réussie !</ion-label>-->
+    <!--        <ion-label *ngIf="status==='ERROR'" style="padding: 10px;">Identification échouée !</ion-label>-->
+    <peculiar-fortify-certificates style="height: 100%;width: 100%;" language="fr" [filters]="filters"
+        (continue)="continueSignature($event)" (cancel)="cancelSign($event)"></peculiar-fortify-certificates>
 </ion-content>

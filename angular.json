@@ -36,7 +36,16 @@
                 "input": "node_modules/ngx-extended-pdf-viewer/assets/",
                 "output": "/assets/"
               },
-              "./src/frontend/core/favicon.ico"
+              {
+                "glob": "*",
+                "input": "./node_modules/@peculiar/fortify-webcomponents/dist/peculiar/",
+                "output": "/assets/fortify"
+              },
+              {
+                "glob": "favicon.ico",
+                "input": "./src/frontend/core/",
+                "output": "/assets/"
+              }
             ],
             "styles": [
               {
