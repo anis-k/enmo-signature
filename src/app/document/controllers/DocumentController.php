@@ -658,6 +658,10 @@ class DocumentController
             foreach ($pages as $page) {
                 exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
             }
+
+            if ($workflow['signature_mode'] == 'rgs_2stars' ) {
+
+            }
         }
 
         if ($loadedXml->docaposteSignature->enable == 'true' && $workflow['signature_mode'] == 'eidas') {
