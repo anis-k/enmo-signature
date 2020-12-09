@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, exhaustMap, tap} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
 import {NotificationService} from '../notification.service';
@@ -27,6 +27,8 @@ export class SignatureMethodModalComponent implements OnInit {
         //   keyUsage: ['digitalSignature'],
         onlyWithPrivateKey: true
     };
+
+    signature: string;
 
     constructor(
         public modalController: ModalController,
@@ -80,26 +82,27 @@ export class SignatureMethodModalComponent implements OnInit {
         console.log('privateKey = ');
         console.log(privateKey);
 
-        this.http.post('../rest/testFortify?action=start', {certificate: certPem}).pipe(
-            tap(async (dataToSign: any) => {
-                const message = this.fromHex(dataToSign.dataToSign);
-                const alg = {
-                    name: privateKey.algorithm.name,
-                    hash: 'SHA-256',
-                };
-                const signature = await provider.subtle.sign(alg, privateKey, message);
+        await this.modalController.dismiss({certificate: certPem});
 
-                return this.http.post('../rest/testFortify?action=complete', {signature: signature});
-            }),
-            tap(() => {
-                console.log('signature ok');
-                this.modalController.dismiss(true);
-            }),
-            catchError(err => {
-                this.notificationService.handleErrors(err);
-                return of(false);
-            })
-        ).subscribe();
+        // this.http.post('../rest/testFortify?action=start', {certificate: certPem}).pipe(
+        //     tap(async (dataToSign: any) => {
+        //         const message = this.fromHex(dataToSign.dataToSign);
+        //         const alg = {
+        //             name: privateKey.algorithm.name,
+        //             hash: 'SHA-256',
+        //         };
+        //         this.signature = await provider.subtle.sign(alg, privateKey, message);
+        //     }),
+        //     exhaustMap(() => this.http.post('../rest/testFortify?action=complete', {signature: this.signature})),
+        //     tap(() => {
+        //         console.log('signature ok');
+        //         this.modalController.dismiss(true);
+        //     }),
+        //     catchError(err => {
+        //         this.notificationService.handleErrors(err);
+        //         return of(false);
+        //     })
+        // ).subscribe();
     }
 
     cancelSign(data: any) {

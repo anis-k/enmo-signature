@@ -18,9 +18,10 @@ import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController, NavController } from '@ionic/angular';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import { catchError, tap } from 'rxjs/operators';
+import {catchError, exhaustMap, tap} from 'rxjs/operators';
 import { of } from 'rxjs';
 import { SignatureMethodService } from '../service/signature-method/signature-method.service';
+import {sign} from "crypto";
 
 @Component({
     selector: 'app-document',
@@ -681,15 +682,15 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        const res = await this.signatureMethodService.checkAuthentication(currentUserWorkflow);
-                        console.log('result auth', res);
-                        if (res) {
+                        const certificate = await this.signatureMethodService.checkAuthentication(currentUserWorkflow);
+                        console.log('result auth', certificate);
+                        if (certificate !== false) {
                             this.loadingController.create({
                                 message: this.translate.instant('lang.processing') + ' ...',
                                 spinner: 'dots'
                             }).then(async (load: HTMLIonLoadingElement) => {
                                 load.present();
-                                const res = await this.sendDocument({ 'note': data.paragraph });
+                                const res = await this.sendDocument({ 'note': data.paragraph, 'certificate': certificate });
                                 if (res) {
                                     const config: MatBottomSheetConfig = {
                                         disableClose: true,
@@ -758,8 +759,27 @@ export class DocumentComponent implements OnInit {
                         });
                     }
                 }
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, { 'signatures': signatures, 'note': data.note })
+                data.signatures = signatures;
+                const privateKey = data.privatekey;
+                data.privateKey = undefined;
+                const signDocumentWith2Steps = data.certificate !== undefined && data.certificate !== false && data.certificate !== true;
+                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)
                     .pipe(
+                        tap((signatureData) => {
+                            if (signDocumentWith2Steps) {
+                                data.signatures = undefined;
+
+                                const message = this.fromHex(signatureData.dataToSign);
+                                const alg = {
+                                    name: privateKey.algorithm.name,
+                                    hash: 'SHA-256',
+                                };
+                                signature = await provider.subtle.sign(alg, privateKey, message);
+
+                                // TODO mettre les infos à envoyer en step 2 dans data !!!!
+                            }
+                        }),
+                        exhaustMap(() => signDocumentWith2Steps ? this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data) : null),
                         tap(() => {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
@@ -946,5 +966,14 @@ export class DocumentComponent implements OnInit {
         if (this.totalPages > 1) {
             this.pagesList.open();
         }
+    }
+
+    fromHex(hexString: any) {
+        const res = new Uint8Array(hexString.length / 2);
+        for (let i = 0; i < hexString.length; i = i + 2) {
+            const c = hexString.slice(i, i + 2);
+            res[i / 2] = parseInt(c, 16);
+        }
+        return res.buffer;
     }
 }
