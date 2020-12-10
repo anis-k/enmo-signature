@@ -18,10 +18,11 @@ import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ActionSheetController, AlertController, LoadingController, MenuController, ModalController, NavController } from '@ionic/angular';
 import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
-import {catchError, exhaustMap, tap} from 'rxjs/operators';
+import { catchError, exhaustMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { SignatureMethodService } from '../service/signature-method/signature-method.service';
 import { FunctionsService } from '../service/functions.service';
+import { ActionsService } from '../service/actions.service';
 
 @Component({
     selector: 'app-document',
@@ -119,7 +120,8 @@ export class DocumentComponent implements OnInit {
         public alertController: AlertController,
         public signatureMethodService: SignatureMethodService,
         public navCtrl: NavController,
-        private functionsService: FunctionsService
+        private functionsService: FunctionsService,
+        public actionsService: ActionsService,
     ) {
         this.draggable = false;
     }
@@ -641,23 +643,22 @@ export class DocumentComponent implements OnInit {
             buttons: [
                 {
                     text: this.translate.instant('lang.reject'),
-                    handler: (data: any) => {
-                        this.loadingController.create({
-                            message: this.translate.instant('lang.processing') + ' ...',
-                            spinner: 'dots'
-                        }).then(async (load: HTMLIonLoadingElement) => {
-                            load.present();
-                            const res = await this.sendDocument({ 'note': data.paragraph });
-                            if (res) {
-                                const config: MatBottomSheetConfig = {
-                                    disableClose: true,
-                                    direction: 'ltr'
-                                };
-                                this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
-                                this.localStorage.remove(this.mainDocument.id.toString());
+                    handler: async (data: any) => {
+                        const res = await this.actionsService.sendDocument(data.paragraph);
+                        if (!this.functionsService.empty(res)) {
+                            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
+                                this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                                if (this.signaturesService.documentsListCount.current > 0) {
+                                    this.signaturesService.documentsListCount.current--;
+                                }
                             }
-                            load.dismiss();
-                        });
+                            const config: MatBottomSheetConfig = {
+                                disableClose: true,
+                                direction: 'ltr'
+                            };
+                            this.bottomSheet.open(RejectInfoBottomSheetComponent, config);
+                            this.localStorage.remove(this.mainDocument.id.toString());
+                        }
                     }
                 }
             ]
@@ -683,7 +684,7 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow);
+                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
                         if (!this.functionsService.empty(res)) {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
@@ -704,99 +705,6 @@ export class DocumentComponent implements OnInit {
         });
 
         await alert.present();
-    }
-
-    sendDocument(data: any) {
-        return new Promise(async (resolve) => {
-            const signatures: any[] = [];
-            if (this.signaturesService.currentAction > 0) {
-                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                    if (this.signaturesService.datesContent[index]) {
-                        this.signaturesService.datesContent[index].forEach((date: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
-                                    'width': date.width,
-                                    'positionX': date.positionX,
-                                    'positionY': date.positionY,
-                                    'type': 'SVG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                    if (this.signaturesService.signaturesContent[index]) {
-                        this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': signature.encodedSignature,
-                                    'width': signature.width,
-                                    'positionX': signature.positionX,
-                                    'positionY': signature.positionY,
-                                    'type': 'PNG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                    if (this.signaturesService.notesContent[index]) {
-                        this.signaturesService.notesContent[index].forEach((note: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': note.fullPath.replace('data:image/png;base64,', ''),
-                                    'width': note.width,
-                                    'positionX': note.positionX,
-                                    'positionY': note.positionY,
-                                    'type': 'PNG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                }
-                data.signatures = signatures;
-                let certData = data.certInfo.certData;
-                const provider = await certData.detail.server.getCrypto(certData.detail.providerId);
-                const privateKey = data.certInfo.privateKey;
-                data.certificate = data.certInfo.certificate
-                const certificate = data.certificate;
-                data.certInfo = undefined;
-                const signDocumentWith2Steps = certificate !== undefined && certificate !== false && certificate !== true;
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)
-                    .pipe(
-                        tap(async (signatureData: any) => {
-                            if (signDocumentWith2Steps) {
-                                data.signatures = undefined;
-
-                                const message = this.fromHex(signatureData.dataToSign);
-                                const alg = {
-                                    name: privateKey.algorithm.name,
-                                    hash: 'SHA-256',
-                                };
-                                data.hashSignature = await provider.subtle.sign(alg, privateKey, message);
-                                data.signatureContentLength = signatureData.signatureContentLength;
-                            }
-                        }),
-                        exhaustMap(() => signDocumentWith2Steps ? this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data) : null),
-                        tap(() => {
-                            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
-                                this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                                if (this.signaturesService.documentsListCount.current > 0) {
-                                    this.signaturesService.documentsListCount.current--;
-                                }
-                            }
-                            resolve(true);
-                        }),
-                        catchError((err: any) => {
-                            this.notificationService.handleErrors(err);
-                            resolve(false);
-                            return of(false);
-                        })
-                    ).subscribe();
-            } else {
-                resolve(false);
-            }
-        });
     }
 
     openDrawer(): void {

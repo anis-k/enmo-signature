@@ -20,7 +20,7 @@ export class ActionsService {
         public signaturesService: SignaturesContentService,
     ) { }
 
-    sendDocument(eSignature: any = null) {
+    sendDocument(note: string, eSignature: any = null) {
         return new Promise(async (resolve) => {
             const signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
@@ -74,6 +74,10 @@ export class ActionsService {
 
                 if (eSignature !== null) {
                     data = {...data, ...eSignature }
+                }
+
+                if (note !== null) {
+                    data['note'] = note;
                 }
 
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)

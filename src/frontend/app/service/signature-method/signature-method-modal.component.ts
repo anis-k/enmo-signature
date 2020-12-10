@@ -38,6 +38,8 @@ export class SignatureMethodModalComponent implements OnInit {
 
     signature: string;
 
+    @Input() note: string;
+
     constructor(
         public modalController: ModalController,
         public http: HttpClient,
@@ -48,35 +50,7 @@ export class SignatureMethodModalComponent implements OnInit {
         public actionsService: ActionsService,
     ) { }
 
-    ngOnInit(): void {
-        // this.interval = setInterval(async () => {
-        //     console.log('attempt', this.attempt);
-        //     const res = await this.checkCertificate();
-        //     if (res) {
-        //         this.status = 'SUCCESS';
-        //         clearInterval(this.interval);
-        //         setTimeout(() => {
-        //             this.modalController.dismiss(true);
-        //         }, 1000);
-        //     } else if (this.attempt === this.nbTry) {
-        //         this.status = 'ERROR';
-        //         clearInterval(this.interval);
-        //         setTimeout(() => {
-        //             this.modalController.dismiss(false);
-        //         }, 1000);
-        //     }
-        //     this.attempt++;
-        // }, 1000);
-    }
-
-    checkCertificate() {
-        // return new Promise((resolve) => {
-        //     setTimeout(() => {
-        //         console.log('end request');
-        //         resolve(false);
-        //     }, 800);
-        // });
-    }
+    ngOnInit(): void { }
 
     async continueSignature(certData: any) {
         this.loadingController.create({
@@ -94,34 +68,13 @@ export class SignatureMethodModalComponent implements OnInit {
                 certificate: this.certPem
             }
 
-            const res: any = await this.actionsService.sendDocument(certificate);
-            console.log('sendDocument', res);
-            
+            const res: any = await this.actionsService.sendDocument(this.note, certificate);
+
             if (res !== false) {
                 await this.signDocument(res.hashDocument, res.signatureContentLength);
             }
             load.dismiss();
         });
-
-        // this.http.post('../rest/testFortify?action=start', {certificate: certPem}).pipe(
-        //     tap(async (dataToSign: any) => {
-        //         const message = this.fromHex(dataToSign.dataToSign);
-        //         const alg = {
-        //             name: privateKey.algorithm.name,
-        //             hash: 'SHA-256',
-        //         };
-        //         this.signature = await provider.subtle.sign(alg, privateKey, message);
-        //     }),
-        //     exhaustMap(() => this.http.post('../rest/testFortify?action=complete', {signature: this.signature})),
-        //     tap(() => {
-        //         console.log('signature ok');
-        //         this.modalController.dismiss(true);
-        //     }),
-        //     catchError(err => {
-        //         this.notificationService.handleErrors(err);
-        //         return of(false);
-        //     })
-        // ).subscribe();
     }
 
     signDocument(hashDocument: any, eSignatureLength: any) {
