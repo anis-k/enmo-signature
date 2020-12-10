@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { SignatureMethodModalComponent } from './signature-method-modal.component';
+import { ActionsService } from '../actions.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,17 +11,26 @@ export class SignatureMethodService {
 
   constructor(
     public http: HttpClient,
-    public modalController: ModalController
+    public modalController: ModalController,
+    public actionsService: ActionsService,
   ) { }
 
-  async checkAuthentication(userWorkflow: any) {
+  async checkAuthenticationAndLaunchAction(userWorkflow: any) {
     console.log(userWorkflow);
     if (userWorkflow.signatureMode === 'rgs_2stars') {
       const res = await this.openRgsAuth();
       return res;
     } else {
-      return true;
+      const res = await this.launchDefaultMode();
+      return res;
     }
+  }
+
+  async launchDefaultMode() {
+    return new Promise(async (resolve) => {
+      const res = await this.actionsService.sendDocument();
+      resolve(res);
+    });
   }
 
   async openRgsAuth() {

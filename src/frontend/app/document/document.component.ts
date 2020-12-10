@@ -682,33 +682,21 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        const certInfo = await this.signatureMethodService.checkAuthentication(currentUserWorkflow);
-                        console.log('result auth', certInfo);
-                        if (certInfo !== false) {
-                            this.loadingController.create({
-                                message: this.translate.instant('lang.processing') + ' ...',
-                                spinner: 'dots'
-                            }).then(async (load: HTMLIonLoadingElement) => {
-                                load.present();
-                                const res = await this.sendDocument({ 'note': data.paragraph, 'certInfo': certInfo });
-                                if (res) {
-                                    if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
-                                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                                        if (this.signaturesService.documentsListCount.current > 0) {
-                                            this.signaturesService.documentsListCount.current--;
-                                        }
-                                    }
-                                    const config: MatBottomSheetConfig = {
-                                        disableClose: true,
-                                        direction: 'ltr'
-                                    };
-                                    this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                                    this.localStorage.remove(this.mainDocument.id.toString());
+                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow);
+                        if (res !== false) {
+                            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
+                                this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                                if (this.signaturesService.documentsListCount.current > 0) {
+                                    this.signaturesService.documentsListCount.current--;
                                 }
-                                load.dismiss();
-                            });
+                            }
+                            const config: MatBottomSheetConfig = {
+                                disableClose: true,
+                                direction: 'ltr'
+                            };
+                            this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                            this.localStorage.remove(this.mainDocument.id.toString());
                         }
-
                     }
                 }
             ]
