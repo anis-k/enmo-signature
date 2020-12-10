@@ -51,7 +51,7 @@ class SearchController
 
         $whereWorkflow = [];
         $dataWorkflow = [];
-        if (Validator::arrayType()->notEmpty()->validate($body['workflowStates'])) {
+        if (Validator::arrayType()->notEmpty()->validate($body['workflowStates'] ?? null)) {
             $whereStatuses = [];
             if (in_array('VAL', $body['workflowStates'])) {
                 $whereStatuses[] = "main_document_id not in (SELECT DISTINCT main_document_id FROM workflows WHERE status is null OR status in ('REF', 'END', 'STOP'))";
@@ -90,7 +90,7 @@ class SearchController
             $data[]  = $documentIds;
         }
 
-        if (Validator::stringType()->notEmpty()->validate($body['title'])) {
+        if (Validator::stringType()->notEmpty()->validate($body['title'] ?? null)) {
             $requestData = SearchController::getDataForRequest([
                 'search'        => $body['title'],
                 'fields'        => 'unaccent(title) ilike unaccent(?::text)',
@@ -102,7 +102,7 @@ class SearchController
             $where[] = implode(' AND ', $requestData['where']);
             $data    = array_merge($data, $requestData['data']);
         }
-        if (Validator::stringType()->notEmpty()->validate($body['reference'])) {
+        if (Validator::stringType()->notEmpty()->validate($body['reference'] ?? null)) {
             $where[] = 'reference ilike ?';
             $data[] = "%{$body['reference']}%";
         }

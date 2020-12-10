@@ -25,9 +25,6 @@ class CertificateSignatureController
 
     public static function getHashedCertificate(array $args)
     {
-        $libDir   = CoreConfigModel::getLibrariesDirectory();
-        require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
-
         $adr = AdrModel::getDocumentsAdr([
             'select'  => ['path', 'filename'],
             'where'   => ['main_document_id = ?', 'type = ?'],
@@ -101,8 +98,6 @@ class CertificateSignatureController
 
     public static function signDocument($args = [])
     {
-        $libDir   = CoreConfigModel::getLibrariesDirectory();
-        require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
         $certificateSignature = \SetaPDF_Core_Type_HexString::hex2str($args['hashSignature']);
         $signatureContentLength = $args['signatureContentLength'];
         $certificate = $args['certificate'];

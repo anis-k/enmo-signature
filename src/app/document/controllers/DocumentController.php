@@ -506,8 +506,12 @@ class DocumentController
         $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id', 'signature_mode', 'digital_signature_id'], 'documentId' => $args['id']]);
         $libDir   = CoreConfigModel::getLibrariesDirectory();
         $loadedXml = CoreConfigModel::getConfig();
-        if ($loadedXml->docaposteSignature->enable == 'true' && $workflow['signature_mode'] == 'eidas' && (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php'))) {
-            return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
+
+        if ($workflow['mode'] == 'sign' && $workflow['signature_mode'] != 'stamp') {
+            if (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
+                return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
+            }
+            require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
         }
 
         $body = $request->getParsedBody();
@@ -695,68 +699,64 @@ class DocumentController
                 ]);
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
                 $imageSignature = false;
-                if (!empty($libDir) && is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
-                    require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
-                    
-                    $adr = AdrModel::getDocumentsAdr([
-                        'select'  => ['path', 'filename'],
-                        'where'   => ['main_document_id = ?', 'type = ?'],
-                        'data'    => [$args['id'], 'ESIGN']
-                    ]);
-                    $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-                    $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-                    $tmpPath            = CoreConfigModel::getTmpPath();
-                    $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
-                    $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
-                    $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
-    
-                    $pages = $document->getCatalog()->getPages();
-                    $pageCount = $pages->count();
-    
-                    for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
-                        $page = $pages->getPage($pageNumber);
-    
-                        $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
-                        foreach ($body['signatures'] as $key => $signature) {
-                            if ($signature['page'] == $pageNumber) {
-                                $image = base64_decode($signature['encodedImage']);
-                                if ($image === false) {
-                                    return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
-                                }
-                                
-                                $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
-                                if ($signature['type'] == 'SVG') {
-                                    $Imagick = new \Imagick();
-                                    $Imagick->readImageBlob($image);
-                                    $Imagick->setImageFormat("png24");
-                                    $Imagick->writeImage($imageTmpPath);
-                                    $Imagick->clear();
-                                    $Imagick->destroy();
+                $adr = AdrModel::getDocumentsAdr([
+                    'select'  => ['path', 'filename'],
+                    'where'   => ['main_document_id = ?', 'type = ?'],
+                    'data'    => [$args['id'], 'ESIGN']
+                ]);
+                $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+                $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+                $tmpPath            = CoreConfigModel::getTmpPath();
+                $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
+                $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
+                $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
+
+                $pages = $document->getCatalog()->getPages();
+                $pageCount = $pages->count();
+
+                for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+                    $page = $pages->getPage($pageNumber);
+
+                    $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
+                    foreach ($body['signatures'] as $key => $signature) {
+                        if ($signature['page'] == $pageNumber) {
+                            $image = base64_decode($signature['encodedImage']);
+                            if ($image === false) {
+                                return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
+                            }
+
+                            $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
+                            if ($signature['type'] == 'SVG') {
+                                $Imagick = new \Imagick();
+                                $Imagick->readImageBlob($image);
+                                $Imagick->setImageFormat("png24");
+                                $Imagick->writeImage($imageTmpPath);
+                                $Imagick->clear();
+                                $Imagick->destroy();
+                            } else {
+                                file_put_contents($imageTmpPath, $image);
+                                if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
+                                    $signWidth = $format['width'];
+                                    $signPosX  = 0;
+                                    $signPosY  = 0;
                                 } else {
-                                    file_put_contents($imageTmpPath, $image);
-                                    if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
-                                        $signWidth = $format['width'];
-                                        $signPosX  = 0;
-                                        $signPosY  = 0;
-                                    } else {
-                                        $signWidth = ($signature['width'] * $format['width']) / 100;
-                                        $signPosX  = ($signature['positionX'] * $format['width']) / 100;
-                                        $signPosY  = ($signature['positionY'] * $format['height']) / 100;
-                                    }
-                                    DigitalSignatureController::signHashes([
-                                        'signatureId'   => $workflow['digital_signature_id'],
-                                        'documentId'    => $args['id'],
-                                        'signatureInfo' => [
-                                            'page'          => $signature['page'],
-                                            'positionX'     => $signPosX,
-                                            'positionY'     => $signPosY,
-                                            'filePath'      => $imageTmpPath,
-                                            'signWidth'     => $signWidth
-                                        ],
-                                        'isLastSignature' => !isset($body['signatures'][$key + 1])
-                                    ]);
-                                    $imageSignature = true;
+                                    $signWidth = ($signature['width'] * $format['width']) / 100;
+                                    $signPosX  = ($signature['positionX'] * $format['width']) / 100;
+                                    $signPosY  = ($signature['positionY'] * $format['height']) / 100;
                                 }
+                                DigitalSignatureController::signHashes([
+                                    'signatureId'   => $workflow['digital_signature_id'],
+                                    'documentId'    => $args['id'],
+                                    'signatureInfo' => [
+                                        'page'          => $signature['page'],
+                                        'positionX'     => $signPosX,
+                                        'positionY'     => $signPosY,
+                                        'filePath'      => $imageTmpPath,
+                                        'signWidth'     => $signWidth
+                                    ],
+                                    'isLastSignature' => !isset($body['signatures'][$key + 1])
+                                ]);
+                                $imageSignature = true;
                             }
                         }
                     }
