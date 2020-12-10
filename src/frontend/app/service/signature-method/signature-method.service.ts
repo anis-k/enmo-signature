@@ -17,7 +17,7 @@ export class SignatureMethodService {
 
     async checkAuthenticationAndLaunchAction(userWorkflow: any, note: any = null) {
         console.log(userWorkflow);
-        if (userWorkflow.signatureMode === 'rgs_2stars') {
+        if (['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'].indexOf(userWorkflow.signatureMode) > -1) {
             const res = await this.openRgsAuth(note);
             return res;
         } else {

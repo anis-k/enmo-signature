@@ -14,12 +14,6 @@ import { SignaturesContentService } from '../signatures.service';
     styleUrls: ['./signature-method-modal.component.scss']
 })
 export class SignatureMethodModalComponent implements OnInit {
-
-    status = 'WAITING';
-    attempt = 1;
-    nbTry = 10;
-    interval: any;
-
     filters: any = {
         //   onlySmartcards: false,
         expired: false,
@@ -74,6 +68,7 @@ export class SignatureMethodModalComponent implements OnInit {
                 await this.signDocument(res.hashDocument, res.signatureContentLength);
             }
             load.dismiss();
+            this.modalController.dismiss(true);
         });
     }
 
