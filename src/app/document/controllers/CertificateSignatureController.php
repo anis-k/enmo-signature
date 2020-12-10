@@ -89,6 +89,8 @@ class CertificateSignatureController
             new \SetaPDF_Core_Writer_File($tempPath),
             $module
         );
+        $_SESSION['tmpDocument'] = $tmpDocument;
+        $_SESSION['module'] = $module;
 
         return [
             'dataToSign'                => \SetaPDF_Core_Type_HexString::str2hex($module->getDataToSign($tmpDocument->getHashFile())),
@@ -99,8 +101,6 @@ class CertificateSignatureController
     public static function signDocument($args = [])
     {
         $certificateSignature = \SetaPDF_Core_Type_HexString::hex2str($args['hashSignature']);
-        $signatureContentLength = $args['signatureContentLength'];
-        $certificate = $args['certificate'];
 
         $adr = AdrModel::getDocumentsAdr([
             'select'  => ['path', 'filename'],
@@ -125,58 +125,14 @@ class CertificateSignatureController
         $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
         $signer             = new \SetaPDF_Signer($document);
 
-        // create a module instance
-        $module = new \SetaPDF_Signer_Signature_Module_Pades();
-        // create a certificate instance
-        $certificate = new \SetaPDF_Signer_X509_Certificate($certificate);
-        // pass the user certificate to the module
-        $module->setCertificate($certificate);
-        // setup information resolver manager
-        $informationResolverManager = new \SetaPDF_Signer_InformationResolver_Manager();
-        $informationResolverManager->addResolver(new \SetaPDF_Signer_InformationResolver_HttpCurlResolver());
-        $extraCerts = new \SetaPDF_Signer_X509_Collection();
-
-        $certificates = [$certificate];
-        while (count($certificates) > 0) {
-            $currentCertificate = array_pop($certificates);
-            $aia = $currentCertificate->getExtensions()->get(\SetaPDF_Signer_X509_Extension_AuthorityInformationAccess::OID);
-            if ($aia instanceof \SetaPDF_Signer_X509_Extension_AuthorityInformationAccess) {
-                foreach ($aia->fetchIssuers($informationResolverManager)->getAll() as $issuer) {
-                    $extraCerts->add($issuer);
-                    $certificates[] = $issuer;
-                }
-            }
-        }
-        
-        $module->setExtraCertificates($extraCerts);
-        $signer->setSignatureContentLength($signatureContentLength);
-
         // pass the signature to the signature module
-        $module->setSignatureValue($certificateSignature);
+        $_SESSION['module']->setSignatureValue($certificateSignature);
         // get the CMS structur from the signature module
-        $cms = (string)$module->getCms();
-        
-        $ts = $certificate->getExtensions()->get(\SetaPDF_Signer_X509_Extension_TimeStamp::OID);
-        if ($ts && $ts->getVersion() === 1 && $ts->requiresAuth() === false) {
-            $tsLocation = $ts->getLocation();
-        }
-
-        if (isset($tsLocation)) {
-            $tsModule = new \SetaPDF_Signer_Timestamp_Module_Rfc3161_Curl($tsLocation);
-            $signer->setTimestampModule($tsModule);
-            $cms = $signer->addTimeStamp($cms, $tmpDocument);
-        }
-
-        $tempPath = \SetaPDF_Core_Writer_TempFile::createTempPath();
-        $tmpDocument = $signer->preSign(
-            new \SetaPDF_Core_Writer_File($tempPath),
-            $module
-        );
+        $cms = (string)$_SESSION['module']->getCms();
 
         // save the signature to the temporary document
-        $signer->saveSignature($tmpDocument, $cms);
         try {
-            $signer->saveSignature($tmpDocument, $cms);
+            $signer->saveSignature($_SESSION['tmpDocument'], $cms);
             // unlink($tmpDocument->getWriter()->getPath());
         } catch (\SetaPDF_Signer_Exception_ContentLength $e) {
             // unlink($tmpDocument->getWriter()->getPath());
