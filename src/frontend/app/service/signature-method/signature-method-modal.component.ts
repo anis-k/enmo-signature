@@ -1,9 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import {catchError, exhaustMap, tap} from 'rxjs/operators';
-import {of} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {NotificationService} from '../notification.service';
+import { LoadingController, ModalController } from '@ionic/angular';
+import { catchError, exhaustMap, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { NotificationService } from '../notification.service';
+import { TranslateService } from '@ngx-translate/core';
+import { ActionsService } from '../actions.service';
+import { SignaturesContentService } from '../signatures.service';
 
 @Component({
     selector: 'signature-method-modal',
@@ -28,12 +31,21 @@ export class SignatureMethodModalComponent implements OnInit {
         onlyWithPrivateKey: true
     };
 
+    provider: any = null;
+    cert: any = null;
+    certPem: any = null;
+    privateKey: any = null;
+
     signature: string;
 
     constructor(
         public modalController: ModalController,
         public http: HttpClient,
+        public translate: TranslateService,
         public notificationService: NotificationService,
+        public loadingController: LoadingController,
+        public signaturesService: SignaturesContentService,
+        public actionsService: ActionsService,
     ) { }
 
     ngOnInit(): void {
@@ -67,22 +79,29 @@ export class SignatureMethodModalComponent implements OnInit {
     }
 
     async continueSignature(certData: any) {
-        console.log(certData);
+        this.loadingController.create({
+            message: this.translate.instant('lang.processing'),
+            spinner: 'dots'
+        }).then(async (load: HTMLIonLoadingElement) => {
+            load.present();
 
-        const provider = await certData.detail.server.getCrypto(certData.detail.providerId);
+            this.provider = await certData.detail.server.getCrypto(certData.detail.providerId);
+            this.cert = await this.provider.certStorage.getItem(certData.detail.certificateId);
+            this.certPem = await this.provider.certStorage.exportCert('pem', this.cert);
+            this.privateKey = await this.provider.keyStorage.getItem(certData.detail.privateKeyId);
 
-        const cert = await provider.certStorage.getItem(certData.detail.certificateId);
-        const certPem = await provider.certStorage.exportCert('pem', cert);
-        const privateKey = await provider.keyStorage.getItem(certData.detail.privateKeyId);
+            const certificate = {
+                certificate: this.certPem
+            }
 
-        console.log('cert = ');
-        console.log(cert);
-        console.log('certPem = ');
-        console.log(certPem);
-        console.log('privateKey = ');
-        console.log(privateKey);
-
-        await this.modalController.dismiss({certificate: certPem, certData: certData, privateKey: privateKey});
+            const res: any = await this.actionsService.sendDocument(certificate);
+            console.log('sendDocument', res);
+            
+            if (res !== false) {
+                await this.signDocument(res.hashDocument, res.signatureContentLength);
+            }
+            load.dismiss();
+        });
 
         // this.http.post('../rest/testFortify?action=start', {certificate: certPem}).pipe(
         //     tap(async (dataToSign: any) => {
@@ -105,17 +124,71 @@ export class SignatureMethodModalComponent implements OnInit {
         // ).subscribe();
     }
 
+    signDocument(hashDocument: any, eSignatureLength: any) {
+        console.log(hashDocument);
+        console.log(eSignatureLength);
+        
+        return new Promise(async (resolve) => {
+            const alg = {
+                name: this.privateKey.algorithm.name,
+                hash: 'SHA-256',
+            };
+            const hashDocumentHex = this.fromHex(hashDocument);
+
+            console.log('hashDocumentHex', hashDocumentHex);
+            
+
+            const hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
+
+            console.log('hashSignature', hashSignature);
+            
+
+            const objEsign = {
+                certificate: this.certPem,
+                hashSignature: this.toHex(hashSignature),
+                signatureContentLength: eSignatureLength
+            }
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objEsign)
+                .pipe(
+                    tap((res: any) => {
+                        resolve(true);
+                    }),
+                    catchError((err: any) => {
+                        this.notificationService.handleErrors(err);
+                        resolve(false);
+                        return of(false);
+                    })
+                ).subscribe();
+
+        });
+    }
+
     cancelSign(data: any) {
         console.log(data);
         this.modalController.dismiss(false);
     }
 
-    // fromHex(hexString: any) {
-    //     const res = new Uint8Array(hexString.length / 2);
-    //     for (let i = 0; i < hexString.length; i = i + 2) {
-    //         const c = hexString.slice(i, i + 2);
-    //         res[i / 2] = parseInt(c, 16);
-    //     }
-    //     return res.buffer;
-    // }
+    toHex(buffer: any) {
+        let buf = new Uint8Array(buffer),
+            splitter = "",
+            res = [],
+            len = buf.length;
+
+        for (let i = 0; i < len; i++) {
+            let char = buf[i].toString(16);
+            res.push(char.length === 1 ? "0" + char : char);
+        }
+        return res.join(splitter);
+    }
+
+
+    fromHex(hexString: any) {
+        const res = new Uint8Array(hexString.length / 2);
+        for (let i = 0; i < hexString.length; i = i + 2) {
+            const c = hexString.slice(i, i + 2);
+            res[i / 2] = parseInt(c, 16);
+        }
+        return res.buffer;
+    }
+
 }

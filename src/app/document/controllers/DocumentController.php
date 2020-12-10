@@ -770,9 +770,9 @@ class DocumentController
         } elseif ($workflow['signature_mode'] == 'rgs_2stars' && !empty($body['hashSignature'])) {
             $return = CertificateSignatureController::signDocument([
                 'id'                     => $args['id'],
-                'certificate'            => $args['certificate'],
-                'signatureContentLength' => $args['signatureContentLength'],
-                'hashSignature'          => $args['hashSignature']
+                'certificate'            => $body['certificate'],
+                'signatureContentLength' => $body['signatureContentLength'],
+                'hashSignature'          => $body['hashSignature']
             ]);
             if (!empty($return['errors'])) {
                 return $response->withStatus(400)->withJson($return);

@@ -692,6 +692,12 @@ export class DocumentComponent implements OnInit {
                                 load.present();
                                 const res = await this.sendDocument({ 'note': data.paragraph, 'certInfo': certInfo });
                                 if (res) {
+                                    if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
+                                        this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
+                                        if (this.signaturesService.documentsListCount.current > 0) {
+                                            this.signaturesService.documentsListCount.current--;
+                                        }
+                                    }
                                     const config: MatBottomSheetConfig = {
                                         disableClose: true,
                                         direction: 'ltr'
