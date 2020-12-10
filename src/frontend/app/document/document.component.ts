@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
@@ -21,7 +21,7 @@ import { NgxExtendedPdfViewerService } from 'ngx-extended-pdf-viewer';
 import {catchError, exhaustMap, tap} from 'rxjs/operators';
 import { of } from 'rxjs';
 import { SignatureMethodService } from '../service/signature-method/signature-method.service';
-import {sign} from "crypto";
+import { FunctionsService } from '../service/functions.service';
 
 @Component({
     selector: 'app-document',
@@ -118,7 +118,8 @@ export class DocumentComponent implements OnInit {
         private pdfViewerService: NgxExtendedPdfViewerService,
         public alertController: AlertController,
         public signatureMethodService: SignatureMethodService,
-        public navCtrl: NavController
+        public navCtrl: NavController,
+        private functionsService: FunctionsService
     ) {
         this.draggable = false;
     }
@@ -683,7 +684,7 @@ export class DocumentComponent implements OnInit {
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow);
-                        if (res !== false) {
+                        if (!this.functionsService.empty(res)) {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                                 if (this.signaturesService.documentsListCount.current > 0) {
