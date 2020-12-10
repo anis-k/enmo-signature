@@ -25,6 +25,8 @@ class CertificateSignatureController
 
     public static function getHashedCertificate(array $args)
     {
+        session_start();
+
         $adr = AdrModel::getDocumentsAdr([
             'select'  => ['path', 'filename'],
             'where'   => ['main_document_id = ?', 'type = ?'],
@@ -79,27 +81,23 @@ class CertificateSignatureController
         }
         $signer->setSignatureContentLength($signatureContentLength);
 
-        $ts = $certificate->getExtensions()->get(\SetaPDF_Signer_X509_Extension_TimeStamp::OID);
-        if ($ts && $ts->getVersion() === 1 && $ts->requiresAuth() === false) {
-            $signer->setSignatureContentLength($signatureContentLength + 6000);
-        }
-
         $tempPath = \SetaPDF_Core_Writer_TempFile::createTempPath();
-        $tmpDocument = $signer->preSign(
+        $_SESSION['tmpDocument'] = $signer->preSign(
             new \SetaPDF_Core_Writer_File($tempPath),
             $module
         );
-        $_SESSION['tmpDocument'] = $tmpDocument;
         $_SESSION['module'] = $module;
 
         return [
-            'dataToSign'                => \SetaPDF_Core_Type_HexString::str2hex($module->getDataToSign($tmpDocument->getHashFile())),
+            'dataToSign'                => \SetaPDF_Core_Type_HexString::str2hex($module->getDataToSign($_SESSION['tmpDocument']->getHashFile())),
             'signatureContentLength'    => $signatureContentLength
         ];
     }
 
     public static function signDocument($args = [])
     {
+        session_start();
+
         $certificateSignature = \SetaPDF_Core_Type_HexString::hex2str($args['hashSignature']);
 
         $adr = AdrModel::getDocumentsAdr([
@@ -125,12 +123,10 @@ class CertificateSignatureController
         $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
         $signer             = new \SetaPDF_Signer($document);
 
-        // pass the signature to the signature module
         $_SESSION['module']->setSignatureValue($certificateSignature);
-        // get the CMS structur from the signature module
         $cms = (string)$_SESSION['module']->getCms();
 
-        // save the signature to the temporary document
+        $signatureContentLength = $args['signatureContentLength'];
         try {
             $signer->saveSignature($_SESSION['tmpDocument'], $cms);
             // unlink($tmpDocument->getWriter()->getPath());
@@ -162,5 +158,7 @@ class CertificateSignatureController
             'fingerprint' => $storeInfos['fingerprint']
         ]);
         // unlink($signedDocumentPath);
+
+        return true;
     }
 }

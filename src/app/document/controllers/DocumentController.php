@@ -513,7 +513,6 @@ class DocumentController
             }
             require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
         }
-        session_start();
 
         $body = $request->getParsedBody();
         if (!empty($body['signatures'])) {
