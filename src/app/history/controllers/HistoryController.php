@@ -215,7 +215,7 @@ class HistoryController
         $workflowTerminated   = true;
         $canGetdocaposteProof = true;
         foreach ($workflow as $step) {
-            if (!$hasEidas && $step['signature_mode'] == 'eidas') {
+            if (!$hasEidas && in_array($step['signature_mode'], ['eidas', 'rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
                 $hasEidas = true;
             }
             if (empty($step['status'])) {

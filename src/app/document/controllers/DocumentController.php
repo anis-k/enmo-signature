@@ -767,7 +767,7 @@ class DocumentController
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'REF' && $workflow['mode'] == 'sign') {
                 DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
             }
-        } elseif ($workflow['signature_mode'] == 'rgs_2stars' && !empty($body['hashSignature'])) {
+        } elseif (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas']) && !empty($body['hashSignature'])) {
             $return = CertificateSignatureController::signDocument([
                 'id'                     => $args['id'],
                 'certificate'            => $body['certificate'],
