@@ -1,7 +1,6 @@
-import { Component, OnInit, ElementRef, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatSidenav } from '@angular/material/sidenav';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { FormControl } from '@angular/forms';
@@ -25,7 +24,7 @@ export class SidebarComponent implements OnInit {
 
     @ViewChild('listContent') listContent: ElementRef;
     @ViewChild('searchInput') searchInput: ElementRef;
-
+    
     searchTerm: FormControl = new FormControl();
 
     constructor(
@@ -102,6 +101,7 @@ export class SidebarComponent implements OnInit {
     }
 
     filter(mode: string) {
+        this.signaturesService.documentsList = [];
         if (mode !== '') {
             this.searchMode = false;
         }
