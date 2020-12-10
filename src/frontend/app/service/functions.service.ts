@@ -13,7 +13,7 @@ export class FunctionsService {
     ) { }
 
     empty(value: any) {
-        if (value === null || value === undefined) {
+        if (value === null || value === undefined || value === false) {
             return true;
 
         } else if (Array.isArray(value)) {
