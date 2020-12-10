@@ -339,6 +339,7 @@ export class IndexationComponent implements OnInit {
                         };
                     }),
                     'signPos': this.filesToUpload[index].signPos,
+                    'pdfTitle': this.filesToUpload[index].title,
                     'pdfContent': 'data:application/pdf;base64,' + this.filesToUpload[index].content,
                 }
             });

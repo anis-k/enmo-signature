@@ -1,12 +1,6 @@
 <ion-header [translucent]="true">
     <ion-toolbar color="primary">
         <ion-title>{{'lang.adminSignaturesPositions' | translate}}</ion-title>
-        <ion-item lines="none" slot="end" color="primary">
-            <ion-label>{{'lang.page' | translate | titlecase}}</ion-label>
-            <ion-select interface="popover" [(ngModel)]="currentPage" (ionChange)="changePage($event.detail.value)">
-                <ion-select-option *ngFor="let page of pages" [value]="page">{{page}}</ion-select-option>
-            </ion-select>
-        </ion-item>
     </ion-toolbar>
     <ion-toolbar color="primary">
         <ion-segment color="warning" scrollable [value]="currentUser" (ionChange)="selectUser($event.detail.value)"
@@ -62,6 +56,22 @@
     <ngx-extended-pdf-viewer style="display: none;" [src]="pdfContent" [useBrowserLocale]="true" [textLayer]="false"
         (pdfLoaded)="onPagesLoaded($event)">
     </ngx-extended-pdf-viewer>
+    <section class="page-info">
+        <div class="page-info-doc">{{pdfTitle}}</div>
+        <div class="page-info-page" (click)="pages.length > 1 ? pagesList.open() : false">{{'lang.page' | translate}} {{ currentPage }} / {{ pages.length }}</div>
+        <ion-select [cancelText]="'lang.cancel' | translate" style="max-height: 30%;" interface="action-sheet" #pagesList (ionChange)="changePage($event.target.value)" hidden="true">
+            <ion-select-option  *ngFor="let page of pages;let i=index" [value]="page">{{ i + 1 }}</ion-select-option>
+        </ion-select>
+    </section>
+    <ng-container *ngIf="pages.length > 1">
+        <ion-fab-button *ngIf="currentPage > 1" (click)="changePage(currentPage-1)" class="paginate-left">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-button *ngIf="currentPage < pages.length" (click)="changePage(currentPage+1)" 
+            class="paginate-right">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-fab-button>
+    </ng-container>
 </ion-content>
 <ion-footer class="ion-no-border footer-buttons">
     <div>

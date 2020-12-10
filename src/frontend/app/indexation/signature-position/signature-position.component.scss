@@ -55,14 +55,17 @@
     font-size: 12px;
     bottom: 20px;
     font-weight: normal;
-    color: var(--ion-color-primary);
+    color: white;
+    font-style: italic;
 }
+
 .chip-item-content {
     z-index: 9999;
     position: absolute;
     margin: 0px;
     bottom: 0px;
 }
+
 .chip-item {
     font-size: 7px;
     width: 15px;
@@ -79,3 +82,72 @@
 img {
     pointer-events: none;
 }
+
+.paginate-left {
+    position: absolute;
+    top: 40%;
+    left: 20px;
+    transform: translateY(-50%);
+    --background: #c6c6c680;
+    --color: #666;
+}
+
+.paginate-right {
+    position: absolute;
+    top: 40%;
+    right: 20px;
+    transform: translateY(-50%);
+    --background: #c6c6c680;
+    --color: #666;
+}
+
+.page {
+    &-info {
+      position: absolute;
+      bottom: 70px;
+      height: 30px;
+      width: auto;
+      max-width: 70%;
+      color: rgba(var(--ion-color-dark-rgb), 0.8);
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.5;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: 500;
+      transition: all 0.3s ease-in-out;
+      z-index: 9999;
+  
+      &-doc {
+        max-width: 80%;
+        background-color: #F1F4F4;
+        border-radius: 14px;
+        padding: 0 20px;
+        z-index: 1;
+        white-space: pre;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+  
+      &-page {
+        cursor: pointer;
+        text-align: center;
+        border-radius: 0 14px 14px 0;
+        padding: 0 20px;
+        background: #fff;
+        border: 1px solid #ECF0F1;
+        margin-left: -15px;
+        height: 28px;
+        white-space: pre;
+        display: flex;
+        align-items: center;
+      }
+    }
+    &-info:hover {
+      opacity: 1;
+    }
+  }

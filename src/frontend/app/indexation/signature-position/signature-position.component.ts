@@ -14,6 +14,7 @@ export class SignaturePositionComponent implements OnInit {
     @Input() workflow: any = [];
     @Input() signPos: any = [];
     @Input() pdfContent: any = null;
+    @Input() pdfTitle: string = '';
 
     loading: boolean = false;
     dragging: boolean = false;
