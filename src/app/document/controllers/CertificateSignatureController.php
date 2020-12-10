@@ -27,11 +27,33 @@ class CertificateSignatureController
     {
         $libDir   = CoreConfigModel::getLibrariesDirectory();
         require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
-        $document = \SetaPDF_Core_Document::loadByString($args['document']);
 
-        $signer = new \SetaPDF_Signer($document);
-        $module = new \SetaPDF_Signer_Signature_Module_Pades();
-        $certificate = new \SetaPDF_Signer_X509_Certificate($args['certificate']);
+        $adr = AdrModel::getDocumentsAdr([
+            'select'  => ['path', 'filename'],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'ESIGN']
+        ]);
+        if (!empty($adr)) {
+            $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+            $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        } else {
+            $adr = AdrModel::getDocumentsAdr([
+                'select' => ['path', 'filename'],
+                'where'  => ['main_document_id = ?', 'type = ?'],
+                'data'   => [$args['id'], 'DOC']
+            ]);
+            $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        }
+        $tmpPath            = CoreConfigModel::getTmpPath();
+        $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
+
+        $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
+        $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
+        $signer             = new \SetaPDF_Signer($document);
+
+        $module             = new \SetaPDF_Signer_Signature_Module_Pades();
+        $certificate        = new \SetaPDF_Signer_X509_Certificate($args['certificate']);
 
         $module->setCertificate($certificate);
 
@@ -90,8 +112,18 @@ class CertificateSignatureController
             'where'   => ['main_document_id = ?', 'type = ?'],
             'data'    => [$args['id'], 'ESIGN']
         ]);
-        $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-        $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!empty($adr)) {
+            $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+            $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        } else {
+            $adr = AdrModel::getDocumentsAdr([
+                'select' => ['path', 'filename'],
+                'where'  => ['main_document_id = ?', 'type = ?'],
+                'data'   => [$args['id'], 'DOC']
+            ]);
+            $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        }
         $tmpPath            = CoreConfigModel::getTmpPath();
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
         $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
@@ -122,10 +154,6 @@ class CertificateSignatureController
         }
         
         $module->setExtraCertificates($extraCerts);
-
-        foreach ($extraCerts->getAll() as $extraCert) {
-            $signatureContentLength += (strlen($extraCert->get(\SetaPDF_Signer_X509_Format::DER)) * 2);
-        }
         $signer->setSignatureContentLength($signatureContentLength);
 
         // pass the signature to the signature module

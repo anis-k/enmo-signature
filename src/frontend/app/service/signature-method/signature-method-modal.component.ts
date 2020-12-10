@@ -82,7 +82,7 @@ export class SignatureMethodModalComponent implements OnInit {
         console.log('privateKey = ');
         console.log(privateKey);
 
-        await this.modalController.dismiss({certificate: certPem});
+        await this.modalController.dismiss({certificate: certPem, certData: certData, privateKey: privateKey});
 
         // this.http.post('../rest/testFortify?action=start', {certificate: certPem}).pipe(
         //     tap(async (dataToSign: any) => {
@@ -110,12 +110,12 @@ export class SignatureMethodModalComponent implements OnInit {
         this.modalController.dismiss(false);
     }
 
-    fromHex(hexString: any) {
-        const res = new Uint8Array(hexString.length / 2);
-        for (let i = 0; i < hexString.length; i = i + 2) {
-            const c = hexString.slice(i, i + 2);
-            res[i / 2] = parseInt(c, 16);
-        }
-        return res.buffer;
-    }
+    // fromHex(hexString: any) {
+    //     const res = new Uint8Array(hexString.length / 2);
+    //     for (let i = 0; i < hexString.length; i = i + 2) {
+    //         const c = hexString.slice(i, i + 2);
+    //         res[i / 2] = parseInt(c, 16);
+    //     }
+    //     return res.buffer;
+    // }
 }

@@ -682,15 +682,15 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        const certificate = await this.signatureMethodService.checkAuthentication(currentUserWorkflow);
-                        console.log('result auth', certificate);
-                        if (certificate !== false) {
+                        const certInfo = await this.signatureMethodService.checkAuthentication(currentUserWorkflow);
+                        console.log('result auth', certInfo);
+                        if (certInfo !== false) {
                             this.loadingController.create({
                                 message: this.translate.instant('lang.processing') + ' ...',
                                 spinner: 'dots'
                             }).then(async (load: HTMLIonLoadingElement) => {
                                 load.present();
-                                const res = await this.sendDocument({ 'note': data.paragraph, 'certificate': certificate });
+                                const res = await this.sendDocument({ 'note': data.paragraph, 'certInfo': certInfo });
                                 if (res) {
                                     const config: MatBottomSheetConfig = {
                                         disableClose: true,
@@ -712,7 +712,7 @@ export class DocumentComponent implements OnInit {
     }
 
     sendDocument(data: any) {
-        return new Promise((resolve) => {
+        return new Promise(async (resolve) => {
             const signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
                 for (let index = 1; index <= this.signaturesService.totalPage; index++) {
@@ -760,12 +760,16 @@ export class DocumentComponent implements OnInit {
                     }
                 }
                 data.signatures = signatures;
-                const privateKey = data.privatekey;
-                data.privateKey = undefined;
-                const signDocumentWith2Steps = data.certificate !== undefined && data.certificate !== false && data.certificate !== true;
+                let certData = data.certInfo.certData;
+                const provider = await certData.detail.server.getCrypto(certData.detail.providerId);
+                const privateKey = data.certInfo.privateKey;
+                data.certificate = data.certInfo.certificate
+                const certificate = data.certificate;
+                data.certInfo = undefined;
+                const signDocumentWith2Steps = certificate !== undefined && certificate !== false && certificate !== true;
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)
                     .pipe(
-                        tap((signatureData) => {
+                        tap(async (signatureData: any) => {
                             if (signDocumentWith2Steps) {
                                 data.signatures = undefined;
 
@@ -774,9 +778,8 @@ export class DocumentComponent implements OnInit {
                                     name: privateKey.algorithm.name,
                                     hash: 'SHA-256',
                                 };
-                                signature = await provider.subtle.sign(alg, privateKey, message);
-
-                                // TODO mettre les infos à envoyer en step 2 dans data !!!!
+                                data.hashSignature = await provider.subtle.sign(alg, privateKey, message);
+                                data.signatureContentLength = signatureData.signatureContentLength;
                             }
                         }),
                         exhaustMap(() => signDocumentWith2Steps ? this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data) : null),

@@ -660,7 +660,7 @@ class DocumentController
             }
 
             if ($workflow['signature_mode'] == 'rgs_2stars') {
-                $hashInformations = CertificateSignatureController::getHashedCertificate(['document' => $fileContent, 'certificate' => $body['certificate']]);
+                $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'certificate' => $body['certificate']]);
                 return $response->withJson($hashInformations);
             }
         }
@@ -767,7 +767,7 @@ class DocumentController
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'REF' && $workflow['mode'] == 'sign') {
                 DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
             }
-        } elseif ($workflow['signature_mode'] == 'rgs_2stars') {
+        } elseif ($workflow['signature_mode'] == 'rgs_2stars' && !empty($body['hashSignature'])) {
             $return = CertificateSignatureController::signDocument([
                 'id'                     => $args['id'],
                 'certificate'            => $args['certificate'],
