@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LatinisePipe } from 'ngx-pipes';
-import { tap, exhaustMap, catchError } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { SignaturesContentService } from './signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { of } from 'rxjs';
@@ -69,11 +69,12 @@ export class ActionsService {
                     }
                 }
                 let data: any = {};
-                
+
                 data.signatures = signatures;
 
                 if (eSignature !== null) {
-                    data = {...data, ...eSignature }
+                    data = {...data, ...eSignature };
+                    data.step = 'hashCertificate';
                 }
 
                 if (note !== null) {
@@ -87,11 +88,11 @@ export class ActionsService {
                                 const objSignData = {
                                     hashDocument : res.dataToSign,
                                     signatureContentLength : res.signatureContentLength
-                                }
+                                };
                                 resolve(objSignData);
                             } else {
                                 resolve(true);
-                            } 
+                            }
                         }),
                         catchError((err: any) => {
                             this.notificationService.handleErrors(err);

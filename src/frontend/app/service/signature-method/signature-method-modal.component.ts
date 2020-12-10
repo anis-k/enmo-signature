@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { LoadingController, ModalController } from '@ionic/angular';
-import { catchError, exhaustMap, tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../notification.service';
@@ -60,7 +60,7 @@ export class SignatureMethodModalComponent implements OnInit {
 
             const certificate = {
                 certificate: this.certPem
-            }
+            };
 
             const res: any = await this.actionsService.sendDocument(this.note, certificate);
 
@@ -75,7 +75,7 @@ export class SignatureMethodModalComponent implements OnInit {
     signDocument(hashDocument: any, eSignatureLength: any) {
         console.log(hashDocument);
         console.log(eSignatureLength);
-        
+
         return new Promise(async (resolve) => {
             const alg = {
                 name: this.privateKey.algorithm.name,
@@ -84,18 +84,16 @@ export class SignatureMethodModalComponent implements OnInit {
             const hashDocumentHex = this.fromHex(hashDocument);
 
             console.log('hashDocumentHex', hashDocumentHex);
-            
 
             const hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
 
             console.log('hashSignature', hashSignature);
-            
 
             const objEsign = {
                 certificate: this.certPem,
                 hashSignature: this.toHex(hashSignature),
                 signatureContentLength: eSignatureLength
-            }
+            };
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objEsign)
                 .pipe(
                     tap((res: any) => {
@@ -117,18 +115,17 @@ export class SignatureMethodModalComponent implements OnInit {
     }
 
     toHex(buffer: any) {
-        let buf = new Uint8Array(buffer),
-            splitter = "",
+        const buf = new Uint8Array(buffer),
+            splitter = '',
             res = [],
             len = buf.length;
 
         for (let i = 0; i < len; i++) {
             let char = buf[i].toString(16);
-            res.push(char.length === 1 ? "0" + char : char);
+            res.push(char.length === 1 ? '0' + char : char);
         }
         return res.join(splitter);
     }
-
 
     fromHex(hexString: any) {
         const res = new Uint8Array(hexString.length / 2);
@@ -138,5 +135,4 @@ export class SignatureMethodModalComponent implements OnInit {
         }
         return res.buffer;
     }
-
 }

@@ -662,11 +662,13 @@ class DocumentController
             foreach ($pages as $page) {
                 exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
             }
-
-            if ($workflow['signature_mode'] == 'rgs_2stars') {
-                $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'certificate' => $body['certificate']]);
-                return $response->withJson($hashInformations);
+        }
+        if (!empty($body['step']) && $body['step'] == 'hashCertificate' && in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+            if (empty($body['certificate'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body certificate is empty']);
             }
+            $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'certificate' => $body['certificate']]);
+            return $response->withJson($hashInformations);
         }
 
         if ($loadedXml->docaposteSignature->enable == 'true' && $workflow['signature_mode'] == 'eidas') {
@@ -767,7 +769,10 @@ class DocumentController
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'REF' && $workflow['mode'] == 'sign') {
                 DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
             }
-        } elseif (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas']) && !empty($body['hashSignature'])) {
+        } elseif (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+            if (empty($body['hashSignature'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body hashSignature is empty']);
+            }
             $return = CertificateSignatureController::signDocument([
                 'id'                     => $args['id'],
                 'certificate'            => $body['certificate'],
