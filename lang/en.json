@@ -398,6 +398,13 @@
         "add": "Add",
         "dateInDocAdded": "Date added in document",
         "rejectDocumentWarning": "You are about to decline this document!",
-        "stampInTheMiddleImpossible": "You cannot add a Signatory with stamp after a Signatory with an electronic signature"
+        "stampInTheMiddleImpossible": "You cannot add a Signatory with stamp after a Signatory with an electronic signature",
+        "refuseDocumentWithoutNote": "You are about to reject this document without annotation!",
+        "rgs_2stars_timestamped": "RGS key ** + timestamp",
+        "loadingMoreData": "Load more data ...",
+        "validateDocumentWarning": "You are about to validate this document!",
+        "certifiedDocument": "Certified document",
+        "certifiedDocumentMsg": "The document was signed by digital certificate, you cannot affix a stamp.",
+        "errorUserSignType": "Signers without a certificate must be present before signers with a certificate."
     }
 }
