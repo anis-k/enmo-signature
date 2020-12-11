@@ -79,6 +79,7 @@ export class AuthInterceptor implements HttpInterceptor {
                                     catchError(err => {
                                         // Disconnect user if bad token process
                                         if (err.status === 401) {
+                                            this.notificationService.handleErrors(err);
                                             this.logout();
                                             return EMPTY;
                                         }
@@ -90,6 +91,7 @@ export class AuthInterceptor implements HttpInterceptor {
                             catchError(err => {
                                 // Disconnect user if bad token process
                                 if (err.status === 401) {
+                                    this.notificationService.handleErrors(err);
                                     this.logout();
                                 }
                                 return EMPTY;
