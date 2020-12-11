@@ -7,6 +7,8 @@ import { NotificationService } from '../notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActionsService } from '../actions.service';
 import { SignaturesContentService } from '../signatures.service';
+import { AuthService } from '../auth.service';
+import { FunctionsService } from '../functions.service';
 
 @Component({
     selector: 'signature-method-modal',
@@ -33,6 +35,7 @@ export class SignatureMethodModalComponent implements OnInit {
     signature: string;
 
     @Input() note: string;
+    @Input() signatureMode: string;
 
     constructor(
         public modalController: ModalController,
@@ -42,9 +45,16 @@ export class SignatureMethodModalComponent implements OnInit {
         public loadingController: LoadingController,
         public signaturesService: SignaturesContentService,
         public actionsService: ActionsService,
+        private functionsService: FunctionsService,
+        public authService: AuthService
     ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        const signatureModeData = this.authService.signatureRoles.filter((mode: any) => mode.id === this.signatureMode)[0];
+        if (!this.functionsService.empty(signatureModeData.issuer)) {
+            this.filters.issuerDNMatch = new RegExp(signatureModeData.issuer, 'i');
+        }
+    }
 
     async continueSignature(certData: any) {
         this.loadingController.create({
@@ -65,14 +75,14 @@ export class SignatureMethodModalComponent implements OnInit {
             const res: any = await this.actionsService.sendDocument(this.note, certificate);
 
             if (res !== false) {
-                await this.signDocument(res.hashDocument, res.signatureContentLength);
+                await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
             }
             load.dismiss();
             this.modalController.dismiss(true);
         });
     }
 
-    signDocument(hashDocument: any, eSignatureLength: any) {
+    signDocument(hashDocument: any, eSignatureLength: any, signatureFieldName: any) {
         console.log(hashDocument);
         console.log(eSignatureLength);
 
@@ -92,7 +102,8 @@ export class SignatureMethodModalComponent implements OnInit {
             const objEsign = {
                 certificate: this.certPem,
                 hashSignature: this.toHex(hashSignature),
-                signatureContentLength: eSignatureLength
+                signatureContentLength: eSignatureLength,
+                signatureFieldName: signatureFieldName,
             };
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objEsign)
                 .pipe(

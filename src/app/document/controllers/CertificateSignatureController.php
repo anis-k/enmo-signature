@@ -17,7 +17,10 @@ namespace Document\controllers;
 use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
+use Document\controllers\DigitalSignatureController;
+use Document\models\DocumentModel;
 use SrcCore\models\CoreConfigModel;
+use User\models\UserModel;
 
 class CertificateSignatureController
 {
@@ -79,8 +82,100 @@ class CertificateSignatureController
         foreach ($extraCerts->getAll() as $extraCert) {
             $signatureContentLength += (strlen($extraCert->get(\SetaPDF_Signer_X509_Format::DER)) * 2);
         }
+
+        $user = UserModel::getById(['id' => $GLOBALS['id'], 'select' => ['firstname', 'lastname', 'email']]);
+        $signer->setName($user['firstname'] . ' ' . $user['lastname'] . ' ('. $user['email'] . ')');
+        $signer->setReason('Signature du document par ' . $user['firstname'] . ' ' . $user['lastname']);
+        $signer->setLocation('Maarch Parapheur');
+
         $signer->setSignatureContentLength($signatureContentLength);
 
+        if (!empty($args['signature'])) {
+            $pages = $document->getCatalog()->getPages();
+            $pageCount = $pages->count();
+    
+            for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
+                $page = $pages->getPage($pageNumber);
+    
+                $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
+
+                $signature = $args['signature'];
+                if ($signature['page'] == $pageNumber) {
+                    $image = base64_decode($signature['encodedImage']);
+                    if ($image === false) {
+                        return ['errors' => 'base64_decode failed'];
+                    }
+    
+                    $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
+                    if ($signature['type'] == 'SVG') {
+                        $Imagick = new \Imagick();
+                        $Imagick->readImageBlob($image);
+                        $Imagick->setImageFormat("png24");
+                        $Imagick->writeImage($imageTmpPath);
+                        $Imagick->clear();
+                        $Imagick->destroy();
+                    } else {
+                        file_put_contents($imageTmpPath, $image);
+                        if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
+                            $signWidth = $format['width'];
+                            $signPosX  = 0;
+                            $signPosY  = 0;
+                        } else {
+                            $signWidth = ($signature['width'] * $format['width']) / 100;
+                            $signPosX  = ($signature['positionX'] * $format['width']) / 100;
+                            $signPosY  = ($signature['positionY'] * $format['height']) / 100;
+                        }
+                        $signatureInfo = [
+                                'page'          => $signature['page'],
+                                'positionX'     => $signPosX,
+                                'positionY'     => $signPosY,
+                                'filePath'      => $imageTmpPath,
+                                'signWidth'     => $signWidth
+                            ];
+                    }
+                }
+            }
+        }
+
+        if (!empty($signatureInfo)) {
+            $image = \SetaPDF_Core_Image::getByPath($signatureInfo['filePath']);
+            $imageXObject = $image->toXObject($document);
+            $width = $signatureInfo['signWidth'];
+            $height = $imageXObject->getHeight($width);
+
+            $fieldName = $signer->addSignatureField(
+                \SetaPDF_Signer_SignatureField::DEFAULT_FIELD_NAME,
+                $signatureInfo['page'],
+                \SetaPDF_Signer_SignatureField::POSITION_LEFT_TOP,
+                ['x' => $signatureInfo['positionX'], 'y' => -$signatureInfo['positionY']],
+                $width,
+                $height + 50
+            )->getQualifiedName();
+
+            $signer->setSignatureFieldName($fieldName);
+
+            $xObject = \SetaPDF_Core_XObject_Form::create($document, [0, 0, $width, $height + 50]);
+            $canvas = $xObject->getCanvas();
+            $imageXObject->draw($canvas, 0, 50, $width, $height);
+
+            $font = new \SetaPDF_Core_Font_Type0_Subset(
+                $document,
+                __DIR__ . '/fonts/dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf'
+            );
+
+            $textBlock = new \SetaPDF_Core_Text_Block($font, 7);
+            $textBlock->setWidth($width);
+            $textBlock->setLineHeight(14);
+            $textBlock->setPadding(2);
+            $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('d/m/Y') . " à " . date('H:i P'));
+            $textBlock->draw($canvas, 0, 30, $width, null);
+
+            $appearance = new \SetaPDF_Signer_Signature_Appearance_XObject($xObject);
+            $signer->setAppearance($appearance);
+        } else {
+            $fieldName = $signer->addSignatureField()->getQualifiedName();
+            $signer->setSignatureFieldName($fieldName);
+        }
         $tempPath = \SetaPDF_Core_Writer_TempFile::createTempPath();
         $_SESSION['tmpDocument'] = $signer->preSign(
             new \SetaPDF_Core_Writer_File($tempPath),
@@ -90,7 +185,8 @@ class CertificateSignatureController
 
         return [
             'dataToSign'                => \SetaPDF_Core_Type_HexString::str2hex($module->getDataToSign($_SESSION['tmpDocument']->getHashFile())),
-            'signatureContentLength'    => $signatureContentLength
+            'signatureContentLength'    => $signatureContentLength,
+            'signatureFieldName'        => $fieldName
         ];
     }
 
@@ -134,6 +230,18 @@ class CertificateSignatureController
             // unlink($tmpDocument->getWriter()->getPath());
             $signatureContentLength = $signatureContentLength + 1000;
             return ['errors' => 'Not enought space for signature', 'newSignatureLength' => $signatureContentLength];
+        }
+
+        if (in_array($args['signatureMode'], ['rgs_2stars_timestamped', 'inca_card_eidas'])) {
+            $document = DocumentModel::getById(['select' => ['digital_signature_transaction_id'], 'id' => $args['id']]);
+            $config = DigitalSignatureController::getConfig();
+            $signedDocumentPath = DigitalSignatureController::timestampHashes([
+                'config'             => $config,
+                'signedDocumentPath' => $signedDocumentPath,
+                'transactionId'      => $document['digital_signature_transaction_id'],
+                'fieldName'          => $args['signatureFieldName']
+            ]);
+            DigitalSignatureController::terminate(['config' => $config, 'transactionId' => $document['digital_signature_transaction_id']]);
         }
 
         $storeInfos = DocserverController::storeResourceOnDocServer([

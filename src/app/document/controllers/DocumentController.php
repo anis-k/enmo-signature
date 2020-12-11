@@ -336,7 +336,7 @@ class DocumentController
                     }
                 }
             }
-            if ($workflow['signatureMode'] == 'eidas') {
+            if (in_array($workflow['signatureMode'], ['eidas', 'rgs_2stars_timestamped', 'inca_card_eidas'])) {
                 $hasEidas = true;
             }
             $body['workflow'][$key]['userId'] = $processingUser['id'];
@@ -667,7 +667,10 @@ class DocumentController
             if (empty($body['certificate'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body certificate is empty']);
             }
-            $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'certificate' => $body['certificate']]);
+            $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'certificate' => $body['certificate'], 'signature' => $body['signatures'][0]]);
+            if (!empty($hashInformations['errors'])) {
+                return $response->withStatus(400)->withJson($hashInformations);
+            }
             return $response->withJson($hashInformations);
         }
 
@@ -777,7 +780,9 @@ class DocumentController
                 'id'                     => $args['id'],
                 'certificate'            => $body['certificate'],
                 'signatureContentLength' => $body['signatureContentLength'],
-                'hashSignature'          => $body['hashSignature']
+                'signatureFieldName'     => $body['signatureFieldName'],
+                'hashSignature'          => $body['hashSignature'],
+                'signatureMode'          => $workflow['signature_mode']
             ]);
             if (!empty($return['errors'])) {
                 return $response->withStatus(400)->withJson($return);

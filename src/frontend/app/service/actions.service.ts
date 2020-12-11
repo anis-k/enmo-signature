@@ -87,7 +87,8 @@ export class ActionsService {
                             if (eSignature !== null) {
                                 const objSignData = {
                                     hashDocument : res.dataToSign,
-                                    signatureContentLength : res.signatureContentLength
+                                    signatureContentLength : res.signatureContentLength,
+                                    signatureFieldName : res.signatureFieldName
                                 };
                                 resolve(objSignData);
                             } else {
