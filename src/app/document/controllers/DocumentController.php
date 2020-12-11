@@ -665,7 +665,7 @@ class DocumentController
             if (empty($body['certificate'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body certificate is empty']);
             }
-            $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'certificate' => $body['certificate'], 'signature' => $body['signatures'][0]]);
+            $hashInformations = CertificateSignatureController::getHashedCertificate(['id' => $args['id'], 'body' => $body]);
             if (!empty($hashInformations['errors'])) {
                 return $response->withStatus(400)->withJson($hashInformations);
             }

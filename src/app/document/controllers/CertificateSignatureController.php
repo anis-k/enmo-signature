@@ -18,7 +18,6 @@ use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\models\DocumentModel;
-use setasign\Fpdi\Fpdi;
 use SrcCore\models\CoreConfigModel;
 use User\models\UserModel;
 
@@ -36,8 +35,8 @@ class CertificateSignatureController
             'data'    => [$args['id'], 'ESIGN']
         ]);
         if (!empty($adr)) {
-            $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-            $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $docserver      = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         } else {
             $adr = AdrModel::getDocumentsAdr([
                 'select' => ['path', 'filename'],
@@ -55,7 +54,7 @@ class CertificateSignatureController
         $signer             = new \SetaPDF_Signer($document);
 
         $module             = new \SetaPDF_Signer_Signature_Module_Pades();
-        $certificate        = new \SetaPDF_Signer_X509_Certificate($args['certificate']);
+        $certificate        = new \SetaPDF_Signer_X509_Certificate($args['body']['certificate']);
 
         $module->setCertificate($certificate);
 
@@ -78,7 +77,7 @@ class CertificateSignatureController
         }
 
         $module->setExtraCertificates($extraCerts);
-        $signatureContentLength = CertificateSignatureController::$signatureLength;
+        $signatureContentLength = $args['body']['signatureLength'] ?? CertificateSignatureController::$signatureLength;
         foreach ($extraCerts->getAll() as $extraCert) {
             $signatureContentLength += (strlen($extraCert->get(\SetaPDF_Signer_X509_Format::DER)) * 2);
         }
@@ -90,7 +89,7 @@ class CertificateSignatureController
 
         $signer->setSignatureContentLength($signatureContentLength);
 
-        if (!empty($args['signature'])) {
+        if (!empty($args['body']['signature'][0])) {
             $pages = $document->getCatalog()->getPages();
             $pageCount = $pages->count();
     
@@ -99,7 +98,7 @@ class CertificateSignatureController
     
                 $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
 
-                $signature = $args['signature'];
+                $signature = $args['body']['signature'][0];
                 if ($signature['page'] == $pageNumber) {
                     $image = base64_decode($signature['encodedImage']);
                     if ($image === false) {
@@ -168,7 +167,7 @@ class CertificateSignatureController
             $textBlock->setLineHeight(14);
             $textBlock->setPadding(2);
             $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('d/m/Y') . " à " . date('H:i P'));
-            $textBlock->draw($canvas, 0, 30, $width, null);
+            $textBlock->draw($canvas, 0, 30);
 
             $appearance = new \SetaPDF_Signer_Signature_Appearance_XObject($xObject);
             $signer->setAppearance($appearance);
@@ -190,7 +189,7 @@ class CertificateSignatureController
         ];
     }
 
-    public static function signDocument($args = [])
+    public static function signDocument(array $args)
     {
         session_start();
 
@@ -229,7 +228,7 @@ class CertificateSignatureController
         } catch (\SetaPDF_Signer_Exception_ContentLength $e) {
             // unlink($tmpDocument->getWriter()->getPath());
             $signatureContentLength = $signatureContentLength + 1000;
-            return ['errors' => 'Not enought space for signature', 'newSignatureLength' => $signatureContentLength];
+            return ['errors' => 'Not enough space for signature', 'newSignatureLength' => $signatureContentLength];
         }
 
         if (in_array($args['signatureMode'], ['rgs_2stars_timestamped', 'inca_card_eidas'])) {
