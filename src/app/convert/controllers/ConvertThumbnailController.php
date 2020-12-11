@@ -14,11 +14,9 @@
 
 namespace Convert\controllers;
 
-
 use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
-use setasign\Fpdi\Tcpdf\Fpdi;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 
@@ -63,8 +61,9 @@ class ConvertThumbnailController
         $filename = pathinfo($pathToDocument, PATHINFO_FILENAME);
         $tmpPath = CoreConfigModel::getTmpPath();
 
-        $pdf = new Fpdi('P', 'pt');
-        $pageCount = $pdf->setSourceFile($pathToDocument);
+        $img = new \Imagick();
+        $img->pingImage($pathToDocument);
+        $pageCount = $img->getNumberImages();
 
         $i = 0;
         while ($i < $pageCount) {
@@ -141,8 +140,9 @@ class ConvertThumbnailController
         $filename = pathinfo($pathToDocument, PATHINFO_FILENAME);
         $tmpPath = CoreConfigModel::getTmpPath();
 
-        $pdf = new Fpdi('P', 'pt');
-        $pageCount = $pdf->setSourceFile($pathToDocument);
+        $img = new \Imagick();
+        $img->pingImage($pathToDocument);
+        $pageCount = $img->getNumberImages();
         if ($pageCount < $args['page']) {
             return ['errors' => 'Page does not exist'];
         }
@@ -192,8 +192,8 @@ class ConvertThumbnailController
     /**
      * [Choose between graphicImage and imageMagics]
      */
-    public static function getConvertCommand() {
-
+    public static function getConvertCommand()
+    {
         $command = 'gm version';
 
         exec($command.' 2>&1', $output, $return);
