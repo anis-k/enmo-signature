@@ -132,6 +132,7 @@ export class DocumentComponent implements OnInit {
         this.load.dismiss();
         this.menu.enable(true, 'right-menu');
         this.loadingImage = false;
+        document.getElementsByClassName('drag-scroll-content')[0].scrollTop = 0;
     }
 
     getImageDimensions(ajustSize: boolean = false): void {
