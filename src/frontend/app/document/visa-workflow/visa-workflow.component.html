@@ -56,7 +56,7 @@
                         interface="popover" [interfaceOptions]="customPopoverOptions"
                         [style.color]="getRole(diffusion.role)?.color" [disabled]="!editMode"
                         style="width: auto;max-width: 100%;padding-left:0px;">
-                        <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes">
+                        <ion-select-option [value]="mode" *ngFor="let mode of diffusion.modes" [disabled]="!isValidRole(i,mode, diffusion.role)">
                             {{'lang.' + mode + 'User' | translate}}
                         </ion-select-option>
                     </ion-select>

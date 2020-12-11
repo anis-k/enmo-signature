@@ -97,7 +97,7 @@
 		"reference"                          : "Référence",
 		"fileReference"                      : "Référence du fichier",
 		"filename"                           : "Nom du fichier",
-		"refuseDocumentWithoutSignature"     : "Vous êtes sur le point de refuser ce document sans annotation !",
+		"refuseDocumentWithoutNote"     : "Vous êtes sur le point de refuser ce document sans annotation !",
 		"reject"                             : "Refuser",
 		"rejectDocument"                     : "Refuser ce document",
 		"renewalInfo"                        : "Veuillez noter que ce nouveau mot de passe ne sera valide que <b>{{time}} jour(s)</b>. Passé ce délai, vous devrez en choisir un nouveau.",
@@ -399,6 +399,8 @@
 		"rejectDocumentWarning": "Vous êtes sur le point de refuser ce document !",
 		"stampInTheMiddleImpossible": "Vous ne pouvez pas ajouter un Signataire Griffe après un Signataire avec signature électronique",
 		"loadingMoreData": "Charger plus de données ...",
-		"validateDocumentWarning": "Vous êtes sur le point de valider ce document"
+		"validateDocumentWarning": "Vous êtes sur le point de valider ce document !",
+		"certifiedDocument": "Document certifié",
+		"certifiedDocumentMsg": "Le document a été signé par certificat numérique, vous ne pouvez pas apposer de griffe."
 	}
 }

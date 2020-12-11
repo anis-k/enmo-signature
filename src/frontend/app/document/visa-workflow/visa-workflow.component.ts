@@ -141,4 +141,14 @@ export class VisaWorkflowComponent implements OnInit {
     loadWorkflow(workflow: any) {
         this.visaWorkflow = workflow;
     }
+
+    isValidRole(indexWorkflow: any, role: string, currentRole: string) {
+        if (this.visaWorkflow.filter((item: any, index: any) => index > indexWorkflow && ['stamp'].indexOf(item.role) > -1).length > 0 && ['visa', 'stamp'].indexOf(currentRole) > -1 && ['visa', 'stamp'].indexOf(role) === -1) {
+            return false;
+        } else if (this.visaWorkflow.filter((item: any, index: any) => index < indexWorkflow && ['visa', 'stamp'].indexOf(item.role) === -1).length > 0 && role === 'stamp') {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
