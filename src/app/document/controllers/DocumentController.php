@@ -504,9 +504,7 @@ class DocumentController
     {
         if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
             return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
-        }
-
-        if (empty(DocumentController::ACTIONS[$args['actionId']])) {
+        } elseif (empty(DocumentController::ACTIONS[$args['actionId']])) {
             return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
 
@@ -522,6 +520,12 @@ class DocumentController
         }
 
         $body = $request->getParsedBody();
+        if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['signature_mode'] == 'stamp') {
+            $isCertificateSigned = WorkflowModel::get(['select' => [1], 'where' => ['main_document_id = ?', 'signature_mode != ?', 'status is not null'], 'data' => [$args['id'], 'stamp']]);
+            if (!empty($isCertificateSigned)) {
+                unset($body['signatures']);
+            }
+        }
         if (!empty($body['signatures'])) {
             foreach ($body['signatures'] as $signature) {
                 foreach (['encodedImage', 'width', 'positionX', 'positionY', 'page', 'type'] as $value) {
@@ -610,23 +614,10 @@ class DocumentController
                 }
             }
 
-            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
-                if ($loadedXml->electronicSignature->enable == 'true') {
-                    $certPath       = realpath((string)$loadedXml->electronicSignature->certPath);
-                    $privateKeyPath = realpath((string)$loadedXml->electronicSignature->privateKeyPath);
-                    if (is_file($certPath) && is_file($privateKeyPath)) {
-                        $certificate = 'file://' . $certPath;
-                        $privateKey = 'file://' . $privateKeyPath;
-                        $info = [
-                            'Name'        => (string)$loadedXml->electronicSignature->certInfo->name,
-                            'Location'    => (string)$loadedXml->electronicSignature->certInfo->location,
-                            'Reason'      => (string)$loadedXml->electronicSignature->certInfo->reason,
-                            'ContactInfo' => (string)$loadedXml->electronicSignature->certInfo->contactInfo
-                        ];
-                        $pdf->setSignature($certificate, $privateKey, (string)$loadedXml->electronicSignature->password, '', 2, $info);
-                    } else {
-                        return $response->withStatus(400)->withJson(['errors' => 'certPath or privateKeyPath is not valid']);
-                    }
+            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
+                $control = CertificateSignatureController::signWithServerCertificate($pdf);
+                if (!empty($control['errors'])) {
+                    return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
                 }
             }
 

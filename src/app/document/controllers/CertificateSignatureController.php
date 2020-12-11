@@ -17,8 +17,8 @@ namespace Document\controllers;
 use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
-use Document\controllers\DigitalSignatureController;
 use Document\models\DocumentModel;
+use setasign\Fpdi\Fpdi;
 use SrcCore\models\CoreConfigModel;
 use User\models\UserModel;
 
@@ -126,12 +126,12 @@ class CertificateSignatureController
                             $signPosY  = ($signature['positionY'] * $format['height']) / 100;
                         }
                         $signatureInfo = [
-                                'page'          => $signature['page'],
-                                'positionX'     => $signPosX,
-                                'positionY'     => $signPosY,
-                                'filePath'      => $imageTmpPath,
-                                'signWidth'     => $signWidth
-                            ];
+                            'page'          => $signature['page'],
+                            'positionX'     => $signPosX,
+                            'positionY'     => $signPosY,
+                            'filePath'      => $imageTmpPath,
+                            'signWidth'     => $signWidth
+                        ];
                     }
                 }
             }
@@ -266,6 +266,30 @@ class CertificateSignatureController
             'fingerprint' => $storeInfos['fingerprint']
         ]);
         // unlink($signedDocumentPath);
+
+        return true;
+    }
+
+    public static function signWithServerCertificate(\setasign\Fpdi\Tcpdf\Fpdi &$pdf)
+    {
+        $loadedXml = CoreConfigModel::getConfig();
+
+        if ($loadedXml->electronicSignature->enable == 'true') {
+            $certPath       = realpath((string)$loadedXml->electronicSignature->certPath);
+            $privateKeyPath = realpath((string)$loadedXml->electronicSignature->privateKeyPath);
+            if (!is_file($certPath) || !is_file($privateKeyPath)) {
+                return ['errors' => 'Signature with server certificate failed : certPath or privateKeyPath is not valid'];
+            }
+            $certificate = 'file://' . $certPath;
+            $privateKey = 'file://' . $privateKeyPath;
+            $info = [
+                'Name'        => (string)$loadedXml->electronicSignature->certInfo->name,
+                'Location'    => (string)$loadedXml->electronicSignature->certInfo->location,
+                'Reason'      => (string)$loadedXml->electronicSignature->certInfo->reason,
+                'ContactInfo' => (string)$loadedXml->electronicSignature->certInfo->contactInfo
+            ];
+            $pdf->setSignature($certificate, $privateKey, (string)$loadedXml->electronicSignature->password, '', 2, $info);
+        }
 
         return true;
     }
