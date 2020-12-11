@@ -405,6 +405,7 @@
         "validateDocumentWarning": "You are about to validate this document!",
         "certifiedDocument": "Certified document",
         "certifiedDocumentMsg": "The document was signed by digital certificate, you cannot affix a stamp.",
-        "errorUserSignType": "Signers without a certificate must be present before signers with a certificate."
+        "errorUserSignType": "Signers without a certificate must be present before signers with a certificate.",
+        "fortifyReadException": "Error when communicating with Fortify"
     }
 }

@@ -65,10 +65,17 @@ export class SignatureMethodModalComponent implements OnInit {
         }).then(async (load: HTMLIonLoadingElement) => {
             load.present();
 
-            this.provider = await certData.detail.server.getCrypto(certData.detail.providerId);
-            this.cert = await this.provider.certStorage.getItem(certData.detail.certificateId);
-            this.certPem = await this.provider.certStorage.exportCert('pem', this.cert);
-            this.privateKey = await this.provider.keyStorage.getItem(certData.detail.privateKeyId);
+            try {
+                this.provider = await certData.detail.server.getCrypto(certData.detail.providerId);
+                this.cert = await this.provider.certStorage.getItem(certData.detail.certificateId);
+                this.certPem = await this.provider.certStorage.exportCert('pem', this.cert);
+                this.privateKey = await this.provider.keyStorage.getItem(certData.detail.privateKeyId);
+            } catch (e) {
+                this.notificationService.error('lang.fortifyReadException');
+                load.dismiss();
+                this.modalController.dismiss(false);
+                return;
+            }
 
             this.certificate = {
                 certificate: this.certPem
@@ -94,7 +101,15 @@ export class SignatureMethodModalComponent implements OnInit {
 
             console.log('hashDocumentHex', hashDocumentHex);
 
-            const hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
+            let hashSignature;
+            try {
+                hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
+            } catch (e) {
+                this.notificationService.error('lang.fortifyReadException');
+                resolve(false);
+                return of(false);
+            }
+
 
             console.log('hashSignature', hashSignature);
 

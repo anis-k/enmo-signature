@@ -402,6 +402,7 @@
 		"validateDocumentWarning": "Vous êtes sur le point de valider ce document !",
 		"certifiedDocument": "Document certifié",
 		"certifiedDocumentMsg": "Le document a été signé par certificat numérique, vous ne pouvez pas apposer de griffe.",
-		"errorUserSignType": "Les signataires sans certificat doivent être présent avant les signataires avec certificat."
+		"errorUserSignType": "Les signataires sans certificat doivent être présent avant les signataires avec certificat.",
+		"fortifyReadException": "Erreur lors de la communication avec Fortify"
 	}
 }
