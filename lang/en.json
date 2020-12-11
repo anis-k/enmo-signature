@@ -397,6 +397,7 @@
         "addNewDate": "Add a new date",
         "add": "Add",
         "dateInDocAdded": "Date added in document",
-        "rejectDocumentWarning": "You are about to decline this document!"
+        "rejectDocumentWarning": "You are about to decline this document!",
+        "stampInTheMiddleImpossible": "You cannot add a Signatory with stamp after a Signatory with an electronic signature"
     }
 }

@@ -396,6 +396,7 @@
 		"addNewDate": "Ajouter une nouvelle date",
 		"add": "Ajouter",
 		"dateInDocAdded": "Date ajoutée dans le document",
-		"rejectDocumentWarning": "Vous êtes sur le point de refuser ce document !"
+		"rejectDocumentWarning": "Vous êtes sur le point de refuser ce document !",
+		"stampInTheMiddleImpossible": "Vous ne pouvez pas ajouter un Signataire Griffe après un Signataire avec signature électronique"
 	}
 }
