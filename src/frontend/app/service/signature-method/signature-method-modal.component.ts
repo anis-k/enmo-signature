@@ -125,17 +125,23 @@ export class SignatureMethodModalComponent implements OnInit {
     }
 
     async sendAndSign() {
-        let success: any = false;
-        while (success === false) {
-            const res: any = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength);
-            if (res === null) {
-                return false;
-            } else if (res !== false) {
-                success = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
+        let allSignaturesComplete: boolean = false;
+        while (!allSignaturesComplete) {
+            let signDocComplete: any = false;
+            while (signDocComplete === false) {
+                const res: any = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength);
+                if (res === null) {
+                    return false;
+                } else if (res !== false) {
+                    signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
+                    if (signDocComplete) {
+                        this.signaturesService.signaturesContent.shift();
+                        allSignaturesComplete = this.signaturesService.signaturesContent.length === 0;
+                    }
+                }
             }
         }
-
-        return success !== null;
+        return allSignaturesComplete;
     }
 
     cancelSign() {
