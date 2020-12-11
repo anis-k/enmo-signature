@@ -9,7 +9,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content (wheel)="scroll($event)">
-    <ng-container *ngIf="!docCertified; else elseCertified">
+    <ng-container *ngIf="!signLock; else elseCertified">
         <ion-slides *ngIf="!loading" pager="true" [options]="slideOpts" #slides>
             <ion-slide *ngFor="let slide of signaturesList;let i=index" style="display: grid;grid-template-columns: repeat(2, 1fr);">
                 <div style="display: contents;">

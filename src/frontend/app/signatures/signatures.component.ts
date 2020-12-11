@@ -19,7 +19,7 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
 export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
-    @Input() docCertified: any;
+    @Input() signLock: any;
 
     loading: boolean = true;
     scrolling: boolean = false;

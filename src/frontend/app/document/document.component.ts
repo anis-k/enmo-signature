@@ -188,7 +188,7 @@ export class DocumentComponent implements OnInit {
             });
         }
 
-        if (!this.mainDocument.isCertified) {
+        if (!this.mainDocument.signLock) {
             buttons.push({
                 text: this.translate.instant('lang.affixSignature'),
                 icon: 'ribbon-outline',
@@ -247,7 +247,7 @@ export class DocumentComponent implements OnInit {
             cssClass: 'my-custom-class',
             componentProps: {
                 currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
-                docCertified : this.mainDocument.isCertified
+                signLock : this.mainDocument.signLock
             }
         });
         await modal.present();
@@ -365,6 +365,7 @@ export class DocumentComponent implements OnInit {
                                 ];
                                 this.detailMode = true;
                             } else {
+                                this.mainDocument.signLock = this.mainDocument.isCertified && ((realUserWorkflow[0].signatureMode === 'stamp' && realUserWorkflow[0].mode === 'sign') || (realUserWorkflow[0].mode === 'visa'));
                                 if (realUserWorkflow[0].userId !== this.authService.user.id) {
                                     this.http.get('../rest/users/' + realUserWorkflow[0].userId + '/signatures')
                                         .subscribe((dataSign: any) => {
@@ -463,8 +464,6 @@ export class DocumentComponent implements OnInit {
 
         if (notesContent) {
             const storageContent = JSON.parse(notesContent);
-            console.log(storageContent);
-            
             this.signaturesService.notesContent = storageContent['note'];
             this.signaturesService.signaturesContent = storageContent['sign'];
             this.signaturesService.datesContent = storageContent['date'];
@@ -685,7 +684,7 @@ export class DocumentComponent implements OnInit {
         if (this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0) {
             msg = this.translate.instant('lang.validateDocumentWithoutSignOrNote');
         }
-        if (this.mainDocument.isCertified) {
+        if (this.mainDocument.signLock) {
             msg = 'Document certifié ! Les annotations sur le document ne seront pas prise en compte !';
         }
         const alert = await this.alertController.create({
