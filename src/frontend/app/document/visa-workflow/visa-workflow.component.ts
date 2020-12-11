@@ -64,7 +64,6 @@ export class VisaWorkflowComponent implements OnInit {
         workflow.forEach((item: any, indexUserRgs: number) => {
             if (['visa', 'stamp'].indexOf(item.role) === -1) {
                 if (workflow.filter((itemUserStamp: any, indexUserStamp: number) => indexUserStamp > indexUserRgs && itemUserStamp.role === 'stamp').length > 0) {
-                    console.log('false!');
                     res = false;
                 }
             }
