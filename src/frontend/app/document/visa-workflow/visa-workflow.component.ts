@@ -7,7 +7,6 @@ import { of } from 'rxjs';
 import { NotificationService } from '../../service/notification.service';
 import { IonReorderGroup, PopoverController } from '@ionic/angular';
 import { VisaWorkflowModelsComponent } from './models/visa-workflow-models.component';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ItemReorderEventDetail } from '@ionic/core';
 
 @Component({
@@ -46,11 +45,42 @@ export class VisaWorkflowComponent implements OnInit {
     }
 
     doReorder(ev: CustomEvent<ItemReorderEventDetail>) {
-        this.visaWorkflow = ev.detail.complete(this.visaWorkflow);
+        if (this.canMoveUser(ev)) {
+            this.visaWorkflow = ev.detail.complete(this.visaWorkflow);
+        } else {
+            this.notificationService.error('lang.errorUserSignType');
+            ev.detail.complete(false);
+        }
     }
 
-    drop(event: CdkDragDrop<string[]>) {
-        moveItemInArray(this.visaWorkflow, event.previousIndex, event.currentIndex);
+    canMoveUser(ev: CustomEvent<ItemReorderEventDetail>) {
+        const newWorkflow = this.array_move(this.visaWorkflow.slice(), ev.detail.from, ev.detail.to);
+        const res = this.isValidWorkflow(newWorkflow);
+        return res;
+    }
+
+    isValidWorkflow(workflow: any = this.visaWorkflow) {
+        let res: boolean = true;
+        workflow.forEach((item: any, indexUserRgs: number) => {
+            if (['visa', 'stamp'].indexOf(item.role) === -1) {
+                if (workflow.filter((itemUserStamp: any, indexUserStamp: number) => indexUserStamp > indexUserRgs && itemUserStamp.role === 'stamp').length > 0) {
+                    console.log('false!');
+                    res = false;
+                }
+            }
+        });
+        return res;
+    }
+
+    array_move(arr: any, old_index: number, new_index: number) {
+        if (new_index >= arr.length) {
+            let k = new_index - arr.length + 1;
+            while (k--) {
+                arr.push(undefined);
+            }
+        }
+        arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+        return arr; // for testing
     }
 
     getVisaUsers(ev: any) {
@@ -84,6 +114,9 @@ export class VisaWorkflowComponent implements OnInit {
             'modes': user.signatureModes
         };
         this.visaWorkflow.push(userObj);
+        if (!this.isValidWorkflow()) {
+            this.visaWorkflow[this.visaWorkflow.length - 1].role = 'visa';
+        }
         this.getAvatarUser(this.visaWorkflow.length - 1);
         this.visaUsersSearchVal = '';
         searchInput.setFocus();
