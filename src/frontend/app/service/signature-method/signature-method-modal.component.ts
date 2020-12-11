@@ -33,6 +33,8 @@ export class SignatureMethodModalComponent implements OnInit {
     privateKey: any = null;
 
     signature: string;
+    certificate: any;
+    signatureLength: any = null;
 
     @Input() note: string;
     @Input() signatureMode: string;
@@ -68,17 +70,14 @@ export class SignatureMethodModalComponent implements OnInit {
             this.certPem = await this.provider.certStorage.exportCert('pem', this.cert);
             this.privateKey = await this.provider.keyStorage.getItem(certData.detail.privateKeyId);
 
-            const certificate = {
+            this.certificate = {
                 certificate: this.certPem
             };
 
-            const res: any = await this.actionsService.sendDocument(this.note, certificate);
+            const result = await this.sendAndSign();
 
-            if (res !== false) {
-                await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
-            }
             load.dismiss();
-            this.modalController.dismiss(true);
+            this.modalController.dismiss(result);
         });
     }
 
@@ -107,12 +106,17 @@ export class SignatureMethodModalComponent implements OnInit {
             };
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objEsign)
                 .pipe(
-                    tap((res: any) => {
+                    tap(() => {
                         resolve(true);
                     }),
                     catchError((err: any) => {
-                        this.notificationService.handleErrors(err);
-                        resolve(false);
+                        if (err.error.newSignatureLength !== undefined) {
+                            this.signatureLength = err.error.newSignatureLength;
+                            resolve(false);
+                        } else {
+                            this.notificationService.handleErrors(err);
+                            resolve(null);
+                        }
                         return of(false);
                     })
                 ).subscribe();
@@ -120,8 +124,21 @@ export class SignatureMethodModalComponent implements OnInit {
         });
     }
 
-    cancelSign(data: any) {
-        console.log(data);
+    async sendAndSign() {
+        let success: any = false;
+        while (success === false) {
+            const res: any = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength);
+            if (res === null) {
+                return false;
+            } else if (res !== false) {
+                success = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
+            }
+        }
+
+        return success !== null;
+    }
+
+    cancelSign() {
         this.modalController.dismiss(false);
     }
 
@@ -132,7 +149,7 @@ export class SignatureMethodModalComponent implements OnInit {
             len = buf.length;
 
         for (let i = 0; i < len; i++) {
-            let char = buf[i].toString(16);
+            const char = buf[i].toString(16);
             res.push(char.length === 1 ? '0' + char : char);
         }
         return res.join(splitter);

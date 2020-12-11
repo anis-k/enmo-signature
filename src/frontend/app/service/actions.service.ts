@@ -20,7 +20,7 @@ export class ActionsService {
         public signaturesService: SignaturesContentService,
     ) { }
 
-    sendDocument(note: string, eSignature: any = null) {
+    sendDocument(note: string, eSignature: any = null, signatureLength: any = null) {
         return new Promise(async (resolve) => {
             const signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
@@ -81,6 +81,10 @@ export class ActionsService {
                     data['note'] = note;
                 }
 
+                if (signatureLength !== null) {
+                    data.signatureLength = signatureLength;
+                }
+
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)
                     .pipe(
                         tap((res: any) => {
@@ -97,7 +101,11 @@ export class ActionsService {
                         }),
                         catchError((err: any) => {
                             this.notificationService.handleErrors(err);
-                            resolve(false);
+                            if (err.status === 403) {
+                                resolve(null);
+                            } else {
+                                resolve(false);
+                            }
                             return of(false);
                         })
                     ).subscribe();
