@@ -40,6 +40,7 @@ class DigitalSignatureController
                 unset($args['workflow'][$key]);
             }
         }
+        $args['workflow'] = array_values($args['workflow']);
         $transactionId  = DigitalSignatureController::initiate(['config' => $config, 'documentId' => $args['documentId'], 'signatoriesCount' => $nbSignatories]);
         DocumentModel::update([
             'set'   => ['digital_signature_transaction_id' => $transactionId],

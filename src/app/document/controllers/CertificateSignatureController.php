@@ -89,7 +89,7 @@ class CertificateSignatureController
 
         $signer->setSignatureContentLength($signatureContentLength);
 
-        if (!empty($args['body']['signature'][0])) {
+        if (!empty($args['body']['signatures'][0])) {
             $pages = $document->getCatalog()->getPages();
             $pageCount = $pages->count();
     
@@ -98,7 +98,7 @@ class CertificateSignatureController
     
                 $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
 
-                $signature = $args['body']['signature'][0];
+                $signature = $args['body']['signatures'][0];
                 if ($signature['page'] == $pageNumber) {
                     $image = base64_decode($signature['encodedImage']);
                     if ($image === false) {
