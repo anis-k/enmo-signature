@@ -526,7 +526,7 @@ class DocumentController
                 unset($body['signatures']);
             }
         }
-        if (!empty($body['signatures'])) {
+        if (!empty($body['signatures']) && empty($body['signatureLength'])) {
             foreach ($body['signatures'] as $signature) {
                 foreach (['encodedImage', 'width', 'positionX', 'positionY', 'page', 'type'] as $value) {
                     if (!isset($signature[$value])) {
@@ -558,61 +558,19 @@ class DocumentController
             $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_' . $adr[0]['filename'];
             copy($pathToDocument, $tmpFilename);
 
-            $pages      = [];
             $configPath = CoreConfigModel::getConfigPath();
             $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
             if (file_exists($overrideFile)) {
                 require_once($overrideFile);
             }
-            $pdf        = new Fpdi('P');
-            $nbPages    = $pdf->setSourceFile($tmpFilename);
-            $pdf->setPrintHeader(false);
+            $pdf            = new Fpdi('P');
+            $pagesNumber    = $pdf->setSourceFile($tmpFilename);
 
-            for ($i = 1; $i <= $nbPages; $i++) {
-                $page = $pdf->importPage($i);
-                $size = $pdf->getTemplateSize($page);
-                $pdf->AddPage($size['orientation'], $size);
-                $pdf->useImportedPage($page);
-                $pdf->SetAutoPageBreak(false, 0);
-                $pdf->SetMargins(0, 0, 0);
-                $pdf->SetAutoPageBreak(false, 0);
-                foreach ($body['signatures'] as $signature) {
-                    if ($signature['page'] == $i) {
-                        if (!in_array($i, $pages)) {
-                            $pages[] = $i;
-                        }
-                        if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
-                            $signWidth = $size['width'];
-                            $signPosX = 0;
-                            $signPosY = 0;
-                        } else {
-                            $signWidth = ($signature['width'] * $size['width']) / 100;
-                            $signPosX = ($signature['positionX'] * $size['width']) / 100;
-                            $signPosY = ($signature['positionY'] * $size['height']) / 100;
-                        }
-                        if ($signature['type'] == 'SVG') {
-                            $image = str_replace('data:image/svg+xml;base64,', '', $signature['encodedImage']);
-                            $image = base64_decode($image);
-                            if ($image === false) {
-                                return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
-                            }
-
-                            $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.svg';
-                            file_put_contents($imageTmpPath, $image);
-                            $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth);
-                        } else {
-                            $image = base64_decode($signature['encodedImage']);
-                            if ($image === false) {
-                                return $response->withStatus(400)->withJson(['errors' => 'base64_decode failed']);
-                            }
-
-                            $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
-                            file_put_contents($imageTmpPath, $image);
-                            $pdf->Image($imageTmpPath, $signPosX, $signPosY, $signWidth);
-                        }
-                    }
-                }
+            $control = DocumentController::setSignaturesOnPdf(['signatures' => $body['signatures'], 'pagesNumber' => $pagesNumber], $pdf);
+            if (!empty($control['errors'])) {
+                return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
             }
+            $affectedPages = $control['affectedPages'];
 
             if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
                 $control = CertificateSignatureController::signWithServerCertificate($pdf);
@@ -646,7 +604,7 @@ class DocumentController
             ]);
 
             $tnlPages = [];
-            foreach ($pages as $page) {
+            foreach ($affectedPages as $page) {
                 $tnlPages[] = "TNL{$page}";
             }
             if (!empty($tnlPages)) {
@@ -657,7 +615,7 @@ class DocumentController
             }
 
             $configPath = CoreConfigModel::getConfigPath();
-            foreach ($pages as $page) {
+            foreach ($affectedPages as $page) {
                 exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
             }
         }
@@ -1042,5 +1000,65 @@ class DocumentController
         exec('openssl pkcs7 -in ' . $signaturePath . ' -inform DER -print_certs > ' . $signatureInfoPath . ' 2>&1', $output, $return);
 
         return file_get_contents($signatureInfoPath);
+    }
+
+    public static function setSignaturesOnPdf(array $args, Fpdi &$pdf)
+    {
+        ValidatorModel::notEmpty($args, ['signatures', 'pagesNumber']);
+        ValidatorModel::arrayType($args, ['signatures']);
+        ValidatorModel::intVal($args, ['pagesNumber']);
+
+        $affectedPages = [];
+        $tmpPath = CoreConfigModel::getTmpPath();
+
+        $pdf->setPrintHeader(false);
+
+        for ($i = 1; $i <= $args['pagesNumber']; $i++) {
+            $page = $pdf->importPage($i);
+            $size = $pdf->getTemplateSize($page);
+            $pdf->AddPage($size['orientation'], $size);
+            $pdf->useImportedPage($page);
+            $pdf->SetAutoPageBreak(false, 0);
+            $pdf->SetMargins(0, 0, 0);
+            $pdf->SetAutoPageBreak(false, 0);
+            foreach ($args['signatures'] as $signature) {
+                if ($signature['page'] == $i) {
+                    if (!in_array($i, $affectedPages)) {
+                        $affectedPages[] = $i;
+                    }
+                    if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
+                        $signWidth = $size['width'];
+                        $signPosX = 0;
+                        $signPosY = 0;
+                    } else {
+                        $signWidth = ($signature['width'] * $size['width']) / 100;
+                        $signPosX = ($signature['positionX'] * $size['width']) / 100;
+                        $signPosY = ($signature['positionY'] * $size['height']) / 100;
+                    }
+                    if ($signature['type'] == 'SVG') {
+                        $image = str_replace('data:image/svg+xml;base64,', '', $signature['encodedImage']);
+                        $image = base64_decode($image);
+                        if ($image === false) {
+                            return ['errors' => 'setSignaturesOnPdf : base64_decode failed for SVP type signature'];
+                        }
+
+                        $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.svg';
+                        file_put_contents($imageTmpPath, $image);
+                        $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth);
+                    } else {
+                        $image = base64_decode($signature['encodedImage']);
+                        if ($image === false) {
+                            return ['errors' => 'setSignaturesOnPdf : base64_decode failed'];
+                        }
+
+                        $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
+                        file_put_contents($imageTmpPath, $image);
+                        $pdf->Image($imageTmpPath, $signPosX, $signPosY, $signWidth);
+                    }
+                }
+            }
+        }
+
+        return ['affectedPages' => $affectedPages];
     }
 }
