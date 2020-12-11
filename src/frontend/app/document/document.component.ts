@@ -391,6 +391,7 @@ export class DocumentComponent implements OnInit {
                             setTimeout(() => {
                                 this.load.dismiss();
                             }, 200);
+                            this.notificationService.handleErrors(err);
                             this.router.navigate(['/home']);
                             return of(false);
                         })
@@ -434,6 +435,7 @@ export class DocumentComponent implements OnInit {
                     }),
                     catchError((err: any) => {
                         this.load.dismiss();
+                        this.notificationService.handleErrors(err);
                         this.router.navigate(['/home']);
                         return of(false);
                     })
@@ -445,6 +447,7 @@ export class DocumentComponent implements OnInit {
                     }),
                     catchError((err: any) => {
                         this.load.dismiss();
+                        this.notificationService.handleErrors(err);
                         this.router.navigate(['/home']);
                         return of(false);
                     })

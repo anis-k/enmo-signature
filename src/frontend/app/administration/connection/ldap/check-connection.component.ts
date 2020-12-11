@@ -69,6 +69,7 @@ export class CheckConnectionComponent implements OnInit {
                 }),
                 finalize(() => this.loadingTest = false),
                 catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
                     return of(false);
                 })
             ).subscribe();
@@ -87,6 +88,7 @@ export class CheckConnectionComponent implements OnInit {
                 }),
                 finalize(() => this.loadingTest = false),
                 catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
                     return of(false);
                 })
             ).subscribe();
