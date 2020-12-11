@@ -10,9 +10,9 @@ import * as EXIF from 'exif-js';
 import { TranslateService } from '@ngx-translate/core';
 import { FiltersService } from '../service/filters.service';
 import { Router } from '@angular/router';
-import { tap, exhaustMap, filter, catchError, finalize } from 'rxjs/operators';
+import { tap, exhaustMap, filter, catchError, finalize, switchMap } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 
 @Component({
@@ -249,7 +249,7 @@ export class ProfileComponent implements OnInit {
                 // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
                 this.authService.updateUserInfoWithTokenRefresh();
             }),
-            exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) : null),
+            exhaustMap(async () => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) :  new Observable<String>()),
             exhaustMap(() => {
                 if (this.authService.authMode === 'default') {
                     this.authService.user.firstname = this.profileInfo.firstname;
@@ -265,9 +265,9 @@ export class ProfileComponent implements OnInit {
                         'Authorization': 'Bearer ' + this.authService.getToken()
                     });
                     return this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers });
-                } else {
+                } /*else {
                     return of(false);
-                }
+                }*/
             }),
             filter(data => !!data),
             tap((dataPass: any) => {
