@@ -1,16 +1,14 @@
 import { Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { HttpClient } from '@angular/common/http';
-import { trigger, transition, style, animate, stagger, query } from '@angular/animations';
 import { NotificationService } from '../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
 import { IonSlides, ModalController } from '@ionic/angular';
-import { log } from 'console';
 import { SignaturePadPageComponent } from '../pad/pad.component';
 
 @Component({
@@ -21,6 +19,7 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
 export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
+    @Input() docCertified: any;
 
     loading: boolean = true;
     scrolling: boolean = false;

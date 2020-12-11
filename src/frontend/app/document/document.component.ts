@@ -187,14 +187,15 @@ export class DocumentComponent implements OnInit {
             });
         }
 
-        buttons.push({
-            text: this.translate.instant('lang.affixSignature'),
-            icon: 'ribbon-outline',
-            handler: () => {
-                this.openSignatures();
-            }
-        });
-
+        if (!this.mainDocument.isCertified) {
+            buttons.push({
+                text: this.translate.instant('lang.affixSignature'),
+                icon: 'ribbon-outline',
+                handler: () => {
+                    this.openSignatures();
+                }
+            });
+        }
         buttons.push({
             text: this.translate.instant('lang.annotateDocument'),
             icon: 'receipt-outline',
@@ -245,6 +246,7 @@ export class DocumentComponent implements OnInit {
             cssClass: 'my-custom-class',
             componentProps: {
                 currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
+                docCertified : this.mainDocument.isCertified
             }
         });
         await modal.present();
@@ -347,6 +349,8 @@ export class DocumentComponent implements OnInit {
                             this.initDoc();
 
                             const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true);
+
+                            this.mainDocument.isCertified = this.mainDocument.workflow.filter((line: any) => line.mode === 'sign' && line.signatureMode !== 'stamp' && line.processDate !== null).length > 0;
 
                             if (realUserWorkflow.length === 0) {
                                 this.actionsList = [
@@ -458,6 +462,8 @@ export class DocumentComponent implements OnInit {
 
         if (notesContent) {
             const storageContent = JSON.parse(notesContent);
+            console.log(storageContent);
+            
             this.signaturesService.notesContent = storageContent['note'];
             this.signaturesService.signaturesContent = storageContent['sign'];
             this.signaturesService.datesContent = storageContent['date'];
@@ -628,10 +634,16 @@ export class DocumentComponent implements OnInit {
     }
 
     async refuseDocument(): Promise<void> {
+        let msg = this.translate.instant('lang.rejectDocumentWarning');
+
+        if (this.signaturesService.notesContent.length === 0) {
+            msg = this.translate.instant('lang.refuseDocumentWithoutNote');
+        }
+
         const alert = await this.alertController.create({
             cssClass: 'custom-alert-danger',
             header: this.translate.instant('lang.reject'),
-            message: this.translate.instant('lang.rejectDocumentWarning'),
+            message: msg,
             inputs: [
                 {
                     name: 'paragraph',
@@ -667,10 +679,18 @@ export class DocumentComponent implements OnInit {
     }
 
     async validateDocument(mode: any): Promise<void> {
+        let msg = this.translate.instant('lang.validateDocumentWarning');
+
+        if (this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0) {
+            msg = this.translate.instant('lang.validateDocumentWithoutSignOrNote');
+        }
+        if (this.mainDocument.isCertified) {
+            msg = 'Document certifié ! Les annotations sur le document ne seront pas prise en compte !';
+        }
         const alert = await this.alertController.create({
             cssClass: 'custom-alert-success',
             header: this.translate.instant('lang.validate'),
-            message: this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0 ? this.translate.instant('lang.validateDocumentWithoutSignOrNote') : this.translate.instant('lang.areYouSure'),
+            message: msg,
             inputs: [
                 {
                     name: 'paragraph',

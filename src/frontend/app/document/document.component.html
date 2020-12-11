@@ -108,12 +108,18 @@
     </div>
     <section class="page-info"
         *ngIf="!signaturesService.dragging && !signaturesService.resizing && docList[currentDoc]">
-        <div class="page-info-doc">{{docList[currentDoc].title}}</div>
+        <div class="page-info-doc">
+            {{docList[currentDoc].title}}
+        </div>
         <div class="page-info-page" (click)="openSelect()">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
         <ion-select [cancelText]="'lang.cancel' | translate" style="max-height: 30%;" interface="action-sheet" #pagesList (ionChange)='goTo($event.target.value)' hidden="true">
             <ion-select-option  *ngFor="let page of pagesArray(this.totalPages);let i=index" [value]="page">{{ i + 1 }}</ion-select-option>
         </ion-select>
     </section>
+    <ion-item *ngIf="mainDocument.isCertified" lines="none" class="certified">
+        <ion-icon slot="start" name="ribbon-outline" color="success"></ion-icon>
+        <ion-label>{{'lang.certifiedDocument' | translate}}</ion-label>
+    </ion-item>
     <ng-container *ngIf="!signaturesService.dragging && !signaturesService.resizing && !loadingImage">
         <ion-fab-button *ngIf="pageNum > 1 && !loadingImage" (click)="prevPage()" class="paginate-left">
             <ion-icon name="chevron-back-outline"></ion-icon>

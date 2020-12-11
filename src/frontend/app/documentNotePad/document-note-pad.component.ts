@@ -123,7 +123,7 @@ export class DocumentNotePadComponent implements OnInit {
                 'width': this.signaturesService.workingAreaWidth,
             }
         );
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
         this.modalController.dismiss('');
         this.notificationService.success('lang.annotationAdded');
     }

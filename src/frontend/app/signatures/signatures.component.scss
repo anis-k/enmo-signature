@@ -40,6 +40,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+
             .substituteInfo {
                 color: #F99830;
                 font-size: 10px;
@@ -47,6 +48,7 @@
                 top: 0px;
                 left: 10px;
             }
+
             &.create {
                 background-color: #F1F4F4;
                 flex-direction: column;
@@ -65,7 +67,7 @@
 .sign_icon {
     position: absolute;
     top: 5px;
-    
+
     .mat-icon {
         color: white;
         height: auto;
@@ -87,4 +89,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.certified-msg {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+
+    div {
+        font-size: 30px;
+        color: var(--ion-color-medium);
+    }
 }
