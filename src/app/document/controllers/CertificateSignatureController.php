@@ -238,7 +238,8 @@ class CertificateSignatureController
                 'config'             => $config,
                 'signedDocumentPath' => $signedDocumentPath,
                 'transactionId'      => $document['digital_signature_transaction_id'],
-                'fieldName'          => $args['signatureFieldName']
+                'fieldName'          => $args['signatureFieldName'],
+                'extraCertificate'   => $args['certificate']
             ]);
             DigitalSignatureController::terminate(['config' => $config, 'transactionId' => $document['digital_signature_transaction_id']]);
         }

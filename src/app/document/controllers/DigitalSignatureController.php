@@ -30,8 +30,17 @@ class DigitalSignatureController
 
     public static function createTransaction($args = [])
     {
-        $config         = DigitalSignatureController::getConfig();
-        $transactionId  = DigitalSignatureController::initiate(['config' => $config, 'documentId' => $args['documentId'], 'signatoriesCount' => count($args['workflow'])]);
+        $config = DigitalSignatureController::getConfig();
+
+        $nbSignatories = 0;
+        foreach ($args['workflow'] as $key => $currentUserId) {
+            if (in_array($currentUserId['signature_mode'], ['eidas', 'inca_card_eidas'])) {
+                $nbSignatories++;
+            } else {
+                unset($args['workflow'][$key]);
+            }
+        }
+        $transactionId  = DigitalSignatureController::initiate(['config' => $config, 'documentId' => $args['documentId'], 'signatoriesCount' => $nbSignatories]);
         DocumentModel::update([
             'set'   => ['digital_signature_transaction_id' => $transactionId],
             'where' => ['id = ?'],
@@ -355,6 +364,27 @@ class DigitalSignatureController
 
             // Create a collection of trusted certificats:
             $trustedCertificates = new \SetaPDF_Signer_X509_Collection(\SetaPDF_Signer_Pem::extractFromFile($tmpTimestampPEM));
+
+            if (!empty($args['extraCertificate'])) {
+                $certificate = new \SetaPDF_Signer_X509_Certificate($args['extraCertificate']);
+        
+                $informationResolverManager = new \SetaPDF_Signer_InformationResolver_Manager();
+                $informationResolverManager->addResolver(new \SetaPDF_Signer_InformationResolver_HttpCurlResolver());
+        
+                $certificates = [$certificate];
+                while (count($certificates) > 0) {
+                    $currentCertificate = array_pop($certificates);
+
+                    $aia = $currentCertificate->getExtensions()->get(\SetaPDF_Signer_X509_Extension_AuthorityInformationAccess::OID);
+                    if ($aia instanceof \SetaPDF_Signer_X509_Extension_AuthorityInformationAccess) {
+                        foreach ($aia->fetchIssuers($informationResolverManager)->getAll() as $issuer) {
+                            $trustedCertificates->add($issuer);
+                            $certificates[] = $issuer;
+                        }
+                    }
+                }
+            }
+
             // Create a collector instance
             $collector = new \SetaPDF_Signer_ValidationRelatedInfo_Collector($trustedCertificates);
             $vriData = $collector->getByFieldName($document, $args['fieldName']);
