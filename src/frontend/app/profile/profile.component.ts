@@ -265,9 +265,9 @@ export class ProfileComponent implements OnInit {
                         'Authorization': 'Bearer ' + this.authService.getToken()
                     });
                     return this.http.put('../rest/users/' + this.authService.user.id + '/password', this.password, { observe: 'response', headers: headers });
-                } /*else {
+                } else {
                     return of(false);
-                }*/
+                }
             }),
             filter(data => !!data),
             tap((dataPass: any) => {
