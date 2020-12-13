@@ -36,22 +36,22 @@
     <!-- Sort by the more secure to the less secure mode -->
     <signatureModes>
         <mode>
-            <id>rgs_2stars</id>
-            <color>#FF0000</color>
-            <issuer>ChamberSign</issuer>
-        </mode>
-        <mode>
             <id>rgs_2stars_timestamped</id>
             <color>#FF0000</color>
             <issuer>ChamberSign</issuer>
         </mode>
         <mode>
-            <id>inca_card</id>
+            <id>rgs_2stars</id>
+            <color>#FF0000</color>
+            <issuer>ChamberSign</issuer>
+        </mode>
+        <mode>
+            <id>inca_card_eidas</id>
             <color>#FFA500</color>
             <issuer>customer</issuer>
         </mode>
         <mode>
-            <id>inca_card_eidas</id>
+            <id>inca_card</id>
             <color>#FFA500</color>
             <issuer>customer</issuer>
         </mode>
