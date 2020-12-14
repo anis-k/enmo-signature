@@ -28,7 +28,6 @@ use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
-use SrcCore\models\TextFormatModel;
 use SrcCore\models\ValidatorModel;
 use User\controllers\SignatureController;
 use User\models\UserModel;
@@ -672,6 +671,29 @@ class DocumentController
                     'filename'      => $storeInfos['filename'],
                     'fingerprint'   => $storeInfos['fingerprint']
                 ]);
+
+                if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && ($workflow['mode'] == 'visa' || $workflow['signature_mode'] == 'stamp')) {
+                    $storeInfos = DocserverController::storeResourceOnDocServer([
+                        'encodedFile'     => base64_encode($fileContent),
+                        'format'          => 'pdf',
+                        'docserverType'   => 'ESIGN'
+                    ]);
+                    if (!empty($storeInfos['errors'])) {
+                        return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+                    }
+    
+                    AdrModel::deleteDocumentAdr([
+                        'where' => ['main_document_id = ?', 'type = ?'],
+                        'data'  => [$args['id'], 'ESIGN']
+                    ]);
+                    AdrModel::createDocumentAdr([
+                        'documentId'    => $args['id'],
+                        'type'          => 'ESIGN',
+                        'path'          => $storeInfos['path'],
+                        'filename'      => $storeInfos['filename'],
+                        'fingerprint'   => $storeInfos['fingerprint']
+                    ]);
+                }
 
                 $tnlPages = [];
                 foreach ($affectedPages as $page) {
