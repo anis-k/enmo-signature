@@ -745,7 +745,7 @@ class DocumentController
                 return $response->withStatus(206)->withJson(['tmpUniqueId' => $body['tmpUniqueId']]);
             } elseif ($lastStep && !empty($body['signatures'])) {
                 $storeInfos = DocserverController::storeResourceOnDocServer([
-                    'encodedFile'     => base64_encode(file_get_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")),
+                    'encodedFile'     => base64_encode(file_get_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf")),
                     'format'          => 'pdf',
                     'docserverType'   => 'DOC'
                 ]);
@@ -753,7 +753,7 @@ class DocumentController
                     return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
                 }
 
-                unlink("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf");
+                unlink("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf");
                 AdrModel::deleteDocumentAdr([
                     'where' => ['main_document_id = ?', 'type = ?'],
                     'data'  => [$args['id'], 'DOC']
