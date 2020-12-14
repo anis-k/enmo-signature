@@ -193,7 +193,7 @@ class DocumentController
                 'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true),
                 'note'                  => $value['note']
             ];
-            if (empty($value['status'])) {
+            if (!$currentId && empty($value['status'])) {
                 $currentFound = true;
                 $currentId = $value['user_id'];
             }

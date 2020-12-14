@@ -221,7 +221,7 @@ class DigitalSignatureController
                 $textBlock->setWidth($width);
                 $textBlock->setLineHeight(14);
                 $textBlock->setPadding(2);
-                $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('d/m/Y') . " à " . date('H:i P'));
+                $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('c'));
                 $textBlock->draw($canvas, 0, 30, $width, null);
 
                 $appearance = new \SetaPDF_Signer_Signature_Appearance_XObject($xObject);
