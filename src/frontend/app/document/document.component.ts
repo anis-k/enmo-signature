@@ -353,7 +353,7 @@ export class DocumentComponent implements OnInit {
 
                             this.mainDocument.isCertified = this.mainDocument.workflow.filter((line: any) => line.mode === 'sign' && line.signatureMode !== 'stamp' && line.processDate !== null).length > 0;
 
-                            if (realUserWorkflow.length === 0) {
+                            if (realUserWorkflow.length === 0 || this.mainDocument.readOnly) {
                                 this.actionsList = [
                                     {
                                         id: 4,

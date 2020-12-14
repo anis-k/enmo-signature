@@ -174,6 +174,7 @@ class DocumentController
 
         $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'mode', 'process_date', 'signature_mode', 'status', 'note', 'signature_positions', 'date_positions'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
         $currentFound = false;
+        $currentId = null;
         foreach ($workflow as $value) {
             if (!empty($value['process_date'])) {
                 $date = new \DateTime($value['process_date']);
@@ -195,7 +196,13 @@ class DocumentController
             ];
             if (empty($value['status'])) {
                 $currentFound = true;
+                $currentId = $value['user_id'];
             }
+        }
+
+        if (!empty($currentId) && $currentId != $GLOBALS['id']) {
+            $substitute = UserModel::getById(['id' => $currentId, 'select' => ['substitute']]);
+            $formattedDocument['readOnly'] = $GLOBALS['id'] != $substitute['substitute'] && PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_documents']);
         }
 
         $formattedDocument['attachments'] = [];
