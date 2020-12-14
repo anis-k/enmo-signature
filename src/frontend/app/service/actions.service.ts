@@ -6,6 +6,7 @@ import { tap, catchError } from 'rxjs/operators';
 import { SignaturesContentService } from './signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { of } from 'rxjs';
+import { FunctionsService } from './functions.service';
 
 @Injectable({
     providedIn: 'root'
@@ -18,9 +19,10 @@ export class ActionsService {
         private latinisePipe: LatinisePipe,
         public notificationService: NotificationService,
         public signaturesService: SignaturesContentService,
+        private functionsService: FunctionsService
     ) { }
 
-    sendDocument(note: string, eSignature: any = null, signatureLength: any = null) {
+    sendDocument(note: string, eSignature: any = null, signatureLength: any = null, tmpUniqueId: string = null) {
         return new Promise(async (resolve) => {
             const signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
@@ -85,6 +87,10 @@ export class ActionsService {
                     data.signatureLength = signatureLength;
                 }
 
+                if (!this.functionsService.empty(tmpUniqueId)) {
+                    data.tmpUniqueId = tmpUniqueId;
+                }
+
                 this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)
                     .pipe(
                         tap((res: any) => {
@@ -92,7 +98,8 @@ export class ActionsService {
                                 const objSignData = {
                                     hashDocument : res.dataToSign,
                                     signatureContentLength : res.signatureContentLength,
-                                    signatureFieldName : res.signatureFieldName
+                                    signatureFieldName : res.signatureFieldName,
+                                    tmpUniqueId: res.tmpUniqueId
                                 };
                                 resolve(objSignData);
                             } else {

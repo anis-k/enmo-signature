@@ -101,7 +101,8 @@ export class SignatureMethodModalComponent implements OnInit {
 
             console.log('hashDocumentHex', hashDocumentHex);
 
-            let hashSignature;
+            let hashSignature: any;
+
             try {
                 hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
             } catch (e) {
@@ -109,7 +110,6 @@ export class SignatureMethodModalComponent implements OnInit {
                 resolve(false);
                 return of(false);
             }
-
 
             console.log('hashSignature', hashSignature);
 
@@ -141,10 +141,11 @@ export class SignatureMethodModalComponent implements OnInit {
 
     async sendAndSign() {
         let allSignaturesComplete: boolean = false;
+        let res: any = {};
         while (!allSignaturesComplete) {
             let signDocComplete: any = false;
             while (signDocComplete === false) {
-                const res: any = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength);
+                res = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength, res.tmpUniqueId);
                 if (res === null) {
                     return false;
                 } else if (res !== false) {
