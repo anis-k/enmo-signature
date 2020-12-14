@@ -548,40 +548,23 @@ class DocumentController
 
             if (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
                 if (!empty($body['step']) && $body['step'] == 'hashCertificate') {
+                    $signWithServerCertificate = false;
+                    if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
+                        $signWithServerCertificate = true;
+                    }
+
                     if (empty($body['tmpUniqueId'])) {
                         $control = DocumentController::getDocumentPath(['id' => $args['id']]);
                         if (!empty($control['errors'])) {
                             return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
                         }
-                        $pathToDocument = $control['path'];
 
-                        $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
-                        copy($pathToDocument, $tmpFilename);
-
-                        $configPath = CoreConfigModel::getConfigPath();
-                        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
-                        if (file_exists($overrideFile)) {
-                            require_once($overrideFile);
-                        }
-                        $pdf            = new Fpdi('P');
-                        $pagesNumber    = $pdf->setSourceFile($tmpFilename);
-
-                        $control = DocumentController::setSignaturesOnPdf(['signatures' => [$body['signatures'][0]], 'pagesNumber' => $pagesNumber], $pdf);
+                        $control = DocumentController::processSignatures(['path' => $control['path'], 'signature' => $body['signatures'][0], 'signWithServerCertificate' => $signWithServerCertificate]);
                         if (!empty($control['errors'])) {
                             return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
                         }
 
-                        if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
-                            $control = CertificateSignatureController::signWithServerCertificate($pdf);
-                            if (!empty($control['errors'])) {
-                                return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
-                            }
-                        }
-
-                        $fileContent = $pdf->Output('', 'S');
-
                         $uniqueId = CoreConfigModel::getUniqueId();
-                        file_put_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$uniqueId}.pdf", $fileContent);
                         $body['tmpUniqueId'] = $uniqueId;
                     } else {
                         $pathToDocument = "{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf";
@@ -589,33 +572,12 @@ class DocumentController
                             return $response->withStatus(400)->withJson(['errors' => 'Unique temporary file does not exist']);
                         }
 
-                        $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
-                        copy($pathToDocument, $tmpFilename);
-
-                        $configPath = CoreConfigModel::getConfigPath();
-                        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
-                        if (file_exists($overrideFile)) {
-                            require_once($overrideFile);
-                        }
-                        $pdf            = new Fpdi('P');
-                        $pagesNumber    = $pdf->setSourceFile($tmpFilename);
-
-                        $control = DocumentController::setSignaturesOnPdf(['signatures' => [$body['signatures'][0]], 'pagesNumber' => $pagesNumber], $pdf);
+                        $control = DocumentController::processSignatures(['path' => $pathToDocument, 'signature' => $body['signatures'][0], 'signWithServerCertificate' => $signWithServerCertificate]);
                         if (!empty($control['errors'])) {
                             return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
                         }
-
-                        if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
-                            $control = CertificateSignatureController::signWithServerCertificate($pdf);
-                            if (!empty($control['errors'])) {
-                                return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
-                            }
-                        }
-
-                        $fileContent = $pdf->Output('', 'S');
-
-                        file_put_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf", $fileContent);
                     }
+                    file_put_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf", $control['fileContent']);
                 }
             } else {
                 $control = DocumentController::getDocumentPath(['id' => $args['id']]);
@@ -1196,5 +1158,41 @@ class DocumentController
         }
 
         return ['path' => $pathToDocument];
+    }
+
+    private static function processSignatures(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['path', 'signature']);
+        ValidatorModel::stringType($args, ['path']);
+
+        $tmpPath = CoreConfigModel::getTmpPath();
+
+        $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
+        copy($args['path'], $tmpFilename);
+
+        $configPath = CoreConfigModel::getConfigPath();
+        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+        if (file_exists($overrideFile)) {
+            require_once($overrideFile);
+        }
+        $pdf            = new Fpdi('P');
+        $pagesNumber    = $pdf->setSourceFile($tmpFilename);
+
+        $control = DocumentController::setSignaturesOnPdf(['signatures' => [$args['signature']], 'pagesNumber' => $pagesNumber], $pdf);
+        if (!empty($control['errors'])) {
+            return ['errors' => $control['errors']];
+        }
+
+        if ($args['signWithServerCertificate']) {
+            $control = CertificateSignatureController::signWithServerCertificate($pdf);
+            if (!empty($control['errors'])) {
+                return ['errors' => $control['errors']];
+            }
+        }
+
+        $fileContent = $pdf->Output('', 'S');
+        unlink($tmpFilename);
+
+        return ['fileContent' => $fileContent];
     }
 }
