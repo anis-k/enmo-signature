@@ -198,7 +198,7 @@ class DigitalSignatureController
                 $height = $imageXObject->getHeight($width);
 
                 $fieldName = $signer->addSignatureField(
-                    \SetaPDF_Signer_SignatureField::DEFAULT_FIELD_NAME,
+                    'Signature_' . rand(),
                     $args['signatureInfo']['page'],
                     \SetaPDF_Signer_SignatureField::POSITION_LEFT_TOP,
                     ['x' => $args['signatureInfo']['positionX'], 'y' => -$args['signatureInfo']['positionY']],

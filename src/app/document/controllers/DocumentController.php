@@ -144,6 +144,7 @@ class DocumentController
         if (empty($adr[0]['count']) && $document['status'] != 'CONVERTING') {
             $configPath = CoreConfigModel::getConfigPath();
             exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' > /dev/null");
+            $adr[0]['count'] = 1;
         }
 
         $formattedDocument = [
@@ -515,10 +516,10 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Action does not exist']);
         }
 
-        $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id', 'signature_mode', 'digital_signature_id'], 'documentId' => $args['id']]);
-        $libDir   = CoreConfigModel::getLibrariesDirectory();
+        $workflow  = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id', 'signature_mode', 'digital_signature_id'], 'documentId' => $args['id']]);
+        $libDir    = CoreConfigModel::getLibrariesDirectory();
         $loadedXml = CoreConfigModel::getConfig();
-        $tmpPath     = CoreConfigModel::getTmpPath();
+        $tmpPath   = CoreConfigModel::getTmpPath();
 
         if ($workflow['mode'] == 'sign' && $workflow['signature_mode'] != 'stamp') {
             if (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
@@ -1139,25 +1140,14 @@ class DocumentController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $adr = AdrModel::getDocumentsAdr([
-            'select'  => ['path', 'filename'],
-            'where'   => ['main_document_id = ?', 'type = ?'],
-            'data'    => [$args['id'], 'DOC']
-        ]);
-        if (empty($adr)) {
+        $content = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => false]);
+        if (empty($content)) {
             return ['errors' => 'Document does not exist'];
-        }
-        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-            return ['errors' => 'Docserver does not exist'];
+        } elseif (!empty($content['errors'])) {
+            return ['errors' => $content['errors']];
         }
 
-        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        if (!is_file($pathToDocument) || !is_readable($pathToDocument)) {
-            return ['errors' => 'Document not found on docserver or not readable'];
-        }
-
-        return ['path' => $pathToDocument];
+        return ['path' => $content['path']];
     }
 
     private static function processSignatures(array $args)

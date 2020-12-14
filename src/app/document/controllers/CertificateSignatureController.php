@@ -151,7 +151,7 @@ class CertificateSignatureController
             $height = $imageXObject->getHeight($width);
 
             $fieldName = $signer->addSignatureField(
-                \SetaPDF_Signer_SignatureField::DEFAULT_FIELD_NAME,
+                'Signature_' . rand(),
                 $signatureInfo['page'],
                 \SetaPDF_Signer_SignatureField::POSITION_LEFT_TOP,
                 ['x' => $signatureInfo['positionX'], 'y' => -$signatureInfo['positionY']],
