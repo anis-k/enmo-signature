@@ -29,23 +29,35 @@ class CertificateSignatureController
     {
         session_start();
 
-        $adr = AdrModel::getDocumentsAdr([
-            'select'  => ['path', 'filename'],
-            'where'   => ['main_document_id = ?', 'type = ?'],
-            'data'    => [$args['id'], 'ESIGN']
-        ]);
-        if (!empty($adr)) {
-            $docserver = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-        } else {
-            $adr = AdrModel::getDocumentsAdr([
-                'select' => ['path', 'filename'],
-                'where'  => ['main_document_id = ?', 'type = ?'],
-                'data'   => [$args['id'], 'DOC']
-            ]);
-            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        $tmpPath = CoreConfigModel::getTmpPath();
+
+        if (!empty($args['body']['tmpUniqueId'])) {
+            if (is_file("{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")) {
+                $pathToDocument = "{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf";
+            } elseif (is_file("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")) {
+                $pathToDocument = "{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf";
+            }
         }
-        $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        $tmpPath            = CoreConfigModel::getTmpPath();
+        if (empty($pathToDocument)) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['main_document_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'ESIGN']
+            ]);
+            if (!empty($adr)) {
+                $docserver      = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            } else {
+                $adr = AdrModel::getDocumentsAdr([
+                    'select' => ['path', 'filename'],
+                    'where'  => ['main_document_id = ?', 'type = ?'],
+                    'data'   => [$args['id'], 'DOC']
+                ]);
+                $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            }
+        }
+
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
 
         $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
@@ -184,7 +196,8 @@ class CertificateSignatureController
         return [
             'dataToSign'                => \SetaPDF_Core_Type_HexString::str2hex($module->getDataToSign($_SESSION['tmpDocument']->getHashFile())),
             'signatureContentLength'    => $signatureContentLength,
-            'signatureFieldName'        => $fieldName
+            'signatureFieldName'        => $fieldName,
+            'tmpUniqueId'               => $args['body']['tmpUniqueId'] ?? null
         ];
     }
 
@@ -192,25 +205,36 @@ class CertificateSignatureController
     {
         session_start();
 
-        $certificateSignature = \SetaPDF_Core_Type_HexString::hex2str($args['hashSignature']);
+        $certificateSignature   = \SetaPDF_Core_Type_HexString::hex2str($args['hashSignature']);
+        $tmpPath                = CoreConfigModel::getTmpPath();
 
-        $adr = AdrModel::getDocumentsAdr([
-            'select'  => ['path', 'filename'],
-            'where'   => ['main_document_id = ?', 'type = ?'],
-            'data'    => [$args['id'], 'ESIGN']
-        ]);
-        if (!empty($adr)) {
-            $docserver = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-        } else {
-            $adr = AdrModel::getDocumentsAdr([
-                'select' => ['path', 'filename'],
-                'where'  => ['main_document_id = ?', 'type = ?'],
-                'data'   => [$args['id'], 'DOC']
-            ]);
-            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (!empty($args['tmpUniqueId'])) {
+            if (is_file("{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")) {
+                $pathToDocument = "{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf";
+            } elseif (is_file("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")) {
+                $pathToDocument = "{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf";
+            }
         }
-        $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-        $tmpPath            = CoreConfigModel::getTmpPath();
+
+        if (empty($pathToDocument)) {
+            $adr = AdrModel::getDocumentsAdr([
+                'select'  => ['path', 'filename'],
+                'where'   => ['main_document_id = ?', 'type = ?'],
+                'data'    => [$args['id'], 'ESIGN']
+            ]);
+            if (!empty($adr)) {
+                $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
+                $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            } else {
+                $adr = AdrModel::getDocumentsAdr([
+                    'select' => ['path', 'filename'],
+                    'where'  => ['main_document_id = ?', 'type = ?'],
+                    'data'   => [$args['id'], 'DOC']
+                ]);
+                $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            }
+        }
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
         $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
         $document           = \SetaPDF_Core_Document::loadByFilename($pathToDocument, $writer);
@@ -242,28 +266,33 @@ class CertificateSignatureController
             DigitalSignatureController::terminate(['config' => $config, 'transactionId' => $document['digital_signature_transaction_id']]);
         }
 
-        $storeInfos = DocserverController::storeResourceOnDocServer([
-            'encodedFile'   => base64_encode(file_get_contents($signedDocumentPath)),
-            'format'        => 'pdf',
-            'docserverType' => 'ESIGN'
-        ]);
 
         // if (!empty($storeInfos['errors'])) {
         //     return ['errors' => $storeInfos['errors']];
         // }
 
-        AdrModel::deleteDocumentAdr([
-            'where' => ['main_document_id = ?', 'type = ?'],
-            'data'  => [$args['id'], 'ESIGN']
-        ]);
-        AdrModel::createDocumentAdr([
-            'documentId'  => $args['id'],
-            'type'        => 'ESIGN',
-            'path'        => $storeInfos['path'],
-            'filename'    => $storeInfos['filename'],
-            'fingerprint' => $storeInfos['fingerprint']
-        ]);
-        // unlink($signedDocumentPath);
+        if ($args['lastStep']) {
+            $storeInfos = DocserverController::storeResourceOnDocServer([
+                'encodedFile'   => base64_encode(file_get_contents($signedDocumentPath)),
+                'format'        => 'pdf',
+                'docserverType' => 'ESIGN'
+            ]);
+
+            AdrModel::deleteDocumentAdr([
+                'where' => ['main_document_id = ?', 'type = ?'],
+                'data'  => [$args['id'], 'ESIGN']
+            ]);
+            AdrModel::createDocumentAdr([
+                'documentId'  => $args['id'],
+                'type'        => 'ESIGN',
+                'path'        => $storeInfos['path'],
+                'filename'    => $storeInfos['filename'],
+                'fingerprint' => $storeInfos['fingerprint']
+            ]);
+        } else {
+            copy($signedDocumentPath, "{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['tmpUniqueId']}.pdf");
+        }
+        unlink($signedDocumentPath);
 
         return true;
     }

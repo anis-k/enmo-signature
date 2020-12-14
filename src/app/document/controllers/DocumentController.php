@@ -28,6 +28,7 @@ use Document\models\DocumentModel;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\models\DatabaseModel;
+use SrcCore\models\TextFormatModel;
 use SrcCore\models\ValidatorModel;
 use User\controllers\SignatureController;
 use User\models\UserModel;
@@ -511,6 +512,7 @@ class DocumentController
         $workflow = WorkflowModel::getCurrentStep(['select' => ['id', 'mode', 'user_id', 'signature_mode', 'digital_signature_id'], 'documentId' => $args['id']]);
         $libDir   = CoreConfigModel::getLibrariesDirectory();
         $loadedXml = CoreConfigModel::getConfig();
+        $tmpPath     = CoreConfigModel::getTmpPath();
 
         if ($workflow['mode'] == 'sign' && $workflow['signature_mode'] != 'stamp') {
             if (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php')) {
@@ -538,88 +540,147 @@ class DocumentController
                 }
             }
 
-            $adr = AdrModel::getDocumentsAdr([
-                'select'  => ['path', 'filename'],
-                'where'   => ['main_document_id = ?', 'type = ?'],
-                'data'    => [$args['id'], 'DOC']
-            ]);
-            if (empty($adr)) {
-                return $response->withStatus(400)->withJson(['errors' => 'Document does not exist']);
-            }
+            if (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+                if (!empty($body['step']) && $body['step'] == 'hashCertificate') {
+                    if (empty($body['tmpUniqueId'])) {
+                        $control = DocumentController::getDocumentPath(['id' => $args['id']]);
+                        if (!empty($control['errors'])) {
+                            return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                        }
+                        $pathToDocument = $control['path'];
 
-            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-            if (empty($docserver['path']) || !file_exists($docserver['path'])) {
-                return $response->withStatus(400)->withJson(['errors' => 'Docserver does not exist']);
-            }
+                        $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
+                        copy($pathToDocument, $tmpFilename);
 
-            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-            if (!is_file($pathToDocument) || !is_readable($pathToDocument)) {
-                return $response->withStatus(404)->withJson(['errors' => 'Document not found on docserver or not readable']);
-            }
+                        $configPath = CoreConfigModel::getConfigPath();
+                        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+                        if (file_exists($overrideFile)) {
+                            require_once($overrideFile);
+                        }
+                        $pdf            = new Fpdi('P');
+                        $pagesNumber    = $pdf->setSourceFile($tmpFilename);
 
-            $tmpPath     = CoreConfigModel::getTmpPath();
-            $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_' . $adr[0]['filename'];
-            copy($pathToDocument, $tmpFilename);
+                        $control = DocumentController::setSignaturesOnPdf(['signatures' => [$body['signatures'][0]], 'pagesNumber' => $pagesNumber], $pdf);
+                        if (!empty($control['errors'])) {
+                            return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                        }
 
-            $configPath = CoreConfigModel::getConfigPath();
-            $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
-            if (file_exists($overrideFile)) {
-                require_once($overrideFile);
-            }
-            $pdf            = new Fpdi('P');
-            $pagesNumber    = $pdf->setSourceFile($tmpFilename);
+                        if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
+                            $control = CertificateSignatureController::signWithServerCertificate($pdf);
+                            if (!empty($control['errors'])) {
+                                return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                            }
+                        }
 
-            $control = DocumentController::setSignaturesOnPdf(['signatures' => $body['signatures'], 'pagesNumber' => $pagesNumber], $pdf);
-            if (!empty($control['errors'])) {
-                return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
-            }
-            $affectedPages = $control['affectedPages'];
+                        $fileContent = $pdf->Output('', 'S');
 
-            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
-                $control = CertificateSignatureController::signWithServerCertificate($pdf);
+                        $uniqueId = CoreConfigModel::getUniqueId();
+                        file_put_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$uniqueId}.pdf", $fileContent);
+                        $body['tmpUniqueId'] = $uniqueId;
+                    } else {
+                        $pathToDocument = "{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf";
+                        if (!is_file($pathToDocument)) {
+                            return $response->withStatus(400)->withJson(['errors' => 'Unique temporary file does not exist']);
+                        }
+
+                        $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
+                        copy($pathToDocument, $tmpFilename);
+
+                        $configPath = CoreConfigModel::getConfigPath();
+                        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+                        if (file_exists($overrideFile)) {
+                            require_once($overrideFile);
+                        }
+                        $pdf            = new Fpdi('P');
+                        $pagesNumber    = $pdf->setSourceFile($tmpFilename);
+
+                        $control = DocumentController::setSignaturesOnPdf(['signatures' => [$body['signatures'][0]], 'pagesNumber' => $pagesNumber], $pdf);
+                        if (!empty($control['errors'])) {
+                            return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                        }
+
+                        if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
+                            $control = CertificateSignatureController::signWithServerCertificate($pdf);
+                            if (!empty($control['errors'])) {
+                                return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                            }
+                        }
+
+                        $fileContent = $pdf->Output('', 'S');
+
+                        file_put_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$body['tmpUniqueId']}.pdf", $fileContent);
+                    }
+                }
+            } else {
+                $control = DocumentController::getDocumentPath(['id' => $args['id']]);
                 if (!empty($control['errors'])) {
                     return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
                 }
-            }
+                $pathToDocument = $control['path'];
 
-            $fileContent = $pdf->Output('', 'S');
+                $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
+                copy($pathToDocument, $tmpFilename);
 
-            $storeInfos = DocserverController::storeResourceOnDocServer([
-                'encodedFile'     => base64_encode($fileContent),
-                'format'          => 'pdf',
-                'docserverType'   => 'DOC'
-            ]);
-            if (!empty($storeInfos['errors'])) {
-                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
-            }
+                $configPath = CoreConfigModel::getConfigPath();
+                $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+                if (file_exists($overrideFile)) {
+                    require_once($overrideFile);
+                }
+                $pdf            = new Fpdi('P');
+                $pagesNumber    = $pdf->setSourceFile($tmpFilename);
 
-            unlink($pathToDocument);
-            AdrModel::deleteDocumentAdr([
-                'where' => ['main_document_id = ?', 'type = ?'],
-                'data'  => [$args['id'], 'DOC']
-            ]);
-            AdrModel::createDocumentAdr([
-                'documentId'    => $args['id'],
-                'type'          => 'DOC',
-                'path'          => $storeInfos['path'],
-                'filename'      => $storeInfos['filename'],
-                'fingerprint'   => $storeInfos['fingerprint']
-            ]);
+                $control = DocumentController::setSignaturesOnPdf(['signatures' => $body['signatures'], 'pagesNumber' => $pagesNumber], $pdf);
+                if (!empty($control['errors'])) {
+                    return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                }
+                $affectedPages = $control['affectedPages'];
 
-            $tnlPages = [];
-            foreach ($affectedPages as $page) {
-                $tnlPages[] = "TNL{$page}";
-            }
-            if (!empty($tnlPages)) {
-                AdrModel::deleteDocumentAdr([
-                    'where' => ['main_document_id = ?', 'type in (?)'],
-                    'data'  => [$args['id'], $tnlPages]
+                if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
+                    $control = CertificateSignatureController::signWithServerCertificate($pdf);
+                    if (!empty($control['errors'])) {
+                        return $response->withStatus(400)->withJson(['errors' => $control['errors']]);
+                    }
+                }
+
+                $fileContent = $pdf->Output('', 'S');
+
+                $storeInfos = DocserverController::storeResourceOnDocServer([
+                    'encodedFile'     => base64_encode($fileContent),
+                    'format'          => 'pdf',
+                    'docserverType'   => 'DOC'
                 ]);
-            }
+                if (!empty($storeInfos['errors'])) {
+                    return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+                }
 
-            $configPath = CoreConfigModel::getConfigPath();
-            foreach ($affectedPages as $page) {
-                exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
+                unlink($pathToDocument);
+                AdrModel::deleteDocumentAdr([
+                    'where' => ['main_document_id = ?', 'type = ?'],
+                    'data'  => [$args['id'], 'DOC']
+                ]);
+                AdrModel::createDocumentAdr([
+                    'documentId'    => $args['id'],
+                    'type'          => 'DOC',
+                    'path'          => $storeInfos['path'],
+                    'filename'      => $storeInfos['filename'],
+                    'fingerprint'   => $storeInfos['fingerprint']
+                ]);
+
+                $tnlPages = [];
+                foreach ($affectedPages as $page) {
+                    $tnlPages[] = "TNL{$page}";
+                }
+                if (!empty($tnlPages)) {
+                    AdrModel::deleteDocumentAdr([
+                        'where' => ['main_document_id = ?', 'type in (?)'],
+                        'data'  => [$args['id'], $tnlPages]
+                    ]);
+                }
+
+                $configPath = CoreConfigModel::getConfigPath();
+                foreach ($affectedPages as $page) {
+                    exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$args['id']} 'document' '{$GLOBALS['id']}' {$page} > /dev/null &");
+                }
             }
         }
         if (!empty($body['step']) && $body['step'] == 'hashCertificate' && in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
@@ -634,19 +695,52 @@ class DocumentController
         }
 
         if (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
-            if (empty($body['hashSignature'])) {
-                return $response->withStatus(400)->withJson(['errors' => 'Body hashSignature is empty']);
+            $lastStep = false;
+            if (empty($body['signatures']) || count($body['signatures']) == 1) {
+                $lastStep = true;
             }
             $return = CertificateSignatureController::signDocument([
-                'id'                     => $args['id'],
-                'certificate'            => $body['certificate'],
-                'signatureContentLength' => $body['signatureContentLength'],
-                'signatureFieldName'     => $body['signatureFieldName'],
-                'hashSignature'          => $body['hashSignature'],
-                'signatureMode'          => $workflow['signature_mode']
+                'id'                        => $args['id'],
+                'certificate'               => $body['certificate'],
+                'signatureContentLength'    => $body['signatureContentLength'],
+                'signatureFieldName'        => $body['signatureFieldName'],
+                'hashSignature'             => $body['hashSignature'],
+                'signatureMode'             => $workflow['signature_mode'],
+                'tmpUniqueId'               => $body['tmpUniqueId'] ?? null,
+                'lastStep'                  => $lastStep
             ]);
             if (!empty($return['errors'])) {
                 return $response->withStatus(400)->withJson($return);
+            }
+            if (!$lastStep) {
+                return $response->withStatus(206)->withJson(['tmpUniqueId' => $body['tmpUniqueId']]);
+            } elseif ($lastStep && !empty($body['signatures'])) {
+                $storeInfos = DocserverController::storeResourceOnDocServer([
+                    'encodedFile'     => base64_encode(file_get_contents("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")),
+                    'format'          => 'pdf',
+                    'docserverType'   => 'DOC'
+                ]);
+                if (!empty($storeInfos['errors'])) {
+                    return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+                }
+
+                unlink("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf");
+                AdrModel::deleteDocumentAdr([
+                    'where' => ['main_document_id = ?', 'type = ?'],
+                    'data'  => [$args['id'], 'DOC']
+                ]);
+                AdrModel::createDocumentAdr([
+                    'documentId'    => $args['id'],
+                    'type'          => 'DOC',
+                    'path'          => $storeInfos['path'],
+                    'filename'      => $storeInfos['filename'],
+                    'fingerprint'   => $storeInfos['fingerprint']
+                ]);
+
+                AdrModel::deleteDocumentAdr([
+                    'where' => ['main_document_id = ?', 'type like ?'],
+                    'data'  => [$args['id'], 'TNL%']
+                ]);
             }
         }
 
@@ -1047,5 +1141,31 @@ class DocumentController
         }
 
         return ['affectedPages' => $affectedPages];
+    }
+
+    public static function getDocumentPath(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['id']);
+        ValidatorModel::intVal($args, ['id']);
+
+        $adr = AdrModel::getDocumentsAdr([
+            'select'  => ['path', 'filename'],
+            'where'   => ['main_document_id = ?', 'type = ?'],
+            'data'    => [$args['id'], 'DOC']
+        ]);
+        if (empty($adr)) {
+            return ['errors' => 'Document does not exist'];
+        }
+        $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
+        if (empty($docserver['path']) || !file_exists($docserver['path'])) {
+            return ['errors' => 'Docserver does not exist'];
+        }
+
+        $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+        if (!is_file($pathToDocument) || !is_readable($pathToDocument)) {
+            return ['errors' => 'Document not found on docserver or not readable'];
+        }
+
+        return ['path' => $pathToDocument];
     }
 }
