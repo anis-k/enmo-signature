@@ -83,7 +83,7 @@ export class ConnectionComponent implements OnInit {
                     )
                     .subscribe({
                         next: () => {
-                            this.authService.authMode = connection;
+                            this.authService.updateUserInfoWithTokenRefresh();
                             this.notificationService.success('lang.connectionModeUpdated');
                         },
                     });

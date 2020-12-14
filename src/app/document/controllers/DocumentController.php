@@ -322,7 +322,7 @@ class DocumentController
             } elseif (!Validator::stringType()->notEmpty()->validate($workflow['mode']) || !in_array($workflow['mode'], DocumentController::MODES)) {
                 return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] mode is empty or not a string in ('visa', 'sign', 'note')"]);
             }
-            if ($hasElectronicSignature && $workflow['signatureMode'] == 'stamp') {
+            if ($hasElectronicSignature && $workflow['signatureMode'] == 'stamp' && $workflow['mode'] == 'sign') {
                 return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}] signatureMode cannot be stamp after an electronic signature", 'lang' => 'stampInTheMiddleImpossible']);
             }
             if (!empty($workflow['signaturePositions'])) {
@@ -350,7 +350,7 @@ class DocumentController
             if (in_array($workflow['signatureMode'], ['eidas', 'rgs_2stars_timestamped', 'inca_card_eidas'])) {
                 $hasEidas = true;
             }
-            if ($workflow['signatureMode'] != 'stamp') {
+            if ($workflow['signatureMode'] != 'stamp' && $workflow['mode'] == 'sign') {
                 $hasElectronicSignature = true;
             }
             $body['workflow'][$key]['userId'] = $processingUser['id'];

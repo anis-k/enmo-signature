@@ -51,45 +51,45 @@
                     <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}}</ion-label>
                     <ion-input name="lastname" [(ngModel)]="profileInfo.lastname" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
-                <ion-list-header lines="none">
-                    <ion-label color="primary">{{'lang.changePassword' | translate}}</ion-label>
-                </ion-list-header>
-                <ion-item>
-                    <ion-label color="secondary" position="stacked">{{'lang.currentPassword' | translate}}</ion-label>
-                    <ion-input name="currentPassword" [(ngModel)]="password.currentPassword"
-                        placeholder="{{'lang.currentPassword' | translate}}"
-                        [type]="hideCurrentPassword ? 'password' : 'text'" [readonly]="authService.authMode !== 'default'"></ion-input>
-                    <ion-button class="showpassButton" slot="end" color="light"
-                        (click)="hideCurrentPassword = !hideCurrentPassword">
-                        <ion-icon slot="icon-only" color="primary"
-                            [name]="hideCurrentPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
-                    </ion-button>
-                </ion-item>
-                <ion-item>
-                    <ion-label color="secondary" position="stacked">{{'lang.newPassword' | translate}}</ion-label>
-                    <ion-input name="newPassword" [(ngModel)]="password.newPassword"
-                        placeholder="{{'lang.newPassword' | translate}}" [type]="hideNewPassword ? 'password' : 'text'"
-                        [readonly]="authService.authMode !== 'default'"
-                        (keyup)="checkPasswordValidity(password.newPassword)"></ion-input>
-                    <ion-button class="showpassButton" slot="end" color="light"
-                        (click)="hideNewPassword = !hideNewPassword">
-                        <ion-icon slot="icon-only" color="primary"
-                            [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
-                    </ion-button>
-                </ion-item>
-                <ion-item>
-                    <ion-label color="secondary" position="stacked">{{'lang.passwordConfirmation' | translate}}
-                    </ion-label>
-                    <ion-input name="passwordConfirmation" [(ngModel)]="password.passwordConfirmation"
-                        placeholder="{{'lang.passwordConfirmation' | translate}}"
-                        [type]="hideNewPasswordConfirm ? 'password' : 'text'"
-                        [readonly]="authService.authMode !== 'default'"></ion-input>
-                    <ion-button class="showpassButton" slot="end" color="light"
-                        (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm">
-                        <ion-icon slot="icon-only" color="primary"
-                            [name]="hideNewPasswordConfirm ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
-                    </ion-button>
-                </ion-item>
+                <div *ngIf="authService.authMode === 'default'">
+                    <ion-list-header lines="none">
+                        <ion-label color="primary">{{'lang.changePassword' | translate}}</ion-label>
+                    </ion-list-header>
+                    <ion-item>
+                        <ion-label color="secondary" position="stacked">{{'lang.currentPassword' | translate}}</ion-label>
+                        <ion-input name="currentPassword" [(ngModel)]="password.currentPassword"
+                            placeholder="{{'lang.currentPassword' | translate}}"
+                            [type]="hideCurrentPassword ? 'password' : 'text'"></ion-input>
+                        <ion-button class="showpassButton" slot="end" color="light"
+                            (click)="hideCurrentPassword = !hideCurrentPassword">
+                            <ion-icon slot="icon-only" color="primary"
+                                [name]="hideCurrentPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label color="secondary" position="stacked">{{'lang.newPassword' | translate}}</ion-label>
+                        <ion-input name="newPassword" [(ngModel)]="password.newPassword"
+                            placeholder="{{'lang.newPassword' | translate}}" [type]="hideNewPassword ? 'password' : 'text'"
+                            (keyup)="checkPasswordValidity(password.newPassword)"></ion-input>
+                        <ion-button class="showpassButton" slot="end" color="light"
+                            (click)="hideNewPassword = !hideNewPassword">
+                            <ion-icon slot="icon-only" color="primary"
+                                [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label color="secondary" position="stacked">{{'lang.passwordConfirmation' | translate}}
+                        </ion-label>
+                        <ion-input name="passwordConfirmation" [(ngModel)]="password.passwordConfirmation"
+                            placeholder="{{'lang.passwordConfirmation' | translate}}"
+                            [type]="hideNewPasswordConfirm ? 'password' : 'text'"></ion-input>
+                        <ion-button class="showpassButton" slot="end" color="light"
+                            (click)="hideNewPasswordConfirm = !hideNewPasswordConfirm">
+                            <ion-icon slot="icon-only" color="primary"
+                                [name]="hideNewPasswordConfirm ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                        </ion-button>
+                    </ion-item>
+                </div>
                 <ion-item lines="none">
                     <ion-note color="success"
                         *ngIf="password.passwordConfirmation === password.newPassword && password.newPassword.length > 0 && password.passwordConfirmation.length> 0">

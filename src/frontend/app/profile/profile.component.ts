@@ -247,14 +247,10 @@ export class ProfileComponent implements OnInit {
                 this.setLang(this.preferenceInfo.lang);
                 this.cookieService.set('maarchParapheurLang', this.preferenceInfo.lang);
                 // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
-                this.authService.updateUserInfoWithTokenRefresh();
             }),
-            exhaustMap(async () => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) :  new Observable<String>()),
+            exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) :  new Promise(resolve => {resolve(true); })),
             exhaustMap(() => {
-                if (this.authService.authMode === 'default') {
-                    this.authService.user.firstname = this.profileInfo.firstname;
-                    this.authService.user.lastname = this.profileInfo.lastname;
-                }
+                this.authService.updateUserInfoWithTokenRefresh();
 
                 if (this.password.newPassword === '') {
                     this.closeProfile();
