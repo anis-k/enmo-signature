@@ -32,6 +32,8 @@ export class SignatureMethodModalComponent implements OnInit {
     certPem: any = null;
     privateKey: any = null;
 
+    signatures: any[] = [];
+
     signature: string;
     certificate: any;
     signatureLength: any = null;
@@ -52,9 +54,57 @@ export class SignatureMethodModalComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        this.getSignatures();
         const signatureModeData = this.authService.signatureRoles.filter((mode: any) => mode.id === this.signatureMode)[0];
         if (!this.functionsService.empty(signatureModeData.issuer)) {
             this.filters.issuerDNMatch = new RegExp(signatureModeData.issuer, 'i');
+        }
+    }
+
+    getSignatures() {
+        for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+            if (this.signaturesService.datesContent[index]) {
+                this.signaturesService.datesContent[index].forEach((date: any) => {
+                    this.signatures.push(
+                        {
+                            'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
+                            'width': date.width,
+                            'positionX': date.positionX,
+                            'positionY': date.positionY,
+                            'type': 'SVG',
+                            'page': index,
+                        }
+                    );
+                });
+            }
+            if (this.signaturesService.signaturesContent[index]) {
+                this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                    this.signatures.push(
+                        {
+                            'encodedImage': signature.encodedSignature,
+                            'width': signature.width,
+                            'positionX': signature.positionX,
+                            'positionY': signature.positionY,
+                            'type': 'PNG',
+                            'page': index,
+                        }
+                    );
+                });
+            }
+            if (this.signaturesService.notesContent[index]) {
+                this.signaturesService.notesContent[index].forEach((noteItem: any) => {
+                    this.signatures.push(
+                        {
+                            'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
+                            'width': noteItem.width,
+                            'positionX': noteItem.positionX,
+                            'positionY': noteItem.positionY,
+                            'type': 'PNG',
+                            'page': index,
+                        }
+                    );
+                });
+            }
         }
     }
 
@@ -89,17 +139,12 @@ export class SignatureMethodModalComponent implements OnInit {
     }
 
     signDocument(hashDocument: any, eSignatureLength: any, signatureFieldName: any, tmpUniqueId: string) {
-        console.log(hashDocument);
-        console.log(eSignatureLength);
-
         return new Promise(async (resolve) => {
             const alg = {
                 name: this.privateKey.algorithm.name,
                 hash: 'SHA-256',
             };
             const hashDocumentHex = this.fromHex(hashDocument);
-
-            console.log('hashDocumentHex', hashDocumentHex);
 
             let hashSignature: any;
 
@@ -111,58 +156,8 @@ export class SignatureMethodModalComponent implements OnInit {
                 return of(false);
             }
 
-            console.log('hashSignature', hashSignature);
-
-            const signatures: any[] = [];
-            if (this.signaturesService.currentAction > 0) {
-                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                    if (this.signaturesService.datesContent[index]) {
-                        this.signaturesService.datesContent[index].forEach((date: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
-                                    'width': date.width,
-                                    'positionX': date.positionX,
-                                    'positionY': date.positionY,
-                                    'type': 'SVG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                    if (this.signaturesService.signaturesContent[index]) {
-                        this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': signature.encodedSignature,
-                                    'width': signature.width,
-                                    'positionX': signature.positionX,
-                                    'positionY': signature.positionY,
-                                    'type': 'PNG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                    if (this.signaturesService.notesContent[index]) {
-                        this.signaturesService.notesContent[index].forEach((noteItem: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
-                                    'width': noteItem.width,
-                                    'positionX': noteItem.positionX,
-                                    'positionY': noteItem.positionY,
-                                    'type': 'PNG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                }
-            }
-
             const objEsign = {
-                signatures : signatures,
+                signatures : this.signatures,
                 certificate: this.certPem,
                 hashSignature: this.toHex(hashSignature),
                 signatureContentLength: eSignatureLength,
@@ -195,18 +190,14 @@ export class SignatureMethodModalComponent implements OnInit {
         while (!allSignaturesComplete) {
             let signDocComplete: any = false;
             while (signDocComplete === false) {
-                console.log('recupération hashDocument');
-                res = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength, res.tmpUniqueId);
-                console.log('res hashDocument', res);
+                res = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength, res.tmpUniqueId, this.signatures);
                 if (res === null) {
                     return false;
                 } else if (res !== false) {
-                    console.log('signature document');
                     signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
                     if (signDocComplete) {
-                        this.signaturesService.signaturesContent.shift();
-                        allSignaturesComplete = this.signaturesService.signaturesContent.length === 0;
-                        res = {};
+                        this.signatures.shift();
+                        allSignaturesComplete = this.signatures.length === 0;
                     }
                 }
             }

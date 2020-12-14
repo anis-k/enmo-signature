@@ -22,53 +22,57 @@ export class ActionsService {
         private functionsService: FunctionsService
     ) { }
 
-    sendDocument(note: string, eSignature: any = null, signatureLength: any = null, tmpUniqueId: string = null) {
+    sendDocument(note: string, eSignature: any = null, signatureLength: any = null, tmpUniqueId: string = null, imgSignatures: any[] = null) {
         return new Promise(async (resolve) => {
-            const signatures: any[] = [];
+            let signatures: any[] = [];
             if (this.signaturesService.currentAction > 0) {
-                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-                    if (this.signaturesService.datesContent[index]) {
-                        this.signaturesService.datesContent[index].forEach((date: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
-                                    'width': date.width,
-                                    'positionX': date.positionX,
-                                    'positionY': date.positionY,
-                                    'type': 'SVG',
-                                    'page': index,
-                                }
-                            );
-                        });
+                if (imgSignatures === null) {
+                    for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                        if (this.signaturesService.datesContent[index]) {
+                            this.signaturesService.datesContent[index].forEach((date: any) => {
+                                signatures.push(
+                                    {
+                                        'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
+                                        'width': date.width,
+                                        'positionX': date.positionX,
+                                        'positionY': date.positionY,
+                                        'type': 'SVG',
+                                        'page': index,
+                                    }
+                                );
+                            });
+                        }
+                        if (this.signaturesService.signaturesContent[index]) {
+                            this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                                signatures.push(
+                                    {
+                                        'encodedImage': signature.encodedSignature,
+                                        'width': signature.width,
+                                        'positionX': signature.positionX,
+                                        'positionY': signature.positionY,
+                                        'type': 'PNG',
+                                        'page': index,
+                                    }
+                                );
+                            });
+                        }
+                        if (this.signaturesService.notesContent[index]) {
+                            this.signaturesService.notesContent[index].forEach((noteItem: any) => {
+                                signatures.push(
+                                    {
+                                        'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
+                                        'width': noteItem.width,
+                                        'positionX': noteItem.positionX,
+                                        'positionY': noteItem.positionY,
+                                        'type': 'PNG',
+                                        'page': index,
+                                    }
+                                );
+                            });
+                        }
                     }
-                    if (this.signaturesService.signaturesContent[index]) {
-                        this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': signature.encodedSignature,
-                                    'width': signature.width,
-                                    'positionX': signature.positionX,
-                                    'positionY': signature.positionY,
-                                    'type': 'PNG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
-                    if (this.signaturesService.notesContent[index]) {
-                        this.signaturesService.notesContent[index].forEach((noteItem: any) => {
-                            signatures.push(
-                                {
-                                    'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
-                                    'width': noteItem.width,
-                                    'positionX': noteItem.positionX,
-                                    'positionY': noteItem.positionY,
-                                    'type': 'PNG',
-                                    'page': index,
-                                }
-                            );
-                        });
-                    }
+                } else {
+                    signatures = imgSignatures;
                 }
                 let data: any = {};
 
@@ -95,7 +99,6 @@ export class ActionsService {
                     .pipe(
                         tap((res: any) => {
                             if (eSignature !== null) {
-                                console.log(res);
                                 const objSignData = {
                                     hashDocument : res.dataToSign,
                                     signatureContentLength : res.signatureContentLength,
