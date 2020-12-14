@@ -45,17 +45,16 @@ class CertificateSignatureController
                 'data'    => [$args['id'], 'ESIGN']
             ]);
             if (!empty($adr)) {
-                $docserver      = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+                $docserver = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
             } else {
                 $adr = AdrModel::getDocumentsAdr([
                     'select' => ['path', 'filename'],
                     'where'  => ['main_document_id = ?', 'type = ?'],
                     'data'   => [$args['id'], 'DOC']
                 ]);
-                $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+                $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
             }
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         }
 
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
@@ -223,17 +222,16 @@ class CertificateSignatureController
                 'data'    => [$args['id'], 'ESIGN']
             ]);
             if (!empty($adr)) {
-                $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-                $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+                $docserver = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
             } else {
                 $adr = AdrModel::getDocumentsAdr([
                     'select' => ['path', 'filename'],
                     'where'  => ['main_document_id = ?', 'type = ?'],
                     'data'   => [$args['id'], 'DOC']
                 ]);
-                $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+                $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
             }
+            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         }
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
         $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
