@@ -467,9 +467,9 @@ export class DocumentComponent implements OnInit {
 
         if (notesContent) {
             const storageContent = JSON.parse(notesContent);
-            this.signaturesService.notesContent = storageContent['note'];
-            this.signaturesService.signaturesContent = storageContent['sign'];
-            this.signaturesService.datesContent = storageContent['date'];
+            this.signaturesService.notesContent = storageContent['note']  !== undefined ? storageContent['note'] : [];
+            this.signaturesService.signaturesContent = storageContent['sign']  !== undefined ? storageContent['sign'] : [];
+            this.signaturesService.datesContent = storageContent['date'] !== undefined ? storageContent['date'] : [];
         }
 
         this.signaturesService.currentAction = 0;

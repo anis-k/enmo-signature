@@ -54,61 +54,15 @@ export class SignatureMethodModalComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.getSignatures();
+        this.signatures = this.actionsService.getElementsFromDoc();
+
         const signatureModeData = this.authService.signatureRoles.filter((mode: any) => mode.id === this.signatureMode)[0];
         if (!this.functionsService.empty(signatureModeData.issuer)) {
             this.filters.issuerDNMatch = new RegExp(signatureModeData.issuer, 'i');
         }
     }
 
-    getSignatures() {
-        for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-            if (this.signaturesService.datesContent[index]) {
-                this.signaturesService.datesContent[index].forEach((date: any) => {
-                    this.signatures.push(
-                        {
-                            'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
-                            'width': date.width,
-                            'positionX': date.positionX,
-                            'positionY': date.positionY,
-                            'type': 'SVG',
-                            'page': index,
-                        }
-                    );
-                });
-            }
-            if (this.signaturesService.signaturesContent[index]) {
-                this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                    this.signatures.push(
-                        {
-                            'encodedImage': signature.encodedSignature,
-                            'width': signature.width,
-                            'positionX': signature.positionX,
-                            'positionY': signature.positionY,
-                            'type': 'PNG',
-                            'page': index,
-                        }
-                    );
-                });
-            }
-            if (this.signaturesService.notesContent[index]) {
-                this.signaturesService.notesContent[index].forEach((noteItem: any) => {
-                    this.signatures.push(
-                        {
-                            'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
-                            'width': noteItem.width,
-                            'positionX': noteItem.positionX,
-                            'positionY': noteItem.positionY,
-                            'type': 'PNG',
-                            'page': index,
-                        }
-                    );
-                });
-            }
-        }
-    }
-
-    async continueSignature(certData: any) {
+    async certificateChosen(certData: any) {
         this.loadingController.create({
             message: this.translate.instant('lang.processing'),
             spinner: 'dots'
@@ -138,6 +92,38 @@ export class SignatureMethodModalComponent implements OnInit {
         });
     }
 
+    async sendAndSign() {
+        let allSignaturesComplete: boolean = false;
+        let res: any = {};
+        while (!allSignaturesComplete) {
+            let signDocComplete: any = false;
+            while (signDocComplete === false) {
+                res = await this.fusionStampAndGenerateSignature(res.tmpUniqueId);
+                if (res === null) {
+                    return false;
+                } else if (res !== false) {
+                    signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
+                    console.log('signDocComplete', signDocComplete);
+                    if (signDocComplete === true) {
+                        this.signatures.shift();
+                        allSignaturesComplete = this.signatures.length === 0;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+        return allSignaturesComplete;
+    }
+
+    async fusionStampAndGenerateSignature(tmpUniqueId: string = null) {
+        let res: any = {};
+        res = await this.actionsService.sendDocument(null, this.certificate, this.signatureLength, tmpUniqueId, this.signatures);
+        return res;
+    }
+
     signDocument(hashDocument: any, eSignatureLength: any, signatureFieldName: any, tmpUniqueId: string) {
         return new Promise(async (resolve) => {
             const alg = {
@@ -156,6 +142,10 @@ export class SignatureMethodModalComponent implements OnInit {
                 return of(false);
             }
 
+            const note = {
+                note: this.note
+            };
+
             const objEsign = {
                 signatures : this.signatures,
                 certificate: this.certPem,
@@ -164,7 +154,10 @@ export class SignatureMethodModalComponent implements OnInit {
                 signatureFieldName: signatureFieldName,
                 tmpUniqueId: tmpUniqueId,
             };
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objEsign)
+
+            const objToSend = {...note, ...objEsign };
+
+            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objToSend)
                 .pipe(
                     tap(() => {
                         resolve(true);
@@ -175,34 +168,13 @@ export class SignatureMethodModalComponent implements OnInit {
                             resolve(false);
                         } else {
                             this.notificationService.handleErrors(err);
-                            resolve(null);
+                            resolve('error');
                         }
                         return of(false);
                     })
                 ).subscribe();
 
         });
-    }
-
-    async sendAndSign() {
-        let allSignaturesComplete: boolean = false;
-        let res: any = {};
-        while (!allSignaturesComplete) {
-            let signDocComplete: any = false;
-            while (signDocComplete === false) {
-                res = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength, res.tmpUniqueId, this.signatures);
-                if (res === null) {
-                    return false;
-                } else if (res !== false) {
-                    signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
-                    if (signDocComplete) {
-                        this.signatures.shift();
-                        allSignaturesComplete = this.signatures.length === 0;
-                    }
-                }
-            }
-        }
-        return allSignaturesComplete;
     }
 
     cancelSign() {
