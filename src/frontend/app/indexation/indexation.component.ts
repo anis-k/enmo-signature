@@ -61,9 +61,17 @@ export class IndexationComponent implements OnInit {
         return new Promise((resolve) => {
             this.http.get(`../rest/documents/${resId}`).pipe(
                 tap((data: any) => {
+                    let ref = '';
+                    let arrRef = data.document.reference.split('/');
+                    arrRef = arrRef.slice(3, arrRef.length);
+
+                    if (arrRef.length > 0) {
+                        ref = arrRef.join('/');
+                    }
+
                     this.filesToUpload.push({
                         title: data.document.title,
-                        reference: '',
+                        reference: ref,
                         mainDocument: true,
                         content: '',
                         linkId: data.document.linkId,

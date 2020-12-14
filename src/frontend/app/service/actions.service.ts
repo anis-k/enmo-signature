@@ -56,13 +56,13 @@ export class ActionsService {
                         });
                     }
                     if (this.signaturesService.notesContent[index]) {
-                        this.signaturesService.notesContent[index].forEach((note: any) => {
+                        this.signaturesService.notesContent[index].forEach((noteItem: any) => {
                             signatures.push(
                                 {
-                                    'encodedImage': note.fullPath.replace('data:image/png;base64,', ''),
-                                    'width': note.width,
-                                    'positionX': note.positionX,
-                                    'positionY': note.positionY,
+                                    'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
+                                    'width': noteItem.width,
+                                    'positionX': noteItem.positionX,
+                                    'positionY': noteItem.positionY,
                                     'type': 'PNG',
                                     'page': index,
                                 }
