@@ -208,10 +208,10 @@ class CertificateSignatureController
         $tmpPath                = CoreConfigModel::getTmpPath();
 
         if (!empty($args['tmpUniqueId'])) {
-            if (is_file("{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")) {
-                $pathToDocument = "{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf";
-            } elseif (is_file("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf")) {
-                $pathToDocument = "{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['body']['tmpUniqueId']}.pdf";
+            if (is_file("{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['tmpUniqueId']}.pdf")) {
+                $pathToDocument = "{$tmpPath}tmpSignatureEsign_{$GLOBALS['id']}_{$args['tmpUniqueId']}.pdf";
+            } elseif (is_file("{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['tmpUniqueId']}.pdf")) {
+                $pathToDocument = "{$tmpPath}tmpSignatureDoc_{$GLOBALS['id']}_{$args['tmpUniqueId']}.pdf";
             }
         }
 
