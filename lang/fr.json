@@ -336,6 +336,7 @@
 		"eidas": "Organisation déléguée",
 		"rgs_2stars": "Clé RGS**",
 		"rgs_2stars_timestamped": "Clé RGS** + horodatage",
+		"docaposteSignatureDisabled": "Le paramètre docaposteSignature n'est pas activé",
 		"noAssociatedGroup": "L'utilisateur n'appartient à aucun groupe",
 		"docToSign": "Document à signer",
 		"attachDocToSign": "Annexe attaché au(x) document(s) à signer",

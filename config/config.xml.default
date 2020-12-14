@@ -43,17 +43,17 @@
         <mode>
             <id>rgs_2stars</id>
             <color>#FF0000</color>
-            <issuer>ChamberSign</issuer>
+            <issuer></issuer>
         </mode>
         <mode>
             <id>inca_card_eidas</id>
             <color>#FFA500</color>
-            <issuer>customer</issuer>
+            <issuer></issuer>
         </mode>
         <mode>
             <id>inca_card</id>
             <color>#FFA500</color>
-            <issuer>customer</issuer>
+            <issuer></issuer>
         </mode>
         <mode>
             <id>eidas</id>

@@ -35,17 +35,16 @@ class CertificateSignatureController
             'data'    => [$args['id'], 'ESIGN']
         ]);
         if (!empty($adr)) {
-            $docserver      = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $docserver = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
         } else {
             $adr = AdrModel::getDocumentsAdr([
                 'select' => ['path', 'filename'],
                 'where'  => ['main_document_id = ?', 'type = ?'],
                 'data'   => [$args['id'], 'DOC']
             ]);
-            $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
         }
+        $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         $tmpPath            = CoreConfigModel::getTmpPath();
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
 
@@ -201,17 +200,16 @@ class CertificateSignatureController
             'data'    => [$args['id'], 'ESIGN']
         ]);
         if (!empty($adr)) {
-            $docserver          = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
-            $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $docserver = DocserverModel::getByType(['type' => 'ESIGN', 'select' => ['path']]);
         } else {
             $adr = AdrModel::getDocumentsAdr([
                 'select' => ['path', 'filename'],
                 'where'  => ['main_document_id = ?', 'type = ?'],
                 'data'   => [$args['id'], 'DOC']
             ]);
-            $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-            $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
+            $docserver = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
         }
+        $pathToDocument     = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
         $tmpPath            = CoreConfigModel::getTmpPath();
         $signedDocumentPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_signedDocument.pdf';
         $writer             = new \SetaPDF_Core_Writer_File($signedDocumentPath);
@@ -231,7 +229,7 @@ class CertificateSignatureController
             return ['errors' => 'Not enough space for signature', 'newSignatureLength' => $signatureContentLength];
         }
 
-        if (in_array($args['signatureMode'], ['rgs_2stars_timestamped', 'inca_card_eidas'])) {
+        if ($args['signatureMode'] == 'rgs_2stars_timestamped') {
             $document = DocumentModel::getById(['select' => ['digital_signature_transaction_id'], 'id' => $args['id']]);
             $config = DigitalSignatureController::getConfig();
             $signedDocumentPath = DigitalSignatureController::timestampHashes([

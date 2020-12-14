@@ -518,6 +518,9 @@ class DocumentController
             }
             require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
         }
+        if (in_array($workflow['signature_mode'], ['eidas', 'inca_card_eidas']) && $loadedXml->docaposteSignature->enable != 'true') {
+            return $response->withStatus(400)->withJson(['errors' => 'docaposteSignature is disabled', 'lang' => 'docaposteSignatureDisabled']);
+        }
 
         $body = $request->getParsedBody();
         if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['signature_mode'] == 'stamp') {
@@ -630,35 +633,25 @@ class DocumentController
             return $response->withJson($hashInformations);
         }
 
-        if ($loadedXml->docaposteSignature->enable == 'true' && $workflow['signature_mode'] == 'eidas') {
-            if ($workflow['mode'] == 'visa' && !empty($body['signatures'])) {
-                $adr = AdrModel::getDocumentsAdr([
-                    'select' => ['path', 'filename'],
-                    'where'  => ['main_document_id = ?', 'type = ?'],
-                    'data'   => [$args['id'], 'DOC']
-                ]);
-                $docserver      = DocserverModel::getByType(['type' => 'DOC', 'select' => ['path']]);
-                $pathToDocument = $docserver['path'] . $adr[0]['path'] . $adr[0]['filename'];
-                $storeInfos = DocserverController::storeResourceOnDocServer([
-                    'encodedFile'   => base64_encode(file_get_contents($pathToDocument)),
-                    'format'        => 'pdf',
-                    'docserverType' => 'ESIGN'
-                ]);
-                if (!empty($storeInfos['errors'])) {
-                    return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
-                }
-                AdrModel::deleteDocumentAdr([
-                    'where' => ['main_document_id = ?', 'type = ?'],
-                    'data'  => [$args['id'], 'ESIGN']
-                ]);
-                AdrModel::createDocumentAdr([
-                    'documentId'  => $args['id'],
-                    'type'        => 'ESIGN',
-                    'path'        => $storeInfos['path'],
-                    'filename'    => $storeInfos['filename'],
-                    'fingerprint' => $storeInfos['fingerprint']
-                ]);
-            } elseif (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
+        if (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+            if (empty($body['hashSignature'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body hashSignature is empty']);
+            }
+            $return = CertificateSignatureController::signDocument([
+                'id'                     => $args['id'],
+                'certificate'            => $body['certificate'],
+                'signatureContentLength' => $body['signatureContentLength'],
+                'signatureFieldName'     => $body['signatureFieldName'],
+                'hashSignature'          => $body['hashSignature'],
+                'signatureMode'          => $workflow['signature_mode']
+            ]);
+            if (!empty($return['errors'])) {
+                return $response->withStatus(400)->withJson($return);
+            }
+        }
+
+        if (in_array($workflow['signature_mode'], ['eidas', 'inca_card_eidas'])) {
+            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign') {
                 $imageSignature = false;
                 $adr = AdrModel::getDocumentsAdr([
                     'select'  => ['path', 'filename'],
@@ -705,7 +698,7 @@ class DocumentController
                                     $signPosX  = ($signature['positionX'] * $format['width']) / 100;
                                     $signPosY  = ($signature['positionY'] * $format['height']) / 100;
                                 }
-                                DigitalSignatureController::signHashes([
+                                $return = DigitalSignatureController::signHashes([
                                     'signatureId'   => $workflow['digital_signature_id'],
                                     'documentId'    => $args['id'],
                                     'signatureInfo' => [
@@ -717,31 +710,25 @@ class DocumentController
                                     ],
                                     'isLastSignature' => !isset($body['signatures'][$key + 1])
                                 ]);
+                                if (!empty($return['errors'])) {
+                                    return $response->withStatus(400)->withJson($return);
+                                }
                                 $imageSignature = true;
                             }
                         }
                     }
                 }
                 if (!$imageSignature) {
-                    DigitalSignatureController::signHashes(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id'], 'isLastSignature' => true]);
+                    $return = DigitalSignatureController::signHashes(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id'], 'isLastSignature' => true]);
+                    if (!empty($return['errors'])) {
+                        return $response->withStatus(400)->withJson($return);
+                    }
                 }
             } elseif (DocumentController::ACTIONS[$args['actionId']] == 'REF' && $workflow['mode'] == 'sign') {
-                DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
-            }
-        } elseif (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
-            if (empty($body['hashSignature'])) {
-                return $response->withStatus(400)->withJson(['errors' => 'Body hashSignature is empty']);
-            }
-            $return = CertificateSignatureController::signDocument([
-                'id'                     => $args['id'],
-                'certificate'            => $body['certificate'],
-                'signatureContentLength' => $body['signatureContentLength'],
-                'signatureFieldName'     => $body['signatureFieldName'],
-                'hashSignature'          => $body['hashSignature'],
-                'signatureMode'          => $workflow['signature_mode']
-            ]);
-            if (!empty($return['errors'])) {
-                return $response->withStatus(400)->withJson($return);
+                $return = DigitalSignatureController::abort(['signatureId' => $workflow['digital_signature_id'], 'documentId' => $args['id']]);
+                if (!empty($return['errors'])) {
+                    return $response->withStatus(400)->withJson($return);
+                }
             }
         }
 
