@@ -366,6 +366,7 @@ class DigitalSignatureController
             // Create a collection of trusted certificats:
             $trustedCertificates = new \SetaPDF_Signer_X509_Collection(\SetaPDF_Signer_Pem::extractFromFile($tmpTimestampPEM));
 
+            $extraTrustedCertificate = false;
             if (!empty($args['extraCertificate'])) {
                 $certificate = new \SetaPDF_Signer_X509_Certificate($args['extraCertificate']);
         
@@ -381,22 +382,25 @@ class DigitalSignatureController
                         foreach ($aia->fetchIssuers($informationResolverManager)->getAll() as $issuer) {
                             $trustedCertificates->add($issuer);
                             $certificates[] = $issuer;
+                            $extraTrustedCertificate = true;
                         }
                     }
                 }
             }
 
-            // Create a collector instance
-            $collector = new \SetaPDF_Signer_ValidationRelatedInfo_Collector($trustedCertificates);
-            $vriData = $collector->getByFieldName($document, $args['fieldName']);
-
-            $dss = new \SetaPDF_Signer_DocumentSecurityStore($document);
-            $dss->addValidationRelatedInfoByFieldName(
-                $args['fieldName'],
-                $vriData->getCrls(),
-                $vriData->getOcspResponses(),
-                $vriData->getCertificates()
-            );
+            if (empty($args['extraCertificate']) || (!empty($args['extraCertificate']) && $extraTrustedCertificate)) {
+                // Create a collector instance
+                $collector = new \SetaPDF_Signer_ValidationRelatedInfo_Collector($trustedCertificates);
+                $vriData = $collector->getByFieldName($document, $args['fieldName']);
+    
+                $dss = new \SetaPDF_Signer_DocumentSecurityStore($document);
+                $dss->addValidationRelatedInfoByFieldName(
+                    $args['fieldName'],
+                    $vriData->getCrls(),
+                    $vriData->getOcspResponses(),
+                    $vriData->getCertificates()
+                );
+            }
 
             $document->save()->finish();
 

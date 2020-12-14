@@ -672,7 +672,7 @@ class DocumentController
                     'fingerprint'   => $storeInfos['fingerprint']
                 ]);
 
-                if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && ($workflow['mode'] == 'visa' || $workflow['signature_mode'] == 'stamp')) {
+                if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['signature_mode'] == 'stamp') {
                     $storeInfos = DocserverController::storeResourceOnDocServer([
                         'encodedFile'     => base64_encode($fileContent),
                         'format'          => 'pdf',
