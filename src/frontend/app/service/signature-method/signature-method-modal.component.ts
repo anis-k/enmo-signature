@@ -88,7 +88,7 @@ export class SignatureMethodModalComponent implements OnInit {
         });
     }
 
-    signDocument(hashDocument: any, eSignatureLength: any, signatureFieldName: any) {
+    signDocument(hashDocument: any, eSignatureLength: any, signatureFieldName: any, tmpUniqueId: string) {
         console.log(hashDocument);
         console.log(eSignatureLength);
 
@@ -113,11 +113,61 @@ export class SignatureMethodModalComponent implements OnInit {
 
             console.log('hashSignature', hashSignature);
 
+            const signatures: any[] = [];
+            if (this.signaturesService.currentAction > 0) {
+                for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                    if (this.signaturesService.datesContent[index]) {
+                        this.signaturesService.datesContent[index].forEach((date: any) => {
+                            signatures.push(
+                                {
+                                    'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
+                                    'width': date.width,
+                                    'positionX': date.positionX,
+                                    'positionY': date.positionY,
+                                    'type': 'SVG',
+                                    'page': index,
+                                }
+                            );
+                        });
+                    }
+                    if (this.signaturesService.signaturesContent[index]) {
+                        this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                            signatures.push(
+                                {
+                                    'encodedImage': signature.encodedSignature,
+                                    'width': signature.width,
+                                    'positionX': signature.positionX,
+                                    'positionY': signature.positionY,
+                                    'type': 'PNG',
+                                    'page': index,
+                                }
+                            );
+                        });
+                    }
+                    if (this.signaturesService.notesContent[index]) {
+                        this.signaturesService.notesContent[index].forEach((noteItem: any) => {
+                            signatures.push(
+                                {
+                                    'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
+                                    'width': noteItem.width,
+                                    'positionX': noteItem.positionX,
+                                    'positionY': noteItem.positionY,
+                                    'type': 'PNG',
+                                    'page': index,
+                                }
+                            );
+                        });
+                    }
+                }
+            }
+
             const objEsign = {
+                signatures : signatures,
                 certificate: this.certPem,
                 hashSignature: this.toHex(hashSignature),
                 signatureContentLength: eSignatureLength,
                 signatureFieldName: signatureFieldName,
+                tmpUniqueId: tmpUniqueId,
             };
             this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objEsign)
                 .pipe(
@@ -152,7 +202,7 @@ export class SignatureMethodModalComponent implements OnInit {
                     return false;
                 } else if (res !== false) {
                     console.log('signature document');
-                    signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
+                    signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
                     if (signDocComplete) {
                         this.signaturesService.signaturesContent.shift();
                         allSignaturesComplete = this.signaturesService.signaturesContent.length === 0;
