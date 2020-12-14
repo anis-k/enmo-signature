@@ -95,6 +95,7 @@ export class ActionsService {
                     .pipe(
                         tap((res: any) => {
                             if (eSignature !== null) {
+                                console.log(res);
                                 const objSignData = {
                                     hashDocument : res.dataToSign,
                                     signatureContentLength : res.signatureContentLength,

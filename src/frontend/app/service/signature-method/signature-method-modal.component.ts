@@ -145,14 +145,18 @@ export class SignatureMethodModalComponent implements OnInit {
         while (!allSignaturesComplete) {
             let signDocComplete: any = false;
             while (signDocComplete === false) {
+                console.log('recupération hashDocument');
                 res = await this.actionsService.sendDocument(this.note, this.certificate, this.signatureLength, res.tmpUniqueId);
+                console.log('res hashDocument', res);
                 if (res === null) {
                     return false;
                 } else if (res !== false) {
+                    console.log('signature document');
                     signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName);
                     if (signDocComplete) {
                         this.signaturesService.signaturesContent.shift();
                         allSignaturesComplete = this.signaturesService.signaturesContent.length === 0;
+                        res = {};
                     }
                 }
             }
