@@ -211,25 +211,25 @@ class HistoryController
         }
 
         $workflow = WorkflowModel::getByDocumentId(['select' => ['user_id', 'process_date', 'note', 'status', 'signature_mode'], 'documentId' => $args['id'], 'orderBy' => ['"order"']]);
-        $hasEidas             = false;
+        $hasCertificate       = false;
         $workflowTerminated   = true;
-        $canGetdocaposteProof = true;
+        $workflowCompleted    = true;
         foreach ($workflow as $step) {
-            if (!$hasEidas && in_array($step['signature_mode'], ['eidas', 'rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
-                $hasEidas = true;
+            if (!$hasCertificate && in_array($step['signature_mode'], ['eidas', 'rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+                $hasCertificate = true;
             }
             if (empty($step['status'])) {
                 $workflowTerminated = false;
             }
             if (in_array($step['status'], ['REF', 'STOP'])) {
-                $canGetdocaposteProof = false;
+                $workflowCompleted = false;
             }
         }
         if (empty($workflow) || !$workflowTerminated) {
             return $response->withStatus(403)->withJson(['errors' => 'The document is still being processed']);
         }
 
-        if ($canGetdocaposteProof) {
+        if ($workflowCompleted) {
             $proofDocument = DigitalSignatureController::proof(['documentId' => $args['id']]);
             if (!empty($proofDocument['errors'])) {
                 return $response->withStatus(403)->withJson(['errors' => $proofDocument['errors']]);
@@ -270,7 +270,7 @@ class HistoryController
                 $mimeType = 'application/xml';
             }
         } else {
-            $eSignDocument = $queryParams['eSignDocument'] ?? $hasEidas;
+            $eSignDocument = $workflowCompleted && ($queryParams['eSignDocument'] ?? $hasCertificate);
 
             $mainDocument = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $eSignDocument]);
             if (!empty($mainDocument['errors'])) {
