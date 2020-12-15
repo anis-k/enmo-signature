@@ -34,7 +34,6 @@ import { ForgotPasswordComponent } from './login/forgotPassword/forgotPassword.c
 import { SignaturesComponent } from './signatures/signatures.component';
 import { SignaturePadPageComponent } from './pad/pad.component';
 import { SignaturePadModule } from 'angular2-signaturepad';
-import { DrawerComponent } from './drawer/drawer.component';
 import { DocumentComponent } from './document/document.component';
 import { DocumentSignListComponent } from './documentSignList/document-sign-list.component';
 import { DocumentNoteListComponent } from './documentNoteList/document-note-list.component';
@@ -45,7 +44,6 @@ import { ConfirmModalComponent } from './modal/confirm-modal.component';
 import { WarnModalComponent } from './modal/warn-modal.component';
 import { SuccessInfoValidBottomSheetComponent } from './modal/success-info-valid.component';
 import { RejectInfoBottomSheetComponent } from './modal/reject-info.component';
-import { OverlayComponent } from './overlay/overlay.component';
 import { VisaWorkflowComponent } from './document/visa-workflow/visa-workflow.component';
 import { DocumentListComponent } from './document/document-list/document-list.component';
 import { MainDocumentDetailComponent } from './document/main-document-detail/main-document-detail.component';
@@ -100,7 +98,6 @@ import { SortPipe } from './plugins/sorting.pipe';
     UpdatePasswordComponent,
     SignaturesComponent,
     SignaturePadPageComponent,
-    DrawerComponent,
     DocumentComponent,
     DocumentSignListComponent,
     DocumentNoteListComponent,
@@ -111,7 +108,6 @@ import { SortPipe } from './plugins/sorting.pipe';
     SuccessInfoValidBottomSheetComponent,
     RejectInfoBottomSheetComponent,
     ProfileComponent,
-    OverlayComponent,
     VisaWorkflowComponent,
     DocumentListComponent,
     MainDocumentDetailComponent,

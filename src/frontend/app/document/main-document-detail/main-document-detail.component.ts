@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
 import { SignaturesContentService } from '../../service/signatures.service';
 
 @Component({
@@ -11,11 +10,7 @@ export class MainDocumentDetailComponent implements OnInit {
 
     loading: boolean = false;
 
-    // tslint:disable-next-line:no-input-rename
-    @Input('mainDocument') mainDocument: any;
-
-    // tslint:disable-next-line:no-input-rename
-    @Input('snavRightComponent') snavRightComponent: MatSidenav;
+    @Input() mainDocument: any;
 
     constructor(public signaturesService: SignaturesContentService) { }
 

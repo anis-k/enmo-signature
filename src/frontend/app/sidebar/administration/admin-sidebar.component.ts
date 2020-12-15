@@ -1,5 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 
@@ -18,9 +17,6 @@ export class AdminSidebarComponent implements OnInit {
 
     loading: boolean = true;
     privileges: Privilege[] = [];
-
-    @Input() snavRightComponent: MatSidenav;
-    @Input() snavLeftComponent: MatSidenav;
 
     constructor(
         private route: ActivatedRoute,

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
@@ -11,7 +11,6 @@ import { NotificationService } from '../service/notification.service';
 import { CookieService } from 'ngx-cookie-service';
 import { DocumentNotePadComponent } from '../documentNotePad/document-note-pad.component';
 import { RejectInfoBottomSheetComponent } from '../modal/reject-info.component';
-import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 import { TranslateService } from '@ngx-translate/core';
 import { DocumentListComponent } from './document-list/document-list.component';
 import { AuthService } from '../service/auth.service';
@@ -23,6 +22,7 @@ import { of } from 'rxjs';
 import { SignatureMethodService } from '../service/signature-method/signature-method.service';
 import { FunctionsService } from '../service/functions.service';
 import { ActionsService } from '../service/actions.service';
+import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-valid.component';
 
 @Component({
     selector: 'app-document',
@@ -92,7 +92,6 @@ export class DocumentComponent implements OnInit {
     @ViewChild('mainContent') mainContent: any;
     @ViewChild('img') img: any;
     @ViewChild('snav', { static: true }) snav: MatSidenav;
-    @ViewChild('snavRight', { static: true }) snavRight: MatSidenav;
     @ViewChild('dragElem') dragElem: any;
     @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
     @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
@@ -120,7 +119,7 @@ export class DocumentComponent implements OnInit {
         public alertController: AlertController,
         public signatureMethodService: SignatureMethodService,
         public navCtrl: NavController,
-        private functionsService: FunctionsService,
+        public functionsService: FunctionsService,
         public actionsService: ActionsService,
     ) {
         this.draggable = false;
@@ -188,7 +187,7 @@ export class DocumentComponent implements OnInit {
             });
         }
 
-        if (!this.mainDocument.signLock) {
+        if (!this.signaturesService.stampLock) {
             buttons.push({
                 text: this.translate.instant('lang.affixSignature'),
                 icon: 'ribbon-outline',
@@ -247,7 +246,6 @@ export class DocumentComponent implements OnInit {
             cssClass: 'my-custom-class',
             componentProps: {
                 currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
-                signLock : this.mainDocument.signLock
             }
         });
         await modal.present();
@@ -324,8 +322,6 @@ export class DocumentComponent implements OnInit {
                 }).then((load: HTMLIonLoadingElement) => {
                     this.load = load;
                     this.load.present();
-                    this.signaturesService.mainLoading = true;
-                    this.signaturesService.renderingDoc = true;
                     this.http.get('../rest/documents/' + params['id']).pipe(
                         tap((data: any) => {
                             this.mainDocument = data.document;
@@ -365,12 +361,11 @@ export class DocumentComponent implements OnInit {
                                 ];
                                 this.detailMode = true;
                             } else {
-                                this.mainDocument.signLock = this.mainDocument.isCertified && ((realUserWorkflow[0].signatureMode === 'stamp' && realUserWorkflow[0].mode === 'sign') || (realUserWorkflow[0].mode === 'visa'));
+                                this.signaturesService.stampLock = this.mainDocument.isCertified && ((realUserWorkflow[0].signatureMode === 'stamp' && realUserWorkflow[0].mode === 'sign') || (realUserWorkflow[0].mode === 'visa'));
                                 if (realUserWorkflow[0].userId !== this.authService.user.id) {
                                     this.http.get('../rest/users/' + realUserWorkflow[0].userId + '/signatures')
                                         .subscribe((dataSign: any) => {
                                             this.signaturesService.signaturesListSubstituted = dataSign.signatures;
-                                            this.signaturesService.loadingSign = false;
                                         });
                                 } else {
                                     this.signaturesService.signaturesListSubstituted = [];
@@ -461,7 +456,7 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.signaturesContent = [];
         this.signaturesService.notesContent = [];
         this.signaturesService.datesContent = [];
-        this.signaturesService.sideNavRigtDatas.mode = 'mainDocumentDetail';
+        this.signaturesService.currentToobal = 'mainDocumentDetail';
 
         const notesContent = this.localStorage.get(this.mainDocument.id.toString());
 
@@ -510,7 +505,6 @@ export class DocumentComponent implements OnInit {
     }
 
     zoomForView() {
-        this.signaturesService.mainLoading = true;
         // this.resetDragPosition();
         this.resetDragPos = true;
         this.widthDoc = '100%';
@@ -519,9 +513,6 @@ export class DocumentComponent implements OnInit {
         setTimeout(() => {
             this.resetDragPos = false;
         }, 200);
-        setTimeout(() => {
-            this.signaturesService.mainLoading = false;
-        }, 400);
         this.signaturesService.scale = 1;
 
     }
@@ -603,39 +594,6 @@ export class DocumentComponent implements OnInit {
         }*/
     }
 
-    addAnnotation(e: any) {
-        /*e.preventDefault();
-
-        e = e.srcEvent;
-
-        if (!this.signaturesService.annotationMode && this.currentDoc === 0 && this.mainDocument.status === 'READY') {
-
-            this.backToDetails();
-
-            this.img = document.querySelector('img.zoom');
-
-            const rect = this.img.getBoundingClientRect();
-            const offsetX = e.pageX - rect.left - window.pageXOffset;
-            const offsetY = e.pageY - rect.top - window.pageYOffset;
-
-            const posX = offsetX - this.signaturesService.x;
-            const posY = offsetY - this.signaturesService.y;
-
-            if (this.signaturesService.mobileMode) {
-                this.signaturesService.x = -posX;
-            } else {
-                this.signaturesService.x = -posX + 350;
-            }
-
-            this.signaturesService.y = -posY;
-            this.zoomForNotes();
-            $('.example-box').css({ 'transform': 'translate3d(' + -(posX) + 'px, ' + -(posY) + 'px, 0px)' });
-
-            this.signaturesService.annotationMode = true;
-            this.appDocumentNotePad.initPad();
-        }*/
-    }
-
     async refuseDocument(): Promise<void> {
         let msg = this.translate.instant('lang.rejectDocumentWarning');
 
@@ -687,8 +645,8 @@ export class DocumentComponent implements OnInit {
         if (this.signaturesService.signaturesContent.length === 0 && this.signaturesService.notesContent.length === 0) {
             msg = this.translate.instant('lang.validateDocumentWithoutSignOrNote');
         }
-        if (this.mainDocument.signLock) {
-            msg = 'Document certifié ! Les annotations sur le document ne seront pas prise en compte !';
+        if (this.signaturesService.stampLock) {
+            msg = this.translate.instant('lang.certifiedDocumentMsg2');
         }
         const alert = await this.alertController.create({
             cssClass: 'custom-alert-success',
@@ -729,21 +687,6 @@ export class DocumentComponent implements OnInit {
 
         await alert.present();
     }
-
-    openDrawer(): void {
-        if (this.currentDoc > 0) {
-            this.currentDoc = 0;
-            this.pageNum = 1;
-        }
-        this.signaturesService.showSign = true;
-        this.signaturesService.showPad = false;
-        const config: MatBottomSheetConfig = {
-            disableClose: false,
-            direction: 'ltr'
-        };
-        this.bottomSheet.open(SignaturesComponent, config);
-    }
-
     async removeTags() {
         this.signaturesService.currentAction = 0;
 
@@ -767,10 +710,6 @@ export class DocumentComponent implements OnInit {
     }
 
     loadDoc(index: any) {
-        this.signaturesService.renderingDoc = true;
-        if (index > 0) {
-            this.signaturesService.isTaggable = false;
-        }
         this.pageNum = 1;
         this.currentDoc = index;
         this.totalPages = this.docList[index].pages;
@@ -829,46 +768,26 @@ export class DocumentComponent implements OnInit {
 
     openVisaWorkflow() {
         this.menu.open('right-menu');
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'visaWorkflow',
-            width: '450px',
-            locked: false,
-        };
+        this.signaturesService.currentToobal = 'visaWorkflow';
     }
 
     openDocumentList() {
         this.menu.open('right-menu');
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'documentList',
-            width: '450px',
-            locked: false,
-        };
+        this.signaturesService.currentToobal = 'documentList';
     }
 
     openAssociatedDocuments() {
         this.menu.open('right-menu');
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'associatedDocuments',
-            width: '450px',
-            locked: false,
-        };
+        this.signaturesService.currentToobal = 'associatedDocuments';
     }
 
     openMainDocumentDetail() {
         this.menu.open('right-menu');
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'mainDocumentDetail',
-            width: '450px',
-            locked: false,
-        };
+        this.signaturesService.currentToobal = 'mainDocumentDetail';
     }
 
     backToDetails() {
-        this.signaturesService.sideNavRigtDatas = {
-            mode: 'mainDocumentDetail',
-            width: '450px',
-            locked: false,
-        };
+        this.signaturesService.currentToobal = 'mainDocumentDetail';
     }
 
     deleteSubstution() {

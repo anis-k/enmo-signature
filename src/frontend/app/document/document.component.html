@@ -3,8 +3,8 @@
         <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
           </ion-buttons>
-        <ion-segment value="favorite" [value]="signaturesService.sideNavRigtDatas.mode"
-            (ionChange)="signaturesService.sideNavRigtDatas.mode=$event.detail.value">
+        <ion-segment value="favorite" [value]="signaturesService.currentToobal"
+            (ionChange)="signaturesService.currentToobal=$event.detail.value">
             <ion-segment-button value="mainDocumentDetail" (click)="openMainDocumentDetail();">
                 <ion-label color="primary">{{'lang.informations' | translate}}</ion-label>
                 <ion-icon color="primary" name="information-circle"></ion-icon>
@@ -41,7 +41,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-toolbar class="ion-text-center" color="primary"
-    *ngIf="authService.user.substitute !== null && !this.signaturesService.annotationMode && docList[currentDoc]">
+    *ngIf="authService.user.substitute !== null && docList[currentDoc]">
     <ion-label style="font-size: 13px;">{{'lang.substitutionInfo' | translate}}</ion-label>
 </ion-toolbar>
 <ion-toolbar class="ion-text-center" color="danger" *ngIf="mainDocument.id !== 0 && mainDocument.status !== 'READY'">
@@ -95,7 +95,7 @@
                 <app-document-sign-list *ngIf="currentDoc === 0 && !loadingImage && this.signaturesService.signaturesContent[pageNum]" [bounds]="myBounds">
                 </app-document-sign-list>
                 <ion-img
-                    *ngIf="docList[currentDoc] !== undefined && !signaturesService.empty(docList[currentDoc].imgContent[pageNum])"
+                    *ngIf="docList[currentDoc] !== undefined && !functionsService.empty(docList[currentDoc].imgContent[pageNum])"
                     class="img-content" [src]="docList[currentDoc].imgContent[pageNum]"
                     [style.width.px]="signaturesService.workingAreaWidth"
                     [style.height.px]="signaturesService.workingAreaHeight" (ionImgDidLoad)="imageLoaded($event)" #img>
@@ -139,16 +139,16 @@
 </ion-footer>
 
 <ng-template #rightContent>
-    <app-visa-workflow [visaWorkflow]="mainDocument.workflow" [snavRightComponent]="this.snavRight"
-        *ngIf="signaturesService.sideNavRigtDatas.mode == 'visaWorkflow'" style="display: contents;">
+    <app-visa-workflow [visaWorkflow]="mainDocument.workflow"
+        *ngIf="signaturesService.currentToobal == 'visaWorkflow'" style="display: contents;">
     </app-visa-workflow>
-    <app-document-list #appDocumentList [currentDocId]="currentDoc" [snavRightComponent]="this.snavRight"
-        [docList]="docList" *ngIf="signaturesService.sideNavRigtDatas.mode == 'documentList'"
+    <app-document-list #appDocumentList [currentDocId]="currentDoc"
+        [docList]="docList" *ngIf="signaturesService.currentToobal == 'documentList'"
         (triggerEvent)="loadDoc($event)" style="display: contents;"></app-document-list>
-    <app-associated-documents #appAssociatedDocuments [snavRightComponent]="this.snavRight"
-        [associatedDocuments]="mainDocument.linkedDocuments" *ngIf="signaturesService.sideNavRigtDatas.mode == 'associatedDocuments'"
+    <app-associated-documents #appAssociatedDocuments
+        [associatedDocuments]="mainDocument.linkedDocuments" *ngIf="signaturesService.currentToobal == 'associatedDocuments'"
         style="display: contents;"></app-associated-documents>
-    <app-main-document-detail #appMainDocumentDetail [snavRightComponent]="this.snavRight" [mainDocument]="mainDocument"
-        *ngIf="signaturesService.sideNavRigtDatas.mode == 'mainDocumentDetail'" style="display: contents;">
+    <app-main-document-detail #appMainDocumentDetail [mainDocument]="mainDocument"
+        *ngIf="signaturesService.currentToobal == 'mainDocumentDetail'" style="display: contents;">
     </app-main-document-detail>
 </ng-template>

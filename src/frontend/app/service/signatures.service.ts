@@ -5,40 +5,33 @@ import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector, Templat
 export class SignaturesContentService {
 
     mainDocumentId = 0;
+
     signaturesContent: any[] = [];
     datesContent: any[] = [];
     notesContent: any[] = [];
+
     signaturesList: any[] = [];
     signaturesListSubstituted: any[] = [];
+
     currentPage = 1;
     totalPage = 1;
-    isTaggable = true;
-    documentFreeze = false;
-    annotationMode = false;
-    showSign = false;
-    showPad = false;
-    showDrawer = false;
-    sideNavRigtDatas = {
-        mode : '',
-        width : '650px',
-        locked : true,
-    };
+
+    stampLock = false;
+
+    currentToobal = 'mainDocumentDetail';
+
     currentAction = 0;
-    loadingSign = true;
     indexDocumentsList = 0;
     documentsList: any[] = [];
     documentsListCount: any = {};
-    newSign: any = {};
     workingAreaWidth = 0;
     workingAreaHeight = 0;
-    renderingDoc = true;
     mobileMode = true;
     smartphoneMode = true;
     mode = '';
     scale = 1;
     x = 0;
     y = 90;
-    mainLoading = true;
     dragging = false;
 
     appSession: any;
@@ -59,11 +52,6 @@ export class SignaturesContentService {
             this.mobileMode = true;
         } else {
             this.mobileMode = false;
-            this.sideNavRigtDatas = {
-                mode : 'mainDocumentDetail',
-                width : '450px',
-                locked : true,
-            };
         }
     }
 
@@ -76,25 +64,14 @@ export class SignaturesContentService {
         this.signaturesListSubstituted = [];
         this.currentPage = 1;
         this.totalPage = 1;
-        this.isTaggable = true;
-        this.annotationMode = false;
-        this.showSign = false;
-        this.showPad = false;
-        this.showDrawer = false;
-        this.sideNavRigtDatas = {
-            mode : '',
-            width : '650px',
-            locked : true,
-        };
+        this.stampLock = false;
         this.currentAction = 0;
-        this.loadingSign = true;
         this.indexDocumentsList = 0;
         this.documentsList = [];
         this.documentsListCount = {};
-        this.newSign = {};
         this.workingAreaWidth = 0;
         this.workingAreaHeight = 0;
-        this.renderingDoc = true;
+        this.currentToobal = 'mainDocumentDetail';
 
         if (window.screen.width <= 360) {
             this.smartphoneMode = true;
@@ -105,11 +82,6 @@ export class SignaturesContentService {
             this.mobileMode = true;
         } else {
             this.mobileMode = false;
-            this.sideNavRigtDatas = {
-                mode : 'mainDocumentDetail',
-                width : '450px',
-                locked : true,
-            };
         }
         this.mode = '';
         this.scale = 1;
@@ -137,23 +109,6 @@ export class SignaturesContentService {
 
         // Attach portal to host
         this.portalHost.attach(templatePortal);
-    }
-
-    empty(value: any) {
-        if (value === null || value === undefined) {
-            return true;
-
-        } else if (Array.isArray(value)) {
-            if (value.length > 0) {
-                return false;
-            } else {
-                return true;
-            }
-        } else if (String(value) !== '') {
-            return false;
-        } else {
-            return true;
-        }
     }
 
     detachTemplate(id: string = 'adminMenu') {

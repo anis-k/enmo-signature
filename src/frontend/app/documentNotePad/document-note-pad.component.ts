@@ -60,7 +60,7 @@ export class DocumentNotePadComponent implements OnInit {
             }
             if (this.editMode) {
                 setTimeout(() => {
-                    //const scrollY = (this.areaHeight * this.precentScrollTop) / 100;
+                    // const scrollY = (this.areaHeight * this.precentScrollTop) / 100;
                     const scrollY = (this.precentScrollTop / 100) * ($('#myBounds').height() - $(window).height());
                     const scrollX = (this.areaWidth * this.precentScrollLeft) / 100;
 
@@ -96,17 +96,6 @@ export class DocumentNotePadComponent implements OnInit {
             mobileMode: this.signaturesService.mobileMode
         });
         $('input[value=\'' + this.authService.user.preferences.writingColor + '\']').trigger('click');
-    }
-
-    cancelAnnotation() {
-        this.signaturesService.mainLoading = true;
-        setTimeout(() => {
-            this.triggerEvent.emit();
-            this.signaturesService.x = 0;
-            this.signaturesService.y = 90;
-            this.signaturesService.annotationMode = false;
-            this.signaturesService.mainLoading = false;
-        }, 200);
     }
 
     validateAnnotation() {

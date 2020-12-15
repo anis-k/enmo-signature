@@ -16,19 +16,11 @@ export class RejectInfoBottomSheetComponent implements OnInit {
     ngOnInit(): void {
         setTimeout(() => {
             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
-                this.signaturesService.sideNavRigtDatas = {
-                    mode : 'mainDocumentDetail',
-                    width : '450px',
-                    locked : false,
-                };
+                this.signaturesService.currentToobal = 'mainDocumentDetail';
                 this.filtersService.resfreshDocuments();
                 this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
             } else {
-                this.signaturesService.sideNavRigtDatas = {
-                    mode : 'mainDocumentDetail',
-                    width : '450px',
-                    locked : false,
-                };
+                this.signaturesService.currentToobal = 'mainDocumentDetail';
                 this.router.navigate(['/documents']);
             }
             this.bottomSheetRef.dismiss();

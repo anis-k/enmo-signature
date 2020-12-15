@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, ViewChild, Renderer2, ElementRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatExpansionPanel } from '@angular/material/expansion';
-import { MatSidenav } from '@angular/material/sidenav';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
@@ -22,10 +21,6 @@ import { ModalController } from '@ionic/angular';
 })
 
 export class ProfileComponent implements OnInit {
-
-    @Input('snavRightComponent') snavRightComponent: MatSidenav;
-    @Input('snavLeftComponent') snavLeftComponent: MatSidenav;
-
 
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
     @ViewChild('avatarProfile') avatarProfile: ElementRef;

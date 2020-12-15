@@ -37,10 +37,6 @@ export class DocumentSignListComponent implements OnInit {
         this[ev.detail.value](index);
     }
 
-    onDragBegin(event: any) {
-        this.signaturesService.documentFreeze = true;
-    }
-
     moveSign(event: any, i: number) {
         const percentx = (event.x * 100) / this.signaturesService.workingAreaWidth;
         const percenty = (event.y * 100) / this.signaturesService.workingAreaHeight;

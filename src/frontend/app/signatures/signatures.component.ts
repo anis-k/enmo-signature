@@ -19,7 +19,6 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
 export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
-    @Input() signLock: any;
 
     loading: boolean = true;
     scrolling: boolean = false;
@@ -107,15 +106,6 @@ export class SignaturesComponent implements OnInit {
         if (data === 'reload') {
             this.initSignatures();
         }
-    }
-
-    closeSignatures() {
-        this.signaturesService.showSign = false;
-    }
-
-    openPad() {
-        this.signaturesService.showPad = true;
-        this.closeSignatures();
     }
 
     selectSignature(signature: any) {

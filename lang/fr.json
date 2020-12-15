@@ -404,6 +404,7 @@
 		"certifiedDocument": "Document certifié",
 		"certifiedDocumentMsg": "Le document a été signé par certificat numérique, vous ne pouvez pas apposer de griffe.",
 		"errorUserSignType": "Les signataires sans certificat doivent être présent avant les signataires avec certificat.",
-		"fortifyReadException": "Erreur lors de la communication avec Fortify"
+		"fortifyReadException": "Erreur lors de la communication avec Fortify",
+		"certifiedDocumentMsg2": "Document certifié ! Les annotations sur le document ne seront pas prise en compte !"
 	}
 }
