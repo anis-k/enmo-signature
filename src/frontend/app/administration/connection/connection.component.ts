@@ -2,12 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
-import { ConfirmComponent } from '../../plugins/confirm.component';
 import { AuthService } from '../../service/auth.service';
+import { AlertController } from '@ionic/angular';
 
 
 export interface Privilege {
@@ -42,8 +41,13 @@ export class ConnectionComponent implements OnInit {
 
     currentConnection: Connection;
 
-    constructor(public http: HttpClient, private translate: TranslateService, private route: ActivatedRoute, private router: Router, public signaturesService: SignaturesContentService, public notificationService: NotificationService, public dialog: MatDialog, public authService: AuthService) {
-    }
+    constructor(
+        public http: HttpClient,
+        public signaturesService: SignaturesContentService,
+        public notificationService: NotificationService,
+        public alertController: AlertController,
+        public authService: AuthService
+    ) { }
 
     ngOnInit(): void {
         this.loading = true;
@@ -71,23 +75,16 @@ export class ConnectionComponent implements OnInit {
             });
     }
 
-    changeConnection(connection: any) {
-        const dialogRef = this.dialog.open(ConfirmComponent, { autoFocus: false, data: { mode: 'warning', title: 'lang.confirmMsg', msg: 'lang.changeConnectionWarn' } });
-
-        dialogRef.afterClosed().subscribe(result => {
-            if (result === 'yes') {
-                this.loading = true;
-                this.http.patch('../rest/configurations/' + this.id, { label: this.label, value: connection })
-                    .pipe(
-                        finalize(() => this.loading = false)
-                    )
-                    .subscribe({
-                        next: () => {
-                            this.authService.updateUserInfoWithTokenRefresh();
-                            this.notificationService.success('lang.connectionModeUpdated');
-                        },
-                    });
-            }
-        });
+    async changeConnection(connection: any) {
+        this.http.patch('../rest/configurations/' + this.id, { label: this.label, value: connection })
+            .pipe(
+                finalize(() => this.loading = false)
+            )
+            .subscribe({
+                next: () => {
+                    this.authService.authMode = connection;
+                    this.notificationService.success('lang.connectionModeUpdated');
+                },
+            });
     }
 }
