@@ -21,6 +21,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { HomeComponent } from './home/home.component';
 import { IndexationComponent } from './indexation/indexation.component';
 import { SearchComponent } from './search/search.component';
+import { HistoryListComponent } from './administration/history/history-list.component';
 
 @NgModule({
     imports: [
@@ -42,6 +43,7 @@ import { SearchComponent } from './search/search.component';
     { path: 'administration/connections/ldaps/:id', canActivate: [AuthGuard], component: LdapComponent },
     { path: 'administration/emailConfiguration', canActivate: [AuthGuard], component: SendmailComponent },
     { path: 'administration/passwordRules', canActivate: [AuthGuard], component: SecuritiesAdministrationComponent },
+    { path: 'administration/history', canActivate: [AuthGuard], component: HistoryListComponent },
     { path: 'documents/:id', canActivate: [AuthGuard], component: DocumentComponent },
     { path: 'login', canActivate: [AuthGuard], component: LoginComponent },
     { path: 'forgot-password', component: ForgotPasswordComponent },

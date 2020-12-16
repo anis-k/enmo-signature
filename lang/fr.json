@@ -405,6 +405,14 @@
 		"certifiedDocumentMsg": "Le document a été signé par certificat numérique, vous ne pouvez pas apposer de griffe.",
 		"errorUserSignType": "Les signataires sans certificat doivent être présent avant les signataires avec certificat.",
 		"fortifyReadException": "Erreur lors de la communication avec Fortify",
-		"certifiedDocumentMsg2": "Document certifié ! Les annotations sur le document ne seront pas prise en compte !"
+		"certifiedDocumentMsg2": "Document certifié ! Les annotations sur le document ne seront pas prise en compte !",
+		"history": "Historique",
+		"manage_history": "Historique",
+		"entries": "entrée(s)",
+		"filters": "Filtre(s)",
+		"currentFilters": "filtre(s) actif(s)",
+		"since": "Depuis",
+		"until": "Jusqu'à",
+		"resource": "Ressource"
 	}
 }

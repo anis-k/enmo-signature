@@ -94,6 +94,7 @@ export class SignaturesContentService {
     }
 
     initTemplate(template: TemplateRef<any>, viewContainerRef: ViewContainerRef, id: string = 'adminMenu', mode: string = '') {
+        document.getElementById(`${id}`).innerHTML = '';
         // Create a portalHost from a DOM element
         this.portalHost = new DomPortalOutlet(
             document.querySelector(`#${id}`),

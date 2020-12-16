@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{'lang.history' | translate}}</ion-title>
+        <ion-buttons slot="end" *ngIf="getNbFilters() > 0">
+            <ion-button>
+                <ion-label>{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-label>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-title slot="end" color="secondary">{{resources.length}} {{'lang.entries' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content #mainContent>
+    <ion-list>
+        <ion-virtual-scroll [items]="resources" approxItemHeight="50px">
+            <ion-item *virtualItem="let element" lines="full">
+                <ion-icon color="primary" slot="start" [name]="aventTypesIcon[element.type]"></ion-icon>
+                <ion-label>
+                    <p>Le <span class="primary">{{element.date | date:'dd/MM/yyyy HH:mm'}}</span> par <span
+                            class="primary">{{element.user}}</span></p>
+                    <h2>{{element.message}}</h2>
+                </ion-label>
+                <ion-note slot="end">
+                    <p>{{'lang.resource' | translate}} : {{element.object_id}}</p>
+                    <p>IP : {{element.ip}}</p>
+                </ion-note>
+            </ion-item>
+        </ion-virtual-scroll>
+        <ion-infinite-scroll threshold="100px" (ionInfinite)="loadData($event)">
+            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+            </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+    </ion-list>
+</ion-content>
+<ng-template #rightContent>
+    <ion-header [translucent]="true">
+        <ion-toolbar color="primary">
+            <ion-buttons slot="start">
+                <ion-back-button></ion-back-button>
+            </ion-buttons>
+            <ion-title class="ion-text-center">{{'lang.filters' | translate}}</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+            <ion-item lines="none">
+                <ion-searchbar placeholder="Entrer le nom / prénom d'un utilisateur"
+                    (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
+            </ion-item>
+            <ion-item>
+                <ion-label color="secondary">{{'lang.since' | translate}}: </ion-label>
+                <ion-datetime displayFormat="DD/MM/YYYY" [doneText]="'lang.validate' | translate"
+                    [cancelText]="'lang.cancel' | translate" [(ngModel)]="filters.date.start" [max]="filters.date.end !== null ? filters.date.end : undefined"></ion-datetime>
+                <ion-buttons *ngIf="filters.date.start !== null" slot="end">
+                    <ion-button color="danger" shape="round" fill="clear" (click)="filters.date.start = null;getDatas()">
+                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                    </ion-button>
+                </ion-buttons>
+            </ion-item>
+            <ion-item>
+                <ion-label color="secondary">{{'lang.until' | translate}}: </ion-label>
+                <ion-datetime displayFormat="DD/MM/YYYY" [doneText]="'lang.validate' | translate"
+                    [cancelText]="'lang.cancel' | translate" [(ngModel)]="filters.date.end" [min]="filters.date.start !== null ? filters.date.start : undefined"></ion-datetime>
+                <ion-buttons *ngIf="filters.date.end !== null" slot="end">
+                    <ion-button color="danger" shape="round" fill="clear" (click)="filters.date.end = null;getDatas()">
+                        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+                    </ion-button>
+                </ion-buttons>
+            </ion-item>
+            <ion-item>
+                <ion-label color="secondary">{{'lang.actions' | translate}}: </ion-label>
+                <ion-select [okText]="'lang.validate' | translate" [cancelText]="'lang.cancel' | translate"
+                    [(ngModel)]="filters.actions" (ionChange)="getDatas()" multiple>
+                    <ion-select-option [value]="action" *ngFor="let action of actions">{{'lang.' + action | translate}}
+                    </ion-select-option>
+                </ion-select>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+    <!--<ion-footer class="ion-no-border">
+        <div class="ion-text-center" style="background: white;">
+            <ion-button color="primary" shape="round" size="large" fill="outline" (click)="onSubmit()">
+                <ion-label style="font-size: 13px;">{{'lang.search' | translate}}</ion-label>
+            </ion-button>
+        </div>
+    </ion-footer>-->
+</ng-template>

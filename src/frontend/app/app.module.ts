@@ -74,6 +74,7 @@ import { GroupsListComponent } from './administration/group/groups-list.componen
 import { GroupComponent } from './administration/group/group.component';
 import { UsersComponent } from './administration/group/list/users.component';
 import { SecuritiesAdministrationComponent } from './administration/security/securities-administration.component';
+import { HistoryListComponent } from './administration/history/history-list.component';
 
 
 // SERVICES
@@ -137,7 +138,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     SignaturePositionComponent,
     DevToolComponent,
     DevLangComponent,
-    SignatureMethodModalComponent
+    SignatureMethodModalComponent,
+    HistoryListComponent
   ],
   imports: [
     FormsModule,

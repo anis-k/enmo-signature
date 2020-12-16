@@ -25,7 +25,8 @@ class PrivilegeController
         ['id' => 'manage_groups',               'type' => 'admin', 'icon' => 'people-sharp',  'route' => '/administration/groups'],
         ['id' => 'manage_connections',          'type' => 'admin', 'icon' => 'server-sharp',  'route' => '/administration/connections'],
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'paper-plane',   'route' => '/administration/emailConfiguration'],
-        ['id' => 'manage_password_rules',       'type' => 'admin', 'icon' => 'lock-closed',    'route' => '/administration/passwordRules'],
+        ['id' => 'manage_password_rules',       'type' => 'admin', 'icon' => 'lock-closed',   'route' => '/administration/passwordRules'],
+        ['id' => 'manage_history',              'type' => 'admin', 'icon' => 'timer-outline', 'route' => '/administration/history'],
         ['id' => 'manage_documents',            'type' => 'simple'],
         ['id' => 'indexation',                  'type' => 'simple']
     ];
