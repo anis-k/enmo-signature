@@ -395,3 +395,10 @@ button.disabled {
     border: solid 1px var(--ion-color-success);
     color: var(--ion-color-success);
 }
+
+::ng-deep .popover-class {
+.popover-content{
+        height: 50%;
+        top: 50px;
+    }
+}

@@ -406,6 +406,16 @@
         "certifiedDocument": "Certified document",
         "certifiedDocumentMsg": "The document was signed by digital certificate, you cannot affix a stamp.",
         "errorUserSignType": "Signers without a certificate must be present before signers with a certificate.",
-        "fortifyReadException": "Error when communicating with Fortify"
+        "fortifyReadException": "Error when communicating with Fortify",
+        "docaposteSignatureDisabled": "The docaposteSignature parameter is not activated",
+        "certifiedDocumentMsg2": "Certified document! Annotations on the document will not be taken into account!",
+        "history": "History",
+        "manage_history": "Manage history",
+        "filters": "Filter (s)",
+        "currentFilters": "Active filter (s)",
+        "since": "Since",
+        "until": "Until",
+        "resource": "Resource",
+        "manage_historyAdmin": "Administer history"
     }
 }

@@ -563,7 +563,7 @@ export class DocumentComponent implements OnInit {
         this.renderImage();
     }
 
-    goTo(page: number) {
+    goTo(page: number) {        
         this.loadingController.create({
             message: this.translate.instant('lang.loadingDocument'),
             spinner: 'dots',
@@ -810,9 +810,10 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.detachTemplate('rightContent');
     }
 
-    openSelect() {
+    openSelect(event: any) {
         if (this.totalPages > 1) {
-            this.pagesList.open();
+            this.pagesList.interface = 'popover';            
+            this.pagesList.open(event);
         }
     }
 

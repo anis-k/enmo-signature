@@ -413,6 +413,7 @@
 		"currentFilters": "filtre(s) actif(s)",
 		"since": "Depuis",
 		"until": "Jusqu'à",
-		"resource": "Ressource"
+		"resource": "Ressource",
+		"manage_historyAdmin": "Administrer les historiques"
 	}
 }
