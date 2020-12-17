@@ -60,9 +60,9 @@ class HistoryController
 
     public function get(Request $request, Response $response)
     {
-        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_history'])) {
-            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
-        }
+//        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_history'])) {
+//            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+//        }
 
         $queryParams = $request->getQueryParams();
         $body = $request->getParsedBody();
@@ -82,6 +82,10 @@ class HistoryController
             $where[] = 'user_id in (?)';
             $data[]  = $body['users'];
         }
+        if (!empty($body['user'])) {
+            $where[] = 'user like (?)';
+            $data[]  = "%{$body['user']}%";
+        }
 
         if (!empty($body['date']['start'])) {
             $where[] = 'date > ?';
@@ -89,7 +93,7 @@ class HistoryController
         }
         if (!empty($body['date']['end'])) {
             $where[] = 'date < ?';
-            $data[]  = $body['date']['end'];
+            $data[]  = TextFormatModel::getEndDayDate(['date' => $body['date']['end']]);
         }
         if (!empty($body['messageTypes']) && is_array($body['messageTypes'])) {
             $queryTypes = '{';
@@ -105,7 +109,7 @@ class HistoryController
         }
 
         $history = HistoryModel::get([
-            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'count(1) OVER()'],
+            'select'    => ['code', 'type', 'user', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'count(1) OVER()'],
             'where'     => $where,
             'data'      => $data,
             'orderBy'   => ['date DESC'],

@@ -29,4 +29,15 @@ class TextFormatModel
 
         return $filename;
     }
+
+    public static function getEndDayDate(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['date']);
+        ValidatorModel::stringType($args, ['date']);
+
+        $date = new \DateTime($args['date']);
+        $date->setTime(23, 59, 59);
+
+        return $date->format('d-m-Y H:i:s');
+    }
 }
