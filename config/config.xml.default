@@ -25,6 +25,7 @@
             <contactInfo>Maarch SAS, société du groupe Archiveco</contactInfo>
         </certInfo>
     </electronicSignature>
+    <textWithDigitalSignature>true</textWithDigitalSignature>
     <docaposteSignature>
         <enable>false</enable>
         <url>https://test.contralia.fr:443/Contralia/api/v2</url>

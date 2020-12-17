@@ -196,19 +196,20 @@ class DigitalSignatureController
                 $imageXObject = $image->toXObject($document);
                 $width = $args['signatureInfo']['signWidth'];
                 $height = $imageXObject->getHeight($width);
+                $signatureFieldWith = $width > 200 ? $width : 200;
 
                 $fieldName = $signer->addSignatureField(
                     'Signature_' . rand(),
                     $args['signatureInfo']['page'],
                     \SetaPDF_Signer_SignatureField::POSITION_LEFT_TOP,
                     ['x' => $args['signatureInfo']['positionX'], 'y' => -$args['signatureInfo']['positionY']],
-                    $width,
+                    $signatureFieldWith,
                     $height + 50
                 )->getQualifiedName();
 
                 $signer->setSignatureFieldName($fieldName);
 
-                $xObject = \SetaPDF_Core_XObject_Form::create($document, [0, 0, $width, $height + 50]);
+                $xObject = \SetaPDF_Core_XObject_Form::create($document, [0, 0, $signatureFieldWith, $height + 50]);
                 $canvas = $xObject->getCanvas();
                 $imageXObject->draw($canvas, 0, 50, $width, $height);
 
@@ -217,12 +218,15 @@ class DigitalSignatureController
                     __DIR__ . '/fonts/dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf'
                 );
     
-                $textBlock = new \SetaPDF_Core_Text_Block($font, 7);
-                $textBlock->setWidth($width);
-                $textBlock->setLineHeight(14);
-                $textBlock->setPadding(2);
-                $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('c'));
-                $textBlock->draw($canvas, 0, 30, $width, null);
+                $loadedXml = CoreConfigModel::getConfig();
+                if ($loadedXml->textWithDigitalSignature == 'true') {
+                    $textBlock = new \SetaPDF_Core_Text_Block($font, 7);
+                    $textBlock->setWidth($signatureFieldWith);
+                    $textBlock->setLineHeight(14);
+                    $textBlock->setPadding(2);
+                    $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('c'));
+                    $textBlock->draw($canvas, 0, 30);
+                }
 
                 $appearance = new \SetaPDF_Signer_Signature_Appearance_XObject($xObject);
                 $signer->setAppearance($appearance);
