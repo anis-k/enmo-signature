@@ -4,19 +4,20 @@
             <ion-back-button></ion-back-button>
         </ion-buttons>
         <ion-title>{{'lang.history' | translate}}</ion-title>
-        <ion-buttons slot="end" *ngIf="getNbFilters() > 0">
-            <ion-button>
-                <ion-label>{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-label>
-            </ion-button>
+        <ion-label slot="end" *ngIf="getNbFilters() > 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-label>
+        <ion-buttons slot="end">
+            <ion-menu-button menu="right-menu">
+                <ion-icon name="funnel-outline"></ion-icon>
+            </ion-menu-button>
         </ion-buttons>
     </ion-toolbar>
     <ion-toolbar color="primary">
-        <ion-title slot="end" color="secondary">{{resources.length}} {{'lang.entries' | translate}}</ion-title>
+        <ion-title slot="end" color="secondary">{{count}} {{'lang.entries' | translate}}</ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content #mainContent>
-    <ion-list>
-        <ion-virtual-scroll [items]="resources" approxItemHeight="50px">
+    <ion-list *ngIf="resources.length > 0">
+        <ion-virtual-scroll [items]="resources" approxItemHeight="90px">
             <ion-item *virtualItem="let element" lines="full">
                 <ion-icon color="primary" slot="start" [name]="aventTypesIcon[element.type]"></ion-icon>
                 <ion-label>
@@ -25,7 +26,7 @@
                     <h2>{{element.message}}</h2>
                 </ion-label>
                 <ion-note slot="end">
-                    <p>{{'lang.resource' | translate}} : {{element.object_id}}</p>
+                    <p>{{'lang.resource' | translate}} : {{element.objectId}}</p>
                     <p>IP : {{element.ip}}</p>
                 </ion-note>
             </ion-item>
@@ -54,7 +55,7 @@
             <ion-item>
                 <ion-label color="secondary">{{'lang.since' | translate}}: </ion-label>
                 <ion-datetime displayFormat="DD/MM/YYYY" [doneText]="'lang.validate' | translate"
-                    [cancelText]="'lang.cancel' | translate" [(ngModel)]="filters.date.start" [max]="filters.date.end !== null ? filters.date.end : undefined"></ion-datetime>
+                    [cancelText]="'lang.cancel' | translate" [(ngModel)]="filters.date.start" [max]="filters.date.end !== null ? filters.date.end : undefined" (ionChange)="getDatas()"></ion-datetime>
                 <ion-buttons *ngIf="filters.date.start !== null" slot="end">
                     <ion-button color="danger" shape="round" fill="clear" (click)="filters.date.start = null;getDatas()">
                         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
@@ -64,20 +65,19 @@
             <ion-item>
                 <ion-label color="secondary">{{'lang.until' | translate}}: </ion-label>
                 <ion-datetime displayFormat="DD/MM/YYYY" [doneText]="'lang.validate' | translate"
-                    [cancelText]="'lang.cancel' | translate" [(ngModel)]="filters.date.end" [min]="filters.date.start !== null ? filters.date.start : undefined"></ion-datetime>
+                    [cancelText]="'lang.cancel' | translate" [(ngModel)]="filters.date.end" [min]="filters.date.start !== null ? filters.date.start : undefined" (ionChange)="getDatas()"></ion-datetime>
                 <ion-buttons *ngIf="filters.date.end !== null" slot="end">
                     <ion-button color="danger" shape="round" fill="clear" (click)="filters.date.end = null;getDatas()">
                         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
                     </ion-button>
                 </ion-buttons>
             </ion-item>
-            <ion-item>
+            <ion-item lines="none" style="position: sticky;top: 0;z-index: 2;">
                 <ion-label color="secondary">{{'lang.actions' | translate}}: </ion-label>
-                <ion-select [okText]="'lang.validate' | translate" [cancelText]="'lang.cancel' | translate"
-                    [(ngModel)]="filters.actions" (ionChange)="getDatas()" multiple>
-                    <ion-select-option [value]="action" *ngFor="let action of actions">{{'lang.' + action | translate}}
-                    </ion-select-option>
-                </ion-select>
+            </ion-item>
+            <ion-item *ngFor="let action of actions">
+                <ion-checkbox slot="start" [value]="action.id" (ionChange)="toggleAction($event.detail)"></ion-checkbox>
+                <ion-label>{{action.label}}</ion-label>
             </ion-item>
         </ion-list>
     </ion-content>

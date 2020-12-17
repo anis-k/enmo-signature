@@ -8,3 +8,9 @@
 .primary {
     color: var(--ion-color-primary);
 }
+
+::ng-deep .test {
+    .alert-wrapper {
+        min-width: 350px;
+    }
+}

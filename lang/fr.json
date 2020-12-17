@@ -414,6 +414,7 @@
 		"since": "Depuis",
 		"until": "Jusqu'à",
 		"resource": "Ressource",
-		"manage_historyAdmin": "Administrer les historiques"
+		"manage_historyAdmin": "Consulter l'historique",
+		"manage_historyDesc": "Consulter les différents événements de l'application"
 	}
 }

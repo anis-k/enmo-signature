@@ -10,6 +10,7 @@ import { LatinisePipe } from 'ngx-pipes';
 import { AuthService } from '../../service/auth.service';
 import { AlertController, IonInfiniteScroll, MenuController } from '@ionic/angular';
 import { of } from 'rxjs';
+import { SortPipe } from '../../plugins/sorting.pipe';
 
 
 export interface User {
@@ -25,6 +26,7 @@ export interface User {
     selector: 'app-administration-history-list',
     templateUrl: 'history-list.component.html',
     styleUrls: ['history-list.component.scss'],
+    providers: [SortPipe]
 })
 
 export class HistoryListComponent {
@@ -39,9 +41,9 @@ export class HistoryListComponent {
     count: number = 0;
 
     filters: any = {
-        search : '',
-        actions : [],
-        date : {
+        search: '',
+        messageTypes: [],
+        date: {
             start: null,
             end: null
         }
@@ -60,7 +62,6 @@ export class HistoryListComponent {
 
     actions: any[] = [];
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
-    @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
     constructor(
         public http: HttpClient,
@@ -72,13 +73,18 @@ export class HistoryListComponent {
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         public authService: AuthService,
-        public alertController: AlertController
+        public alertController: AlertController,
+        public sortPipe: SortPipe
     ) { }
 
     applyFilter(filterValue: string) {
         filterValue = this.latinisePipe.transform(filterValue.toLowerCase());
         this.filters.field = filterValue;
         this.getDatas();
+    }
+
+    openFilters() {
+        this.menu.open('right-menu');
     }
 
     ionViewWillEnter() {
@@ -90,40 +96,33 @@ export class HistoryListComponent {
     }
 
     gesActions() {
-        this.actions = [
-            'emailAdded',
-            'documentViewed'
-        ];
+        this.http.get(`../rest/history/messageTypes`, this.filters)
+            .pipe(
+                tap((data: any) => {
+                    this.actions = data.messageTypes.map((item: any) => {
+                        return {
+                            id: item,
+                            label: this.translate.instant('lang.' + item)
+                        };
+                    });
+                    this.actions = this.sortPipe.transform(this.actions, 'label');
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
     }
 
     getDatas() {
         this.resources = [];
         this.offset = 0;
-        this.resources = [
-            {
-                type: 'VIEW',
-                date : '2020-12-15 17:21:07.854099',
-                user : 'Barbara BAIN',
-                message : '{documentViewed} : recommande_2D_000_000_0003_1',
-                object_id : 103,
-                ip : '192.168.1.12',
-            },
-            {
-                type: 'ACTION',
-                date : '2020-12-15 17:20:37.304331',
-                user : 'Jenny JANE-SUR-SAINT-ETIENNE',
-                message : '{actionDone} : VAL',
-                object_id : 145,
-                ip : '192.168.1.12',
-            }
-        ];
-        /*return new Promise((resolve) => {
-            this.http.post(`../rest/search/history?limit=10&offset=0`, this.filters)
+        return new Promise((resolve) => {
+            this.http.post(`../rest/history?limit=10&offset=0`, this.filters)
                 .pipe(
                     tap((data: any) => {
                         this.resources = data.history;
-                        this.count = data.count;
-                        this.infiniteScroll.disabled = false;
+                        this.count = data.total;
                         resolve(true);
                     }),
                     catchError((err: any) => {
@@ -132,7 +131,7 @@ export class HistoryListComponent {
                         return of(false);
                     })
                 ).subscribe();
-        });*/
+        });
     }
 
     sortData(sort: Sort) {
@@ -169,9 +168,18 @@ export class HistoryListComponent {
         if (this.filters.date.end !== null) {
             nb++;
         }
-        if (this.filters.actions.length > 0) {
+        if (this.filters.messageTypes.length > 0) {
             nb++;
         }
         return nb;
+    }
+
+    toggleAction(ev: any) {
+        if (ev.checked) {
+            this.filters.messageTypes.push(ev.value);
+        } else {
+            this.filters.messageTypes = this.filters.messageTypes.filter((item: any) => item !== ev.value);
+        }
+        this.getDatas();
     }
 }
