@@ -25,6 +25,7 @@ export class DocumentNotePadComponent implements OnInit {
     areaHeight = 0;
     editMode: boolean = true;
     originalSize: boolean = true;
+    loading = true;
 
     @Output() triggerEvent = new EventEmitter<string>();
     @ViewChild('mainContent') mainContent: any;
@@ -41,7 +42,11 @@ export class DocumentNotePadComponent implements OnInit {
         public modalController: ModalController
     ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void { 
+        setTimeout(() => {
+            this.loading = false;
+        }, 100);
+    }
 
     imageLoaded(ev: any) {
         // console.log('imageLoaded');
