@@ -29,6 +29,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use SrcCore\controllers\LanguageController;
 use SrcCore\models\CoreConfigModel;
+use SrcCore\models\DatabaseModel;
 use SrcCore\models\TextFormatModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
@@ -57,36 +58,90 @@ class HistoryController
         return true;
     }
 
-    public function get(Request $request, Response $response, array $args)
+    public function get(Request $request, Response $response)
     {
-        //TODO privilege
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_history'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+        }
 
-//        $history = HistoryModel::get([
-//            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip'],
-//            'where'     => ["(object_type = ? AND object_id = ?) OR (data->>'mainDocumentId' = ?)"],
-//            'data'      => ['main_documents', $args['id'], $args['id']],
-//            'orderBy'   => ['date']
-//        ]);
-//
-//
-//        HistoryController::add([
-//            'code'          => 'OK',
-//            'objectType'    => 'history',
-//            'objectId'      => $args['id'],
-//            'type'          => 'VIEW',
-//            'message'       => '{documentHistoryViewed}',
-//            'data'          => ['objectType' => 'main_documents']
-//        ]);
-//
-//        $queryParams = $request->getQueryParams();
-//        if (!isset($queryParams['mode']) || $queryParams['mode'] == 'json') {
-//            return $response->withJson(['history' => $formattedHistory['formattedHistory']]);
-//        } else {
-//            $historyXml = HistoryController::arrayToXml(['data' => $formattedHistory['formattedHistory'], 'xml' => false]);
-//            $response->write($historyXml);
-//            $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch_history.xml");
-//            return $response->withHeader('Content-Type', 'application/xml');
-//        }
+        $queryParams = $request->getQueryParams();
+        $body = $request->getParsedBody();
+
+        $limit = 25;
+        if (!empty($queryParams['limit']) && is_numeric($queryParams['limit'])) {
+            $limit = (int)$queryParams['limit'];
+        }
+        $offset = 0;
+        if (!empty($queryParams['offset']) && is_numeric($queryParams['offset'])) {
+            $offset = (int)$queryParams['offset'];
+        }
+
+        $where = [];
+        $data = [];
+        if (!empty($body['users']) && is_array($body['users'])) {
+            $where[] = 'user_id in (?)';
+            $data[]  = $body['users'];
+        }
+
+        if (!empty($body['date']['start'])) {
+            $where[] = 'date > ?';
+            $data[]  = $body['date']['start'];
+        }
+        if (!empty($body['date']['end'])) {
+            $where[] = 'date < ?';
+            $data[]  = $body['date']['end'];
+        }
+        if (!empty($body['messageTypes']) && is_array($body['messageTypes'])) {
+            $queryTypes = '{';
+            foreach ($body['messageTypes'] as $key => $messageType) {
+                if ($key > 0) {
+                    $queryTypes .= ',';
+                }
+                $queryTypes .= "\"%{{$messageType}}%\"";
+            }
+            $queryTypes .= '}';
+            $where[] = 'message like any (?)';
+            $data[]  = $queryTypes;
+        }
+
+        $history = HistoryModel::get([
+            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'count(1) OVER()'],
+            'where'     => $where,
+            'data'      => $data,
+            'orderBy'   => ['date DESC'],
+            'limit'     => $limit,
+            'offset'    => $offset
+        ]);
+
+        $formattedHistory = [];
+
+        $lang       = LanguageController::get();
+        $langKeys   = [];
+        $langValues = [];
+        foreach ($lang as $key => $value) {
+            $langKeys[]   = "/{{$key}}/";
+            $langValues[] = $value;
+        }
+
+        $total = $history[0]['count'] ?? 0;
+        foreach ($history as $value) {
+            $date = new \DateTime($value['date']);
+
+            $data = json_decode($value['data'], true);
+            $formattedHistory[] = [
+                'code'      => $value['code'],
+                'objectId'  => $value['object_id'],
+                'type'      => $value['type'],
+                'userId'    => $value['user_id'],
+                'user'      => $value['user'],
+                'date'      => $date->format('c'),
+                'ip'        => $value['ip'],
+                'message'   => preg_replace($langKeys, $langValues, $value['message']),
+                'data'      => $data
+            ];
+        }
+
+        return $response->withJson(['history' => $formattedHistory, 'total' => $total]);
     }
 
     public function getByDocumentId(Request $request, Response $response, array $args)
@@ -127,6 +182,25 @@ class HistoryController
             $response = $response->withAddedHeader('Content-Disposition', "inline; filename=maarch_history.xml");
             return $response->withHeader('Content-Type', 'application/xml');
         }
+    }
+
+    public function getMessageTypes(Request $request, Response $response)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_history'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+        }
+
+        $rawHistory = DatabaseModel::select([
+            'select'    => ['DISTINCT h.msg'],
+            'table'     => ["(SELECT REGEXP_MATCHES(message, '{[a-zA-Z]+}', 'g') AS msg FROM history) h"],
+        ]);
+
+        $messageTypes = [];
+        foreach ($rawHistory as $value) {
+            $messageTypes[] = str_replace(['"', '{', '}'], '', $value['msg']);
+        }
+
+        return $response->withJson(['messageTypes' => $messageTypes]);
     }
 
     public static function getFormattedHistory($args = [])

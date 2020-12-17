@@ -19,20 +19,20 @@ use SrcCore\models\ValidatorModel;
 
 class HistoryModel
 {
-    public static function get(array $aArgs)
+    public static function get(array $args)
     {
-        ValidatorModel::notEmpty($aArgs, ['select']);
-        ValidatorModel::arrayType($aArgs, ['select', 'where', 'data', 'orderBy']);
-        ValidatorModel::intType($aArgs, ['limit', 'offset']);
+        ValidatorModel::notEmpty($args, ['select']);
+        ValidatorModel::arrayType($args, ['select', 'where', 'data', 'orderBy']);
+        ValidatorModel::intType($args, ['limit', 'offset']);
 
         $history = DatabaseModel::select([
-            'select'    => $aArgs['select'],
+            'select'    => $args['select'],
             'table'     => ['history'],
-            'where'     => empty($aArgs['where']) ? [] : $aArgs['where'],
-            'data'      => empty($aArgs['data']) ? [] : $aArgs['data'],
-            'orderBy'   => empty($aArgs['orderBy']) ? [] : $aArgs['orderBy'],
-            'offset'    => empty($aArgs['offset']) ? 0 : $aArgs['offset'],
-            'limit'     => empty($aArgs['limit']) ? 0 : $aArgs['limit'],
+            'where'     => empty($args['where']) ? [] : $args['where'],
+            'data'      => empty($args['data']) ? [] : $args['data'],
+            'orderBy'   => empty($args['orderBy']) ? [] : $args['orderBy'],
+            'offset'    => empty($args['offset']) ? 0 : $args['offset'],
+            'limit'     => empty($args['limit']) ? 0 : $args['limit'],
         ]);
 
         return $history;

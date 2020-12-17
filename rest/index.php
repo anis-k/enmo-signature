@@ -87,15 +87,6 @@ $app->put('/documents/{id}/workflows/interrupt', \Workflow\controllers\WorkflowC
 //Emails
 $app->post('/emails', \Email\controllers\EmailController::class . ':send');
 
-//Languages
-$app->get('/languages', \SrcCore\controllers\LanguageController::class . ':getAvailableCoreLanguages');
-$app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
-$app->put('/languages', \SrcCore\controllers\LanguageController::class . ':generateLang');
-
-//PasswordRules
-$app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
-$app->put('/passwordRules', \SrcCore\controllers\PasswordController::class . ':updateRules');
-
 //Groups
 $app->post('/groups', \Group\controllers\GroupController::class . ':create');
 $app->get('/groups', \Group\controllers\GroupController::class . ':get');
@@ -105,6 +96,19 @@ $app->put('/groups/{id}', \Group\controllers\GroupController::class . ':update')
 $app->put('/groups/{id}/privilege/{privilegeId}', \Group\controllers\GroupController::class . ':updateGroupPrivilege');
 $app->put('/groups/{id}/users', \Group\controllers\GroupController::class . ':addUser');
 $app->delete('/groups/{id}/users/{userId}', \Group\controllers\GroupController::class . ':removeUser');
+
+//History
+$app->post('/history', \History\controllers\HistoryController::class . ':get');
+$app->get('/history/messageTypes', \History\controllers\HistoryController::class . ':getMessageTypes');
+
+//Languages
+$app->get('/languages', \SrcCore\controllers\LanguageController::class . ':getAvailableCoreLanguages');
+$app->get('/languages/{lang}', \SrcCore\controllers\LanguageController::class . ':getByLang');
+$app->put('/languages', \SrcCore\controllers\LanguageController::class . ':generateLang');
+
+//PasswordRules
+$app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
+$app->put('/passwordRules', \SrcCore\controllers\PasswordController::class . ':updateRules');
 
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');
