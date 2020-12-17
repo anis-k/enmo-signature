@@ -23,7 +23,7 @@ export class SignatureMethodModalComponent implements OnInit {
         //   subjectDNMatch: new RegExp(/apple/),
         //   issuerDNMatch: 'demo',
         //   issuerDNMatch: new RegExp(/demo/),
-        //   keyUsage: ['digitalSignature'],
+        keyUsage: ['digitalSignature'],
         onlyWithPrivateKey: true
     };
 
