@@ -30,6 +30,17 @@ class TextFormatModel
         return $filename;
     }
 
+    public static function getStartDayDate(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['date']);
+        ValidatorModel::stringType($args, ['date']);
+
+        $date = new \DateTime($args['date']);
+        $date->setTime(00, 00, 00);
+
+        return $date->format('d-m-Y H:i:s');
+    }
+
     public static function getEndDayDate(array $args)
     {
         ValidatorModel::notEmpty($args, ['date']);

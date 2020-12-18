@@ -250,7 +250,7 @@ class GroupController
             'objectType'    => 'groups',
             'objectId'      => $aArgs['id'],
             'type'          => 'MODIFICATION',
-            'message'       => "{userAdded} : {$user['firstname']} {$user['lastname']}"
+            'message'       => "{userAddedToGroup} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         HistoryController::add([
@@ -258,7 +258,7 @@ class GroupController
             'objectType'    => 'users',
             'objectId'      => $body['userId'],
             'type'          => 'MODIFICATION',
-            'message'       => "{groupAdded} : {$group['label']}"
+            'message'       => "{groupAddedToUser} : {$group['label']}"
         ]);
 
         return $response->withStatus(204);

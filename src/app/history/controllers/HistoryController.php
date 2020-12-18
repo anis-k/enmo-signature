@@ -83,13 +83,22 @@ class HistoryController
             $data[]  = $body['users'];
         }
         if (!empty($body['user'])) {
-            $where[] = 'user like (?)';
-            $data[]  = "%{$body['user']}%";
+            $userWhere = '"user" ilike ?';
+            $data[] = "%{$body['user']}%";
+
+            $matchedUsers = UserModel::get(['select' => ['id'], 'where' => ["CONCAT(firstname,' ',lastname) ilike ?"], 'data' => ["%{$body['user']}%"]]);
+            if (!empty($matchedUsers)) {
+                $matchedUsers = array_column($matchedUsers, 'id');
+                $userWhere .= ' OR user_id in (?)';
+                $userWhere = "({$userWhere})";
+                $data[]  = $matchedUsers;
+            }
+            $where[] = $userWhere;
         }
 
         if (!empty($body['date']['start'])) {
             $where[] = 'date > ?';
-            $data[]  = $body['date']['start'];
+            $data[]  = TextFormatModel::getStartDayDate(['date' => $body['date']['start']]);
         }
         if (!empty($body['date']['end'])) {
             $where[] = 'date < ?';
@@ -109,7 +118,7 @@ class HistoryController
         }
 
         $history = HistoryModel::get([
-            'select'    => ['code', 'type', 'user', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'count(1) OVER()'],
+            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'count(1) OVER()'],
             'where'     => $where,
             'data'      => $data,
             'orderBy'   => ['date DESC'],
