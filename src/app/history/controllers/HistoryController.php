@@ -60,9 +60,9 @@ class HistoryController
 
     public function get(Request $request, Response $response)
     {
-//        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_history'])) {
-//            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
-//        }
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_history'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Service forbidden']);
+        }
 
         $queryParams = $request->getQueryParams();
         $body = $request->getParsedBody();
