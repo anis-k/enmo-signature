@@ -664,6 +664,13 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
+                        this.loadingController.create({
+                            message: this.translate.instant('lang.loadingValidation'),
+                            spinner: 'dots'
+                        }).then((load: HTMLIonLoadingElement) => {
+                            this.load = load;
+                            this.load.present();
+                        });
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
                         if (!this.functionsService.empty(res)) {
@@ -680,6 +687,7 @@ export class DocumentComponent implements OnInit {
                             this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
                             this.localStorage.remove(this.mainDocument.id.toString());
                         }
+                        this.load.dismiss();
                     }
                 }
             ]
