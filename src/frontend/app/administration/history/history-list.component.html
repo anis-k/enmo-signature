@@ -18,10 +18,10 @@
 <ion-content #mainContent>
     <ion-list *ngIf="resources.length > 0">
         <ion-virtual-scroll [items]="resources" approxItemHeight="90px">
-            <ion-item *virtualItem="let element" lines="full">
+            <ion-item *virtualItem="let element" lines="full" class="canSelect">
                 <ion-icon color="primary" slot="start" [name]="aventTypesIcon[element.type]"></ion-icon>
                 <ion-label>
-                    <p>Le <span class="primary">{{element.date | date:'dd/MM/yyyy HH:mm'}}</span> par <span
+                    <p>{{'lang.the' | translate | titlecase}} <span class="primary">{{element.date | date:'dd/MM/yyyy HH:mm'}}</span> {{'lang.by' | translate}} <span
                             class="primary">{{element.user}}</span></p>
                     <h2>{{element.message}}</h2>
                 </ion-label>

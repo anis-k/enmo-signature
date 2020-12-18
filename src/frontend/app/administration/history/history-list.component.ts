@@ -5,10 +5,10 @@ import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
 import { TranslateService } from '@ngx-translate/core';
-import { map, finalize, tap, catchError } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 import { LatinisePipe } from 'ngx-pipes';
 import { AuthService } from '../../service/auth.service';
-import { AlertController, IonInfiniteScroll, MenuController } from '@ionic/angular';
+import { AlertController, MenuController } from '@ionic/angular';
 import { of } from 'rxjs';
 import { SortPipe } from '../../plugins/sorting.pipe';
 
@@ -41,7 +41,7 @@ export class HistoryListComponent {
     count: number = 0;
 
     filters: any = {
-        search: '',
+        user: '',
         messageTypes: [],
         date: {
             start: null,
@@ -79,7 +79,7 @@ export class HistoryListComponent {
 
     applyFilter(filterValue: string) {
         filterValue = this.latinisePipe.transform(filterValue.toLowerCase());
-        this.filters.field = filterValue;
+        this.filters.user = filterValue;
         this.getDatas();
     }
 
@@ -159,7 +159,7 @@ export class HistoryListComponent {
 
     getNbFilters() {
         let nb = 0;
-        if (this.filters.search !== '') {
+        if (this.filters.user !== '') {
             nb++;
         }
         if (this.filters.date.start !== null) {
@@ -169,7 +169,7 @@ export class HistoryListComponent {
             nb++;
         }
         if (this.filters.messageTypes.length > 0) {
-            nb++;
+            nb += this.filters.messageTypes.length;
         }
         return nb;
     }
