@@ -565,7 +565,6 @@ export class DocumentComponent implements OnInit {
         }
         // this.exportAsImage();
         this.renderImage();
-        this.load.dismiss();
     }
 
     pagesArray(n: number): number[] {
