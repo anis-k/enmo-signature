@@ -46,9 +46,9 @@ class ThumbnailScript
         ]);
 
         if (isset($args['page'])) {
-            $isConverted = ConvertThumbnailController::convertOnePage(['id' => $args['id'], 'type' => $args['type'], 'page' => $args['page']]);
+            $isConverted = ConvertThumbnailController::convertOnePage(['configPath' => $args['configPath'], 'id' => $args['id'], 'type' => $args['type'], 'page' => $args['page']]);
         } else {
-            $isConverted = ConvertThumbnailController::convert(['id' => $args['id'], 'type' => $args['type']]);
+            $isConverted = ConvertThumbnailController::convert(['configPath' => $args['configPath'], 'id' => $args['id'], 'type' => $args['type']]);
         }
         if (!empty($isConverted['errors'])) {
             DocumentModel::update([

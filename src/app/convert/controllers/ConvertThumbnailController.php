@@ -17,6 +17,7 @@ namespace Convert\controllers;
 use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
+use setasign\Fpdi\Tcpdf\Fpdi;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 
@@ -61,9 +62,18 @@ class ConvertThumbnailController
         $filename = pathinfo($pathToDocument, PATHINFO_FILENAME);
         $tmpPath = CoreConfigModel::getTmpPath();
 
-        $img = new \Imagick();
-        $img->pingImage($pathToDocument);
-        $pageCount = $img->getNumberImages();
+        if (!empty($args['configPath'])) {
+            $configPath = $args['configPath'];
+        } else {
+            $configPath = CoreConfigModel::getConfigPath();
+        }
+
+        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+        if (file_exists($overrideFile)) {
+            require_once($overrideFile);
+        }
+        $pdf = new Fpdi('P', 'pt');
+        $pageCount = $pdf->setSourceFile($pathToDocument);
 
         $i = 0;
         while ($i < $pageCount) {
@@ -137,16 +147,24 @@ class ConvertThumbnailController
             return ['errors' => 'Document not found on docserver or not readable'];
         }
 
-        $filename = pathinfo($pathToDocument, PATHINFO_FILENAME);
-        $tmpPath = CoreConfigModel::getTmpPath();
+        if (!empty($args['configPath'])) {
+            $configPath = $args['configPath'];
+        } else {
+            $configPath = CoreConfigModel::getConfigPath();
+        }
 
-        $img = new \Imagick();
-        $img->pingImage($pathToDocument);
-        $pageCount = $img->getNumberImages();
+        $overrideFile = "{$configPath}/override/setasign/fpdi_pdf-parser/src/autoload.php";
+        if (file_exists($overrideFile)) {
+            require_once($overrideFile);
+        }
+        $pdf = new Fpdi('P', 'pt');
+        $pageCount = $pdf->setSourceFile($pathToDocument);
         if ($pageCount < $args['page']) {
             return ['errors' => 'Page does not exist'];
         }
 
+        $filename = pathinfo($pathToDocument, PATHINFO_FILENAME);
+        $tmpPath = CoreConfigModel::getTmpPath();
         $fileNameOnTmp = rand() . $filename;
 
         $convertPage = $args['page'] - 1;
@@ -199,9 +217,9 @@ class ConvertThumbnailController
         exec($command.' 2>&1', $output, $return);
 
         if ($return !== 0) {
-            return "convert -density 500x500 -quality 100 -background white -alpha remove";
+            return "convert -density 200x200 -quality 100 ";
         } else {
-            return "gm convert -density 500x500 -quality 100 -background white +matte";
+            return "gm convert -density 200x200 -quality 100";
         }
     }
 }
