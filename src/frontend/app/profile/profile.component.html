@@ -76,6 +76,7 @@
                             <ion-icon slot="icon-only" color="primary"
                                 [name]="hideNewPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
                         </ion-button>
+                        <ion-note color="danger" *ngIf="this.handlePassword.error"> {{ this.handlePassword.errorMsg | translate}}</ion-note>
                     </ion-item>
                     <ion-item>
                         <ion-label color="secondary" position="stacked">{{'lang.passwordConfirmation' | translate}}
