@@ -416,6 +416,9 @@
         "since": "Since",
         "until": "Until",
         "resource": "Resource",
-        "manage_historyAdmin": "Administer history"
+        "manage_historyAdmin": "Administer history",
+        "manage_historyDesc": "Consult the various events of the application",
+        "loadingValidation": "Validation of the current document ...",
+        "workflowTemplateAdded": "Workflow template added"
     }
 }

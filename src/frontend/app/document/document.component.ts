@@ -518,13 +518,6 @@ export class DocumentComponent implements OnInit {
     }
 
     prevPage() {
-        this.loadingController.create({
-            message: this.translate.instant('lang.loadingDocument'),
-            spinner: 'dots'
-        }).then((load: HTMLIonLoadingElement) => {
-            this.load = load;
-            this.load.present();
-        });
         this.loadingImage = true;
         this.pageNum--;
 
@@ -541,13 +534,6 @@ export class DocumentComponent implements OnInit {
     }
 
     nextPage() {
-        this.loadingController.create({
-            message: this.translate.instant('lang.loadingDocument'),
-            spinner: 'dots'
-        }).then((load: HTMLIonLoadingElement) => {
-            this.load = load;
-            this.load.present();
-        });
         this.loadingImage = true;
         if (this.pageNum >= this.totalPages) {
             this.pageNum = this.totalPages;
@@ -579,6 +565,7 @@ export class DocumentComponent implements OnInit {
         }
         // this.exportAsImage();
         this.renderImage();
+        this.load.dismiss();
     }
 
     pagesArray(n: number): number[] {
@@ -820,7 +807,7 @@ export class DocumentComponent implements OnInit {
 
     openSelect(event: any) {
         if (this.totalPages > 1) {
-            this.pagesList.interface = 'popover';            
+            this.pagesList.interface = 'popover'; 
             this.pagesList.open(event);
         }
     }

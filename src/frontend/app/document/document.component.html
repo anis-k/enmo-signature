@@ -112,8 +112,8 @@
             {{docList[currentDoc].title}}
         </div>
         <div class="page-info-page" (click)="openSelect($event)">{{'lang.page' | translate}} {{ pageNum }} / {{ totalPages }}</div>
-        <ion-select interface="popover" [interfaceOptions]="{cssClass : this.totalPages > 10  ? 'popover-class' : 'custom-popover-class'}"  style="max-height: 100%;" #pagesList (ionChange)='goTo($event.target.value)' hidden="true">
-            <ion-select-option *ngFor="let page of pagesArray(this.totalPages);let i=index" [value]="page" [disabled]="i+1 === pageNum">{{ i + 1 }}</ion-select-option>
+        <ion-select interface="popover" [(ngModel)]="pageNum" [interfaceOptions]="{cssClass : this.totalPages > 10  ? 'popover-class' : 'custom-popover-class'}"  style="max-height: 100%;" #pagesList (ionChange)='goTo($event.target.value)' hidden="true">
+            <ion-select-option *ngFor="let page of pagesArray(this.totalPages);let i=index" [value]="i+1" [disabled]="i+1 === pageNum">{{ i + 1 }}</ion-select-option>
         </ion-select>
     </section>
     <ion-item *ngIf="mainDocument.isCertified" lines="none" class="certified">
