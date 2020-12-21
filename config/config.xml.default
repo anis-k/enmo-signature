@@ -40,21 +40,29 @@
             <id>rgs_2stars_timestamped</id>
             <color>#FF0000</color>
             <issuer>ChamberSign</issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
         </mode>
         <mode>
             <id>rgs_2stars</id>
             <color>#FF0000</color>
             <issuer></issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
         </mode>
         <mode>
             <id>inca_card_eidas</id>
             <color>#FFA500</color>
             <issuer></issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
         </mode>
         <mode>
             <id>inca_card</id>
             <color>#FFA500</color>
             <issuer></issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
         </mode>
         <mode>
             <id>eidas</id>

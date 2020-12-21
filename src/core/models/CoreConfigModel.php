@@ -138,7 +138,13 @@ class CoreConfigModel
         if ($config) {
             if (!empty($config->signatureModes->mode)) {
                 foreach ($config->signatureModes->mode as $mode) {
-                    $modes[] = ['id' => (string)$mode->id, 'color' => (string)$mode->color, 'issuer' => (string)$mode->issuer];
+                    $modes[] = [
+                        'id'       => (string)$mode->id,
+                        'color'    => (string)$mode->color,
+                        'issuer'   => (string)$mode->issuer,
+                        'subject'  => (string)$mode->subject,
+                        'keyUsage' => (string)$mode->keyUsage
+                    ];
                 }
             }
         }

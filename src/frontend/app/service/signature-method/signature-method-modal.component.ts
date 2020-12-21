@@ -19,11 +19,7 @@ export class SignatureMethodModalComponent implements OnInit {
     filters: any = {
         //   onlySmartcards: false,
         expired: false,
-        //   subjectDNMatch: 'apple',
-        //   subjectDNMatch: new RegExp(/apple/),
-        //   issuerDNMatch: 'demo',
-        //   issuerDNMatch: new RegExp(/demo/),
-        keyUsage: ['digitalSignature'],
+        keyUsage: [],
         onlyWithPrivateKey: true
     };
 
@@ -59,6 +55,12 @@ export class SignatureMethodModalComponent implements OnInit {
         const signatureModeData = this.authService.signatureRoles.filter((mode: any) => mode.id === this.signatureMode)[0];
         if (!this.functionsService.empty(signatureModeData.issuer)) {
             this.filters.issuerDNMatch = new RegExp(signatureModeData.issuer, 'i');
+        }
+        if (!this.functionsService.empty(signatureModeData.subject)) {
+            this.filters.subjectDNMatch = new RegExp(signatureModeData.subject, 'i');
+        }
+        if (!this.functionsService.empty(signatureModeData.keyUsage)) {
+            this.filters.keyUsage.push(signatureModeData.keyUsage);
         }
     }
 
