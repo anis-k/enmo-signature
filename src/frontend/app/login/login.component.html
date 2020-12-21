@@ -5,11 +5,11 @@
             <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
                 <ion-item>
                     <ion-label position="floating">{{'lang.login' | translate}}</ion-label>
-                    <ion-input formControlName="login" type="text"></ion-input>
+                    <ion-input formControlName="login" type="text" (keyup.enter)="onSubmit()"></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-label position="floating">{{'lang.password' | translate}}</ion-label>
-                    <ion-input name="password" matInput type="password" formControlName="password"></ion-input>
+                    <ion-input name="password" matInput type="password" formControlName="password" (keyup.enter)="onSubmit()"></ion-input>
                 </ion-item>
                 <a routerLink="/forgot-password" *ngIf="authService.authMode === 'default'"
                     class="forgot-password">{{'lang.forgotPassword' | translate}}</a>

@@ -424,6 +424,7 @@
         "workflowTemplateAdded": "Workflow template added",
         "by": "by",
         "the": "the",
-        "passwordRuleUpdated": "Updated password rules"
+        "passwordRuleUpdated": "Updated password rules",
+        "requiredLoginPassword": "Please complete all fields"
     }
 }

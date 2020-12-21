@@ -75,31 +75,37 @@ export class LoginComponent implements OnInit, AfterViewInit {
             message: this.translate.instant('lang.connexion'),
           });
         await loading.present();
-        this.http.post('../rest/authenticate', { 'login': this.loginForm.get('login').value, 'password': this.loginForm.get('password').value }, { observe: 'response' })
-            .pipe(
-                tap((data: any) => {
-                    this.loading = false;
-                    this.showForm = false;
-                    this.authService.saveTokens(data.headers.get('Token'), data.headers.get('Refresh-Token'));
-                    this.authService.setUser({});
+        if(!this.loginForm.invalid ) {
 
-                    this.router.navigate(['/home']);
-                    loading.dismiss();
-                }),
-                catchError((err: any) => {
-                    this.loading = false;
-                    if (err.status === 401) {
-                        this.notificationService.error('lang.wrongLoginPassword');
+            this.http.post('../rest/authenticate', { 'login': this.loginForm.get('login').value, 'password': this.loginForm.get('password').value }, { observe: 'response' })
+                .pipe(
+                    tap((data: any) => {
+                        this.loading = false;
+                        this.showForm = false;
+                        this.authService.saveTokens(data.headers.get('Token'), data.headers.get('Refresh-Token'));
+                        this.authService.setUser({});
+    
+                        this.router.navigate(['/home']);
                         loading.dismiss();
-                    } else {
-                        this.notificationService.handleErrors(err);
-
-                    }
-
-                    return of(false);
-                })
-            )
-            .subscribe();
+                    }),
+                    catchError((err: any) => {
+                        this.loading = false;
+                        if (err.status === 401) {
+                            this.notificationService.error('lang.wrongLoginPassword');
+                            loading.dismiss();
+                        } else {
+                            this.notificationService.handleErrors(err);
+    
+                        }
+    
+                        return of(false);
+                    })
+                )
+                .subscribe();
+        } else {
+            loading.dismiss();
+            this.notificationService.error('lang.requiredLoginPassword')
+        }
     }
 
     initConnection() {

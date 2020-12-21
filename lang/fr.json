@@ -422,6 +422,7 @@
 		"workflowTemplateAdded": "Modèle de circuit ajouté",
 		"by": "par",
 		"the": "le",
-		"passwordRuleUpdated": "Règles de mot de passe mises à jour"
+		"passwordRuleUpdated": "Règles de mot de passe mises à jour",
+		"requiredLoginPassword": "Veuillez renseigner tous les champs"
 	}
 }
