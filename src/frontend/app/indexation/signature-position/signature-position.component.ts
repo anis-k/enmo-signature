@@ -120,7 +120,7 @@ export class SignaturePositionComponent implements OnInit {
                 }
             }
         );
-        document.getElementsByClassName('drag-scroll-content')[0].scrollTo(0, 0);
+        document.getElementsByClassName('drag-scroll-content')[0].scrollTop = 0;
     }
 
     getUserSignPosPage(workflowIndex: number) {

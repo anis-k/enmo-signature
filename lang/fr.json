@@ -421,6 +421,7 @@
 		"loadingValidation": "Validation du document en cours ...",
 		"workflowTemplateAdded": "Modèle de circuit ajouté",
 		"by": "par",
-		"the": "le"
+		"the": "le",
+		"passwordRuleUpdated": "Règles de mot de passe mises à jour"
 	}
 }

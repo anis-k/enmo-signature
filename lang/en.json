@@ -124,7 +124,7 @@
         "updatedListDocument": "Updated list of documents",
         "updatePassword": "Update password",
         "upperRequired": "One upper character required",
-        "userAddedToGroup"                  	: "User added to group",
+        "userAddedToGroup": "User added to group",
         "userAdded": "User added",
         "userForgottenPasswordUpdated": "User password updated after forgot request",
         "UserLogIn": "User log in",
@@ -203,7 +203,7 @@
         "warnPrivateKeyTitle": "The private key is not updated !",
         "warnPrivateKey": "This cause security issues",
         "ok": "Ok",
-        "groupAddedToUser" : "Group added to user",
+        "groupAddedToUser": "Group added to user",
         "groupAdded": "Group added",
         "groupdeleted": "Group deleted",
         "groupUpdated": "Group updated",
@@ -421,6 +421,9 @@
         "manage_historyAdmin": "Administer history",
         "manage_historyDesc": "Consult the various events of the application",
         "loadingValidation": "Validation of the current document ...",
-        "workflowTemplateAdded": "Workflow template added"
+        "workflowTemplateAdded": "Workflow template added",
+        "by": "by",
+        "the": "the",
+        "passwordRuleUpdated": "Updated password rules"
     }
 }
