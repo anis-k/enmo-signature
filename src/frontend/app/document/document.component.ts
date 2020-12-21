@@ -650,15 +650,13 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
-                        this.loadingController.create({
-                            message: this.translate.instant('lang.loadingValidation'),
-                            spinner: 'dots'
-                        }).then((load: HTMLIonLoadingElement) => {
-                            this.load = load;
-                            this.load.present();
-                        });
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
+                        const loading = await this.loadingController.create({
+                            message: this.translate.instant('lang.loadingValidation'),
+                            spinner: 'dots'
+                        });
+                        await loading.present();
                         if (!this.functionsService.empty(res)) {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
@@ -670,10 +668,10 @@ export class DocumentComponent implements OnInit {
                                 disableClose: true,
                                 direction: 'ltr'
                             };
+                            loading.dismiss();
                             this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
                             this.localStorage.remove(this.mainDocument.id.toString());
                         }
-                        this.load.dismiss();
                     }
                 }
             ]

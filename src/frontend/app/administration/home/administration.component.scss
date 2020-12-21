@@ -59,3 +59,8 @@
   flex-direction: column;
   align-items: center;
 }
+
+.repeatRows {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
