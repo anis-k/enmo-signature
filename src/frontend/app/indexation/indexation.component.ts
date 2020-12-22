@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, LoadingController, MenuController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,6 +26,7 @@ export class IndexationComponent implements OnInit {
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
+    @ViewChild('docToUpload') fileImport: ElementRef;
 
     constructor(
         public http: HttpClient,
@@ -306,6 +307,7 @@ export class IndexationComponent implements OnInit {
                     }
                 };
             }
+            this.fileImport.nativeElement.value = "";
         } else {
             this.loading = false;
         }
