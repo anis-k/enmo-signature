@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, ViewContainerRef, Injectable } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatBottomSheet, MatBottomSheetConfig } from '@angular/material/bottom-sheet';
@@ -30,8 +30,11 @@ import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-vali
     styleUrls: ['document.component.scss'],
 })
 
+
 export class DocumentComponent implements OnInit {
 
+    posX: number = 0;
+    posY: number = 0;
     enterApp: boolean = true;
     detailMode: boolean = false;
     pageNum: number = 1;
@@ -175,7 +178,9 @@ export class DocumentComponent implements OnInit {
         // this.originalSize = false;
     }
 
-    async openAction() {
+    async openAction(event: any) {
+        this.posX = event.clientX;
+        this.posY = event.clientY; 
         let buttons = [];
         if (!this.checkEmptyNote()) {
             buttons.push({
@@ -282,8 +287,8 @@ export class DocumentComponent implements OnInit {
             component: DocumentNotePadComponent,
             cssClass: 'fullscreen',
             componentProps: {
-                precentScrollTop: scrollPercentY,
-                precentScrollLeft: -scrollPercentX,
+                precentScrollTop: this.posY,
+                precentScrollLeft: -this.posX,
                 content: this.docList[this.currentDoc].imgContent[this.pageNum]
             }
         });
@@ -656,8 +661,8 @@ export class DocumentComponent implements OnInit {
                             message: this.translate.instant('lang.loadingValidation'),
                             spinner: 'dots'
                         });
-                        await loading.present();
                         if (!this.functionsService.empty(res)) {
+                            await loading.present();
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                                 if (this.signaturesService.documentsListCount.current > 0) {
@@ -672,6 +677,7 @@ export class DocumentComponent implements OnInit {
                             this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
                             this.localStorage.remove(this.mainDocument.id.toString());
                         }
+                        this.load.dismiss();
                     }
                 }
             ]

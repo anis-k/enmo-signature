@@ -68,7 +68,7 @@ export class DocumentNotePadComponent implements OnInit {
                     // const scrollY = (this.areaHeight * this.precentScrollTop) / 100;
                     const scrollY = (this.precentScrollTop / 100) * ($('#myBounds').height() - $(window).height());
                     const scrollX = (this.areaWidth * this.precentScrollLeft) / 100;
-
+                    
                     document.getElementsByClassName('drag-scroll-content')[1].scrollTo(scrollX, scrollY);
                     this.initPad();
                 }, 200);

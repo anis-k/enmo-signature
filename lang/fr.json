@@ -423,6 +423,7 @@
 		"by": "par",
 		"the": "le",
 		"passwordRuleUpdated": "Règles de mot de passe mises à jour",
-		"requiredLoginPassword": "Veuillez renseigner tous les champs"
+		"requiredLoginPassword": "Veuillez renseigner tous les champs",
+		"workflowTemplateDeleted": "Modèle de circuit supprimé"
 	}
 }
