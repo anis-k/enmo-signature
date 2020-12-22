@@ -655,27 +655,31 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
-                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
-                        const loading = await this.loadingController.create({
+                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];                                                
+                        this.loadingController.create({
                             message: this.translate.instant('lang.loadingValidation'),
-                            spinner: 'dots'
+                            spinner: 'dots',
+                        }).then((load: HTMLIonLoadingElement) => {
+                            this.load = load;
+                            if ((currentUserWorkflow.signatureMode !== 'rgs_2stars') || (currentUserWorkflow.signatureMode !== 'inca_card')) {
+                                this.load.present();
+                            }
                         });
+                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
                         if (!this.functionsService.empty(res)) {
-                            await loading.present();
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
+                                this.load.present();
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                                 if (this.signaturesService.documentsListCount.current > 0) {
                                     this.signaturesService.documentsListCount.current--;
                                 }
-                            }
-                            const config: MatBottomSheetConfig = {
-                                disableClose: true,
-                                direction: 'ltr'
-                            };
-                            loading.dismiss();
-                            this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                            this.localStorage.remove(this.mainDocument.id.toString());
+                            }                            
+                                const config: MatBottomSheetConfig = {
+                                    disableClose: true,
+                                    direction: 'ltr'
+                                };
+                                this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                                this.localStorage.remove(this.mainDocument.id.toString());
                         }
                         this.load.dismiss();
                     }
