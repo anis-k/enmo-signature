@@ -418,7 +418,7 @@
 		"resource": "Ressource",
 		"manage_historyAdmin": "Consulter l'historique",
 		"manage_historyDesc": "Consulter les différents événements de l'application",
-		"loadingValidation": "Validation en cours du document ...",
+		"loadingValidation": "Validation du document en cours ...",
 		"workflowTemplateAdded": "Modèle de circuit ajouté",
 		"by": "par",
 		"the": "le",

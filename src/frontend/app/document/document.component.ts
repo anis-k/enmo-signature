@@ -662,7 +662,7 @@ export class DocumentComponent implements OnInit {
                         }).then((load: HTMLIonLoadingElement) => {
                             this.load = load;
                             this.load.present();
-                            if ((currentUserWorkflow.signatureMode === 'rgs_2stars') || (currentUserWorkflow.signatureMode === 'inca_card')) {
+                            if ((currentUserWorkflow.signatureMode === 'rgs_2stars') || (currentUserWorkflow.signatureMode === 'inca_card') || (currentUserWorkflow.signatureMode === 'rgs_2stars_timestamped' ) || (currentUserWorkflow.signatureMode === 'inca_card_eidas')) {
                                 this.load.dismiss();
                             }
                         });
@@ -674,7 +674,6 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.documentsListCount.current--;
                                 }
                             }
-                            this.load.present();                           
                                 const config: MatBottomSheetConfig = {
                                     disableClose: true,
                                     direction: 'ltr'
