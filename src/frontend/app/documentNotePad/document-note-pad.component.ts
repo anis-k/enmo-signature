@@ -70,8 +70,17 @@ export class DocumentNotePadComponent implements OnInit {
                     const scrollX = (this.areaWidth * this.precentScrollLeft) / 100;
                     
                     const offset = $('#myBounds').offset();
-                    const x = this.precentScrollLeft - offset.left;
-                    const y = this.precentScrollTop - offset.top;
+                    console.log('offset Top' ,offset.top);
+                    let y: number;
+                    let x: number;
+                    if (offset.top > (this.precentScrollTop - offset.top)) {
+                        y = (this.precentScrollTop - offset.top)
+                    } else {
+                        y = (this.precentScrollTop - offset.top) + 250;  
+                    }
+                    x = this.precentScrollLeft - offset.left;
+                    console.log('(' + x + ', ' + y + ')');
+                                      
                     document.getElementsByClassName('drag-scroll-content')[1].scrollTo(x, y);
                     this.initPad();
                 }, 200);
