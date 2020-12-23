@@ -287,8 +287,8 @@ export class DocumentComponent implements OnInit {
             component: DocumentNotePadComponent,
             cssClass: 'fullscreen',
             componentProps: {
-                precentScrollTop: this.posY,
-                precentScrollLeft: -this.posX,
+                precentScrollTop:  this.posY,
+                precentScrollLeft: this.posX,
                 content: this.docList[this.currentDoc].imgContent[this.pageNum]
             }
         });
@@ -669,12 +669,12 @@ export class DocumentComponent implements OnInit {
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
                         if (!this.functionsService.empty(res)) {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
-                                this.load.present();
                                 this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
                                 if (this.signaturesService.documentsListCount.current > 0) {
                                     this.signaturesService.documentsListCount.current--;
                                 }
-                            }                            
+                            }
+                            this.load.present();                           
                                 const config: MatBottomSheetConfig = {
                                     disableClose: true,
                                     direction: 'ltr'
