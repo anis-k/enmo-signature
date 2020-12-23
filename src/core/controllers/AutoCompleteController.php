@@ -61,9 +61,9 @@ class AutoCompleteController
         return $response->withJson($users);
     }
 
-    private static function getDataForRequest(array $args)
+    public static function getDataForRequest(array $args)
     {
-        ValidatorModel::notEmpty($args, ['search', 'fields', 'where', 'data', 'fieldsNumber']);
+        ValidatorModel::notEmpty($args, ['search', 'fields', 'fieldsNumber']);
         ValidatorModel::stringType($args, ['search', 'fields']);
         ValidatorModel::arrayType($args, ['where', 'data']);
         ValidatorModel::intType($args, ['fieldsNumber']);
@@ -80,5 +80,21 @@ class AutoCompleteController
         }
 
         return ['where' => $args['where'], 'data' => $args['data']];
+    }
+
+    public static function getInsensitiveFieldsForRequest(array $args)
+    {
+        ValidatorModel::notEmpty($args, ['fields']);
+        ValidatorModel::arrayType($args, ['fields']);
+
+        $fields = [];
+        foreach ($args['fields'] as $key => $field) {
+            $fields[$key] = "unaccent({$field}::text)";
+            $fields[$key] .= " ilike unaccent(?::text)";
+        }
+        $fields = implode(' OR ', $fields);
+        $fields = "({$fields})";
+
+        return $fields;
     }
 }
