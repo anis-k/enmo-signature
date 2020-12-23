@@ -655,14 +655,15 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
-                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];                                                
+                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0]; 
                         this.loadingController.create({
                             message: this.translate.instant('lang.loadingValidation'),
                             spinner: 'dots',
                         }).then((load: HTMLIonLoadingElement) => {
                             this.load = load;
-                            if ((currentUserWorkflow.signatureMode !== 'rgs_2stars') || (currentUserWorkflow.signatureMode !== 'inca_card')) {
-                                this.load.present();
+                            this.load.present();
+                            if ((currentUserWorkflow.signatureMode === 'rgs_2stars') || (currentUserWorkflow.signatureMode === 'inca_card')) {
+                                this.load.dismiss();
                             }
                         });
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
