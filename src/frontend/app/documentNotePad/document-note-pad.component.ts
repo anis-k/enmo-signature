@@ -70,7 +70,6 @@ export class DocumentNotePadComponent implements OnInit {
                     const scrollX = (this.areaWidth * this.precentScrollLeft) / 100;
                     
                     const offset = $('#myBounds').offset();
-                    console.log('offset Top' ,offset.top);
                     let y: number;
                     let x: number;
                     if (offset.top > (this.precentScrollTop - offset.top)) {

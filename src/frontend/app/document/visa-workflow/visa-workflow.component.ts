@@ -129,7 +129,7 @@ export class VisaWorkflowComponent implements OnInit {
         if (this.visaWorkflow[index].userPicture === undefined && this.visaWorkflow[index].userDisplay !== '') {
             this.http.get('../rest/users/' + this.visaWorkflow[index].userId + '/picture').pipe(
                 tap((data: any) => {
-                    this.visaWorkflow[index].userPicture = data.picture;
+                    this.visaWorkflow[index].userPicture = data.picture;                    
                 }),
                 catchError(err => {
                     this.notificationService.handleErrors(err);
@@ -172,6 +172,11 @@ export class VisaWorkflowComponent implements OnInit {
 
     loadWorkflow(workflow: any) {
         this.visaWorkflow = workflow;
+        const length = this.visaWorkflow.length;
+        for (let index = 0; index < length; index++) {
+            this.getAvatarUser(index); 
+        }
+        
     }
 
     isValidRole(indexWorkflow: any, role: string, currentRole: string) {
