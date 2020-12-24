@@ -14,6 +14,13 @@
     <ion-toolbar color="primary">
         <ion-title slot="end" color="secondary">{{count}} {{'lang.entries' | translate}}</ion-title>
     </ion-toolbar>
+    <ion-toolbar color="primary" *ngIf="this.filters.messageTypes.length > 0">
+                <p>
+                    <ion-badge *ngFor="let filter of filters.messageTypes" color="secondary"  style="height: auto; margin: 4px;">
+                        <ion-label>{{ 'lang.' + filter | translate }}</ion-label>
+                    </ion-badge>
+                </p>
+    </ion-toolbar>
 </ion-header>
 <ion-content #mainContent>
     <ion-list *ngIf="resources.length > 0">
@@ -78,7 +85,6 @@
             <ion-item *ngFor="let action of actions; let i=index" [title]="action.label">
                 <ion-checkbox slot="start" [value]="action.id" (ionChange)="toggleAction($event.detail)"></ion-checkbox>
                 <ion-label>{{action.label}}</ion-label>
-                <ion-badge color="primary" slot="end" *ngIf="this.countFilters[i]">{{ this.countFilters[i].length }}</ion-badge>
             </ion-item>
         </ion-list>
     </ion-content>
