@@ -75,9 +75,10 @@
             <ion-item lines="none" style="position: sticky;top: 0;z-index: 2;">
                 <ion-label color="secondary">{{'lang.actions' | translate}}: </ion-label>
             </ion-item>
-            <ion-item *ngFor="let action of actions">
+            <ion-item *ngFor="let action of actions; let i=index" [title]="action.label">
                 <ion-checkbox slot="start" [value]="action.id" (ionChange)="toggleAction($event.detail)"></ion-checkbox>
                 <ion-label>{{action.label}}</ion-label>
+                <ion-badge color="primary" slot="end" *ngIf="this.countFilters[i]">{{ this.countFilters[i].length }}</ion-badge>
             </ion-item>
         </ion-list>
     </ion-content>

@@ -426,6 +426,7 @@
         "the": "the",
         "passwordRuleUpdated": "Updated password rules",
         "requiredLoginPassword": "Please complete all fields",
-        "workflowTemplateDeleted": "Workflow template deleted"
+        "workflowTemplateDeleted": "Workflow template deleted",
+        "entries": "entrie(s)"
     }
 }
