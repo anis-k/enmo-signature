@@ -35,7 +35,6 @@ export class HistoryListComponent {
     displayedColumns: string[] = ['creation_date', 'user', 'info', 'ip'];
     loading: boolean = true;
 
-    countFilters: any[] = [];
     resources: any[] = [];
     offset: number = 0;
     limit: number = 10;
@@ -106,18 +105,7 @@ export class HistoryListComponent {
                             label: this.translate.instant('lang.' + item)
                         };
                     });
-                    this.actions = this.sortPipe.transform(this.actions, 'label');
-                    this.actions.forEach(element => {
-                        this.http.post(`../rest/history?limit=10&offset=0`, { messageTypes: [element.id]})
-                        .pipe(
-                            tap((data: any) => {
-                                this.countFilters.push({
-                                    'id': element.id,
-                                    'length': data.total
-                                });
-                            })
-                        ).subscribe();
-                    });    
+                    this.actions = this.sortPipe.transform(this.actions, 'label');   
                 }),
                 catchError((err: any) => {
                     this.notificationService.handleErrors(err);
