@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-title>{{'lang.options' | translate}}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismissModal()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-toolbar>
+        <ion-title style="text-align: center;font-weight: normal;font-size: 50px;padding: 50px;"
+            [class]="getFontLabel(date.font)" [style.color]="date.color">{{today | date : date.format}}</ion-title>
+    </ion-toolbar>
+    <ion-item>
+        <ion-label color="secondary">{{'lang.format' | translate}}</ion-label>
+        <ion-select [(ngModel)]="date.format">
+            <ion-select-option *ngFor="let format of dateformats" [value]="format">
+                {{today | date : format}}
+            </ion-select-option>
+        </ion-select>
+    </ion-item>
+    <ion-item button lines="full" (click)="colorPicker.click()">
+        <input type="color" #colorPicker [(ngModel)]="date.color" style="display: none;"/>
+        <ion-label color="secondary">{{'lang.color' | translate}}</ion-label>
+        <ion-icon slot="end" name="ellipse" [style.color]="date.color"></ion-icon>
+    </ion-item>
+    <ion-item>
+        <ion-label color="secondary">{{'lang.font' | translate}}</ion-label>
+        <ion-select [(ngModel)]="date.font" [interfaceOptions]="{cssClass:'selectFormat'}">
+            <ion-select-option *ngFor="let font of datefonts" [value]="font" [class]="getFontLabel(font)">
+                {{font}}
+            </ion-select-option>
+        </ion-select>
+    </ion-item>
+</ion-content>
+<ion-footer class="ion-no-border">
+    <ion-toolbar>
+        <ion-buttons class="ion-justify-content-center">
+            <ion-button type="submit" color="primary">
+                <ion-label>{{'lang.save' | translate}}</ion-label>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-footer>

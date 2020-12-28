@@ -156,11 +156,14 @@ export class SignaturesComponent implements OnInit {
         const datePosOtherPage = this.currentWorflow.datePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
 
         if (datePosCurrentPage.length === 0 && datePosOtherPage.length === 0) {
-            let dateBlock: any = {
+            const dateBlock: any = {
                 width: (130 * 100) / this.signaturesService.workingAreaWidth,
                 height: (30 * 100) / this.signaturesService.workingAreaHeight,
                 positionX: 0,
-                positionY: 0
+                positionY: 0,
+                font: 'Arial',
+                color: '#666',
+                format : 'd MMMM y'
             };
 
             dateBlock.positionX = 130;
@@ -174,21 +177,27 @@ export class SignaturesComponent implements OnInit {
             this.modalController.dismiss('success');
         } else {
             if (datePosCurrentPage.length > 0) {
-                let dateBlock: any = {
+                const dateBlock: any = {
                     width: datePosCurrentPage[0].width,
                     height: datePosCurrentPage[0].height,
                     positionX: datePosCurrentPage[0].positionX,
-                    positionY: datePosCurrentPage[0].positionY
+                    positionY: datePosCurrentPage[0].positionY,
+                    font: 'Arial',
+                    color: '#666',
+                    format : 'd MMMM y'
                 };
                 this.storeDate(dateBlock, this.signaturesService.currentPage);
             }
 
             datePosOtherPage.forEach((position: any) => {
-                let dateBlock: any = {
+                const dateBlock: any = {
                     width: position.width,
                     height: position.height,
                     positionX: position.positionX,
-                    positionY: position.positionY
+                    positionY: position.positionY,
+                    font: 'Arial',
+                    color: '#666',
+                    format : 'd MMMM y'
                 };
                 this.storeDate(dateBlock, position.page);
             });

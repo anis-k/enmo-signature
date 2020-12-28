@@ -55,6 +55,7 @@ import { SearchComponent } from './search/search.component';
 import { SignaturePositionComponent } from './indexation/signature-position/signature-position.component';
 import { DevToolComponent } from './service/debug/dev-tool.component';
 import { DevLangComponent } from './service/debug/dev-lang.component';
+import { DateOptionModalComponent } from './documentSignList/dateOption/date-option-modal.component';
 
 
 // ADMINISTRATION
@@ -139,7 +140,8 @@ import { SortPipe } from './plugins/sorting.pipe';
     DevToolComponent,
     DevLangComponent,
     SignatureMethodModalComponent,
-    HistoryListComponent
+    HistoryListComponent,
+    DateOptionModalComponent
   ],
   imports: [
     FormsModule,

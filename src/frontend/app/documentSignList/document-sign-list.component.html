@@ -24,14 +24,15 @@
 <div *ngFor="let date of this.signaturesService.datesContent[this.signaturesService.currentPage];let i = index;"
   class="test"
   [position]="{x: (date.positionX*this.signaturesService.workingAreaWidth)/100, y:(date.positionY*this.signaturesService.workingAreaHeight)/100}"
-  [style.width.%]="date.width"
-  [style.height.%]="date.height" 
-  [ngDraggable]="!signaturesService.resizing" ngResizable [rzAspectRatio]="true"
-  (rzStart)="signaturesService.resizing=true"
-  (movingOffset)="signaturesService.dragging=true" (endOffset)="moveDate($event, i);"
-  (rzStop)="onResizeDateStop($event, i);signaturesService.resizing=false;" [preventDefaultEvent]="false" [bounds]="bounds"
-  [inBounds]="true"
-  (click)="$event.stopPropagation();">
+  [style.width.%]="date.width" [style.height.%]="date.height" [ngDraggable]="!signaturesService.resizing" ngResizable
+  [rzAspectRatio]="true" (rzStart)="signaturesService.resizing=true" (movingOffset)="signaturesService.dragging=true"
+  (endOffset)="moveDate($event, i);" (rzStop)="onResizeDateStop($event, i);signaturesService.resizing=false;"
+  [preventDefaultEvent]="false" [bounds]="bounds" [inBounds]="true" (click)="$event.stopPropagation();">
+  <ion-buttons style="position:absolute;top: -30px;">
+    <ion-button slot="icon-only" shape="round" (click)="openDateSettings(date)">
+      <ion-icon name="construct-outline"></ion-icon>
+    </ion-button>
+  </ion-buttons>
   <svg [id]="'testSVG_'+ i" viewBox="0 0 130 30" preserveAspectRatio="xMinYMin meet">
     <text y="10" font-size="16" dy=".3em" style="fill: #0000ff;">25 décembre 2020</text></svg>
 </div>

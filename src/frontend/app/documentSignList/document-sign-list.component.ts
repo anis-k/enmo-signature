@@ -7,7 +7,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ConfirmComponent } from '../plugins/confirm.component';
-import { PopoverController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
+import { DateOptionModalComponent } from './dateOption/date-option-modal.component';
 
 @Component({
     selector: 'app-document-sign-list',
@@ -28,7 +29,8 @@ export class DocumentSignListComponent implements OnInit {
         public notificationService: NotificationService,
         private localStorage: LocalStorageService,
         public dialog: MatDialog,
-        public popoverController: PopoverController
+        public popoverController: PopoverController,
+        public modalController: ModalController,
     ) { }
 
     ngOnInit(): void { }
@@ -121,5 +123,15 @@ export class DocumentSignListComponent implements OnInit {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
         }
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+    }
+
+    async openDateSettings(date: any) {
+        const modal = await this.modalController.create({
+            component: DateOptionModalComponent,
+            componentProps: {
+                'date': date,
+            }
+        });
+        await modal.present();
     }
 }
