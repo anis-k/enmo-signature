@@ -105,12 +105,12 @@ export class UsersListComponent {
                                     const indexToDelete = this.userList.findIndex(user => user.id === userToDelete.id);
 
                                     this.userList.splice(indexToDelete, 1);
-
                                     this.sortedData = this.userList.slice();
-
                                     this.notificationService.success('lang.userDeleted');
-
                                 },
+                                error: err => {
+                                    this.notificationService.handleErrors(err);
+                                }
                             });
                     }
                 }
