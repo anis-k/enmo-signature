@@ -12,32 +12,17 @@ stages:
   - test
 
 before_script:
-  - ls -al
   - apt-get update -yqq > /dev/null
-  - mkdir -p /usr/share/man/man1
-  - mkdir -p /usr/share/man/man7
-  #- apt-get install apt-utils -yqq > /dev/null
   - apt-get install cron -yqq > /dev/null
-  #- apt-get install tar -yqq > /dev/null
-  #- apt-get install wkhtmltopdf -yqq > /dev/null
-  #- apt-get install wget -yqq > /dev/null
-  #- wget https://downloads.wkhtmltopdf.org/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
-  #- tar xvf wkhtmltox-0.12.4_linux-generic-amd64.tar.xz
-  #- mv wkhtmltox/bin/wkhtmlto* /usr/bin
-  #- chmod +x /usr/bin/wkhtmlto*
-  #- apt-get install libreoffice -yqq > /dev/null
-#  - apt-get install git -yqq > /dev/null
   - bash ci/docker_install_php.sh > /dev/null
   - ls -al
   - cat directory.txt
   - bash ci/docker_install_database.sh > /dev/null
   - mkdir -p /opt/maarchparapheur/docservers/{documents,attachments,signatures,esigned_documents}
-  - mkdir -p /var/www/html/
-#  - cp -r . /var/www/html/MaarchParapheur
   - ln -s $CI_PROJECT_DIR /var/www/html/MaarchParapheur
   - cd /var/www/html/MaarchParapheur
-#  - sed 's/127.0.0.1/postgres/' config/config.xml.default > config/config.xml
-  - sed 's!<server>.*</server>!<server>127.0.0.1</server>!;s!<password>.*</password>!<password>maarch</password>!;s!<name>.*</name>!<name>maarchparapheur</name>!;s!<user>.*</user>!<user>maarch</user>!;s!<enable>.*</enable>!<enable>true</enable>!' config/config.xml.default > config/config.xml
+  - sed 's!<server>.*</server>!<server>postgres</server>!;s!<password>.*</password>!<password>maarch</password>!;s!<name>.*</name>!<name>MaarchParapheur</name>!;s!<user>.*</user>!<user>maarch</user>!;s!<enable>.*</enable>!<enable>true</enable>!' config/config.xml.default > config/config.xml
+  - cat config/config.xml
   - sed -i 's/rights="none" pattern="PDF"/rights="read | write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml
 
 job_php-7.4:
