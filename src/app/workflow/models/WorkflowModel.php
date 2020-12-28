@@ -86,7 +86,7 @@ class WorkflowModel
     {
         ValidatorModel::notEmpty($args, ['userId', 'mainDocumentId', 'mode', 'order', 'signatureMode']);
         ValidatorModel::intVal($args, ['userId', 'mainDocumentId', 'order']);
-        ValidatorModel::stringType($args, ['mode', 'signatureMode', 'signaturePositions']);
+        ValidatorModel::stringType($args, ['mode', 'signatureMode', 'signaturePositions', 'datePositions']);
 
         DatabaseModel::insert([
             'table'         => 'workflows',
@@ -96,6 +96,7 @@ class WorkflowModel
                 'mode'                  => $args['mode'],
                 'signature_mode'        => $args['signatureMode'],
                 'signature_positions'   => $args['signaturePositions'],
+                'date_positions'        => $args['datePositions'],
                 '"order"'               => $args['order']
             ]
         ]);

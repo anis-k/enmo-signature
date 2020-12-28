@@ -337,7 +337,6 @@ export class DocumentComponent implements OnInit {
                                 item.userSignatureModes.unshift('visa');
                                 return {
                                     ...item,
-                                    'datePositions': [],
                                     'role': item.mode === 'visa' ? 'visa' : item.signatureMode,
                                     'modes': item.userSignatureModes
                                 };

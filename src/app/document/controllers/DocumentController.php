@@ -343,7 +343,7 @@ class DocumentController
                 foreach ($workflow['datePositions'] as $keyDP => $datePosition) {
                     if (empty($datePosition['positionX']) || empty($datePosition['positionY']) || empty($datePosition['page'])) {
                         return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}][datePositions][{$keyDP}] is wrong formatted"]);
-                    } elseif (empty($datePosition['color']) || empty($datePosition['font']) || empty($datePosition['format']) || empty($datePosition['size'])) {
+                    } elseif (empty($datePosition['color']) || empty($datePosition['font']) || empty($datePosition['format']) || empty($datePosition['width'])) {
                         return $response->withStatus(400)->withJson(['errors' => "Body workflow[{$key}][datePositions][{$keyDP}] is wrong formatted"]);
                     }
                 }
@@ -452,7 +452,8 @@ class DocumentController
                     'mode'                  => $workflow['mode'],
                     'order'                 => $key + 1,
                     'signatureMode'         => $workflow['signatureMode'],
-                    'signaturePositions'    => empty($workflow['signaturePositions']) ? '[]' : json_encode($workflow['signaturePositions'])
+                    'signaturePositions'    => empty($workflow['signaturePositions']) ? '[]' : json_encode($workflow['signaturePositions']),
+                    'datePositions'         => empty($workflow['datePositions']) ? '[]' : json_encode($workflow['datePositions'])
                 ]);
             }
 
@@ -1100,13 +1101,15 @@ class DocumentController
                         $affectedPages[] = $i;
                     }
                     if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
-                        $signWidth = $size['width'];
-                        $signPosX = 0;
-                        $signPosY = 0;
+                        $signWidth  = $size['width'];
+                        $signPosX   = 0;
+                        $signPosY   = 0;
+                        $signHeight = null;
                     } else {
-                        $signWidth = ($signature['width'] * $size['width']) / 100;
-                        $signPosX = ($signature['positionX'] * $size['width']) / 100;
-                        $signPosY = ($signature['positionY'] * $size['height']) / 100;
+                        $signWidth  = ($signature['width'] * $size['width']) / 100;
+                        $signHeight = ($signature['height'] * $size['height']) / 100;
+                        $signPosX   = ($signature['positionX'] * $size['width']) / 100;
+                        $signPosY   = ($signature['positionY'] * $size['height']) / 100;
                     }
                     if ($signature['type'] == 'SVG') {
                         $image = str_replace('data:image/svg+xml;base64,', '', $signature['encodedImage']);
@@ -1117,7 +1120,7 @@ class DocumentController
 
                         $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.svg';
                         file_put_contents($imageTmpPath, $image);
-                        $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth);
+                        $pdf->ImageSVG($imageTmpPath, $signPosX, $signPosY, $signWidth, $signHeight);
                     } else {
                         $image = base64_decode($signature['encodedImage']);
                         if ($image === false) {

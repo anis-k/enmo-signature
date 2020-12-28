@@ -129,10 +129,10 @@ export class SignaturesComponent implements OnInit {
                 this.storeSignature(signature, this.signaturesService.currentPage);
             }
 
-            signPosOtherPage.forEach((postion: any) => {
-                signature.positionX = postion.positionX;
-                signature.positionY = postion.positionY;
-                this.storeSignature(signature, postion.page);
+            signPosOtherPage.forEach((position: any) => {
+                signature.positionX = position.positionX;
+                signature.positionY = position.positionY;
+                this.storeSignature(signature, position.page);
             });
 
             if (this.currentWorflow.signaturePositions.length === 1) {
@@ -152,16 +152,17 @@ export class SignaturesComponent implements OnInit {
     }
 
     addNewDate() {
-        const dateBlock: any = {
-            width: (130 * 100) / this.signaturesService.workingAreaWidth,
-            height: (30 * 100) / this.signaturesService.workingAreaHeight,
-            positionX: 0,
-            positionY: 0
-        };
         const datePosCurrentPage = this.currentWorflow.datePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
         const datePosOtherPage = this.currentWorflow.datePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
 
-        if (!this.datePosMode || (datePosCurrentPage.length === 0 && datePosOtherPage.length === 0)) {
+        if (datePosCurrentPage.length === 0 && datePosOtherPage.length === 0) {
+            let dateBlock: any = {
+                width: (130 * 100) / this.signaturesService.workingAreaWidth,
+                height: (30 * 100) / this.signaturesService.workingAreaHeight,
+                positionX: 0,
+                positionY: 0
+            };
+
             dateBlock.positionX = 130;
             dateBlock.positionY = 30;
             this.storeDate(dateBlock, this.signaturesService.currentPage);
@@ -173,15 +174,23 @@ export class SignaturesComponent implements OnInit {
             this.modalController.dismiss('success');
         } else {
             if (datePosCurrentPage.length > 0) {
-                dateBlock.positionX = datePosCurrentPage[0].positionX;
-                dateBlock.positionY = datePosCurrentPage[0].positionY;
+                let dateBlock: any = {
+                    width: datePosCurrentPage[0].width,
+                    height: datePosCurrentPage[0].height,
+                    positionX: datePosCurrentPage[0].positionX,
+                    positionY: datePosCurrentPage[0].positionY
+                };
                 this.storeDate(dateBlock, this.signaturesService.currentPage);
             }
 
-            datePosOtherPage.forEach((postion: any) => {
-                dateBlock.positionX = postion.positionX;
-                dateBlock.positionY = postion.positionY;
-                this.storeDate(dateBlock, postion.page);
+            datePosOtherPage.forEach((position: any) => {
+                let dateBlock: any = {
+                    width: position.width,
+                    height: position.height,
+                    positionX: position.positionX,
+                    positionY: position.positionY
+                };
+                this.storeDate(dateBlock, position.page);
             });
 
             if (this.currentWorflow.signaturePositions.length === 1) {

@@ -88,6 +88,7 @@ export class ActionsService {
                         {
                             'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
                             'width': date.width,
+                            'height': date.height,
                             'positionX': date.positionX,
                             'positionY': date.positionY,
                             'type': 'SVG',
