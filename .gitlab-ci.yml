@@ -15,14 +15,11 @@ before_script:
   - apt-get update -yqq > /dev/null
   - apt-get install cron -yqq > /dev/null
   - bash ci/docker_install_php.sh > /dev/null
-  - ls -al
-  - cat directory.txt
   - bash ci/docker_install_database.sh > /dev/null
   - mkdir -p /opt/maarchparapheur/docservers/{documents,attachments,signatures,esigned_documents}
   - ln -s $CI_PROJECT_DIR /var/www/html/MaarchParapheur
   - cd /var/www/html/MaarchParapheur
   - sed 's!<server>.*</server>!<server>postgres</server>!;s!<password>.*</password>!<password>maarch</password>!;s!<name>.*</name>!<name>MaarchParapheur</name>!;s!<user>.*</user>!<user>maarch</user>!;s!<enable>.*</enable>!<enable>true</enable>!' config/config.xml.default > config/config.xml
-  - cat config/config.xml
   - sed -i 's/rights="none" pattern="PDF"/rights="read | write" pattern="PDF"/' /etc/ImageMagick-6/policy.xml
 
 job_php-7.4:
