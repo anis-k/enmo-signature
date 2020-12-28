@@ -18,6 +18,9 @@ class ConfigurationControllerTest extends TestCase
 
     public function testCreate()
     {
+        \Configuration\models\ConfigurationModel::delete(['id' => 1]);
+        \Configuration\models\ConfigurationModel::delete(['id' => 2]);
+
         $configurationController = new \Configuration\controllers\ConfigurationController();
 
         $environment    = \Slim\Http\Environment::mock(['REQUEST_METHOD' => 'POST']);

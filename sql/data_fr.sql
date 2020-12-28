@@ -80,6 +80,6 @@ INSERT INTO password_rules (label, "value") VALUES ('renewal', 90);
 -- CONFIGURATIONS
 -----
 TRUNCATE TABLE configurations;
-INSERT INTO configurations (identifier, label, value) VALUES ('emailServer', 'Configuration Courriel', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
-INSERT INTO configurations (identifier, label, value) VALUES ('ldapServer', 'Configuration serveur LDAP #1', '{"uri" : "10.2.95.60", "prefix" : "MAARCH", "suffix" : "", "ssl" : false, "baseDN" : ""}');
-INSERT INTO configurations (identifier, label, value) VALUES ('connection', 'Méthode de connexion', '"default"');
+INSERT INTO configurations (id, identifier, label, value) VALUES (1, 'emailServer', 'Configuration Courriel', '{"type" : "smtp", "host" : "smtp.gmail.com", "port" : 465, "user" : "", "password" : "", "auth" : true, "secure" : "ssl", "from" : "notifications@maarch.org", "charset" : "utf-8"}');
+INSERT INTO configurations (id, identifier, label, value) VALUES (2, 'ldapServer', 'Configuration serveur LDAP #1', '{"uri" : "10.2.95.60", "prefix" : "MAARCH", "suffix" : "", "ssl" : false, "baseDN" : ""}');
+INSERT INTO configurations (id, identifier, label, value) VALUES (3, 'connection', 'Méthode de connexion', '"default"');

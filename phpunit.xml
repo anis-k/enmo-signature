@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true" bootstrap="test/unitTests/define.php">
-    <testsuites>
-        <testsuite name="Maarch Parapheur Test Suite">
-            <file>test/unitTests/core/AuthenticationControllerTest.php</file>
-            <file>test/unitTests/core/PasswordControllerTest.php</file>
-            <file>test/unitTests/app/user/UserControllerTest.php</file>
-            <file>test/unitTests/app/configuration/ConfigurationControllerTest.php</file>
-            <file>test/unitTests/app/document/DocumentControllerTest.php</file>
-            <file>test/unitTests/app/group/GroupControllerTest.php</file>
-            <file>test/unitTests/app/workflow/WorkflowTemplateControllerTest.php</file>
-            <file>test/unitTests/app/history/HistoryControllerTest.php</file>
-        </testsuite>
-    </testsuites>
-    <filter>
-      <whitelist>
-          <directory suffix="Test.php">test</directory>
-          <directory suffix=".php">src</directory>
-      </whitelist>
-    </filter>
-    <logging>
-        <log type="coverage-clover" target="test/unitTests/build/tests-clover.xml"/>
-        <log type="junit"           target="test/unitTests/build/tests-phpunit.xml"/>
-        <log type="coverage-html"   target="test/unitTests/build" lowUpperBound="35" highLowerBound="70"/>
-    </logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" colors="true" bootstrap="test/unitTests/define.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <coverage>
+    <include>
+      <directory suffix="Test.php">test</directory>
+      <directory suffix=".php">src</directory>
+    </include>
+    <report>
+      <clover outputFile="test/unitTests/build/tests-clover.xml"/>
+      <html outputDirectory="test/unitTests/build" lowUpperBound="35" highLowerBound="70"/>
+    </report>
+  </coverage>
+  <testsuites>
+    <testsuite name="Maarch Parapheur Test Suite">
+      <file>test/unitTests/core/AuthenticationControllerTest.php</file>
+      <file>test/unitTests/core/PasswordControllerTest.php</file>
+      <file>test/unitTests/app/user/UserControllerTest.php</file>
+      <file>test/unitTests/app/document/DocumentControllerTest.php</file>
+      <file>test/unitTests/app/group/GroupControllerTest.php</file>
+      <file>test/unitTests/app/workflow/WorkflowTemplateControllerTest.php</file>
+      <file>test/unitTests/app/history/HistoryControllerTest.php</file>
+      <file>test/unitTests/app/configuration/ConfigurationControllerTest.php</file> <!-- Keep at the end -->
+    </testsuite>
+  </testsuites>
+  <logging>
+    <junit outputFile="test/unitTests/build/tests-phpunit.xml"/>
+  </logging>
 </phpunit>
