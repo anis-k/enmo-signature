@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../../service/notification.service';
 import { TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs/operators';
+import { MenuController } from '@ionic/angular';
 
 @Component({
     templateUrl: 'updatePassword.component.html',
@@ -46,7 +47,16 @@ export class UpdatePasswordComponent implements OnInit {
     otherRuleText = '';
 
 
-    constructor(private translate: TranslateService, private router: Router, private route: ActivatedRoute, public http: HttpClient, iconReg: MatIconRegistry, sanitizer: DomSanitizer, public notificationService: NotificationService) {
+    constructor(
+        private translate: TranslateService,
+        private router: Router,
+        private route: ActivatedRoute,
+        public http: HttpClient,
+        iconReg: MatIconRegistry,
+        sanitizer: DomSanitizer,
+        public notificationService: NotificationService,
+        private menu: MenuController,
+    ) {
         iconReg.addSvgIcon('maarchLogo', sanitizer.bypassSecurityTrustResourceUrl('../src/frontend/assets/logo_white.svg'));
         this.route.queryParams
             .subscribe(params => {
@@ -55,6 +65,11 @@ export class UpdatePasswordComponent implements OnInit {
     }
 
     ngOnInit(): void { }
+
+    ionViewWillEnter() {
+        this.menu.enable(false, 'left-menu');
+        this.menu.enable(false, 'right-menu');
+    }
 
     updatePassword() {
         this.labelButton = 'lang.sending';

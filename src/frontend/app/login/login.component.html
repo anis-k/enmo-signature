@@ -9,17 +9,21 @@
                 </ion-item>
                 <ion-item>
                     <ion-label position="floating">{{'lang.password' | translate}}</ion-label>
-                    <ion-input name="password" matInput type="password" formControlName="password" (keyup.enter)="onSubmit()"></ion-input>
+                    <ion-input name="password" matInput type="password" formControlName="password"
+                        (keyup.enter)="onSubmit()"></ion-input>
                 </ion-item>
-                <a routerLink="/forgot-password" *ngIf="authService.authMode === 'default'"
-                    class="forgot-password">{{'lang.forgotPassword' | translate}}</a>
-                <a href="" *ngIf="authService.authMode === 'ldap'"
-                    class="forgot-password">{{'lang.ldapEnabled' | translate}}</a>
-                <a href="" *ngIf="authService.authMode === 'kerberos'"
-                    class="forgot-password">{{'lang.kerberosEnabled' | translate}}</a>
-                <a href="" *ngIf="authService.authMode === 'x509'"
-                    class="forgot-password">{{'lang.x509Enabled' | translate}}</a>  
-                <ion-button type="submit" expand="block" [disabled]="loginForm.invalid || loading">{{'lang.connect' | translate}}
+                <div class="connection-type">
+                    <a routerLink="/forgot-password" *ngIf="authService.authMode === 'default'"
+                        class="forgot-password">{{'lang.forgotPassword' | translate}}</a>
+                    <a href="" *ngIf="authService.authMode === 'ldap'"
+                        class="forgot-password">{{'lang.ldapEnabled' | translate}}</a>
+                    <a href="" *ngIf="authService.authMode === 'kerberos'"
+                        class="forgot-password">{{'lang.kerberosEnabled' | translate}}</a>
+                    <a href="" *ngIf="authService.authMode === 'x509'"
+                        class="forgot-password">{{'lang.x509Enabled' | translate}}</a>
+                </div>
+                <ion-button type="submit" expand="block" [disabled]="loginForm.invalid || loading">
+                    {{'lang.connect' | translate}}
                 </ion-button>
             </form>
         </ion-card-content>

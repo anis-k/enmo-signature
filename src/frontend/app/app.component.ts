@@ -57,6 +57,8 @@ export class AppComponent {
     }
 
     allowedRoute() {
-        return ['/', '/login', '/forgot-password', '/update-password', '/password-modification'].indexOf(this.router.url) === -1;
+        const route = this.router.url.split('?')[0];
+        
+        return ['/', '/login', '/forgot-password', '/update-password', '/password-modification'].indexOf(route) === -1;
     }
 }
