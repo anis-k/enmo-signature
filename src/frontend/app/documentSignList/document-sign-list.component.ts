@@ -125,6 +125,11 @@ export class DocumentSignListComponent implements OnInit {
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
     }
 
+    deleteDate(i: number) {
+        this.signaturesService.datesContent[this.signaturesService.currentPage].splice(i, 1);
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent }));
+    } 
+
     async openDateSettings(date: any) {
         const modal = await this.modalController.create({
             component: DateOptionModalComponent,

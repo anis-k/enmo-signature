@@ -16,7 +16,7 @@
             shape="round" size="small" slot="start" 
             color="primary" 
             (click)="clearFilters()" style="margin-left: 4px;" [title]="'lang.clearFilters' | translate">
-            <ion-icon name="backspace" color="light"></ion-icon>
+            <ion-icon slot="icon-only" name="backspace" color="light"></ion-icon>
         </ion-button>
         <ion-title slot="end" *ngIf="getNbFilters() >= 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-title>
         <div class="scrollfilters" slot="start">

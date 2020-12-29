@@ -28,6 +28,10 @@
   [rzAspectRatio]="true" (rzStart)="signaturesService.resizing=true" (movingOffset)="signaturesService.dragging=true"
   (endOffset)="moveDate($event, i);" (rzStop)="onResizeDateStop($event, i);signaturesService.resizing=false;"
   [preventDefaultEvent]="false" [bounds]="bounds" [inBounds]="true" (click)="$event.stopPropagation();">
+    <ion-select (click)="$event.stopPropagation();" selectedText=" " value="" interface="popover"
+      (ionChange)="select($event,i)" style="position: absolute;--background: none;right: 0;--border-width: 0; top: -30px;">
+      <ion-select-option class="action-item" value="deleteDate">{{'lang.delete' | translate}}</ion-select-option>
+    </ion-select>
   <ion-buttons style="position:absolute;top: -30px;">
     <ion-button slot="icon-only" shape="round" (click)="openDateSettings(date)">
       <ion-icon name="construct-outline"></ion-icon>
