@@ -65,7 +65,6 @@ export class UpdatePasswordComponent implements OnInit {
     }
 
     ngOnInit(): void { 
-        console.log('je suis la');
         
     }
 
