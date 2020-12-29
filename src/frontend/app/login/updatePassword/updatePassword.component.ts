@@ -64,7 +64,10 @@ export class UpdatePasswordComponent implements OnInit {
             });
     }
 
-    ngOnInit(): void { }
+    ngOnInit(): void { 
+        console.log('je suis la');
+        
+    }
 
     ionViewWillEnter() {
         this.menu.enable(false, 'left-menu');
