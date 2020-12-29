@@ -426,6 +426,11 @@
 		"requiredLoginPassword": "Veuillez renseigner tous les champs",
 		"workflowTemplateDeleted": "Modèle de circuit supprimé",
 		"enterUserName": "Entrez le nom / prénom d'un utilisateur",
-		"clearFilters": "Effacer tous les filtres"
+		"clearFilters": "Effacer tous les filtres",
+		"options": "Options",
+		"format": "Format",
+		"font": "Police",
+		"color": "Couleur",
+		"langISO": "fr-FR"
 	}
 }

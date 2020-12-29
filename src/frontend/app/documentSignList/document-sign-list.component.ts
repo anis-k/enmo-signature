@@ -8,7 +8,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ConfirmComponent } from '../plugins/confirm.component';
 import { ModalController, PopoverController } from '@ionic/angular';
-import { DateOptionModalComponent } from './dateOption/date-option-modal.component';
 
 @Component({
     selector: 'app-document-sign-list',
@@ -22,6 +21,7 @@ export class DocumentSignListComponent implements OnInit {
     @ViewChild('test') test: any;
 
     fix = 'auto';
+    today: Date = new Date();
 
     constructor(private translate: TranslateService,
         private sanitization: DomSanitizer,
@@ -49,23 +49,8 @@ export class DocumentSignListComponent implements OnInit {
         this.signaturesService.dragging = false;
     }
 
-    moveDate(event: any, i: number) {
-        const percentx = (event.x * 100) / this.signaturesService.workingAreaWidth;
-        const percenty = (event.y * 100) / this.signaturesService.workingAreaHeight;
-
-        this.signaturesService.datesContent[this.signaturesService.currentPage][i].positionX = percentx;
-        this.signaturesService.datesContent[this.signaturesService.currentPage][i].positionY = percenty;
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
-        this.signaturesService.dragging = false;
-    }
-
     onResizing(event: any, index: number) {
         this.test.nativeElement.style.height = 'auto';
-    }
-
-    onResizeDateStop(event: any, index: number) {
-        this.signaturesService.datesContent[this.signaturesService.currentPage][index].height = (event.size.height * 100) / this.signaturesService.workingAreaHeight;
-        this.signaturesService.datesContent[this.signaturesService.currentPage][index].width = (event.size.width * 100) / this.signaturesService.workingAreaWidth;
     }
 
     onResizeStop(event: any, index: number) {
@@ -123,20 +108,5 @@ export class DocumentSignListComponent implements OnInit {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
         }
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
-    }
-
-    deleteDate(i: number) {
-        this.signaturesService.datesContent[this.signaturesService.currentPage].splice(i, 1);
-        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent }));
-    } 
-
-    async openDateSettings(date: any) {
-        const modal = await this.modalController.create({
-            component: DateOptionModalComponent,
-            componentProps: {
-                'date': date,
-            }
-        });
-        await modal.present();
     }
 }

@@ -94,6 +94,8 @@
                 </app-document-note-list>
                 <app-document-sign-list *ngIf="currentDoc === 0 && !loadingImage && this.signaturesService.signaturesContent[pageNum]" [bounds]="myBounds">
                 </app-document-sign-list>
+                <app-document-date-list *ngIf="currentDoc === 0 && !loadingImage && this.signaturesService.datesContent[pageNum]" [bounds]="myBounds">
+                </app-document-date-list>
                 <ion-img
                     *ngIf="docList[currentDoc] !== undefined && !functionsService.empty(docList[currentDoc].imgContent[pageNum])"
                     class="img-content" [src]="docList[currentDoc].imgContent[pageNum]"

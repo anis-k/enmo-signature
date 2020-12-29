@@ -1,0 +1,21 @@
+<div *ngFor="let date of this.signaturesService.datesContent[this.signaturesService.currentPage];let i = index;"
+    class="test" [id]="'dateDiv_'+ i"
+    [position]="{x: (date.positionX*this.signaturesService.workingAreaWidth)/100, y:(date.positionY*this.signaturesService.workingAreaHeight)/100}"
+    [style.width.%]="date.width" [style.height.%]="date.height" [ngDraggable]="!signaturesService.resizing" ngResizable
+    (rzResizing)="onResizingDate($event, i)"
+    [rzAspectRatio]="true" (rzStart)="signaturesService.resizing=true" (movingOffset)="signaturesService.dragging=true"
+    (endOffset)="moveDate($event, i);" (rzStop)="onResizeDateStop($event, i);signaturesService.resizing=false;"
+    [preventDefaultEvent]="false" [bounds]="bounds" [inBounds]="true" (click)="$event.stopPropagation();" [style.height]="fix" #test2>
+    <ion-buttons style="position:absolute;top: -30px;right: 0px;">
+        <ion-button slot="icon-only" shape="round" [matMenuTriggerFor]="menu" color="secondary">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="openDateSettings(i)">{{'lang.options' | translate}}</button>
+        <button mat-menu-item (click)="deleteDate(i)">{{'lang.delete' | translate}}</button>
+      </mat-menu>
+    <svg [id]="'testSVG_'+ i" viewBox="0 0 130 30" preserveAspectRatio="xMinYMin meet">
+        <text y="15" [attr.font-size]="date.size" dy=".3em" [style.font-family]="date.font" [style.fill]="date.color">{{today | date : date.format : undefined : ('lang.langISO' | translate)}}</text>
+    </svg>
+</div>

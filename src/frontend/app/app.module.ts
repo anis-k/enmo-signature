@@ -7,6 +7,9 @@ import { RouteReuseStrategy } from '@angular/router';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
+import localeFr from '@angular/common/locales/fr';
+import { registerLocaleData } from '@angular/common';
+
 import { AuthInterceptor } from './service/auth-interceptor.service';
 
 // import ngx-translate and the http loader
@@ -55,7 +58,8 @@ import { SearchComponent } from './search/search.component';
 import { SignaturePositionComponent } from './indexation/signature-position/signature-position.component';
 import { DevToolComponent } from './service/debug/dev-tool.component';
 import { DevLangComponent } from './service/debug/dev-lang.component';
-import { DateOptionModalComponent } from './documentSignList/dateOption/date-option-modal.component';
+import { DocumentDateListComponent } from './documentDateList/document-date-list.component';
+import { DateOptionModalComponent } from './documentDateList/dateOption/date-option-modal.component';
 
 
 // ADMINISTRATION
@@ -89,6 +93,8 @@ import { ConfirmComponent } from './plugins/confirm.component';
 import { AlertComponent } from './plugins/alert.component';
 import { PluginAutocompleteComponent } from './plugins/autocomplete/autocomplete.component';
 import { SortPipe } from './plugins/sorting.pipe';
+
+registerLocaleData(localeFr, 'fr-FR');
 
 @NgModule({
   declarations: [
@@ -141,6 +147,7 @@ import { SortPipe } from './plugins/sorting.pipe';
     DevLangComponent,
     SignatureMethodModalComponent,
     HistoryListComponent,
+    DocumentDateListComponent,
     DateOptionModalComponent
   ],
   imports: [

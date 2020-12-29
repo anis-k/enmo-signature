@@ -162,12 +162,13 @@ export class SignaturesComponent implements OnInit {
                 positionX: 0,
                 positionY: 0,
                 font: 'Arial',
-                color: '#666',
+                size: 15,
+                color: '#eb4034',
                 format : 'd MMMM y'
             };
 
-            dateBlock.positionX = 130;
-            dateBlock.positionY = 30;
+            dateBlock.positionX = 60;
+            dateBlock.positionY = 80;
             this.storeDate(dateBlock, this.signaturesService.currentPage);
             this.notificationService.success('lang.dateInDocAdded');
             setTimeout(() => {
@@ -183,6 +184,7 @@ export class SignaturesComponent implements OnInit {
                     positionX: datePosCurrentPage[0].positionX,
                     positionY: datePosCurrentPage[0].positionY,
                     font: 'Arial',
+                    size: 15,
                     color: '#666',
                     format : 'd MMMM y'
                 };
@@ -196,6 +198,7 @@ export class SignaturesComponent implements OnInit {
                     positionX: position.positionX,
                     positionY: position.positionY,
                     font: 'Arial',
+                    size: 15,
                     color: '#666',
                     format : 'd MMMM y'
                 };
@@ -244,18 +247,7 @@ export class SignaturesComponent implements OnInit {
             this.signaturesService.datesContent[page] = [];
         }
         this.signaturesService.datesContent[page].push(JSON.parse(JSON.stringify(date)));
-        setTimeout(() => {
-            const svg = document.getElementById('testSVG_' + (this.signaturesService.datesContent[this.signaturesService.currentPage].length - 1));
-            const data = new XMLSerializer().serializeToString(svg);
-            const blob = new Blob([data], { type: 'image/svg+xml' });
-
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                this.signaturesService.datesContent[page][this.signaturesService.datesContent[page].length - 1].content = reader.result;
-                this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
-            };
-        }, 200);
+        this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'date': this.signaturesService.datesContent, 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
     }
 
     removeSignature(signature: any) {

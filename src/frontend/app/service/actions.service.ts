@@ -83,18 +83,26 @@ export class ActionsService {
         const signatures: any[] = [];
         for (let index = 1; index <= this.signaturesService.totalPage; index++) {
             if (this.signaturesService.datesContent[index]) {
-                this.signaturesService.datesContent[index].forEach((date: any) => {
-                    signatures.push(
-                        {
-                            'encodedImage': date.content.replace('data:image/svg+xml;base64,', ''),
-                            'width': date.width,
-                            'height': date.height,
-                            'positionX': date.positionX,
-                            'positionY': date.positionY,
-                            'type': 'SVG',
-                            'page': index,
-                        }
-                    );
+                this.signaturesService.datesContent[index].forEach((date: any, indexSvg: number) => {
+                    const svg = document.getElementById('testSVG_' + indexSvg);
+                    const data = new XMLSerializer().serializeToString(svg);
+                    const blob = new Blob([data], { type: 'image/svg+xml' });
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => {
+                        const content: any = reader.result;
+                        signatures.push(
+                            {
+                                'encodedImage': content.replace('data:image/svg+xml;base64,', ''),
+                                'width': date.width,
+                                'height': date.height,
+                                'positionX': date.positionX,
+                                'positionY': date.positionY,
+                                'type': 'SVG',
+                                'page': index,
+                            }
+                        );
+                    };
                 });
             }
             if (this.signaturesService.signaturesContent[index]) {
@@ -126,7 +134,6 @@ export class ActionsService {
                 });
             }
         }
-
         return signatures;
     }
 }

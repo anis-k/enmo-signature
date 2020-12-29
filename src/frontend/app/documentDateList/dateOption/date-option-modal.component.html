@@ -11,13 +11,13 @@
 <ion-content>
     <ion-toolbar>
         <ion-title style="text-align: center;font-weight: normal;font-size: 50px;padding: 50px;"
-            [class]="getFontLabel(date.font)" [style.color]="date.color">{{today | date : date.format}}</ion-title>
+            [class]="getFontLabel(date.font)" [style.color]="date.color">{{today | date : date.format : undefined : ('lang.langISO' | translate)}}</ion-title>
     </ion-toolbar>
     <ion-item>
         <ion-label color="secondary">{{'lang.format' | translate}}</ion-label>
-        <ion-select [(ngModel)]="date.format">
+        <ion-select [(ngModel)]="date.format" interface="popover">
             <ion-select-option *ngFor="let format of dateformats" [value]="format">
-                {{today | date : format}}
+                {{today | date : format : undefined : ('lang.langISO' | translate)}}
             </ion-select-option>
         </ion-select>
     </ion-item>
@@ -28,7 +28,7 @@
     </ion-item>
     <ion-item>
         <ion-label color="secondary">{{'lang.font' | translate}}</ion-label>
-        <ion-select [(ngModel)]="date.font" [interfaceOptions]="{cssClass:'selectFormat'}">
+        <ion-select [(ngModel)]="date.font" (ionChange)="select($event.detail.value)" [interfaceOptions]="{cssClass:'selectFormat'}" [cancelText]="'lang.cancel' | translate">
             <ion-select-option *ngFor="let font of datefonts" [value]="font" [class]="getFontLabel(font)">
                 {{font}}
             </ion-select-option>
@@ -38,7 +38,7 @@
 <ion-footer class="ion-no-border">
     <ion-toolbar>
         <ion-buttons class="ion-justify-content-center">
-            <ion-button type="submit" color="primary">
+            <ion-button type="submit" color="primary" (click)="onSubmit()">
                 <ion-label>{{'lang.save' | translate}}</ion-label>
             </ion-button>
         </ion-buttons>

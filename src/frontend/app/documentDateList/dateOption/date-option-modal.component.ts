@@ -29,6 +29,15 @@ export class DateOptionModalComponent implements OnInit {
         'Courier New',
     ];
 
+    size = {
+        'Arial': 15,
+        'Verdana': 13,
+        'Helvetica': 13,
+        'Tahoma': 13,
+        'Times New Roman': 15,
+        'Courier New': 13
+    };
+
     constructor(
         private translate: TranslateService,
         public modalController: ModalController
@@ -36,19 +45,21 @@ export class DateOptionModalComponent implements OnInit {
 
     ngOnInit(): void {
         console.log(this.date);
-        
     }
 
     dismissModal() {
-        this.modalController.dismiss('cancel');
+        this.modalController.dismiss();
     }
 
     getFontLabel(label: string) {
         return label.replace(' ', '_');
     }
 
-    test() {
-        
+    onSubmit() {
+        this.modalController.dismiss(this.date);
     }
 
+    select(font: string) {
+        this.date.size = this.size[font];
+    }
 }
