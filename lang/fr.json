@@ -431,6 +431,7 @@
 		"format": "Format",
 		"font": "Police",
 		"color": "Couleur",
-		"langISO": "fr-FR"
+		"langISO": "fr-FR",
+		"userName": "Nom / prénom de l'utilisateur"
 	}
 }

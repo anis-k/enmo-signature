@@ -87,12 +87,19 @@ export class HistoryListComponent {
         this.menu.open('right-menu');
     }
 
-    ionViewWillEnter() {
+    ionViewWillEnter() { 
         this.menu.enable(true, 'left-menu');
         this.menu.enable(true, 'right-menu');
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
+        
         this.gesActions();
-        this.getDatas();
+        this.getDatas().finally(() => {
+            $(".checkedAction").each((index, element) => {
+                if (this.filters.messageTypes.includes($(element).val())) {
+                    $(element).prop("checked", true);
+                }
+            });
+        });
     }
 
     gesActions() {
@@ -186,9 +193,34 @@ export class HistoryListComponent {
     clearFilters() {
         $(".checkedAction").each(function(){
             $(this).prop("checked", false);
-        });        
-        this.filters.user = '';
+        });  
+        document.querySelector('ion-searchbar').getInputElement().then((searchInput) => {
+            searchInput.value = '';
+         });  
+        this.filters.user = ''; 
         this.filters.date.start = this.filters.date.end = null;
-        this.getDatas();
+    }
+
+    removeFilter(filter: any) {
+        if (this.filters.messageTypes.includes(filter)) {
+            $(".checkedAction").each(function() {
+                if ($(this).val() === filter) {
+                    $(this).prop("checked", false);
+                    return false;
+                }
+            }); 
+        }
+        if (this.filters.user === filter) {
+            document.querySelector('ion-searchbar').getInputElement().then((searchInput) => {
+                searchInput.value = '';
+            });  
+            this.filters.user = '';   
+        }
+        if (this.filters.date.start === filter) {
+            this.filters.date.start = null;
+        }
+        if (this.filters.date.end === filter) {
+            this.filters.date.end = null;
+        }
     }
 }

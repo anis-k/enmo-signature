@@ -28,9 +28,17 @@
 .scrollfilters {
     overflow: auto;
     white-space: nowrap;
+    height: 50%;
     ion-chip {
         height: auto;
         margin: 4px;
         display: inline-block;
     }
+}
+
+ion-button.clearFilter {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    z-index: 1;
 }
