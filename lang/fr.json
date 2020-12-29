@@ -424,6 +424,8 @@
 		"the": "le",
 		"passwordRuleUpdated": "Règles de mot de passe mises à jour",
 		"requiredLoginPassword": "Veuillez renseigner tous les champs",
-		"workflowTemplateDeleted": "Modèle de circuit supprimé"
+		"workflowTemplateDeleted": "Modèle de circuit supprimé",
+		"enterUserName": "Entrez le nom / prénom d'un utilisateur",
+		"clearFilters": "Effacer tous les filtres"
 	}
 }

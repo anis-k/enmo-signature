@@ -178,6 +178,20 @@ export class SearchComponent implements OnInit {
         });
     }
 
+    getNbFilters() {
+        let nb_filters = 0;
+        for (let index = 0; index < this.filters.length; index++) {
+            if (!Array.isArray(this.filters[index].val) && this.filters[index].val !== '') {
+                nb_filters ++;
+            }
+
+            if (Array.isArray(this.filters[index].val) && this.filters[index].val.length > 0) {
+                nb_filters += this.filters[index].val.length;
+            }
+        }      
+        return nb_filters;
+    }
+
     async openActions(item: any) {
         const buttons: any[] = [];
         this.actions.forEach(element => {
@@ -391,5 +405,23 @@ export class SearchComponent implements OnInit {
 
     goTo(resId: number) {
         this.router.navigate([`/documents/${resId}`]);
+    }
+
+    clearFilters() {
+        $(".checkedAction").each(function(){
+            $(this).prop("checked", false);
+        });
+        for (let index = 0; index < this.filters.length; index++) {
+            if (!Array.isArray(this.filters[index].val) && this.filters[index].val !== '') {
+                this.filters[index].val = '';
+            }
+
+            if (Array.isArray(this.filters[index].val) && this.filters[index].val.length > 0 && (this.filters[index].id === 'workflowUsers')) {
+                this.filters[index].val = [];
+            }
+        }
+        if (this.ressources.length > 0) {
+            this.launchSearch();
+        }
     }
 }

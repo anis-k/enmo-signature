@@ -4,7 +4,7 @@
             <ion-back-button></ion-back-button>
         </ion-buttons>
         <ion-title>{{'lang.history' | translate}}</ion-title>
-        <ion-label slot="end" *ngIf="getNbFilters() > 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-label>
+        <ion-title slot="end" color="secondary">{{count}} {{'lang.entries' | translate}}</ion-title>
         <ion-buttons slot="end">
             <ion-menu-button menu="right-menu">
                 <ion-icon name="funnel-outline"></ion-icon>
@@ -12,14 +12,31 @@
         </ion-buttons>
     </ion-toolbar>
     <ion-toolbar color="primary">
-        <ion-title slot="end" color="secondary">{{count}} {{'lang.entries' | translate}}</ion-title>
-    </ion-toolbar>
-    <ion-toolbar color="primary" *ngIf="this.filters.messageTypes.length > 0">
-                <p>
-                    <ion-badge *ngFor="let filter of filters.messageTypes" color="secondary"  style="height: auto; margin: 4px;">
-                        <ion-label>{{ 'lang.' + filter | translate }}</ion-label>
-                    </ion-badge>
-                </p>
+        <ion-button *ngIf="getNbFilters() > 0"  
+            shape="round" size="small" slot="start" 
+            color="primary" 
+            (click)="clearFilters()" style="margin-left: 4px;" [title]="'lang.clearFilters' | translate">
+            <ion-icon name="backspace" color="light"></ion-icon>
+        </ion-button>
+        <ion-title slot="end" *ngIf="getNbFilters() >= 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-title>
+        <div class="scrollfilters" slot="start">
+                <ion-chip *ngFor="let filter of filters.messageTypes"  color="light">
+                    <ion-icon name="options-outline"></ion-icon>
+                    <ion-label>{{ 'lang.' + filter | translate }}</ion-label>
+                </ion-chip>
+                <ion-chip *ngIf="filters.user !== ''"   color="light">
+                    <ion-icon name="person-circle"></ion-icon>
+                    <ion-label >{{ this.filters.user}}</ion-label>
+                </ion-chip>
+                <ion-chip *ngIf="filters.date.start !== null"  color="light">
+                    <ion-icon name="calendar"></ion-icon>
+                    <ion-label >{{ this.filters.date.start}}</ion-label>
+                </ion-chip>
+                <ion-chip *ngIf="filters.date.end !== null"  color="light">
+                    <ion-icon name="calendar"></ion-icon>
+                    <ion-label >{{ this.filters.date.end}}</ion-label>
+                </ion-chip>
+        </div>
     </ion-toolbar>
 </ion-header>
 <ion-content #mainContent>
@@ -56,7 +73,7 @@
     <ion-content>
         <ion-list>
             <ion-item lines="none">
-                <ion-searchbar placeholder="Entrer le nom / prénom d'un utilisateur"
+                <ion-searchbar [placeholder]="'lang.enterUserName' | translate"
                     (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
             </ion-item>
             <ion-item>
@@ -83,7 +100,7 @@
                 <ion-label color="secondary">{{'lang.actions' | translate}}: </ion-label>
             </ion-item>
             <ion-item *ngFor="let action of actions; let i=index" [title]="action.label">
-                <ion-checkbox slot="start" [value]="action.id" (ionChange)="toggleAction($event.detail)"></ion-checkbox>
+                <ion-checkbox class="checkedAction" slot="start" [value]="action.id" (ionChange)="toggleAction($event.detail)"></ion-checkbox>
                 <ion-label>{{action.label}}</ion-label>
             </ion-item>
         </ion-list>

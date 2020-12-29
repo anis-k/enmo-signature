@@ -24,3 +24,13 @@
         -ms-user-select: text !important;
     }
 }
+
+.scrollfilters {
+    overflow: auto;
+    white-space: nowrap;
+    ion-chip {
+        height: auto;
+        margin: 4px;
+        display: inline-block;
+    }
+}

@@ -427,6 +427,8 @@
         "passwordRuleUpdated": "Updated password rules",
         "requiredLoginPassword": "Please complete all fields",
         "workflowTemplateDeleted": "Workflow template deleted",
-        "entries": "entrie(s)"
+        "entries": "entrie(s)",
+        "enterUserName": "Enter the last name / first name of a user",
+        "clearFilters": "Clear all filters"
     }
 }

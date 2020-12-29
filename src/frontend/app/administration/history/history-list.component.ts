@@ -122,7 +122,7 @@ export class HistoryListComponent {
                 .pipe(
                     tap((data: any) => {
                         this.resources = data.history;
-                        this.count = data.total;                        
+                        this.count = data.total;                                                
                         resolve(true);
                     }),
                     catchError((err: any) => {
@@ -180,6 +180,15 @@ export class HistoryListComponent {
         } else {
             this.filters.messageTypes = this.filters.messageTypes.filter((item: any) => item !== ev.value);
         }
+        this.getDatas();
+    }
+
+    clearFilters() {
+        $(".checkedAction").each(function(){
+            $(this).prop("checked", false);
+        });        
+        this.filters.user = '';
+        this.filters.date.start = this.filters.date.end = null;
         this.getDatas();
     }
 }
