@@ -180,7 +180,7 @@ export class DocumentComponent implements OnInit {
 
     async openAction(event: any) {
         this.posX = event.clientX;
-        this.posY = event.clientY; 
+        this.posY = event.clientY;
         let buttons = [];
         if (!this.checkEmptyNote()) {
             buttons.push({
@@ -287,7 +287,7 @@ export class DocumentComponent implements OnInit {
             component: DocumentNotePadComponent,
             cssClass: 'fullscreen',
             componentProps: {
-                precentScrollTop:  this.posY,
+                precentScrollTop: this.posY,
                 precentScrollLeft: this.posX,
                 content: this.docList[this.currentDoc].imgContent[this.pageNum]
             }
@@ -373,6 +373,23 @@ export class DocumentComponent implements OnInit {
                                         });
                                 } else {
                                     this.signaturesService.signaturesListSubstituted = [];
+                                }
+                                if (realUserWorkflow[0].datePositions.length > 0 && this.functionsService.empty(this.signaturesService.datesContent)) {
+                                    realUserWorkflow[0].datePositions.forEach((date: any) => {
+                                        if (!this.signaturesService.datesContent[date.page]) {
+                                            this.signaturesService.datesContent[date.page] = [];
+                                        }
+                                        this.signaturesService.datesContent[date.page][0] = {
+                                            width: date.width,
+                                            height: date.height,
+                                            positionX: date.positionX,
+                                            positionY: date.positionY,
+                                            font: date.font,
+                                            size: date.size,
+                                            color: date.color,
+                                            format: date.format
+                                        };
+                                    });
                                 }
                             }
 
@@ -466,8 +483,8 @@ export class DocumentComponent implements OnInit {
 
         if (notesContent) {
             const storageContent = JSON.parse(notesContent);
-            this.signaturesService.notesContent = storageContent['note']  !== undefined ? storageContent['note'] : [];
-            this.signaturesService.signaturesContent = storageContent['sign']  !== undefined ? storageContent['sign'] : [];
+            this.signaturesService.notesContent = storageContent['note'] !== undefined ? storageContent['note'] : [];
+            this.signaturesService.signaturesContent = storageContent['sign'] !== undefined ? storageContent['sign'] : [];
             this.signaturesService.datesContent = storageContent['date'] !== undefined ? storageContent['date'] : [];
         }
 
@@ -553,7 +570,7 @@ export class DocumentComponent implements OnInit {
         this.renderImage();
     }
 
-    goTo(page: number) {        
+    goTo(page: number) {
         this.loadingController.create({
             message: this.translate.instant('lang.loadingDocument'),
             spinner: 'dots',
@@ -654,14 +671,14 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
-                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0]; 
+                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
                         this.loadingController.create({
                             message: this.translate.instant('lang.loadingValidation'),
                             spinner: 'dots',
                         }).then((load: HTMLIonLoadingElement) => {
                             this.load = load;
                             this.load.present();
-                            if ((currentUserWorkflow.signatureMode === 'rgs_2stars') || (currentUserWorkflow.signatureMode === 'inca_card') || (currentUserWorkflow.signatureMode === 'rgs_2stars_timestamped' ) || (currentUserWorkflow.signatureMode === 'inca_card_eidas')) {
+                            if ((currentUserWorkflow.signatureMode === 'rgs_2stars') || (currentUserWorkflow.signatureMode === 'inca_card') || (currentUserWorkflow.signatureMode === 'rgs_2stars_timestamped') || (currentUserWorkflow.signatureMode === 'inca_card_eidas')) {
                                 this.load.dismiss();
                             }
                         });
@@ -673,12 +690,12 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.documentsListCount.current--;
                                 }
                             }
-                                const config: MatBottomSheetConfig = {
-                                    disableClose: true,
-                                    direction: 'ltr'
-                                };
-                                this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
-                                this.localStorage.remove(this.mainDocument.id.toString());
+                            const config: MatBottomSheetConfig = {
+                                disableClose: true,
+                                direction: 'ltr'
+                            };
+                            this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
+                            this.localStorage.remove(this.mainDocument.id.toString());
                         }
                         this.load.dismiss();
                     }
@@ -813,7 +830,7 @@ export class DocumentComponent implements OnInit {
 
     openSelect(event: any) {
         if (this.totalPages > 1) {
-            this.pagesList.interface = 'popover'; 
+            this.pagesList.interface = 'popover';
             this.pagesList.open(event);
         }
     }
