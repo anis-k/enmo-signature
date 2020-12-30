@@ -12,35 +12,39 @@
         </ion-buttons>
     </ion-toolbar>
     <ion-toolbar color="primary">
-        <ion-button *ngIf="getNbFilters() > 0"  
-            shape="round" size="small" slot="start" 
-            color="primary" 
-            (click)="clearFilters()" style="margin-left: 4px;" [title]="'lang.clearFilters' | translate">
-            <ion-icon slot="icon-only" name="backspace" color="light"></ion-icon>
-        </ion-button>
         <ion-title slot="end" *ngIf="getNbFilters() >= 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-title>
         <div class="scrollfilters" slot="start">
+            <ion-button *ngIf="getNbFilters() > 0" class="clearFilter" 
+                shape="round" size="small" slot="start" color="primary" (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
+                <ion-icon slot="icon-only" name="backspace" color="light"></ion-icon>
+            </ion-button>
             <div *ngFor="let filter of filters" >
-                <ion-chip *ngIf="filter.id === 'title' && filter.val !== ''" color="light">
+                <ion-chip *ngIf="filter.id === 'title' && filter.val !== ''" color="light" 
+                [title]="'lang.titleSearch' | translate" (click)="removeFilter(filter)">
                     <ion-icon name="document-text"></ion-icon>
-                    <ion-label >{{ filter.val}}</ion-label>
+                    <ion-label >{{ filter.val }}</ion-label>
+                    <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
-                <ion-chip *ngIf="filter.id === 'reference' && filter.val !== ''" color="light">
+                <ion-chip *ngIf="filter.id === 'reference' && filter.val !== ''" color="light" 
+                [title]="'lang.referenceSearch' | translate" (click)="removeFilter(filter)">
                     <ion-icon name="key"></ion-icon>
-                    <ion-label >{{ filter.val}}</ion-label>
+                    <ion-label >{{ filter.val }}</ion-label>
+                    <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
                 <div *ngIf="filter.id === 'workflowStates'">
-                    <ion-chip *ngFor="let item of filter.val" color="light">
-                        <span *ngFor="let lang of filter.values">
-                            <ion-icon *ngIf="lang.id === item" name="options-outline"></ion-icon>
-                            <ion-label *ngIf="lang.id === item">{{ lang.label | translate}}</ion-label>
-                        </span>
+                    <ion-chip *ngFor="let item of filter.val" color="light" 
+                    [title]="'lang.workflowStatesSearch' | translate" (click)="removeFilter(filter, item)">
+                        <ion-icon name="options-outline"></ion-icon>
+                        <ion-label>{{ getLabel(item) | translate}}</ion-label>
+                        <ion-icon name="close-circle"></ion-icon>
                     </ion-chip>
                 </div>
                 <div *ngIf="filter.id === 'workflowUsers'">
-                    <ion-chip *ngFor="let item of filter.val" color="light">
+                    <ion-chip *ngFor="let item of filter.val" color="light" 
+                    [title]="'lang.workflowUsersSearch' | translate" (click)="removeFilter(filter, item)">
                         <ion-icon name="person-circle"></ion-icon>
                         <ion-label >{{ item.firstname}} {{ item.lastname }}</ion-label>
+                        <ion-icon name="close-circle"></ion-icon>
                     </ion-chip>
                 </div>
             </div>
@@ -150,7 +154,7 @@
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.' + filter.id + 'Search' | translate}}
                     </ion-label>
-                    <ion-input [(ngModel)]="filter.val"></ion-input>
+                    <ion-input [(ngModel)]="filter.val" [value]="filter.val"></ion-input>
                 </ion-item>
             </ng-container>
             <ng-container *ngIf="filter.type === 'checkbox'">
@@ -160,7 +164,7 @@
                 <ion-item *ngFor="let val of filter.values;let i=index;">
                     <ion-label>{{val.label | translate}}</ion-label>
                     <ion-checkbox (ionChange)="toggleItem(filter, val, $event.detail.checked)"
-                        [checked]="filter.val.indexOf(val.id) > -1" slot="end" class="checkedAction"></ion-checkbox>
+                        [checked]="filter.val.indexOf(val.id) > -1" slot="end" [value]="val.id" class="workflowStates"></ion-checkbox>
                 </ion-item>
             </ng-container>
             <ng-container *ngIf="filter.type === 'autocompleteUsers'">

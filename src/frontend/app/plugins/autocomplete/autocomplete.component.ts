@@ -53,7 +53,6 @@ export class PluginAutocompleteComponent implements OnInit {
         } else {
             this.http.get('../rest/autocomplete/users?search=' + ev.detail.value).pipe(
                 tap((res: any) => {
-                    console.log(res);
                     this.itemList = res;
                 }),
                 catchError(err => {

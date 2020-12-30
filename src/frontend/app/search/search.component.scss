@@ -65,7 +65,13 @@
     white-space: nowrap;
     ion-chip, div {
         height: auto;
-        margin: 4px;
         display: inline-block;
     }
+}
+
+ion-button.clearFilter {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    z-index: 1;
 }

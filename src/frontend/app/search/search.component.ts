@@ -112,7 +112,7 @@ export class SearchComponent implements OnInit {
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
         setTimeout(() => {
             this.menu.open('right-menu');
-        }, 500);
+        }, 500);        
     }
 
     ionViewWillLeave() {
@@ -157,14 +157,14 @@ export class SearchComponent implements OnInit {
     formatDatas() {
         const objToSend: any = {};
         const tmpArr = this.filters.filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0));
-
+        
         tmpArr.forEach((filter: any) => {
             if (filter.id === 'workflowUsers') {
                 objToSend[filter.id] = filter.val.map((item: any) => item.id);
             } else {
                 objToSend[filter.id] = filter.val;
             }
-        });
+        });        
         return objToSend;
     }
 
@@ -239,7 +239,7 @@ export class SearchComponent implements OnInit {
         return new Promise((resolve) => {
             this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
                 .pipe(
-                    tap((data: any) => {
+                    tap((data: any) => {                        
                         this.ressources = this.formatListDatas(data.documents);
                         this.count = data.count;
                         this.infiniteScroll.disabled = false;
@@ -408,7 +408,7 @@ export class SearchComponent implements OnInit {
     }
 
     clearFilters() {
-        $(".checkedAction").each(function(){
+        $(".workflowStates").each(function(){
             $(this).prop("checked", false);
         });
         for (let index = 0; index < this.filters.length; index++) {
@@ -423,5 +423,31 @@ export class SearchComponent implements OnInit {
         if (this.ressources.length > 0) {
             this.launchSearch();
         }
+    }
+
+    removeFilter(filter: any, item: any) {
+        if (!Array.isArray(filter.val)) {
+            filter.val = '';
+        } else {
+            if (filter.id === 'workflowStates') {
+                    $(".workflowStates").each(function() {
+                        if ($(this).val() === item) {
+                            $(this).prop("checked", false);
+                            return false;
+                        }
+                    });
+            } else {
+                const index = filter.val.indexOf(item);
+                filter.val.splice(index, 1);
+            }
+        }
+        if (this.ressources.length > 0) {
+            this.launchSearch();
+        }
+    }
+
+    getLabel(filter: any) {
+        const obj = this.filters.filter((item: any) => item.id === 'workflowStates')[0].values;
+        return obj.find((element: any) => element.id === filter).label;
     }
 }
