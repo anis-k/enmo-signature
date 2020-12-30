@@ -6,6 +6,7 @@ import { SignaturesContentService } from './signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { of } from 'rxjs';
 import { FunctionsService } from './functions.service';
+import { resolve } from 'path';
 
 @Injectable({
     providedIn: 'root'
@@ -26,13 +27,13 @@ export class ActionsService {
 
             if (this.signaturesService.currentAction > 0) {
                 if (imgDocElements === null) {
-                    data.signatures = this.getElementsFromDoc();
+                    data.signatures = await this.getElementsFromDoc();
                 } else {
                     data.signatures = imgDocElements;
                 }
 
                 if (eSignature !== null) {
-                    data = {...data, ...eSignature };
+                    data = { ...data, ...eSignature };
                     data.step = 'hashCertificate';
                 }
 
@@ -53,9 +54,9 @@ export class ActionsService {
                         tap((res: any) => {
                             if (eSignature !== null) {
                                 const objSignData = {
-                                    hashDocument : res.dataToSign,
-                                    signatureContentLength : res.signatureContentLength,
-                                    signatureFieldName : res.signatureFieldName,
+                                    hashDocument: res.dataToSign,
+                                    signatureContentLength: res.signatureContentLength,
+                                    signatureFieldName: res.signatureFieldName,
                                     tmpUniqueId: res.tmpUniqueId
                                 };
                                 resolve(objSignData);
@@ -79,21 +80,17 @@ export class ActionsService {
         });
     }
 
-    getElementsFromDoc() {
-        const signatures: any[] = [];
-        for (let index = 1; index <= this.signaturesService.totalPage; index++) {
-            if (this.signaturesService.datesContent[index]) {
-                this.signaturesService.datesContent[index].forEach((date: any, indexSvg: number) => {
-                    const svg = document.getElementById('testSVG_' + indexSvg);
-                    const data = new XMLSerializer().serializeToString(svg);
-                    const blob = new Blob([data], { type: 'image/svg+xml' });
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = () => {
-                        const content: any = reader.result;
+    async getElementsFromDoc(): Promise<any[]> {
+        return new Promise(async (resolve) => {
+            const signatures: any[] = [];
+            for (let index = 1; index <= this.signaturesService.totalPage; index++) {
+                if (this.signaturesService.datesContent[index]) {
+                    for (let indexSvg = 0; indexSvg < this.signaturesService.datesContent[index].length; indexSvg++) {
+                        const date = this.signaturesService.datesContent[index][indexSvg];
+                        const svgContent: any = await this.getSvgContent(indexSvg);
                         signatures.push(
                             {
-                                'encodedImage': content.replace('data:image/svg+xml;base64,', ''),
+                                'encodedImage': svgContent.replace('data:image/svg+xml;base64,', ''),
                                 'width': date.width,
                                 'height': date.height,
                                 'positionX': date.positionX,
@@ -102,38 +99,52 @@ export class ActionsService {
                                 'page': index,
                             }
                         );
-                    };
-                });
+                        console.log('push date', signatures);
+                    }
+                }
+                if (this.signaturesService.signaturesContent[index]) {
+                    this.signaturesService.signaturesContent[index].forEach((signature: any) => {
+                        signatures.push(
+                            {
+                                'encodedImage': signature.encodedSignature,
+                                'width': signature.width,
+                                'positionX': signature.positionX,
+                                'positionY': signature.positionY,
+                                'type': 'PNG',
+                                'page': index,
+                            }
+                        );
+                    });
+                }
+                if (this.signaturesService.notesContent[index]) {
+                    this.signaturesService.notesContent[index].forEach((noteItem: any) => {
+                        signatures.push(
+                            {
+                                'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
+                                'width': noteItem.width,
+                                'positionX': noteItem.positionX,
+                                'positionY': noteItem.positionY,
+                                'type': 'PNG',
+                                'page': index,
+                            }
+                        );
+                    });
+                }
             }
-            if (this.signaturesService.signaturesContent[index]) {
-                this.signaturesService.signaturesContent[index].forEach((signature: any) => {
-                    signatures.push(
-                        {
-                            'encodedImage': signature.encodedSignature,
-                            'width': signature.width,
-                            'positionX': signature.positionX,
-                            'positionY': signature.positionY,
-                            'type': 'PNG',
-                            'page': index,
-                        }
-                    );
-                });
-            }
-            if (this.signaturesService.notesContent[index]) {
-                this.signaturesService.notesContent[index].forEach((noteItem: any) => {
-                    signatures.push(
-                        {
-                            'encodedImage': noteItem.fullPath.replace('data:image/png;base64,', ''),
-                            'width': noteItem.width,
-                            'positionX': noteItem.positionX,
-                            'positionY': noteItem.positionY,
-                            'type': 'PNG',
-                            'page': index,
-                        }
-                    );
-                });
-            }
-        }
-        return signatures;
+            resolve(signatures);
+        });
+    }
+
+    getSvgContent(index: number) {
+        return new Promise((resolve) => {
+            const svg = document.getElementById('testSVG_' + index);
+            const data = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([data], { type: 'image/svg+xml' });
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                resolve(reader.result);
+            };
+        });
     }
 }

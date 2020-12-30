@@ -49,8 +49,8 @@ export class SignatureMethodModalComponent implements OnInit {
         public authService: AuthService
     ) { }
 
-    ngOnInit(): void {
-        this.signatures = this.actionsService.getElementsFromDoc();
+    async ngOnInit(): Promise<void> {
+        this.signatures = await this.actionsService.getElementsFromDoc();
 
         const signatureModeData = this.authService.signatureRoles.filter((mode: any) => mode.id === this.signatureMode)[0];
         if (!this.functionsService.empty(signatureModeData.issuer)) {

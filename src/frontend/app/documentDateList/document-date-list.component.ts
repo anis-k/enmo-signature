@@ -62,7 +62,7 @@ export class DocumentDateListComponent implements OnInit {
         const modal = await this.modalController.create({
             component: DateOptionModalComponent,
             componentProps: {
-                'date': this.signaturesService.datesContent[this.signaturesService.currentPage][index],
+                'currentDate': this.signaturesService.datesContent[this.signaturesService.currentPage][index],
             }
         });
         await modal.present();

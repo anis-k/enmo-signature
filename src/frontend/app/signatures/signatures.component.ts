@@ -163,7 +163,7 @@ export class SignaturesComponent implements OnInit {
                 positionY: 0,
                 font: 'Arial',
                 size: 15,
-                color: '#eb4034',
+                color: '#666',
                 format : 'd MMMM y'
             };
 
@@ -171,10 +171,6 @@ export class SignaturesComponent implements OnInit {
             dateBlock.positionY = 80;
             this.storeDate(dateBlock, this.signaturesService.currentPage);
             this.notificationService.success('lang.dateInDocAdded');
-            setTimeout(() => {
-                const svg = document.getElementById('testSVG_' + (this.signaturesService.datesContent[this.signaturesService.currentPage].length - 1));
-                console.log(svg);
-            }, 200);
             this.modalController.dismiss('success');
         } else {
             if (datePosCurrentPage.length > 0) {
@@ -218,19 +214,6 @@ export class SignaturesComponent implements OnInit {
             } else {
                 this.modalController.dismiss('success');
             }
-        }
-    }
-
-    getDateContent() {
-        const svg = document.getElementById('testSVG_' + (this.signaturesService.datesContent[this.signaturesService.currentPage].length - 1));
-        const data = new XMLSerializer().serializeToString(svg);
-        const blob = new Blob([data], { type: 'image/svg+xml' });
-
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function () {
-            var base64data = reader.result;
-            console.log(base64data);
         }
     }
 
