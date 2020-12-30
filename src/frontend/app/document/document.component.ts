@@ -673,7 +673,6 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.documentsListCount.current--;
                                 }
                             }
-                            this.load.present();                           
                                 const config: MatBottomSheetConfig = {
                                     disableClose: true,
                                     direction: 'ltr'
