@@ -1,0 +1,18 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-title>{{'lang.about' | translate}}</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="dismissModal()">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div style="padding: 10px">
+        <h3>Maarch Parapheur {{applicationVersion}} </h3>
+        <em>Version : <a target="blank" href="https://labs.maarch.org/maarch/MaarchParapheur/commit/{{commitHash}}">{{commitHash}}</a></em>
+        <hr />
+        <p><em>Copyright &copy; 2008-2020 Maarch SAS {{'lang.groupCompany' | translate}}</em></p>
+    </div>
+</ion-content>

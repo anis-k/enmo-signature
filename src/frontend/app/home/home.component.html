@@ -1,4 +1,6 @@
 <ion-content color="primary">
-    <mat-icon svgIcon="maarchLogo" class="maarchLogo"></mat-icon>
-    <ion-button *ngIf="signaturesService.mobileMode" class="menu-button" color="light" fill="outline" size="large" (click)="menu.open('left-menu')">Accéder au menu</ion-button>
+    <mat-icon svgIcon="maarchLogo" class="maarchLogo" (click)="openInformationModal()" [title]="'lang.about' | translate"></mat-icon>
+    <ion-button *ngIf="signaturesService.mobileMode" class="menu-button" color="light" fill="outline" size="large" (click)="menu.open('left-menu')">
+        {{'lang.accessMenu' | translate}}
+    </ion-button>
 </ion-content>

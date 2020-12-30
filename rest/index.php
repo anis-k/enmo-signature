@@ -72,6 +72,9 @@ $app->patch('/configurations/{id}', \Configuration\controllers\ConfigurationCont
 $app->delete('/configurations/{id}', \Configuration\controllers\ConfigurationController::class . ':delete');
 $app->get('/configurations/{id}/connection', \Configuration\controllers\ConfigurationController::class . ':testConnection');
 
+// CommitInformation
+$app->get('/commitInformation', \SrcCore\controllers\AuthenticationController::class . ':getGitCommitInformation');
+
 //Documents
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');

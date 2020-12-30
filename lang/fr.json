@@ -432,6 +432,9 @@
 		"font": "Police",
 		"color": "Couleur",
 		"langISO": "fr-FR",
-		"userName": "Nom / prénom de l'utilisateur"
+		"userName": "Nom / prénom de l'utilisateur",
+		"groupCompany": "société du groupe Xelians",
+		"about": "À propos de Maarch Parapheur",
+		"accessMenu": "Accéder au menu"
 	}
 }

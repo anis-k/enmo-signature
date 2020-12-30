@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { SignaturesContentService } from '../service/signatures.service';
+import { VersionInformationComponent } from '../versionInformation/version-information.component';
 
 @Component({
     templateUrl: 'home.component.html',
@@ -13,8 +14,9 @@ export class HomeComponent implements OnInit {
 
     constructor(
         public signaturesService: SignaturesContentService,
-        private translate: TranslateService,
-        private menu: MenuController,
+        public translate: TranslateService,
+        public menu: MenuController,
+        public modalController: ModalController,
     ) { }
 
     ngOnInit(): void {
@@ -23,5 +25,11 @@ export class HomeComponent implements OnInit {
         this.menu.open('left-menu');
     }
 
-
+    async openInformationModal() {
+        const modal = await this.modalController.create({
+            component: VersionInformationComponent,
+            cssClass: 'my-custom-class'
+        });
+        await modal.present();
+    }
 }

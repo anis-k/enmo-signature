@@ -429,6 +429,9 @@
         "workflowTemplateDeleted": "Workflow template deleted",
         "entries": "entrie(s)",
         "enterUserName": "Enter the last name / first name of a user",
-        "clearFilters": "Clear all filters"
+        "clearFilters": "Clear all filters",
+        "groupCompany": ", a Xelians group company",
+        "about": "About Maarch Parapheur",
+        "accessMenu": "Access menu"
     }
 }

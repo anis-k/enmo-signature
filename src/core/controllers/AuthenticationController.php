@@ -370,4 +370,28 @@ class AuthenticationController
 
         return true;
     }
+
+    public function getGitCommitInformation(Request $request, Response $response)
+    {
+        $head = file_get_contents('.git/HEAD');
+
+        if ($head === false) {
+            return $response->withJson(['hash' => null]);
+        }
+        preg_match('#^ref:(.+)$#', $head, $matches);
+        $currentHead = trim($matches[1]);
+
+        if (empty($currentHead)) {
+            return $response->withJson(['hash' => null]);
+        }
+
+        $hash = file_get_contents('.git/' . $currentHead);
+        if ($hash === false) {
+            return $response->withJson(['hash' => null]);
+        }
+
+        $hash = explode("\n", $hash)[0];
+
+        return $response->withJson(['hash' => $hash]);
+    }
 }
