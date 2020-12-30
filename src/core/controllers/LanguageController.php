@@ -99,6 +99,9 @@ class LanguageController
 
     public function generateLang(Request $request, Response $response)
     {
+        if (!is_file('dist/main.js')) {
+            return $response->withStatus(403)->withJson(['errors' => 'Route forbidden']);
+        }
         $body = $request->getParsedBody();
 
         if (!Validator::stringType()->notEmpty()->validate($body['langId'])) {
