@@ -222,6 +222,7 @@ export class HistoryListComponent {
         if (this.filters.date.end === filter) {
             this.filters.date.end = null;
         }
+        this.getDatas();
     }
 
     // to remove duplicates in array
