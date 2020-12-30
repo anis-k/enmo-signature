@@ -18,7 +18,7 @@
                 shape="round" size="small" slot="start" color="primary" (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
                 <ion-icon slot="icon-only" name="backspace" color="light"></ion-icon>
             </ion-button>
-                <ion-chip *ngFor="let filter of uniqueArray(this.filters.messageTypes)" [title]="'lang.actions' | translate"  color="light" (click)="removeFilter(filter)">
+                <ion-chip *ngFor="let filter of this.filters.messageTypes" [title]="'lang.actions' | translate"  color="light" (click)="removeFilter(filter)">
                     <ion-icon name="options-outline"></ion-icon>
                     <ion-label>{{ 'lang.' + filter | translate }}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
