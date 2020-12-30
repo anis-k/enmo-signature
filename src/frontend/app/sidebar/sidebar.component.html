@@ -14,7 +14,7 @@
                 <ion-icon slot="icon-only" name="power"></ion-icon>
             </ion-button>
             <ion-button *ngIf="!isAdminRoute() && authService.user.administrativePrivileges.length > 0" (click)="openAdmin()" [title]="'lang.administration' | translate">
-                <ion-icon slot="icon-only" name="build-outline"></ion-icon>
+                <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
             </ion-button>
             <ion-button *ngIf="isAdminRoute()" (click)="openHome()" [title]="'lang.homePage' | translate">
                 <ion-icon slot="icon-only" name="home"></ion-icon>
