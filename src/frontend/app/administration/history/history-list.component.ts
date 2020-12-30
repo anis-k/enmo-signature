@@ -91,15 +91,15 @@ export class HistoryListComponent {
         this.menu.enable(true, 'left-menu');
         this.menu.enable(true, 'right-menu');
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
-        
         this.gesActions();
-        this.getDatas().finally(() => {
+        this.getDatas();
+        setTimeout(() => {
             $(".checkedAction").each((index, element) => {
                 if (this.filters.messageTypes.includes($(element).val())) {
                     $(element).prop("checked", true);
                 }
             });
-        });
+        }, 100);
     }
 
     gesActions() {
@@ -175,8 +175,8 @@ export class HistoryListComponent {
         if (this.filters.date.end !== null) {
             nb++;
         }
-        if (this.filters.messageTypes.length > 0) {
-            nb += this.filters.messageTypes.length;
+        if (this.uniqueArray(this.filters.messageTypes).length > 0) {
+            nb += this.uniqueArray(this.filters.messageTypes).length;
         }
         return nb;
     }
@@ -222,5 +222,21 @@ export class HistoryListComponent {
         if (this.filters.date.end === filter) {
             this.filters.date.end = null;
         }
+    }
+
+    // to remove duplicates in array
+    uniqueArray(array: any[]) {
+        let i: number, j: any;
+        const length = array.length;
+        const uniqueArray = [];
+        const obj = {};
+        for (i = 0; i < length; i++) {
+            obj[array[i]] = 0;
+        }
+        for (j in obj) {
+            uniqueArray.push(j);
+        }
+        array = uniqueArray;
+        return array;
     }
 }
