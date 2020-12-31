@@ -452,4 +452,13 @@ export class SearchComponent implements OnInit {
         const obj = this.filters.filter((item: any) => item.id === 'workflowStates')[0].values;
         return obj.find((element: any) => element.id === filter).label;
     }
+
+    checkInput() {
+        if ((this.filters.find((el: any) => el.id === 'title').val === '') && (this.filters.find((el: any) => el.id === 'reference').val === '')) {            
+            if (this.filters.find((el: any) => el.id === 'workflowStates').val.length === 0 || this.filters.find((el: any) => el.id === 'workflowUsers').val.length === 0) {
+                this.clearFilters();
+                this.currentFilters = [];
+            }
+        }
+    }
 }

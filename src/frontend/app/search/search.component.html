@@ -154,7 +154,7 @@
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.' + filter.id + 'Search' | translate}}
                     </ion-label>
-                    <ion-input [(ngModel)]="filter.val" [value]="filter.val"></ion-input>
+                    <ion-input [(ngModel)]="filter.val" [value]="filter.val" (keyup.enter)="launchSearch()" (ionChange)="checkInput()"></ion-input>
                 </ion-item>
             </ng-container>
             <ng-container *ngIf="filter.type === 'checkbox'">
