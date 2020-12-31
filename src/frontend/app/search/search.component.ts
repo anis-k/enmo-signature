@@ -455,7 +455,7 @@ export class SearchComponent implements OnInit {
 
     checkInput() {
         if ((this.filters.find((el: any) => el.id === 'title').val === '') && (this.filters.find((el: any) => el.id === 'reference').val === '')) {            
-            if (this.filters.find((el: any) => el.id === 'workflowStates').val.length === 0 || this.filters.find((el: any) => el.id === 'workflowUsers').val.length === 0) {
+            if ((this.filters.find((el: any) => el.id === 'workflowStates').val.length === 0) && (this.filters.find((el: any) => el.id === 'workflowUsers').val.length === 0)) {
                 this.clearFilters();
                 this.currentFilters = [];
             }
