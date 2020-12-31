@@ -432,6 +432,12 @@
         "clearFilters": "Clear all filters",
         "groupCompany": ", a Xelians group company",
         "about": "About Maarch Parapheur",
-        "accessMenu": "Access menu"
+        "accessMenu": "Access menu",
+        "options": "Options",
+        "format": "Format",
+        "font": "Police",
+        "color": "Color",
+        "langISO": "fr-FR",
+        "userName": "Last name / first name"
     }
 }

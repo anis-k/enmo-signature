@@ -8,6 +8,7 @@ import { of } from 'rxjs';
 import { catchError, exhaustMap, tap } from 'rxjs/operators';
 import { VisaWorkflowComponent } from '../document/visa-workflow/visa-workflow.component';
 import { AuthService } from '../service/auth.service';
+import { FunctionsService } from '../service/functions.service';
 import { NotificationService } from '../service/notification.service';
 import { SignaturesContentService } from '../service/signatures.service';
 
@@ -78,6 +79,7 @@ export class SearchComponent implements OnInit {
     ];
 
     ressources: any[] = [];
+    currentFilters: any[] = [];
     offset: number = 0;
     limit: number = 10;
     count: number = 0;
@@ -102,6 +104,7 @@ export class SearchComponent implements OnInit {
         public alertController: AlertController,
         public actionSheetController: ActionSheetController,
         public datePipe: DatePipe,
+        private functionsService: FunctionsService,
     ) { }
 
     ngOnInit(): void { }
@@ -234,6 +237,7 @@ export class SearchComponent implements OnInit {
     }
 
     launchSearch() {
+        this.currentFilters = this.filters.filter((item: any)=> !this.functionsService.empty(item.val));
         this.ressources = [];
         this.offset = 0;
         return new Promise((resolve) => {
@@ -427,7 +431,7 @@ export class SearchComponent implements OnInit {
 
     removeFilter(filter: any, item: any) {
         if (!Array.isArray(filter.val)) {
-            filter.val = '';
+            this.filters.find((element: any) => element.id === filter.id).val = '';
         } else {
             if (filter.id === 'workflowStates') {
                     $(".workflowStates").each(function() {
@@ -441,9 +445,7 @@ export class SearchComponent implements OnInit {
                 filter.val.splice(index, 1);
             }
         }
-        if (this.ressources.length > 0) {
-            this.launchSearch();
-        }
+        this.launchSearch();
     }
 
     getLabel(filter: any) {
