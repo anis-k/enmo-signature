@@ -8,7 +8,7 @@
 </ion-header>
 <ion-content #mainContent>
   <ion-grid>
-    <ion-row class="repeatRows">
+    <ion-row [ngClass]="[!signaturesService.mobileMode ? 'repeatRows' : 'repeatRowsMobile']">
       <ion-col *ngFor="let privilege of authService.user.administrativePrivileges">
         <ion-button [routerLink]="privilege.route" expand="block" size="large" fill="outline" color="secondary"
           style="height: 200px;">

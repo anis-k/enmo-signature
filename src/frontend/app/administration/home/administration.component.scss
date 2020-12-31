@@ -64,3 +64,9 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
 }
+
+.repeatRowsMobile {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  -ms-grid-row-align: 10px;
+}
