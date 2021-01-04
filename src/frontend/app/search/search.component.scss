@@ -61,6 +61,7 @@
 }
 
 .scrollfilters {
+    padding-left: 50px;
     overflow: auto;
     white-space: nowrap;
     ion-chip, div {
@@ -70,8 +71,11 @@
 }
 
 ion-button.clearFilter {
+    position: absolute;
+    background: var(--ion-color-primary);
     position: -webkit-sticky;
-    position: sticky;
     left: 0;
     z-index: 1;
+    left: -2px;
+    height: 31px;
 }

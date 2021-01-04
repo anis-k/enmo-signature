@@ -11,28 +11,27 @@
             </ion-menu-button>
         </ion-buttons>
     </ion-toolbar>
-    <ion-toolbar color="primary">
-        <ion-title slot="end" *ngIf="getNbFilters() >= 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-title>
-        <div class="scrollfilters" slot="start" *ngIf="this.currentFilters.length > 0">
-            <ion-button  class="clearFilter" 
-                shape="round" size="small" slot="start" color="primary" (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
-                <ion-icon slot="icon-only" name="backspace" color="light"></ion-icon>
+    <ion-toolbar *ngIf="this.currentFilters.length > 0" color="primary" style="padding-left: 1px;padding-right: 1px;">
+        <div class="scrollfilters" slot="start">
+            <ion-button class="clearFilter" 
+                shape="round" size="small" fill="clear" slot="start" color="primary" (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
+                <ion-icon slot="icon-only" name="trash-bin-outline" color="light"></ion-icon>
             </ion-button>
             <div *ngFor="let currentFilter of currentFilters">
-                <ion-chip *ngIf="currentFilter.id === 'title' && currentFilter.val !== ''" color="light" 
+                <ion-chip outline *ngIf="currentFilter.id === 'title' && currentFilter.val !== ''" color="primary" style="background: white;" 
                     [title]="'lang.titleSearch' | translate" (click)="removeFilter(currentFilter)">
                     <ion-icon name="document-text"></ion-icon>
                     <ion-label >{{ currentFilter.val }}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
-                <ion-chip *ngIf="currentFilter.id === 'reference' && currentFilter.val !== ''" color="light" 
+                <ion-chip outline *ngIf="currentFilter.id === 'reference' && currentFilter.val !== ''" color="primary" style="background: white;" 
                     [title]="'lang.titleSearch' | translate" (click)="removeFilter(currentFilter)">
                     <ion-icon name="key"></ion-icon>
                     <ion-label >{{ currentFilter.val }}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
                 <div *ngIf="currentFilter.id === 'workflowStates' && currentFilter.val.length > 0">
-                    <ion-chip *ngFor="let item of currentFilter.val" color="light" 
+                    <ion-chip outline *ngFor="let item of currentFilter.val" color="primary" style="background: white;" 
                     [title]="'lang.workflowStatesSearch' | translate" (click)="removeFilter(currentFilter, item)">
                         <ion-icon name="options-outline"></ion-icon>
                         <ion-label>{{ getLabel(item) | translate}}</ion-label>
@@ -40,7 +39,7 @@
                     </ion-chip>
                 </div>
                 <div *ngIf="currentFilter.id === 'workflowUsers' && currentFilter.val.length > 0">
-                    <ion-chip *ngFor="let item of currentFilter.val" color="light" 
+                    <ion-chip outline *ngFor="let item of currentFilter.val" color="primary" style="background: white;" 
                     [title]="'lang.workflowUsersSearch' | translate" (click)="removeFilter(currentFilter, item)">
                         <ion-icon name="person-circle"></ion-icon>
                         <ion-label >{{ item.firstname}} {{ item.lastname }}</ion-label>

@@ -115,7 +115,7 @@ export class SearchComponent implements OnInit {
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
         setTimeout(() => {
             this.menu.open('right-menu');
-        }, 500);        
+        }, 500);
     }
 
     ionViewWillLeave() {
@@ -160,14 +160,14 @@ export class SearchComponent implements OnInit {
     formatDatas() {
         const objToSend: any = {};
         const tmpArr = this.filters.filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0));
-        
+
         tmpArr.forEach((filter: any) => {
             if (filter.id === 'workflowUsers') {
                 objToSend[filter.id] = filter.val.map((item: any) => item.id);
             } else {
                 objToSend[filter.id] = filter.val;
             }
-        });        
+        });
         return objToSend;
     }
 
@@ -183,15 +183,15 @@ export class SearchComponent implements OnInit {
 
     getNbFilters() {
         let nb_filters = 0;
-        for (let index = 0; index < this.filters.length; index++) {
-            if (!Array.isArray(this.filters[index].val) && this.filters[index].val !== '') {
-                nb_filters ++;
+        for (let index = 0; index < this.currentFilters.length; index++) {
+            if (!Array.isArray(this.currentFilters[index].val) && this.currentFilters[index].val !== '') {
+                nb_filters++;
             }
 
-            if (Array.isArray(this.filters[index].val) && this.filters[index].val.length > 0) {
-                nb_filters += this.filters[index].val.length;
+            if (Array.isArray(this.currentFilters[index].val) && this.currentFilters[index].val.length > 0) {
+                nb_filters += this.currentFilters[index].val.length;
             }
-        }      
+        }
         return nb_filters;
     }
 
@@ -209,7 +209,7 @@ export class SearchComponent implements OnInit {
             }
         });
         const actionSheet = await this.actionSheetController.create({
-            header: this.translate.instant('lang.actions') + (item.reference !== null ? ' - ' + item.reference : '' ),
+            header: this.translate.instant('lang.actions') + (item.reference !== null ? ' - ' + item.reference : ''),
             buttons: buttons
         });
         await actionSheet.present();
@@ -237,13 +237,13 @@ export class SearchComponent implements OnInit {
     }
 
     launchSearch() {
-        this.currentFilters = this.filters.filter((item: any)=> !this.functionsService.empty(item.val));
         this.ressources = [];
         this.offset = 0;
         return new Promise((resolve) => {
             this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
                 .pipe(
-                    tap((data: any) => {                        
+                    tap((data: any) => {
+                        this.currentFilters = JSON.parse(JSON.stringify(this.filters.filter((item: any) => !this.functionsService.empty(item.val))));
                         this.ressources = this.formatListDatas(data.documents);
                         this.count = data.count;
                         this.infiniteScroll.disabled = false;
@@ -336,7 +336,7 @@ export class SearchComponent implements OnInit {
 
     async openPromptProof(item: any) {
         const alert = await this.alertController.create({
-            cssClass : 'promptProof',
+            cssClass: 'promptProof',
             header: this.translate.instant('lang.download'),
             inputs: [
                 {
@@ -377,7 +377,7 @@ export class SearchComponent implements OnInit {
         const onlyProof = mode === 'onlyProof' ? '&onlyProof=true' : '';
 
         return new Promise((resolve) => {
-            this.http.get(`../rest/documents/${item.id}/proof?mode=stream${onlyProof}`, {responseType: 'blob' as 'json' })
+            this.http.get(`../rest/documents/${item.id}/proof?mode=stream${onlyProof}`, { responseType: 'blob' as 'json' })
                 .pipe(
                     tap((data: any) => {
                         const today = new Date();
@@ -412,7 +412,7 @@ export class SearchComponent implements OnInit {
     }
 
     clearFilters() {
-        $(".workflowStates").each(function(){
+        $(".workflowStates").each(function () {
             $(this).prop("checked", false);
         });
         for (let index = 0; index < this.filters.length; index++) {
@@ -434,12 +434,12 @@ export class SearchComponent implements OnInit {
             this.filters.find((element: any) => element.id === filter.id).val = '';
         } else {
             if (filter.id === 'workflowStates') {
-                    $(".workflowStates").each(function() {
-                        if ($(this).val() === item) {
-                            $(this).prop("checked", false);
-                            return false;
-                        }
-                    });
+                $(".workflowStates").each(function () {
+                    if ($(this).val() === item) {
+                        $(this).prop("checked", false);
+                        return false;
+                    }
+                });
             } else {
                 const index = filter.val.indexOf(item);
                 filter.val.splice(index, 1);
@@ -454,7 +454,7 @@ export class SearchComponent implements OnInit {
     }
 
     checkInput() {
-        if ((this.filters.find((el: any) => el.id === 'title').val === '') && (this.filters.find((el: any) => el.id === 'reference').val === '')) {            
+        if ((this.filters.find((el: any) => el.id === 'title').val === '') && (this.filters.find((el: any) => el.id === 'reference').val === '')) {
             if ((this.filters.find((el: any) => el.id === 'workflowStates').val.length === 0) && (this.filters.find((el: any) => el.id === 'workflowUsers').val.length === 0)) {
                 this.clearFilters();
                 this.currentFilters = [];
