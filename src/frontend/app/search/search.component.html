@@ -12,42 +12,49 @@
         </ion-buttons>
     </ion-toolbar>
     <ion-toolbar *ngIf="this.currentFilters.length > 0" color="primary" style="padding-left: 1px;padding-right: 1px;">
-        <div class="scrollfilters" slot="start">
-            <ion-button class="clearFilter" 
-                shape="round" size="small" fill="clear" slot="start" color="primary" (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
+        <div style="display: flex;">
+            <ion-button class="clearFilter" shape="round" size="small" fill="clear" slot="start" color="primary"
+                (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
                 <ion-icon slot="icon-only" name="trash-bin-outline" color="light"></ion-icon>
             </ion-button>
-            <div *ngFor="let currentFilter of currentFilters">
-                <ion-chip outline *ngIf="currentFilter.id === 'title' && currentFilter.val !== ''" color="primary" style="background: white;" 
-                    [title]="'lang.titleSearch' | translate" (click)="removeFilter(currentFilter)">
-                    <ion-icon name="document-text"></ion-icon>
-                    <ion-label >{{ currentFilter.val }}</ion-label>
-                    <ion-icon name="close-circle"></ion-icon>
-                </ion-chip>
-                <ion-chip outline *ngIf="currentFilter.id === 'reference' && currentFilter.val !== ''" color="primary" style="background: white;" 
-                    [title]="'lang.titleSearch' | translate" (click)="removeFilter(currentFilter)">
-                    <ion-icon name="key"></ion-icon>
-                    <ion-label >{{ currentFilter.val }}</ion-label>
-                    <ion-icon name="close-circle"></ion-icon>
-                </ion-chip>
-                <div *ngIf="currentFilter.id === 'workflowStates' && currentFilter.val.length > 0">
-                    <ion-chip outline *ngFor="let item of currentFilter.val" color="primary" style="background: white;" 
-                    [title]="'lang.workflowStatesSearch' | translate" (click)="removeFilter(currentFilter, item)">
-                        <ion-icon name="options-outline"></ion-icon>
-                        <ion-label>{{ getLabel(item) | translate}}</ion-label>
+            <div class="scrollfilters" slot="start">
+                <div *ngFor="let currentFilter of currentFilters">
+                    <ion-chip outline *ngIf="currentFilter.id === 'title' && currentFilter.val !== ''" color="primary"
+                        style="background: white;" [title]="'lang.titleSearch' | translate"
+                        (click)="removeFilter(currentFilter)">
+                        <ion-icon name="document-text"></ion-icon>
+                        <ion-label>{{ currentFilter.val }}</ion-label>
                         <ion-icon name="close-circle"></ion-icon>
                     </ion-chip>
-                </div>
-                <div *ngIf="currentFilter.id === 'workflowUsers' && currentFilter.val.length > 0">
-                    <ion-chip outline *ngFor="let item of currentFilter.val" color="primary" style="background: white;" 
-                    [title]="'lang.workflowUsersSearch' | translate" (click)="removeFilter(currentFilter, item)">
-                        <ion-icon name="person-circle"></ion-icon>
-                        <ion-label >{{ item.firstname}} {{ item.lastname }}</ion-label>
+                    <ion-chip outline *ngIf="currentFilter.id === 'reference' && currentFilter.val !== ''"
+                        color="primary" style="background: white;" [title]="'lang.titleSearch' | translate"
+                        (click)="removeFilter(currentFilter)">
+                        <ion-icon name="key"></ion-icon>
+                        <ion-label>{{ currentFilter.val }}</ion-label>
                         <ion-icon name="close-circle"></ion-icon>
                     </ion-chip>
+                    <div *ngIf="currentFilter.id === 'workflowStates' && currentFilter.val.length > 0">
+                        <ion-chip outline *ngFor="let item of currentFilter.val" color="primary"
+                            style="background: white;" [title]="'lang.workflowStatesSearch' | translate"
+                            (click)="removeFilter(currentFilter, item)">
+                            <ion-icon name="options-outline"></ion-icon>
+                            <ion-label>{{ getLabel(item) | translate}}</ion-label>
+                            <ion-icon name="close-circle"></ion-icon>
+                        </ion-chip>
+                    </div>
+                    <div *ngIf="currentFilter.id === 'workflowUsers' && currentFilter.val.length > 0">
+                        <ion-chip outline *ngFor="let item of currentFilter.val" color="primary"
+                            style="background: white;" [title]="'lang.workflowUsersSearch' | translate"
+                            (click)="removeFilter(currentFilter, item)">
+                            <ion-icon name="person-circle"></ion-icon>
+                            <ion-label>{{ item.firstname}} {{ item.lastname }}</ion-label>
+                            <ion-icon name="close-circle"></ion-icon>
+                        </ion-chip>
+                    </div>
                 </div>
             </div>
         </div>
+
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -66,12 +73,14 @@
                                 style="display: flex;align-items: center;white-space: pre;overflow-x: auto;overflow-y: hidden;">
                                 <ng-container *ngFor="let itemW of element.workflow;let i=index;">
                                     <ion-icon *ngIf="i>0" name="chevron-forward-outline"></ion-icon>
-                                    <span class="workflow-item success" [class.success]="itemW.processDate!==null && itemW.status!=='STOP'"
+                                    <span class="workflow-item success"
+                                        [class.success]="itemW.processDate!==null && itemW.status!=='STOP'"
                                         [class.typist-interrupt]="itemW.status==='REF'"
                                         [class.interrupt]="(itemW.processDate===null && itemW.status === 'END') || itemW.status === 'STOP'"
                                         [class.current]="itemW.current"
                                         [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{itemW.userDisplay}}&nbsp;
-                                        <ion-icon *ngIf="itemW.processDate!==null && itemW.status!=='REF' && itemW.status!=='STOP'"
+                                        <ion-icon
+                                            *ngIf="itemW.processDate!==null && itemW.status!=='REF' && itemW.status!=='STOP'"
                                             name="thumbs-up-outline"></ion-icon>
                                         <ion-icon *ngIf="itemW.processDate!==null && itemW.status==='REF'"
                                             name="thumbs-down-outline"></ion-icon>
@@ -97,7 +106,8 @@
                             <ion-icon *ngIf="element.state == 'REF'" color="danger" slot="start"
                                 name="thumbs-down-outline">
                             </ion-icon>
-                            <ion-label (click)="goTo(element.id)" [title]="'lang.accessDocument' | translate" style="cursor: pointer;">
+                            <ion-label (click)="goTo(element.id)" [title]="'lang.accessDocument' | translate"
+                                style="cursor: pointer;">
                                 <p>{{element.reference}}</p>
                                 <h2>{{element.title}}</h2>
                                 <p *ngIf="element.reason.length > 0" class="primary">
@@ -118,7 +128,8 @@
                             </ion-buttons>
                         </ion-item>
                         <ion-item-options>
-                            <ion-item-option *ngIf="element.state !== 'PROG'" color="primary" (click)="openPromptProof(element)">
+                            <ion-item-option *ngIf="element.state !== 'PROG'" color="primary"
+                                (click)="openPromptProof(element)">
                                 <ion-icon slot="bottom" name="ribbon-sharp"></ion-icon>
                                 {{'lang.download' | translate}}
                             </ion-item-option>
@@ -153,7 +164,8 @@
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.' + filter.id + 'Search' | translate}}
                     </ion-label>
-                    <ion-input [(ngModel)]="filter.val" [value]="filter.val" (keyup.enter)="launchSearch()" (ionChange)="checkInput()"></ion-input>
+                    <ion-input [(ngModel)]="filter.val" [value]="filter.val" (keyup.enter)="launchSearch()"
+                        (ionChange)="checkInput()"></ion-input>
                 </ion-item>
             </ng-container>
             <ng-container *ngIf="filter.type === 'checkbox'">
@@ -163,7 +175,8 @@
                 <ion-item *ngFor="let val of filter.values;let i=index;">
                     <ion-label>{{val.label | translate}}</ion-label>
                     <ion-checkbox (ionChange)="toggleItem(filter, val, $event.detail.checked)"
-                        [checked]="filter.val.indexOf(val.id) > -1" slot="end" [value]="val.id" class="workflowStates"></ion-checkbox>
+                        [checked]="filter.val.indexOf(val.id) > -1" slot="end" [value]="val.id" class="workflowStates">
+                    </ion-checkbox>
                 </ion-item>
             </ng-container>
             <ng-container *ngIf="filter.type === 'autocompleteUsers'">
