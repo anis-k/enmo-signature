@@ -94,7 +94,7 @@ export class ActionsService {
                                 'width': date.width,
                                 'height': date.height,
                                 'positionX': date.positionX,
-                                'positionY': date.positionY,
+                                'positionY': date.positionY + 0.40,
                                 'type': 'SVG',
                                 'page': index,
                             }
