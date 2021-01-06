@@ -43,19 +43,23 @@ export class SearchComponent implements OnInit {
             values: [
                 {
                     id: 'PROG',
-                    label: 'lang.inprogress'
+                    label: 'lang.inprogress',
+                    selected: false
                 },
                 {
                     id: 'STOP',
-                    label: 'lang.interrupt'
+                    label: 'lang.interrupt',
+                    selected: false
                 },
                 {
                     id: 'VAL',
-                    label: 'lang.end'
+                    label: 'lang.end',
+                    selected: false
                 },
                 {
                     id: 'REF',
-                    label: 'lang.refused'
+                    label: 'lang.refused',
+                    selected: false
                 }
             ]
         },
@@ -148,7 +152,7 @@ export class SearchComponent implements OnInit {
         this.menu.close('right-menu');
     }
 
-    toggleItem(filter: any, item: any, state: boolean) {
+    toggleItem(filter: any, item: any, state: any) {
         if (!state) {
             const index = filter.val.indexOf(item.id);
             filter.val.splice(index, 1);
@@ -159,11 +163,13 @@ export class SearchComponent implements OnInit {
 
     formatDatas() {
         const objToSend: any = {};
-        const tmpArr = this.filters.filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0));
+        const tmpArr = JSON.parse(JSON.stringify(this.filters.filter((filter: any) => (filter.type === 'text' && filter.val !== '') || (filter.type !== 'text' && filter.val.length > 0))));
 
         tmpArr.forEach((filter: any) => {
             if (filter.id === 'workflowUsers') {
                 objToSend[filter.id] = filter.val.map((item: any) => item.id);
+            } else if (filter.id === 'workflowStates') {
+                objToSend[filter.id] = filter.values.filter((item: any) => item.selected).map((item: any) => item.id);
             } else {
                 objToSend[filter.id] = filter.val;
             }
@@ -239,11 +245,12 @@ export class SearchComponent implements OnInit {
     launchSearch() {
         this.ressources = [];
         this.offset = 0;
+        this.refreshCurrentFilter();
+
         return new Promise((resolve) => {
             this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
                 .pipe(
                     tap((data: any) => {
-                        this.currentFilters = JSON.parse(JSON.stringify(this.filters.filter((item: any) => !this.functionsService.empty(item.val))));
                         this.ressources = this.formatListDatas(data.documents);
                         this.count = data.count;
                         this.infiniteScroll.disabled = false;
@@ -256,6 +263,17 @@ export class SearchComponent implements OnInit {
                     })
                 ).subscribe();
         });
+    }
+
+    refreshCurrentFilter() {
+        this.currentFilters = JSON.parse(JSON.stringify(this.filters.filter((item: any) => !this.functionsService.empty(item.val))));
+
+        if (this.currentFilters.filter((item: any) => item.id === 'workflowStates').length > 0) {
+            this.currentFilters.filter((item: any) => item.id === 'workflowStates')[0].val = this.currentFilters.filter((item: any) => item.id === 'workflowStates')[0].values.filter((item: any) => item.selected);
+            if (this.currentFilters.filter((item: any) => item.id === 'workflowStates')[0].val.length === 0) {
+                this.currentFilters = this.currentFilters.filter((item: any) => item.id !== 'workflowStates');
+            }
+        }
     }
 
     loadData(event: any) {
@@ -412,16 +430,19 @@ export class SearchComponent implements OnInit {
     }
 
     clearFilters() {
-        $(".workflowStates").each(function () {
-            $(this).prop("checked", false);
-        });
         for (let index = 0; index < this.filters.length; index++) {
             if (!Array.isArray(this.filters[index].val) && this.filters[index].val !== '') {
                 this.filters[index].val = '';
             }
 
-            if (Array.isArray(this.filters[index].val) && this.filters[index].val.length > 0 && (this.filters[index].id === 'workflowUsers')) {
+            if (Array.isArray(this.filters[index].val)) {
                 this.filters[index].val = [];
+                this.filters[index].values = this.filters[index].values.map((item: any) => {
+                    return {
+                        ...item,
+                        selected : false
+                    };
+                });
             }
         }
         if (this.ressources.length > 0) {
@@ -434,15 +455,10 @@ export class SearchComponent implements OnInit {
             this.filters.find((element: any) => element.id === filter.id).val = '';
         } else {
             if (filter.id === 'workflowStates') {
-                $(".workflowStates").each(function () {
-                    if ($(this).val() === item) {
-                        $(this).prop("checked", false);
-                        return false;
-                    }
-                });
+                this.filters.find((element: any) => element.id === filter.id).values.filter((element: any) => element.id === item)[0].selected = false;
             } else {
                 const index = filter.val.indexOf(item);
-                filter.val.splice(index, 1);
+                this.filters.filter((element: any) => element.id === filter.id)[0].val.splice(index, 1);
             }
         }
         this.launchSearch();

@@ -36,9 +36,9 @@
                     <div *ngIf="currentFilter.id === 'workflowStates' && currentFilter.val.length > 0">
                         <ion-chip outline *ngFor="let item of currentFilter.val" color="primary"
                             style="background: white;" [title]="'lang.workflowStatesSearch' | translate"
-                            (click)="removeFilter(currentFilter, item)">
+                            (click)="removeFilter(currentFilter, item.id)">
                             <ion-icon name="options-outline"></ion-icon>
-                            <ion-label>{{ getLabel(item) | translate}}</ion-label>
+                            <ion-label>{{ item.label | translate}}</ion-label>
                             <ion-icon name="close-circle"></ion-icon>
                         </ion-chip>
                     </div>
@@ -174,8 +174,8 @@
                 </ion-list-header>
                 <ion-item *ngFor="let val of filter.values;let i=index;">
                     <ion-label>{{val.label | translate}}</ion-label>
-                    <ion-checkbox (ionChange)="toggleItem(filter, val, $event.detail.checked)"
-                        [checked]="filter.val.indexOf(val.id) > -1" slot="end" [value]="val.id" class="workflowStates">
+                    <ion-checkbox (ngModelChange)="toggleItem(filter, val, !val.selected)" [(ngModel)]="val.selected" [checked]="val.selected"
+                        slot="end" [value]="val.id" class="workflowStates">
                     </ion-checkbox>
                 </ion-item>
             </ng-container>
