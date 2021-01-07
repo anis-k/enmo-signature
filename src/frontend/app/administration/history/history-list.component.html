@@ -11,30 +11,29 @@
             </ion-menu-button>
         </ion-buttons>
     </ion-toolbar>
-    <ion-toolbar color="primary">
-        <ion-title slot="end" *ngIf="getNbFilters() >= 0">{{getNbFilters()}} {{'lang.currentFilters' | translate}}</ion-title>
-        <div class="scrollfilters" slot="start">
-            <ion-button *ngIf="getNbFilters() > 0" class="clearFilter" 
-                shape="round" size="small" slot="start" color="primary" (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
-                <ion-icon slot="icon-only" name="backspace" color="light"></ion-icon>
+    <ion-toolbar color="primary" *ngIf="getNbFilters() > 0" color="primary" style="padding-left: 1px;padding-right: 1px;">
+        <ion-button class="clearFilter" shape="round" size="small" fill="clear" slot="start" color="primary"
+                (click)="clearFilters()" [title]="'lang.clearFilters' | translate">
+                <ion-icon slot="icon-only" name="trash-bin-outline" color="light"></ion-icon>
             </ion-button>
-                <ion-chip *ngFor="let filter of this.filters.messageTypes" [title]="'lang.actions' | translate"  color="light" (click)="removeFilter(filter)">
-                    <ion-icon name="options-outline"></ion-icon>
+        <div class="scrollfilters" slot="start">
+                <ion-chip outline *ngFor="let filter of this.filters.messageTypes" [title]="'lang.actions' | translate"  color="primary" (click)="removeFilter(filter)">
+                    <ion-icon name="swap-horizontal-outline"></ion-icon>
                     <ion-label>{{ 'lang.' + filter | translate }}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
-                <ion-chip *ngIf="filters.user !== ''" [title]="'lang.userName' | translate" color="light" (click)="removeFilter(this.filters.user)">
-                    <ion-icon name="person-circle"></ion-icon>
+                <ion-chip outline *ngIf="filters.user !== ''" [title]="'lang.userName' | translate" color="primary" (click)="removeFilter(this.filters.user)">
+                    <ion-icon name="person-outline"></ion-icon>
                     <ion-label >{{ this.filters.user}}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
-                <ion-chip *ngIf="filters.date.start !== null" [title]="'lang.since' | translate" color="light" (click)="removeFilter(this.filters.date.start)">
-                    <ion-icon name="calendar"></ion-icon>
+                <ion-chip outline *ngIf="filters.date.start !== null" [title]="'lang.since' | translate" color="primary" (click)="removeFilter(this.filters.date.start)">
+                    <ion-icon name="today-outline"></ion-icon>
                     <ion-label >{{ this.filters.date.start | date:'dd/MM/yyyy'}}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
-                <ion-chip *ngIf="filters.date.end !== null" [title]="'lang.until' | translate" color="light" (click)="removeFilter(this.filters.date.end)">
-                    <ion-icon name="calendar"></ion-icon>
+                <ion-chip outline *ngIf="filters.date.end !== null" [title]="'lang.until' | translate" color="primary" (click)="removeFilter(this.filters.date.end)">
+                    <ion-icon name="calendar-outline"></ion-icon>
                     <ion-label >{{ this.filters.date.end | date:'dd/MM/yyyy'}}</ion-label>
                     <ion-icon name="close-circle"></ion-icon>
                 </ion-chip>
