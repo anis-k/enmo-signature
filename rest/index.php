@@ -56,6 +56,7 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
 $app->get('/authenticationInformations', \SrcCore\controllers\AuthenticationController::class . ':getInformations');
 $app->post('/authenticate', \SrcCore\controllers\AuthenticationController::class . ':authenticate');
 $app->get('/authenticate/token', \SrcCore\controllers\AuthenticationController::class . ':getRefreshedToken');
+$app->get('/authenticate/logout', \SrcCore\controllers\AuthenticationController::class . ':logout');
 
 //Attachments
 $app->get('/attachments/{id}', \Attachment\controllers\AttachmentController::class . ':getById');
@@ -112,6 +113,9 @@ $app->put('/languages', \SrcCore\controllers\LanguageController::class . ':gener
 //PasswordRules
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
 $app->put('/passwordRules', \SrcCore\controllers\PasswordController::class . ':updateRules');
+
+// Privileges
+$app->get('/privileges', \Group\controllers\PrivilegeController::class . ':getPrivileges');
 
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');

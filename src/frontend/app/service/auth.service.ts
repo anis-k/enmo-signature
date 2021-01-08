@@ -5,6 +5,8 @@ import { NotificationService } from './notification.service';
 import { SignaturesContentService } from './signatures.service';
 import { LocalStorageService } from './local-storage.service';
 import { NavController } from '@ionic/angular';
+import { catchError, tap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -46,8 +48,17 @@ export class AuthService {
     }
 
     logout() {
-        this.clearTokens();
-        this.navCtrl.navigateRoot('/login');
+        this.http.get('../rest/authenticate/logout')
+            .pipe(
+                tap(() => {
+                    this.clearTokens();
+                    this.navCtrl.navigateRoot('/login');
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
         // this.router.navigate(['/login']);
     }
 

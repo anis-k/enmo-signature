@@ -57,10 +57,13 @@ export class HistoryListComponent {
         'EMAIL': 'mail-outline',
         'SUPPRESSION': 'trash-bin-outline',
         'MODIFICATION': 'create-outline',
-        'LOGIN': 'log-in-outline'
+        'LOGIN': 'log-in-outline',
+        'LOGOUT': 'log-out-outline'
     };
 
     actions: any[] = [];
+    privileges: any[] = [];
+
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
 
     constructor(
@@ -87,18 +90,19 @@ export class HistoryListComponent {
         this.menu.open('right-menu');
     }
 
-    ionViewWillEnter() {
+    async ionViewWillEnter() {
         this.filters.messageTypes = [];
         this.filters.user = '';
         this.filters.date.start = this.filters.date.end = null;
         this.menu.enable(true, 'left-menu');
         this.menu.enable(true, 'right-menu');
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
-        this.gesActions();
+        this.getActions();
         this.getDatas();
+        await this.getPrivileges();
     }
 
-    gesActions() {
+    getActions() {
         this.http.get(`../rest/history/messageTypes`, this.filters)
             .pipe(
                 tap((data: any) => {
@@ -108,13 +112,33 @@ export class HistoryListComponent {
                             label: this.translate.instant('lang.' + item)
                         };
                     });
-                    this.actions = this.sortPipe.transform(this.actions, 'label');   
+                    this.actions = this.sortPipe.transform(this.actions, 'label');
                 }),
                 catchError((err: any) => {
                     this.notificationService.handleErrors(err);
                     return of(false);
                 })
             ).subscribe();
+    }
+
+    async getPrivileges() {
+        return new Promise(resolve => {
+            this.http.get(`../rest/privileges`)
+                .pipe(
+                    tap((data: any) => {
+                        this.privileges = data.privileges;
+                        this.privileges.forEach((privilege, index) => {
+                            this.privileges[index].label = this.translate.instant('lang.' + privilege.id + 'Admin');
+                        });
+                        resolve(true);
+                    }),
+                    catchError((err: any) => {
+                        this.notificationService.handleErrors(err);
+                        resolve(false);
+                        return of(false);
+                    })
+                ).subscribe();
+        });
     }
 
     getDatas() {
@@ -125,7 +149,16 @@ export class HistoryListComponent {
                 .pipe(
                     tap((data: any) => {
                         this.resources = data.history;
-                        this.count = data.total;                                                
+                        this.resources.forEach((history, index) => {
+                            this.privileges.forEach(privilege => {
+                                if (history.message.includes(privilege.id)) {
+                                    this.resources[index].message = this.resources[index].message.replace(privilege.id, privilege.label);
+                                }
+                            });
+                            this.resources[index].message = this.resources[index].message.replace('VAL', this.translate.instant('lang.validate'));
+                            this.resources[index].message = this.resources[index].message.replace('REF', this.translate.instant('lang.reject'));
+                        });
+                        this.count = data.total;
                         resolve(true);
                     }),
                     catchError((err: any) => {
@@ -151,6 +184,15 @@ export class HistoryListComponent {
             this.http.post('../rest/history?limit=' + this.limit + '&offset=' + this.offset, this.filters).pipe(
                 tap((data: any) => {
                     this.resources = this.resources.concat(data.history);
+                    this.resources.forEach((history, index) => {
+                        this.privileges.forEach(privilege => {
+                            if (history.message.includes(privilege.id)) {
+                                this.resources[index].message = this.resources[index].message.replace(privilege.id, privilege.label);
+                            }
+                        });
+                        this.resources[index].message = this.resources[index].message.replace('VAL', this.translate.instant('lang.validate'));
+                        this.resources[index].message = this.resources[index].message.replace('REF', this.translate.instant('lang.reject'));
+                    });
                     event.target.complete();
                     if (this.count === this.resources.length) {
                         event.target.disabled = true;

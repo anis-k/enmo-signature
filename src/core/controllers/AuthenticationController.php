@@ -236,6 +236,19 @@ class AuthenticationController
         return $response->withJson(['token' => AuthenticationController::getJWT()]);
     }
 
+    public function logout(Request $request, Response $response)
+    {
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'users',
+            'objectId'      => $GLOBALS['id'],
+            'type'          => 'LOGOUT',
+            'message'       => '{userLogOut}'
+        ]);
+
+        $response->withStatus(204);
+    }
+
     public static function getJWT()
     {
         $sessionTime = AuthenticationController::MAX_DURATION_TOKEN;

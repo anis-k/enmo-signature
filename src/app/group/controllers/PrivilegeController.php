@@ -14,6 +14,8 @@
 
 namespace Group\controllers;
 
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SrcCore\models\ValidatorModel;
 use User\models\UserGroupModel;
 use Group\models\GroupPrivilegeModel;
@@ -30,6 +32,11 @@ class PrivilegeController
         ['id' => 'manage_documents',            'type' => 'simple'],
         ['id' => 'indexation',                  'type' => 'simple']
     ];
+
+    public function getPrivileges(Request $request, Response $response)
+    {
+        return $response->withJson(['privileges' => PrivilegeController::PRIVILEGES]);
+    }
 
     public static function getPrivilegesByUserId(array $args)
     {
