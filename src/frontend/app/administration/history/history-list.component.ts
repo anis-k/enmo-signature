@@ -62,7 +62,6 @@ export class HistoryListComponent {
     };
 
     actions: any[] = [];
-    privileges: any[] = [];
 
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
 
@@ -99,7 +98,6 @@ export class HistoryListComponent {
         this.signaturesService.initTemplate(this.rightContent, this.viewContainerRef, 'rightContent');
         this.getActions();
         this.getDatas();
-        await this.getPrivileges();
     }
 
     getActions() {
@@ -121,26 +119,6 @@ export class HistoryListComponent {
             ).subscribe();
     }
 
-    async getPrivileges() {
-        return new Promise(resolve => {
-            this.http.get(`../rest/privileges`)
-                .pipe(
-                    tap((data: any) => {
-                        this.privileges = data.privileges;
-                        this.privileges.forEach((privilege, index) => {
-                            this.privileges[index].label = this.translate.instant('lang.' + privilege.id + 'Admin');
-                        });
-                        resolve(true);
-                    }),
-                    catchError((err: any) => {
-                        this.notificationService.handleErrors(err);
-                        resolve(false);
-                        return of(false);
-                    })
-                ).subscribe();
-        });
-    }
-
     getDatas() {
         this.resources = [];
         this.offset = 0;
@@ -149,15 +127,6 @@ export class HistoryListComponent {
                 .pipe(
                     tap((data: any) => {
                         this.resources = data.history;
-                        this.resources.forEach((history, index) => {
-                            this.privileges.forEach(privilege => {
-                                if (history.message.includes(privilege.id)) {
-                                    this.resources[index].message = this.resources[index].message.replace(privilege.id, privilege.label);
-                                }
-                            });
-                            this.resources[index].message = this.resources[index].message.replace('VAL', this.translate.instant('lang.validate'));
-                            this.resources[index].message = this.resources[index].message.replace('REF', this.translate.instant('lang.reject'));
-                        });
                         this.count = data.total;
                         resolve(true);
                     }),
@@ -184,15 +153,6 @@ export class HistoryListComponent {
             this.http.post('../rest/history?limit=' + this.limit + '&offset=' + this.offset, this.filters).pipe(
                 tap((data: any) => {
                     this.resources = this.resources.concat(data.history);
-                    this.resources.forEach((history, index) => {
-                        this.privileges.forEach(privilege => {
-                            if (history.message.includes(privilege.id)) {
-                                this.resources[index].message = this.resources[index].message.replace(privilege.id, privilege.label);
-                            }
-                        });
-                        this.resources[index].message = this.resources[index].message.replace('VAL', this.translate.instant('lang.validate'));
-                        this.resources[index].message = this.resources[index].message.replace('REF', this.translate.instant('lang.reject'));
-                    });
                     event.target.complete();
                     if (this.count === this.resources.length) {
                         event.target.disabled = true;
@@ -229,31 +189,31 @@ export class HistoryListComponent {
     }
 
     clearFilters() {
-        $(".checkedAction").each(function(){
-            $(this).prop("checked", false);
-        });  
+        $('.checkedAction').each(function() {
+            $(this).prop('checked', false);
+        });
         document.querySelector('ion-searchbar').getInputElement().then((searchInput) => {
             searchInput.value = '';
-         });  
-        this.filters.user = ''; 
+         });
+        this.filters.user = '';
         this.filters.date.start = this.filters.date.end = null;
         this.getDatas();
     }
 
     removeFilter(filter: any) {
         if (this.filters.messageTypes.includes(filter)) {
-            $(".checkedAction").each(function() {
+            $('.checkedAction').each(function() {
                 if ($(this).val() === filter) {
-                    $(this).prop("checked", false);
+                    $(this).prop('checked', false);
                     return false;
                 }
-            }); 
+            });
         }
         if (this.filters.user === filter) {
             document.querySelector('ion-searchbar').getInputElement().then((searchInput) => {
                 searchInput.value = '';
-            });  
-            this.filters.user = '';   
+            });
+            this.filters.user = '';
         }
         if (this.filters.date.start === filter) {
             this.filters.date.start = null;

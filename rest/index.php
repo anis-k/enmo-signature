@@ -114,9 +114,6 @@ $app->put('/languages', \SrcCore\controllers\LanguageController::class . ':gener
 $app->get('/passwordRules', \SrcCore\controllers\PasswordController::class . ':get');
 $app->put('/passwordRules', \SrcCore\controllers\PasswordController::class . ':updateRules');
 
-// Privileges
-$app->get('/privileges', \Group\controllers\PrivilegeController::class . ':getPrivileges');
-
 //Users
 $app->post('/users', \User\controllers\UserController::class . ':create');
 $app->get('/users', \User\controllers\UserController::class . ':get');

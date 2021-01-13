@@ -15,13 +15,16 @@
 namespace History\controllers;
 
 use Attachment\models\AttachmentModel;
+use Configuration\models\ConfigurationModel;
 use Docserver\controllers\DocserverController;
 use Docserver\models\AdrModel;
 use Docserver\models\DocserverModel;
 use Document\controllers\DigitalSignatureController;
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
+use Email\models\EmailModel;
 use Group\controllers\PrivilegeController;
+use Group\models\GroupModel;
 use History\models\HistoryModel;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
@@ -30,10 +33,13 @@ use Slim\Http\Response;
 use SrcCore\controllers\LanguageController;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\DatabaseModel;
+use SrcCore\models\PasswordModel;
 use SrcCore\models\TextFormatModel;
 use SrcCore\models\ValidatorModel;
+use User\models\SignatureModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
+use Workflow\models\WorkflowTemplateModel;
 
 class HistoryController
 {
@@ -118,13 +124,15 @@ class HistoryController
         }
 
         $history = HistoryModel::get([
-            'select'    => ['code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'count(1) OVER()'],
+            'select'    => ['id', 'code', 'type', '"user"', 'date', 'message', 'data', 'user_id', 'ip', 'object_id', 'object_type', 'count(1) OVER()'],
             'where'     => $where,
             'data'      => $data,
             'orderBy'   => ['date DESC'],
             'limit'     => $limit,
             'offset'    => $offset
         ]);
+        $total = $history[0]['count'] ?? 0;
+        $history = array_column($history, null, 'id');
 
         $formattedHistory = [];
 
@@ -136,21 +144,75 @@ class HistoryController
             $langValues[] = $value;
         }
 
-        $total = $history[0]['count'] ?? 0;
+        $objectTypes = ['attachment', 'attachments', 'configurations', 'emails', 'document', 'groups', 'main_documents', 'password_rules', 'signatures', 'workflowTemplates', 'users'];
+
+        foreach ($objectTypes as $objectType) {
+            $filteredHistory = array_filter($history, function ($element) use ($objectType) {
+                return $element['object_type'] == $objectType;
+            });
+            if (!empty($filteredHistory)) {
+                $filteredHistoryIds = array_column($filteredHistory, 'object_id', 'id');
+                $objects = [];
+                if (in_array($objectType,  ['attachment', 'attachments'])) {
+                    $objects = AttachmentModel::get(['select' => ['id', 'title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                } elseif ($objectType == 'configurations') {
+                    $objects = ConfigurationModel::get(['select' => ['id', 'label as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                }  elseif ($objectType == 'emails') {
+                    $objects = EmailModel::get(['select' => ['id', 'subject as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                } elseif ($objectType == 'groups') {
+                    $objects = GroupModel::get(['select' => ['id', 'label as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                } elseif (in_array($objectType, ['main_documents', 'document'])) {
+                    $objects = DocumentModel::get(['select' => ['id', 'title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                } elseif ($objectType == 'password_rules') {
+                    $objects = PasswordModel::getRules(['select' => ['id', 'label as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                } elseif ($objectType == 'workflowTemplates') {
+                    $objects = WorkflowTemplateModel::get(['select' => ['id', 'title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                } elseif ($objectType == 'users') {
+                    $objects = UserModel::get(['select' => ['id', "(firstname || ' ' || lastname) as title"], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
+                }
+                $objects = array_column($objects, 'title', 'id');
+
+                foreach ($filteredHistoryIds as $key => $objectId) {
+                    $history[$key]['label'] = $objects[$objectId];
+                }
+            }
+        }
+
         foreach ($history as $value) {
             $date = new \DateTime($value['date']);
 
             $data = json_decode($value['data'], true);
+
+            $message = preg_replace($langKeys, $langValues, $value['message']);
+
+            foreach (PrivilegeController::PRIVILEGES as $privilege) {
+                $message = str_replace($privilege['id'], $lang[$privilege['id']], $message);
+            }
+
+            if ($value['type'] == 'ACTION') {
+                $message = str_replace('VAL', $lang['validate'], $message);
+                $message = str_replace('REF', $lang['reject'], $message);
+
+                if (!empty($data['mode'])) {
+                    $message .= ' - ' . $lang[$data['mode'] . 'User'];
+                }
+                if (!empty($data['signatureMode'])) {
+                    $message .= ' - ' . $lang[$data['signatureMode'] . 'User'];
+                }
+            }
+
             $formattedHistory[] = [
-                'code'      => $value['code'],
-                'objectId'  => $value['object_id'],
-                'type'      => $value['type'],
-                'userId'    => $value['user_id'],
-                'user'      => $value['user'],
-                'date'      => $date->format('c'),
-                'ip'        => $value['ip'],
-                'message'   => preg_replace($langKeys, $langValues, $value['message']),
-                'data'      => $data
+                'code'        => $value['code'],
+                'objectId'    => $value['object_id'],
+                'objectType'  => $value['object_type'],
+                'type'        => $value['type'],
+                'userId'      => $value['user_id'],
+                'user'        => $value['user'],
+                'date'        => $date->format('c'),
+                'ip'          => $value['ip'],
+                'message'     => $message,
+                'data'        => $data,
+                'objectLabel' => $value['label']
             ];
         }
 
@@ -179,7 +241,7 @@ class HistoryController
 
         HistoryController::add([
             'code'          => 'OK',
-            'objectType'    => 'history',
+            'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
             'message'       => '{documentHistoryViewed}',
@@ -434,7 +496,7 @@ class HistoryController
 
         HistoryController::add([
             'code'          => 'OK',
-            'objectType'    => 'history',
+            'objectType'    => 'main_documents',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
             'message'       => '{documentProofViewed}',
@@ -593,7 +655,7 @@ class HistoryController
 
         HistoryController::add([
             'code'          => 'OK',
-            'objectType'    => 'history',
+            'objectType'    => 'users',
             'objectId'      => $args['id'],
             'type'          => 'VIEW',
             'message'       => '{userHistoryViewed}',

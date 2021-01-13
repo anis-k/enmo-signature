@@ -435,6 +435,13 @@
 		"userName": "Nom / prénom de l'utilisateur",
 		"groupCompany": "société du groupe Xelians",
 		"about": "À propos de Maarch Parapheur",
-		"accessMenu": "Accéder au menu"
+		"accessMenu": "Accéder au menu",
+		"groups": "Groupes",
+		"main_documents": "Documents",
+		"document": "Documents",
+		"attachments": "Pièce jointes",
+		"emails": "Courriels",
+		"workflowTemplates": "Modèles de circuit",
+		"configurations": "Configurations"
 	}
 }

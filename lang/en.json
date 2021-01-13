@@ -438,6 +438,13 @@
         "font": "Police",
         "color": "Color",
         "langISO": "fr-FR",
-        "userName": "Last name / first name"
+        "userName": "Last name / first name",
+        "groups": "Groups",
+        "main_documents": "Documents",
+        "document": "Documents",
+        "attachments": "Attachments",
+        "emails": "Emails",
+        "workflowTemplates": "Workflow templates",
+        "configurations": "Configurations"
     }
 }

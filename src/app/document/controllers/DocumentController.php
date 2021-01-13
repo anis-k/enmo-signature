@@ -851,7 +851,7 @@ class DocumentController
             'objectId'      => $args['id'],
             'type'          => 'ACTION',
             'message'       => $historyMessagePart . DocumentController::ACTIONS[$args['actionId']],
-            'data'          => ['actionId' => $args['actionId'], 'mode' => $workflow['mode']]
+            'data'          => ['actionId' => $args['actionId'], 'mode' => $workflow['mode'], 'signatureMode' => $workflow['signature_mode']]
         ]);
 
         return $response->withJson(['success' => 'success']);
