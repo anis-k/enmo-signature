@@ -1,5 +1,5 @@
 import { Component, ViewChild, Output, EventEmitter } from '@angular/core';
-import { SignaturePad } from 'angular2-signaturepad/signature-pad';
+import { SignaturePad } from 'angular2-signaturepad';
 import { Observable } from 'rxjs';
 import { SignaturesContentService } from '../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
