@@ -124,7 +124,7 @@ export class SignaturesComponent implements OnInit {
             this.notificationService.success('lang.signatureInDocAdded');
             this.modalController.dismiss('success');
         } else {
-            if (signPosCurrentPage.length > 0 && signPosOtherPage.length === 0) {
+            if (signPosCurrentPage.length > 0) {
                 signature.positionX = signPosCurrentPage[0].positionX;
                 signature.positionY = signPosCurrentPage[0].positionY;
                 this.storeSignature(signature, this.signaturesService.currentPage);
