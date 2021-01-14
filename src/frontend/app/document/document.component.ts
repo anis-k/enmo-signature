@@ -251,6 +251,7 @@ export class DocumentComponent implements OnInit {
             cssClass: 'my-custom-class',
             componentProps: {
                 currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
+                posCurrentUser: this.mainDocument.workflow.indexOf(this.mainDocument.workflow.filter((item: { current: boolean; }) => item.current === true)[0])
             }
         });
         await modal.present();
