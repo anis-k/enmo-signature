@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { FunctionsService } from '../../service/functions.service';
 import { SignaturesContentService } from '../../service/signatures.service';
 
 @Component({
@@ -12,7 +13,10 @@ export class MainDocumentDetailComponent implements OnInit {
 
     @Input() mainDocument: any;
 
-    constructor(public signaturesService: SignaturesContentService) { }
+    constructor(
+        public signaturesService: SignaturesContentService,
+        public functionsService: FunctionsService,
+    ) { }
 
     ngOnInit(): void { }
 

@@ -7,6 +7,7 @@ import { NotificationService } from '../service/notification.service';
 import { of } from 'rxjs';
 import { FunctionsService } from './functions.service';
 import { resolve } from 'path';
+import { AlertController } from '@ionic/angular';
 
 @Injectable({
     providedIn: 'root'
@@ -18,7 +19,8 @@ export class ActionsService {
         public translate: TranslateService,
         public notificationService: NotificationService,
         public signaturesService: SignaturesContentService,
-        private functionsService: FunctionsService
+        private functionsService: FunctionsService,
+        public alertController: AlertController,
     ) { }
 
     sendDocument(note: string, eSignature: any = null, signatureLength: any = null, tmpUniqueId: string = null, imgDocElements: any[] = null) {
@@ -145,6 +147,36 @@ export class ActionsService {
             reader.onloadend = () => {
                 resolve(reader.result);
             };
+        });
+    }
+
+    checkGroupMail(mainDocument: any) {
+        return new Promise(async (resolve) => {
+            if (this.functionsService.empty(mainDocument.groupMailId)) {
+                resolve(false);
+            } else {
+                const alert = await this.alertController.create({
+                    header: this.translate.instant('lang.mailing'),
+                    message: this.translate.instant('lang.makeActionOnDocInMailGroup'),
+                    buttons: [
+                        {
+                            text: this.translate.instant('lang.yes'),
+                            handler: () => {
+                                resolve(true);
+                            }
+                        },
+                        {
+                            role: 'cancel',
+                            text: this.translate.instant('lang.no'),
+                            cssClass: 'secondary',
+                            handler: () => {
+                                resolve(false);
+                            }
+                        }
+                    ]
+                });
+                await alert.present();
+            }
         });
     }
 }

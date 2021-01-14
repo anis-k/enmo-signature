@@ -8,6 +8,7 @@ import { debounceTime, switchMap, distinctUntilChanged, tap, finalize } from 'rx
 import { AuthService } from '../service/auth.service';
 import { MenuController, ModalController } from '@ionic/angular';
 import { ProfileComponent } from '../profile/profile.component';
+import { FunctionsService } from '../service/functions.service';
 
 
 @Component({
@@ -24,7 +25,7 @@ export class SidebarComponent implements OnInit {
 
     @ViewChild('listContent') listContent: ElementRef;
     @ViewChild('searchInput') searchInput: ElementRef;
-    
+
     searchTerm: FormControl = new FormControl();
 
     constructor(
@@ -36,6 +37,7 @@ export class SidebarComponent implements OnInit {
         public notificationService: NotificationService,
         public authService: AuthService,
         public modalController: ModalController,
+        public functionsService: FunctionsService,
     ) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),

@@ -330,6 +330,10 @@ export class DocumentComponent implements OnInit {
                     this.http.get('../rest/documents/' + params['id']).pipe(
                         tap((data: any) => {
                             this.mainDocument = data.document;
+
+                            // FOR TEST
+                            this.mainDocument.groupMailId = 14;
+
                             this.mainDocument.workflow = this.mainDocument.workflow.map((item: any) => {
                                 if (item.note) {
                                     this.hasWorkflowNotes = true;
@@ -683,6 +687,8 @@ export class DocumentComponent implements OnInit {
                                 this.load.dismiss();
                             }
                         });
+                        const massAction = await this.actionsService.checkGroupMail(this.mainDocument);
+                        console.log('massAction', massAction);
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
                         if (!this.functionsService.empty(res)) {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {

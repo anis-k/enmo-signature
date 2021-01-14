@@ -9,6 +9,12 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
+    <ion-card *ngIf="!functionsService.empty(mainDocument.groupMailId)">
+        <ion-item color="danger">
+            <ion-icon name="alert-circle" slot="start"></ion-icon>
+            <ion-label>{{'lang.docIsInMailGroup' | translate}}</ion-label>
+        </ion-item>
+    </ion-card>
     <ion-list lines="full" class="ion-no-margin">
         <ion-item [title]="mainDocument.sender">
             <ion-label color="secondary" position="floating">{{'lang.emittedBy' | translate}}</ion-label>

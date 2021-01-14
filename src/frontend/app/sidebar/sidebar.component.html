@@ -86,6 +86,7 @@
                 <ion-icon *ngIf="document.mode == 'note'" color="primary" slot="start"
                     name="chatbubble-ellipses-outline">
                 </ion-icon>
+                <ion-icon *ngIf="!functionsService.empty(document.groupMailId)" slot="start" color="danger" name="layers" class="groupMailIcon"></ion-icon>
                 <div>
                     <ion-label class="sub-label">{{document.reference}}</ion-label>
                     <ion-label class="ion-text-wrap" color="primary">{{document.title | shorten: 50: '...'}}</ion-label>

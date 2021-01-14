@@ -442,6 +442,9 @@
 		"attachments": "Pièce jointes",
 		"emails": "Courriels",
 		"workflowTemplates": "Modèles de circuit",
-		"configurations": "Configurations"
+		"configurations": "Configurations",
+		"docIsInMailGroup": "Ce document est issu d'un publipostage",
+		"makeActionOnDocInMailGroup": "Voulez-vous valider les autres documents avec les tampons actuels ?",
+		"mailing": "Publipostage"
 	}
 }
