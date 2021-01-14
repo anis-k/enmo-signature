@@ -244,7 +244,7 @@ export class DocumentComponent implements OnInit {
         });
         await actionSheet.present();
     }
-
+    
     async openSignatures() {
         const modal = await this.modalController.create({
             component: SignaturesComponent,
@@ -567,7 +567,7 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.currentPage = this.pageNum;
         }
         // this.exportAsImage();
-        this.renderImage();
+        this.renderImage();        
     }
 
     goTo(page: number) {
@@ -577,15 +577,16 @@ export class DocumentComponent implements OnInit {
         }).then((load: HTMLIonLoadingElement) => {
             this.load = load;
             this.load.present();
+            this.loadingImage = true;
+            this.load.dismiss();
         });
-        this.loadingImage = true;
         this.pageNum = page;
         // only for main document
         if (this.currentDoc === 0) {
             this.signaturesService.currentPage = this.pageNum;
         }
         // this.exportAsImage();
-        this.renderImage();
+        this.renderImage();        
     }
 
     pagesArray(n: number): number[] {

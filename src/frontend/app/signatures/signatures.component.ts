@@ -128,13 +128,11 @@ export class SignaturesComponent implements OnInit {
                 signature.positionY = signPosCurrentPage[0].positionY;
                 this.storeSignature(signature, this.signaturesService.currentPage);
             }
-
-            signPosOtherPage.forEach((position: any) => {
-                signature.positionX = position.positionX;
-                signature.positionY = position.positionY;
-                this.storeSignature(signature, position.page);
+            this.currentWorflow.signaturePositions.forEach((element: { positionX: any; positionY: any; page: number; }) => {
+                signature.positionX = element.positionX;
+                signature.positionY = element.positionY;
+                this.storeSignature(signature, element.page);
             });
-
             if (this.currentWorflow.signaturePositions.length === 1) {
                 this.notificationService.success('lang.signatureInDocAddedAlt');
             } else {

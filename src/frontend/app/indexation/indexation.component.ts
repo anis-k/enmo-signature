@@ -355,7 +355,6 @@ export class IndexationComponent implements OnInit {
             });
             await modal.present();
             const { data } = await modal.onWillDismiss();
-            console.log(data);
             if (data !== undefined) {
                 this.filesToUpload[index].signPos = data;
             }
