@@ -32,7 +32,7 @@ class AuthenticationController
     const MAX_DURATION_TOKEN = 30; //Minutes
     const ROUTES_WITHOUT_AUTHENTICATION = [
         'GET/authenticationInformations', 'POST/authenticate', 'GET/authenticate/token',
-        'POST/password', 'PUT/password', 'GET/passwordRules', 'GET/languages/{lang}'
+        'POST/password', 'PUT/password', 'GET/passwordRules', 'GET/languages/{lang}', 'GET/commitInformation'
     ];
 
 
@@ -386,6 +386,10 @@ class AuthenticationController
 
     public function getGitCommitInformation(Request $request, Response $response)
     {
+        if (!file_exists('.git/HEAD')) {
+            return $response->withJson(['hash' => null]);
+        }
+
         $head = file_get_contents('.git/HEAD');
 
         if ($head === false) {

@@ -60,7 +60,6 @@ import { DevToolComponent } from './service/debug/dev-tool.component';
 import { DevLangComponent } from './service/debug/dev-lang.component';
 import { DocumentDateListComponent } from './documentDateList/document-date-list.component';
 import { DateOptionModalComponent } from './documentDateList/dateOption/date-option-modal.component';
-import {VersionInformationComponent} from './versionInformation/version-information.component';
 
 
 // ADMINISTRATION
@@ -149,8 +148,7 @@ registerLocaleData(localeFr, 'fr-FR');
     SignatureMethodModalComponent,
     HistoryListComponent,
     DocumentDateListComponent,
-    DateOptionModalComponent,
-    VersionInformationComponent
+    DateOptionModalComponent
   ],
   imports: [
     FormsModule,

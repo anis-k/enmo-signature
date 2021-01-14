@@ -29,6 +29,6 @@
         </ion-card-content>
     </ion-card>
     <ion-note class="version-info">
-        Maarch parapheur {{environment.VERSION}} Powered by {{environment.AUTHOR}}
+        Maarch parapheur {{environment.VERSION}} <a *ngIf="commitHash !== null" style="color: white" target="blank" href="https://labs.maarch.org/maarch/MaarchParapheur/commit/{{commitHash}}">{{commitHash}}</a> Powered by {{environment.AUTHOR}}
     </ion-note>
 </ion-content>

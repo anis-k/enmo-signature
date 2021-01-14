@@ -23,6 +23,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
     loading: boolean = false;
     showForm: boolean = false;
     environment: any;
+    commitHash: any = null;
 
 
     constructor(
@@ -38,7 +39,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         private menu: MenuController,
     ) { }
 
-    ngOnInit(): void {
+    async ngOnInit() {
 
         this.loginForm = this.formBuilder.group({
             login: [null, Validators.required],
@@ -47,6 +48,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
         this.environment = environment;
         this.signaturesService.reset();
+
+        await this.loadCommitInformation();
     }
 
     ionViewWillEnter() {
@@ -75,7 +78,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
             message: this.translate.instant('lang.connexion'),
           });
         await loading.present();
-        if(!this.loginForm.invalid ) {
+        if (!this.loginForm.invalid ) {
 
             this.http.post('../rest/authenticate', { 'login': this.loginForm.get('login').value, 'password': this.loginForm.get('password').value }, { observe: 'response' })
                 .pipe(
@@ -84,7 +87,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
                         this.showForm = false;
                         this.authService.saveTokens(data.headers.get('Token'), data.headers.get('Refresh-Token'));
                         this.authService.setUser({});
-    
+
                         this.router.navigate(['/home']);
                         loading.dismiss();
                     }),
@@ -95,16 +98,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
                             loading.dismiss();
                         } else {
                             this.notificationService.handleErrors(err);
-    
                         }
-    
+
                         return of(false);
                     })
                 )
                 .subscribe();
         } else {
             loading.dismiss();
-            this.notificationService.error('lang.requiredLoginPassword')
+            this.notificationService.error('lang.requiredLoginPassword');
         }
     }
 
@@ -114,5 +116,20 @@ export class LoginComponent implements OnInit, AfterViewInit {
             this.loginForm.setValidators(null);
             this.onSubmit();
         }
+    }
+
+    loadCommitInformation() {
+        return new Promise((resolve) => {
+            this.http.get('../rest/commitInformation').pipe(
+                tap((data: any) => {
+                    this.commitHash = data.hash;
+                    resolve(true);
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            ).subscribe();
+        });
     }
 }
