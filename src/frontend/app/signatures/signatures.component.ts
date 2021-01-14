@@ -124,19 +124,19 @@ export class SignaturesComponent implements OnInit {
             this.notificationService.success('lang.signatureInDocAdded');
             this.modalController.dismiss('success');
         } else {
-            if (signPosCurrentPage.length > 0) {
+            if (signPosCurrentPage.length > 0 && signPosOtherPage.length === 0) {
                 signature.positionX = signPosCurrentPage[0].positionX;
                 signature.positionY = signPosCurrentPage[0].positionY;
                 this.storeSignature(signature, this.signaturesService.currentPage);
             }  
-            let signaturePos = signPosOtherPage.filter((item: any) => item.sequence === this.posCurrentUser);
+            let signaturePos = this.currentWorflow.signaturePositions.filter((item: any) => item.sequence === this.posCurrentUser);            
             if (signaturePos.length > 0) {
                 signaturePos.forEach((element: { positionX: any; positionY: any; page: number; }) => {
                     signature.positionX = element.positionX;
                     signature.positionY = element.positionY;
                     this.storeSignature(signature, element.page);
                 });
-            } else {
+            } else {                                
                 signPosOtherPage.forEach((element: { positionX: any; positionY: any; page: number; }) => {
                     signature.positionX = element.positionX;
                     signature.positionY = element.positionY;
@@ -158,13 +158,13 @@ export class SignaturesComponent implements OnInit {
                 }
             }
 
-            if (signPosCurrentPage.length === 0 && signPosOtherPage.length > 0) {
+            if (signPosCurrentPage.length === 0 && signPosOtherPage.length > 0) {                
                 if (signaturePos.length > 0) {
                     this.modalController.dismiss({ redirectPage: signaturePos[0].page });
                 } else {
                     this.modalController.dismiss({ redirectPage: this.currentWorflow.signaturePositions[0].page });
                 }
-            } else {
+            } else {                
                 this.modalController.dismiss('success');
             }
         }

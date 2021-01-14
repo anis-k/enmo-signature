@@ -678,6 +678,9 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
+                        
+                        const massAction = await this.actionsService.checkGroupMail(this.mainDocument);
+                        console.log('massAction', massAction);
                         this.loadingController.create({
                             message: this.translate.instant('lang.loadingValidation'),
                             spinner: 'dots',
@@ -688,8 +691,6 @@ export class DocumentComponent implements OnInit {
                                 this.load.dismiss();
                             }
                         });
-                        const massAction = await this.actionsService.checkGroupMail(this.mainDocument);
-                        console.log('massAction', massAction);
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
                         if (!this.functionsService.empty(res)) {
                             if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
