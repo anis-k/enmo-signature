@@ -88,7 +88,7 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit(): void {
         this.initProfileInfo();
-        this.getPassRules();
+        this.getPassRules(); 
     }
 
     dismissModal() {
@@ -101,7 +101,7 @@ export class ProfileComponent implements OnInit {
         } else if (ev.detail.value.length >= 3) {
             this.http.get('../rest/autocomplete/users?search=' + ev.detail.value).pipe(
                 tap((res: any) => {
-                    this.userList = res.filter((item: any) => item.id !== this.profileInfo.id);
+                    this.userList = res.filter((item: any) => item.id !== this.profileInfo.id);                                        
                 }),
                 catchError(err => {
                     this.notificationService.handleErrors(err);
@@ -407,5 +407,9 @@ export class ProfileComponent implements OnInit {
                 this.signaturesService.signaturesList[i].substituted = !this.signaturesService.signaturesList[i].substituted;
                 this.notificationService.success('lang.modificationSaved');
             });
+    }
+
+    checkSubstitutes(id: number, substitute: boolean) {
+        return this.authService.user.substitutes.includes(id) || substitute === true ? true : false;
     }
 }

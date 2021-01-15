@@ -174,10 +174,11 @@
                 </ion-item>
             </ion-list>
             <ion-list *ngIf="authService.user.substitute === null">
-                <ion-item *ngFor="let user of userList">
-                    <ion-checkbox color="primary" slot="start" [value]="user" (ionChange)="selectSubstitute($event.detail.value)"></ion-checkbox>
+                <ion-item *ngFor="let user of userList" [disabled]="checkSubstitutes(user.id, user.substitute)">
+                    <ion-checkbox  color="primary" slot="start" [value]="user" (ionChange)="selectSubstitute($event.detail.value)"></ion-checkbox>
                     <ion-label>{{ user.firstname }} {{ user.lastname }}</ion-label>
-                    <ion-note slot="end">{{ user.email }}</ion-note>
+                    <ion-note *ngIf="!checkSubstitutes(user.id, user.substitute)" slot="end">{{ user.email }}</ion-note>
+                    <ion-note *ngIf="checkSubstitutes(user.id, user.substitute)" slot="end" color="danger">{{ 'lang.delegatedUser' | translate }}</ion-note>
                 </ion-item>
             </ion-list>
             <ng-container *ngIf="authService.user.substitute != null && signaturesService.signaturesList.length > 0">

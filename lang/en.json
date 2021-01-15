@@ -445,6 +445,11 @@
         "attachments": "Attachments",
         "emails": "Emails",
         "workflowTemplates": "Workflow templates",
-        "configurations": "Configurations"
+        "configurations": "Configurations",
+        "signaturesInDocAdded": "Signature (s) affixed to page (s) {{0}}",
+        "docIsInMailGroup": "This document is the result of a direct mail",
+        "makeActionOnDocInMailGroup": "Do you want to validate the other documents with the current stamps?",
+        "mailing": "Direct mail",
+        "delegatedUser": "Delegated user"
     }
 }
