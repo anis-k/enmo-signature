@@ -48,6 +48,13 @@ export class AuthService {
     }
 
     logout() {
+        const refreshToken = this.getRefreshToken();
+        if (refreshToken === null) {
+            this.clearTokens();
+            this.navCtrl.navigateRoot('/login');
+            return;
+        }
+
         this.http.get('../rest/authenticate/logout')
             .pipe(
                 tap(() => {
@@ -56,10 +63,11 @@ export class AuthService {
                 }),
                 catchError((err: any) => {
                     this.notificationService.handleErrors(err);
+                    this.clearTokens();
+                    this.navCtrl.navigateRoot('/login');
                     return of(false);
                 })
             ).subscribe();
-        // this.router.navigate(['/login']);
     }
 
     saveTokens(token: string, refreshToken: string) {
