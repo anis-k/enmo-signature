@@ -73,4 +73,8 @@ DO $$ BEGIN
         INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
         VALUES ('ESIGN', 'Document avec signatures électronique', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/esigned_documents/');
     END IF;
+    IF (SELECT count(1) from docservers where type = 'ORIGINAL') = 0 THEN
+        INSERT INTO docservers (type, label, is_readonly, size_limit_number, actual_size_number, path)
+        VALUES ('ORIGINAL', 'Documents originaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/original_documents/');
+    END IF;
 END$$;

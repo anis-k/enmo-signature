@@ -153,11 +153,11 @@ class HistoryController
             if (!empty($filteredHistory)) {
                 $filteredHistoryIds = array_column($filteredHistory, 'object_id', 'id');
                 $objects = [];
-                if (in_array($objectType,  ['attachment', 'attachments'])) {
+                if (in_array($objectType, ['attachment', 'attachments'])) {
                     $objects = AttachmentModel::get(['select' => ['id', 'title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
                 } elseif ($objectType == 'configurations') {
                     $objects = ConfigurationModel::get(['select' => ['id', 'label as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
-                }  elseif ($objectType == 'emails') {
+                } elseif ($objectType == 'emails') {
                     $objects = EmailModel::get(['select' => ['id', 'subject as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
                 } elseif ($objectType == 'groups') {
                     $objects = GroupModel::get(['select' => ['id', 'label as title'], 'where' => ['id in (?)'], 'data' => [$filteredHistoryIds]]);
@@ -419,9 +419,11 @@ class HistoryController
                 $mimeType = 'application/xml';
             }
         } else {
-            $eSignDocument = $workflowCompleted && ($queryParams['eSignDocument'] ?? $hasCertificate);
+            if ($workflowCompleted && ($queryParams['eSignDocument'] ?? $hasCertificate)) {
+                $contentType = 'ESIGN';
+            }
 
-            $mainDocument = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $eSignDocument]);
+            $mainDocument = DocumentController::getContentPath(['id' => $args['id'], 'type' => $contentType]);
             if (!empty($mainDocument['errors'])) {
                 return $response->withStatus($mainDocument['code'])->withJson(['errors' => $mainDocument['errors']]);
             }

@@ -104,7 +104,7 @@ export class IndexationComponent implements OnInit {
 
     getDocumentContent(resId: number) {
         return new Promise((resolve) => {
-            this.http.get(`../rest/documents/${resId}/content`).pipe(
+            this.http.get(`../rest/documents/${resId}/content?type=original`).pipe(
                 tap((data: any) => {
                     this.filesToUpload[0].content = data.encodedDocument;
                     resolve(true);

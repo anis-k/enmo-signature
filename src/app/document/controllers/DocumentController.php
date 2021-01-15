@@ -138,8 +138,8 @@ class DocumentController
 
         $adr = AdrModel::getDocumentsAdr([
             'select'  => ['count(1)'],
-            'where'   => ['main_document_id = ?', 'type != ?', 'type != ?'],
-            'data'    => [$args['id'], 'DOC', 'ESIGN']
+            'where'   => ['main_document_id = ?', 'type != ?', 'type != ?', 'type != ?'],
+            'data'    => [$args['id'], 'DOC', 'ESIGN', 'ORIGINAL']
         ]);
         if (empty($adr[0]['count']) && $document['status'] != 'CONVERTING') {
             $configPath = CoreConfigModel::getConfigPath();
@@ -247,7 +247,11 @@ class DocumentController
         }
 
         $queryParams = $request->getQueryParams();
-        $content = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => $queryParams['eSignDocument']]);
+        if (!empty($queryParams['type']) && !in_array($queryParams['type'], ['esign', 'original', 'doc'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Query param type is not allowed']);
+        }
+
+        $content = DocumentController::getContentPath(['id' => $args['id'], 'type' => strtoupper($queryParams['type'])]);
         if (!empty($content['errors'])) {
             return $response->withStatus($content['code'])->withJson(['errors' => $content['errors']]);
         } elseif (empty($content['path'])) {
@@ -269,8 +273,7 @@ class DocumentController
         $finfo       = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType    = $finfo->buffer($fileContent);
         
-        $data = $request->getQueryParams();
-        if (empty($data['mode']) || $data['mode'] == 'base64') {
+        if (empty($queryParams['mode']) || $queryParams['mode'] == 'base64') {
             return $response->withJson(['encodedDocument' => base64_encode($fileContent)]);
         } else {
             $pathInfo = pathinfo($pathToDocument);
@@ -437,6 +440,22 @@ class DocumentController
             AdrModel::createDocumentAdr([
                 'documentId'     => $id,
                 'type'           => 'DOC',
+                'path'           => $storeInfos['path'],
+                'filename'       => $storeInfos['filename'],
+                'fingerprint'    => $storeInfos['fingerprint']
+            ]);
+
+            $storeInfos = DocserverController::storeResourceOnDocServer([
+                'encodedFile'       => $encodedDocument['encodedDocument'],
+                'format'            => 'pdf',
+                'docserverType'     => 'ORIGINAL'
+            ]);
+            if (!empty($storeInfos['errors'])) {
+                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+            }
+            AdrModel::createDocumentAdr([
+                'documentId'     => $id,
+                'type'           => 'ORIGINAL',
                 'path'           => $storeInfos['path'],
                 'filename'       => $storeInfos['filename'],
                 'fingerprint'    => $storeInfos['fingerprint']
@@ -993,11 +1012,11 @@ class DocumentController
 
     public static function getContentPath($args = [])
     {
-        if ($args['eSignDocument']) {
+        if (!empty($args['type'])) {
             $adr = AdrModel::getDocumentsAdr([
                 'select'    => ['path', 'filename', 'fingerprint', 'type'],
                 'where'     => ['main_document_id = ?', 'type = ?'],
-                'data'      => [$args['id'], 'ESIGN']
+                'data'      => [$args['id'], $args['type']]
             ]);
         }
         if (empty($adr)) {
@@ -1143,7 +1162,7 @@ class DocumentController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $content = DocumentController::getContentPath(['id' => $args['id'], 'eSignDocument' => false]);
+        $content = DocumentController::getContentPath(['id' => $args['id']]);
         if (empty($content)) {
             return ['errors' => 'Document does not exist'];
         } elseif (!empty($content['errors'])) {
