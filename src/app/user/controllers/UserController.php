@@ -686,6 +686,9 @@ class UserController
             if (!empty($user['substitute'])) {
                 $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
             }
+
+            $substitutes = UserModel::get(['select' => ['id'], 'where' => ['substitute = ? '], 'data' => [$GLOBALS['id']]]);
+            $user['substitutes'] = array_column($substitutes, 'id');
         }
 
         return $user;
