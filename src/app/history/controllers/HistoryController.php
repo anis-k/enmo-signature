@@ -190,14 +190,14 @@ class HistoryController
             }
 
             if ($value['type'] == 'ACTION') {
-                $message = str_replace('VAL', $lang['validate'], $message);
-                $message = str_replace('REF', $lang['reject'], $message);
+                $message = str_replace('VAL', $lang['documentValidateAs'], $message);
+                $message = str_replace('REF', $lang['documentRefusedAs'], $message);
 
                 if (!empty($data['mode'])) {
-                    $message .= ' - ' . $lang[$data['mode'] . 'User'];
-                }
-                if (!empty($data['signatureMode'])) {
-                    $message .= ' - ' . $lang[$data['signatureMode'] . 'User'];
+                    $message .= ' ' . $lang[$data['mode'] . 'User'];
+                    if (!empty($data['signatureMode']) && $data['mode'] == 'sign') {
+                        $message .= ' (' . $lang[$data['signatureMode'] . 'User'] . ')';
+                    }
                 }
             }
 
