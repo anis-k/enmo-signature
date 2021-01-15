@@ -380,7 +380,9 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.signaturesListSubstituted = [];
                                 }
                                 if (realUserWorkflow[0].datePositions.length > 0 && this.functionsService.empty(this.signaturesService.datesContent)) {
-                                    realUserWorkflow[0].datePositions.forEach((date: any) => {
+                                    const currentUser = this.mainDocument.workflow.indexOf(realUserWorkflow[0]);
+                                    const datePosUser = realUserWorkflow[0].datePositions.filter((item: any) => item.sequence === currentUser);
+                                    datePosUser.forEach((date: any) => {
                                         if (!this.signaturesService.datesContent[date.page]) {
                                             this.signaturesService.datesContent[date.page] = [];
                                         }

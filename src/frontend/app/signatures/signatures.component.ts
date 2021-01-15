@@ -110,13 +110,10 @@ export class SignaturesComponent implements OnInit {
     }
 
     selectSignature(signature: any) {
-
         const percentWidth = 25;
         signature.width = percentWidth;
-
         const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
         const signPosOtherPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
-
         if (!this.signPosMode || (signPosCurrentPage.length === 0 && signPosOtherPage.length === 0)) {
             signature.positionX = 60;
             signature.positionY = 80;
@@ -143,7 +140,6 @@ export class SignaturesComponent implements OnInit {
                     this.storeSignature(signature, element.page);
                 });
             }
-            
             if (this.currentWorflow.signaturePositions.length === 1) {
                 this.notificationService.success('lang.signatureInDocAddedAlt');
             } else {
@@ -157,7 +153,6 @@ export class SignaturesComponent implements OnInit {
                     });
                 }
             }
-
             if (signPosCurrentPage.length === 0 && signPosOtherPage.length > 0) {                
                 if (signaturePos.length > 0) {
                     this.modalController.dismiss({ redirectPage: signaturePos[0].page });
@@ -205,7 +200,6 @@ export class SignaturesComponent implements OnInit {
                 };
                 this.storeDate(dateBlock, this.signaturesService.currentPage);
             }
-
             datePosOtherPage.forEach((position: any) => {
                 const dateBlock: any = {
                     width: position.width,
