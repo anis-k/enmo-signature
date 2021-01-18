@@ -30,13 +30,13 @@ use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\AutoCompleteController;
 use SrcCore\controllers\LanguageController;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\DatabaseModel;
 use SrcCore\models\PasswordModel;
 use SrcCore\models\TextFormatModel;
 use SrcCore\models\ValidatorModel;
-use User\models\SignatureModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
 use Workflow\models\WorkflowTemplateModel;
@@ -88,11 +88,37 @@ class HistoryController
             $where[] = 'user_id in (?)';
             $data[]  = $body['users'];
         }
-        if (!empty($body['user'])) {
-            $userWhere = '"user" ilike ?';
-            $data[] = "%{$body['user']}%";
+        if (!empty($body['user']) && strlen($body['user']) >= 2) {
+            $searchFields = ['firstname', 'lastname'];
+            $fields = AutoCompleteController::getInsensitiveFieldsForRequest(['fields' => $searchFields]);
 
-            $matchedUsers = UserModel::get(['select' => ['id'], 'where' => ["CONCAT(firstname,' ',lastname) ilike ?"], 'data' => ["%{$body['user']}%"]]);
+            $requestData = AutoCompleteController::getDataForRequest([
+                'search'        => $body['user'],
+                'fields'        => $fields,
+                'where'         => $where,
+                'data'          => $data,
+                'fieldsNumber'  => 2,
+                'longField'     => true
+            ]);
+            $matchedUsers = UserModel::get([
+                'select' => ['id'],
+                'where'  => $requestData['where'],
+                'data'   => $requestData['data']
+            ]);
+
+            $searchFields = ['user'];
+            $fields = AutoCompleteController::getInsensitiveFieldsForRequest(['fields' => $searchFields]);
+            $requestData = AutoCompleteController::getDataForRequest([
+                'search'        => $body['user'],
+                'fields'        => $fields,
+                'where'         => $where,
+                'data'          => $data,
+                'fieldsNumber'  => 1,
+                'longField'     => true
+            ]);
+
+            $userWhere = $requestData['where'][0];
+            $data[] = $requestData['data'][0];
             if (!empty($matchedUsers)) {
                 $matchedUsers = array_column($matchedUsers, 'id');
                 $userWhere .= ' OR user_id in (?)';
