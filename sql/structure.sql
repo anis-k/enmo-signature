@@ -154,6 +154,7 @@ CREATE TABLE main_documents
   typist INTEGER,
   status CHARACTER VARYING(10),
   digital_signature_transaction_id text,
+  mailing_id text,
   CONSTRAINT main_documents_pkey PRIMARY KEY (id)
 )
 WITH (OIDS=FALSE);
