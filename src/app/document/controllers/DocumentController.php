@@ -102,7 +102,7 @@ class DocumentController
             }
 
             $documents = DocumentModel::get([
-                'select'    => ['id', 'title', 'reference', 'count(1) OVER()'],
+                'select'    => ['id', 'title', 'reference', 'mailing_id as "mailingId"', 'count(1) OVER()'],
                 'where'     => $where,
                 'data'      => $data,
                 'limit'     => $queryParams['limit'],
@@ -157,7 +157,8 @@ class DocumentController
             'creationDate'      => $document['creation_date'],
             'modificationDate'  => $document['modification_date'],
             'pages'             => $adr[0]['count'],
-            'status'            => $document['status']
+            'status'            => $document['status'],
+            'mailingId'         => $document['mailing_id']
         ];
         if (!empty($document['deadline'])) {
             $date = new \DateTime($document['deadline']);
@@ -916,6 +917,36 @@ class DocumentController
         $base64Content = base64_encode($fileContent);
 
         return $response->withJson(['fileContent' => $base64Content]);
+    }
+
+    public function getLinkedMailing(Request $request, Response $response, array $args)
+    {
+        if (!DocumentController::hasRightById(['id' => $args['id'], 'userId' => $GLOBALS['id']])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Document out of perimeter']);
+        }
+
+        $document = DocumentModel::getById(['select' => ['mailing_id'], 'id' => $args['id']]);
+        if (empty($document['mailing_id'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Document has no mailing id']);
+        }
+
+        $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
+
+        $workflows = WorkflowModel::get([
+            'select'    => ['main_document_id'],
+            'where'     => ['user_id = ?', "(id) in ({$workflowSelect})"],
+            'data'      => [$GLOBALS['id']]
+        ]);
+        $ids = array_column($workflows, 'main_document_id');
+
+        $documents = DocumentModel::get([
+            'select'    => ['id'],
+            'where'     => ['id in (?)', 'mailing_id = ?'],
+            'data'      => [$ids, $document['mailing_id']]
+        ]);
+        $documentsId = array_column($documents, 'id');
+
+        return $response->withJson(['documents' => $documentsId]);
     }
 
     public static function hasRightById(array $args)

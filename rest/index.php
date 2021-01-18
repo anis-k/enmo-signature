@@ -85,6 +85,7 @@ $app->get('/documents/{id}/proof', \History\controllers\HistoryController::class
 $app->get('/documents/{id}/history', \History\controllers\HistoryController::class . ':getByDocumentId');
 $app->put('/documents/{id}/actions/{actionId}', \Document\controllers\DocumentController::class . ':setAction');
 $app->get('/documents/{id}/workflow', \Workflow\controllers\WorkflowController::class . ':getByDocumentId');
+$app->get('/documents/{id}/linkedMailing', \Document\controllers\DocumentController::class . ':getLinkedMailing');
 $app->get('/documents/{id}/thumbnails/{page}', \Document\controllers\DocumentController::class . ':getThumbnailContent');
 $app->put('/documents/{id}/workflows/interrupt', \Workflow\controllers\WorkflowController::class . ':interrupt');
 

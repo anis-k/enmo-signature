@@ -78,3 +78,6 @@ DO $$ BEGIN
         VALUES ('ORIGINAL', 'Documents originaux', 'N', 50000000000, 0, '/opt/maarchparapheur/docservers/original_documents/');
     END IF;
 END$$;
+
+ALTER TABLE main_documents DROP COLUMN IF EXISTS mailing_id;
+ALTER TABLE main_documents ADD COLUMN mailing_id text;
