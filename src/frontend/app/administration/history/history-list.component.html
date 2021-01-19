@@ -51,7 +51,7 @@
                     <h2>{{element.message}}</h2>
                 </ion-label>
                 <ion-note slot="end">
-                    <p [title]=" ('lang.' + element.objectType | translate) + ' : ' + element.objectLabel">{{'lang.resource' | translate}} : {{element.objectId}}</p>
+                    <p [title]="('lang.resource' | translate) + ' : ' + element.objectId">{{'lang.resource' | translate}} : {{('lang.' + element.objectType | translate) + ' : ' + element.objectLabel}}</p>
                     <p style="float: right; margin-top: 0px">IP : {{element.ip}}</p>
                 </ion-note>
             </ion-item>
