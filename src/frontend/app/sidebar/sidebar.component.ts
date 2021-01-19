@@ -9,6 +9,7 @@ import { AuthService } from '../service/auth.service';
 import { MenuController, ModalController } from '@ionic/angular';
 import { ProfileComponent } from '../profile/profile.component';
 import { FunctionsService } from '../service/functions.service';
+import { FiltersService } from '../service/filters.service';
 
 
 @Component({
@@ -19,8 +20,6 @@ import { FunctionsService } from '../service/functions.service';
 export class SidebarComponent implements OnInit {
 
     loadingList: boolean = false;
-    offset: number = 0;
-    limit: number = 10;
     searchMode: boolean = false;
 
     @ViewChild('listContent') listContent: ElementRef;
@@ -38,12 +37,13 @@ export class SidebarComponent implements OnInit {
         public authService: AuthService,
         public modalController: ModalController,
         public functionsService: FunctionsService,
+        public filterService: FiltersService
     ) {
         this.searchTerm.valueChanges.pipe(
             debounceTime(500),
             distinctUntilChanged(),
             tap((value) => this.loadingList = true),
-            switchMap(data => this.http.get('../rest/documents?limit=' + this.limit + '&search=' + data))
+            switchMap(data => this.http.get('../rest/documents?limit=' + this.filterService.limit + '&search=' + data))
         ).subscribe((response: any) => {
             this.signaturesService.documentsList = response.documents;
             this.signaturesService.documentsListCount = response.count;
@@ -53,7 +53,7 @@ export class SidebarComponent implements OnInit {
 
     ngOnInit() {
         $('.avatar').css({ 'background': 'url(data:image/png;base64,' + this.authService.user.picture + ') no-repeat #135F7F' }).css({ 'background-size': 'cover' }).css({ 'background-position': 'center' });
-        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
+        this.http.get('../rest/documents?limit=' + this.filterService.limit + '&offset=' + this.filterService.offset + '&mode=' + this.signaturesService.mode)
             .subscribe((data: any) => {
                 this.signaturesService.documentsList = data.documents;
                 this.signaturesService.documentsListCount = data.count;
@@ -110,8 +110,8 @@ export class SidebarComponent implements OnInit {
 
         this.loadingList = true;
         this.signaturesService.mode === mode ? this.signaturesService.mode = '' : this.signaturesService.mode = mode;
-        this.offset = 0;
-        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode)
+        this.filterService.offset = 0;
+        this.http.get('../rest/documents?limit=' + this.filterService.limit + '&offset=' + this.filterService.offset + '&mode=' + this.signaturesService.mode)
             .pipe(
                 finalize(() => {
                     this.loadingList = false;
@@ -133,9 +133,9 @@ export class SidebarComponent implements OnInit {
     }
 
     loadData(event: any) {
-        this.offset = this.offset + this.limit;
+        this.filterService.offset = this.filterService.offset + this.filterService.limit;
 
-        this.http.get('../rest/documents?limit=' + this.limit + '&offset=' + this.offset + '&mode=' + this.signaturesService.mode).pipe(
+        this.http.get('../rest/documents?limit=' + this.filterService.limit + '&offset=' + this.filterService.offset + '&mode=' + this.signaturesService.mode).pipe(
             tap((data: any) => {
                 this.signaturesService.documentsList = this.signaturesService.documentsList.concat(data.documents);
                 event.target.complete();

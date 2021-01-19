@@ -244,7 +244,7 @@ export class DocumentComponent implements OnInit {
         });
         await actionSheet.present();
     }
-    
+
     async openSignatures() {
         const modal = await this.modalController.create({
             component: SignaturesComponent,
@@ -331,10 +331,6 @@ export class DocumentComponent implements OnInit {
                     this.http.get('../rest/documents/' + params['id']).pipe(
                         tap((data: any) => {
                             this.mainDocument = data.document;
-
-                            // FOR TEST
-                            this.mainDocument.groupMailId = 14;
-
                             this.mainDocument.workflow = this.mainDocument.workflow.map((item: any) => {
                                 if (item.note) {
                                     this.hasWorkflowNotes = true;
@@ -574,7 +570,7 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.currentPage = this.pageNum;
         }
         // this.exportAsImage();
-        this.renderImage();        
+        this.renderImage();
     }
 
     goTo(page: number) {
@@ -593,7 +589,7 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.currentPage = this.pageNum;
         }
         // this.exportAsImage();
-        this.renderImage();        
+        this.renderImage();
     }
 
     pagesArray(n: number): number[] {
@@ -632,14 +628,11 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.reject'),
                     handler: async (data: any) => {
-                        const res = await this.actionsService.sendDocument(data.paragraph);
+                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument);
+
+                        const res = await this.signatureMethodService.launchDefaultMode(data.paragraph, idsToProcess);
+
                         if (!this.functionsService.empty(res)) {
-                            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
-                                this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                                if (this.signaturesService.documentsListCount.current > 0) {
-                                    this.signaturesService.documentsListCount.current--;
-                                }
-                            }
                             const config: MatBottomSheetConfig = {
                                 disableClose: true,
                                 direction: 'ltr'
@@ -680,27 +673,11 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        
-                        const massAction = await this.actionsService.checkGroupMail(this.mainDocument);
-                        console.log('massAction', massAction);
-                        this.loadingController.create({
-                            message: this.translate.instant('lang.loadingValidation'),
-                            spinner: 'dots',
-                        }).then((load: HTMLIonLoadingElement) => {
-                            this.load = load;
-                            this.load.present();
-                            if ((currentUserWorkflow.signatureMode === 'rgs_2stars') || (currentUserWorkflow.signatureMode === 'inca_card') || (currentUserWorkflow.signatureMode === 'rgs_2stars_timestamped') || (currentUserWorkflow.signatureMode === 'inca_card_eidas')) {
-                                this.load.dismiss();
-                            }
-                        });
-                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph);
+                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument);
+
+                        const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph, idsToProcess);
+
                         if (!this.functionsService.empty(res)) {
-                            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList] !== undefined) {
-                                this.signaturesService.documentsList.splice(this.signaturesService.indexDocumentsList, 1);
-                                if (this.signaturesService.documentsListCount.current > 0) {
-                                    this.signaturesService.documentsListCount.current--;
-                                }
-                            }
                             const config: MatBottomSheetConfig = {
                                 disableClose: true,
                                 direction: 'ltr'
@@ -708,7 +685,6 @@ export class DocumentComponent implements OnInit {
                             this.bottomSheet.open(SuccessInfoValidBottomSheetComponent, config);
                             this.localStorage.remove(this.mainDocument.id.toString());
                         }
-                        this.load.dismiss();
                     }
                 }
             ]
@@ -716,6 +692,7 @@ export class DocumentComponent implements OnInit {
 
         await alert.present();
     }
+
     async removeTags() {
         this.signaturesService.currentAction = 0;
 

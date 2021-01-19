@@ -36,6 +36,7 @@ export class SignatureMethodModalComponent implements OnInit {
 
     @Input() note: string;
     @Input() signatureMode: string;
+    @Input() idsToProcess: any[];
 
     constructor(
         public modalController: ModalController,
@@ -50,8 +51,6 @@ export class SignatureMethodModalComponent implements OnInit {
     ) { }
 
     async ngOnInit(): Promise<void> {
-        this.signatures = await this.actionsService.getElementsFromDoc();
-
         const signatureModeData = this.authService.signatureRoles.filter((mode: any) => mode.id === this.signatureMode)[0];
         if (!this.functionsService.empty(signatureModeData.issuer)) {
             this.filters.issuerDNMatch = new RegExp(signatureModeData.issuer, 'i');
@@ -87,24 +86,28 @@ export class SignatureMethodModalComponent implements OnInit {
                 certificate: this.certPem
             };
 
-            const result = await this.sendAndSign();
+            let result: any = false;
 
+            for (let index = 0; index < this.idsToProcess.length; index++) {
+                this.signatures = await this.actionsService.getElementsFromDoc();
+                result = await this.sendAndSign(this.idsToProcess[index]);
+            }
             load.dismiss();
             this.modalController.dismiss(result);
         });
     }
 
-    async sendAndSign() {
+    async sendAndSign(idToProcess: number) {
         let allSignaturesComplete: boolean = false;
         let res: any = {};
         while (!allSignaturesComplete) {
             let signDocComplete: any = false;
             while (signDocComplete === false) {
-                res = await this.fusionStampAndGenerateSignature(res.tmpUniqueId);
+                res = await this.fusionStampAndGenerateSignature(idToProcess, res.tmpUniqueId);
                 if (res === null) {
                     return false;
                 } else if (res !== false) {
-                    signDocComplete = await this.signDocument(res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
+                    signDocComplete = await this.signDocument(idToProcess, res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
                     console.log('signDocComplete', signDocComplete);
                     if (signDocComplete === true) {
                         this.signatures.shift();
@@ -120,13 +123,13 @@ export class SignatureMethodModalComponent implements OnInit {
         return allSignaturesComplete;
     }
 
-    async fusionStampAndGenerateSignature(tmpUniqueId: string = null) {
+    async fusionStampAndGenerateSignature(idToProcess: number, tmpUniqueId: string = null) {
         let res: any = {};
-        res = await this.actionsService.sendDocument(null, this.certificate, this.signatureLength, tmpUniqueId, this.signatures);
+        res = await this.actionsService.sendDocument(idToProcess, null, this.certificate, this.signatureLength, tmpUniqueId, this.signatures);
         return res;
     }
 
-    signDocument(hashDocument: any, eSignatureLength: any, signatureFieldName: any, tmpUniqueId: string) {
+    signDocument(idToProcess: number, hashDocument: any, eSignatureLength: any, signatureFieldName: any, tmpUniqueId: string) {
         return new Promise(async (resolve) => {
             const alg = {
                 name: this.privateKey.algorithm.name,
@@ -159,7 +162,7 @@ export class SignatureMethodModalComponent implements OnInit {
 
             const objToSend = {...note, ...objEsign };
 
-            this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, objToSend)
+            this.http.put('../rest/documents/' + idToProcess + '/actions/' + this.signaturesService.currentAction, objToSend)
                 .pipe(
                     tap(() => {
                         resolve(true);

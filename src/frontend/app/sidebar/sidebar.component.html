@@ -77,7 +77,7 @@
             </ion-label>
         </ion-item>
         <ion-menu-toggle auto-hide="false" *ngFor="let document of signaturesService.documentsList;let i=index">
-            <ion-item class="doc-item" (click)="selectedIndex = i" routerDirection="root"
+            <ion-item class="doc-item" (click)="filterService.currentIndex = i" routerDirection="root"
                 [routerLink]="['/documents/'+document.id]" detail="false"
                 [class.selected]="router.url === '/documents/'+document.id">
                 <ion-icon *ngIf="document.mode == 'sign'" color="primary" slot="start" name="pencil-outline"></ion-icon>
@@ -86,7 +86,7 @@
                 <ion-icon *ngIf="document.mode == 'note'" color="primary" slot="start"
                     name="chatbubble-ellipses-outline">
                 </ion-icon>
-                <ion-icon *ngIf="!functionsService.empty(document.groupMailId)" slot="start" color="danger" name="layers" class="groupMailIcon"></ion-icon>
+                <ion-icon *ngIf="!functionsService.empty(document.mailingId)" slot="start" color="danger" name="layers" class="groupMailIcon"></ion-icon>
                 <div>
                     <ion-label class="sub-label">{{document.reference}}</ion-label>
                     <ion-label class="ion-text-wrap" color="primary">{{document.title | shorten: 50: '...'}}</ion-label>

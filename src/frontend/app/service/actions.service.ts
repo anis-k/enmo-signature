@@ -23,7 +23,7 @@ export class ActionsService {
         public alertController: AlertController,
     ) { }
 
-    sendDocument(note: string, eSignature: any = null, signatureLength: any = null, tmpUniqueId: string = null, imgDocElements: any[] = null) {
+    sendDocument(documentId: number, note: string, eSignature: any = null, signatureLength: any = null, tmpUniqueId: string = null, imgDocElements: any[] = null) {
         return new Promise(async (resolve) => {
             let data: any = {};
 
@@ -51,7 +51,7 @@ export class ActionsService {
                     data.tmpUniqueId = tmpUniqueId;
                 }
 
-                this.http.put('../rest/documents/' + this.signaturesService.mainDocumentId + '/actions/' + this.signaturesService.currentAction, data)
+                this.http.put('../rest/documents/' + documentId + '/actions/' + this.signaturesService.currentAction, data)
                     .pipe(
                         tap((res: any) => {
                             if (eSignature !== null) {
@@ -150,32 +150,47 @@ export class ActionsService {
         });
     }
 
-    checkGroupMail(mainDocument: any) {
+    checkGroupMail(mainDocument: any): Promise<any[]> {
         return new Promise(async (resolve) => {
-            if (this.functionsService.empty(mainDocument.groupMailId)) {
-                resolve(false);
+            if (this.functionsService.empty(mainDocument.mailingId)) {
+                resolve([this.signaturesService.mainDocumentId]);
             } else {
-                const alert = await this.alertController.create({
-                    header: this.translate.instant('lang.mailing'),
-                    message: this.translate.instant('lang.makeActionOnDocInMailGroup'),
-                    buttons: [
-                        {
-                            text: this.translate.instant('lang.yes'),
-                            handler: () => {
-                                resolve(true);
+                this.http.get(`../rest/documents/${this.signaturesService.mainDocumentId}/linkedMailing`)
+                    .pipe(
+                        tap(async (res: any) => {
+                            if (res.documents.length > 1) {
+                                const alert = await this.alertController.create({
+                                    header: this.translate.instant('lang.mailing'),
+                                    message: this.translate.instant('lang.makeActionOnDocInMailGroup'),
+                                    backdropDismiss: false,
+                                    buttons: [
+                                        {
+                                            text: this.translate.instant('lang.yes'),
+                                            handler: () => {
+                                                resolve(res.documents);
+                                            }
+                                        },
+                                        {
+                                            role: 'cancel',
+                                            text: this.translate.instant('lang.no'),
+                                            cssClass: 'secondary',
+                                            handler: () => {
+                                                resolve([this.signaturesService.mainDocumentId]);
+                                            }
+                                        }
+                                    ]
+                                });
+                                await alert.present();
+                            } else {
+                                resolve([this.signaturesService.mainDocumentId]);
                             }
-                        },
-                        {
-                            role: 'cancel',
-                            text: this.translate.instant('lang.no'),
-                            cssClass: 'secondary',
-                            handler: () => {
-                                resolve(false);
-                            }
-                        }
-                    ]
-                });
-                await alert.present();
+                        }),
+                        catchError((err: any) => {
+                            this.notificationService.handleErrors(err);
+                            resolve([]);
+                            return of(false);
+                        })
+                    ).subscribe();
             }
         });
     }

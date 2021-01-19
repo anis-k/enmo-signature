@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../service/auth.service';
 import { FiltersService } from '../service/filters.service';
+import { AuthService } from '../service/auth.service';
 
 @Component({
     templateUrl: '../modal/reject-info.html',
@@ -12,18 +10,18 @@ import { FiltersService } from '../service/filters.service';
 })
 export class RejectInfoBottomSheetComponent implements OnInit {
     date: Date = new Date();
-    constructor(private translate: TranslateService, private router: Router, public signaturesService: SignaturesContentService, public authService: AuthService, public filtersService: FiltersService, private bottomSheetRef: MatBottomSheetRef<RejectInfoBottomSheetComponent>) { }
+    constructor(
+        public signaturesService: SignaturesContentService,
+        public filtersService: FiltersService,
+        public authService: AuthService,
+        private bottomSheetRef: MatBottomSheetRef<RejectInfoBottomSheetComponent>
+    ) { }
+
     ngOnInit(): void {
         setTimeout(() => {
-            if (this.signaturesService.documentsList[this.signaturesService.indexDocumentsList]) {
-                this.signaturesService.currentToobal = 'mainDocumentDetail';
-                this.filtersService.resfreshDocuments();
-                this.router.navigate(['/documents/' + this.signaturesService.documentsList[this.signaturesService.indexDocumentsList].id]);
-            } else {
-                this.signaturesService.currentToobal = 'mainDocumentDetail';
-                this.router.navigate(['/documents']);
-            }
+            this.signaturesService.currentToobal = 'mainDocumentDetail';
+            this.filtersService.resfreshDocuments(true);
             this.bottomSheetRef.dismiss();
         }, 2000);
-     }
+    }
 }
