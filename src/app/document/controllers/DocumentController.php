@@ -927,15 +927,22 @@ class DocumentController
 
         $document = DocumentModel::getById(['select' => ['mailing_id'], 'id' => $args['id']]);
         if (empty($document['mailing_id'])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Document has no mailing id']);
+            return $response->withJson(['documents' => []]);
+        }
+
+        $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$GLOBALS['id']]]);
+
+        $users = [$GLOBALS['id']];
+        foreach ($substitutedUsers as $value) {
+            $users[] = $value['id'];
         }
 
         $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
 
         $workflows = WorkflowModel::get([
             'select'    => ['main_document_id'],
-            'where'     => ['user_id = ?', "(id) in ({$workflowSelect})"],
-            'data'      => [$GLOBALS['id']]
+            'where'     => ['user_id in (?)', "(id) in ({$workflowSelect})"],
+            'data'      => [$users]
         ]);
         $ids = array_column($workflows, 'main_document_id');
 
