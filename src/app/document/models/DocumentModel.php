@@ -60,7 +60,7 @@ class DocumentModel
     public static function create(array $args)
     {
         ValidatorModel::notEmpty($args, ['title', 'sender', 'metadata']);
-        ValidatorModel::stringType($args, ['title', 'reference', 'description', 'sender', 'deadline', 'notes', 'link_id', 'metadata']);
+        ValidatorModel::stringType($args, ['title', 'reference', 'description', 'sender', 'deadline', 'notes', 'link_id', 'metadata', 'mailing_id']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'main_documents_id_seq']);
 
@@ -75,7 +75,8 @@ class DocumentModel
                 'deadline'          => $args['deadline'],
                 'notes'             => $args['notes'],
                 'link_id'           => $args['link_id'],
-                'metadata'          => $args['metadata']
+                'metadata'          => $args['metadata'],
+                'mailing_id'        => $args['mailing_id']
             ]
         ]);
 

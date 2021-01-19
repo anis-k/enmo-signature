@@ -435,7 +435,8 @@ class DocumentController
                 'link_id'       => (string)$body['linkId'] ?? null,
                 'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
                 'status'        => 'CREATED',
-                'typist'        => $GLOBALS['id']
+                'typist'        => $GLOBALS['id'],
+                'mailing_id'    => (string)$body['mailingId'] ?? null
             ]);
 
             AdrModel::createDocumentAdr([
