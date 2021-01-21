@@ -432,11 +432,11 @@ class DocumentController
                 'sender'        => $body['sender'],
                 'deadline'      => empty($body['deadline']) ? null : $body['deadline'],
                 'notes'         => $notes ?? null,
-                'link_id'       => (string)$body['linkId'] ?? null,
+                'link_id'       => !empty($body['linkId']) ? (string)$body['linkId'] : null,
                 'metadata'      => empty($body['metadata']) ? '{}' : json_encode($body['metadata']),
                 'status'        => 'CREATED',
                 'typist'        => $GLOBALS['id'],
-                'mailing_id'    => (string)$body['mailingId'] ?? null
+                'mailing_id'    => !empty($body['mailingId']) ? (string)$body['mailingId'] : null
             ]);
 
             AdrModel::createDocumentAdr([
@@ -569,7 +569,7 @@ class DocumentController
                 }
             }
 
-            if (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
                 if (!empty($body['step']) && $body['step'] == 'hashCertificate') {
                     $signWithServerCertificate = false;
                     if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['mode'] == 'sign' && $loadedXml->electronicSignature->enable == 'true') {
@@ -708,7 +708,7 @@ class DocumentController
             return $response->withJson($hashInformations);
         }
 
-        if (in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
+        if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && in_array($workflow['signature_mode'], ['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'])) {
             $lastStep = false;
             if (empty($body['signatures']) || count($body['signatures']) == 1) {
                 $lastStep = true;
