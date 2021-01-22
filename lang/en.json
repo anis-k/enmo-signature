@@ -413,8 +413,8 @@
         "certifiedDocumentMsg2": "Certified document! Annotations on the document will not be taken into account!",
         "history": "History",
         "manage_history": "Manage history",
-        "filters": "Filter (s)",
-        "currentFilters": "Active filter (s)",
+        "filters": "Filter(s)",
+        "currentFilters": "Active filter(s)",
         "since": "Since",
         "until": "Until",
         "resource": "Resource",
@@ -446,10 +446,13 @@
         "emails": "Emails",
         "workflowTemplates": "Workflow templates",
         "configurations": "Configurations",
-        "signaturesInDocAdded": "Signature (s) affixed to page (s) {{0}}",
+        "signaturesInDocAdded": "Signature(s) affixed to page(s) {{0}}",
         "docIsInMailGroup": "This document is the result of a direct mail",
         "makeActionOnDocInMailGroup": "Do you want to validate the other documents with the current stamps?",
         "mailing": "Direct mail",
-        "delegatedUser": "Delegated user"
+        "delegatedUser": "Delegated user",
+        "filter": "Filter",
+        "noItem": "No item",
+        "modelCreated": "Model created"
     }
 }

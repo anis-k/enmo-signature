@@ -9,7 +9,7 @@
 </ion-list>
 <ion-list>
     <ion-item lines="none">
-        <ion-label *ngIf="currentItems.length === 0" color="medium" style="font-style: italic;">Aucun élément</ion-label>
+        <ion-label *ngIf="currentItems.length === 0" color="medium" style="font-style: italic;">{{ 'lang.noItem' | translate }}</ion-label>
         <p>
             <ion-chip *ngFor="let item of currentItems;let i=index" (click)="removeItem(i)" style="height: auto;">
                 <ion-label class="ion-text-wrap">{{ item.firstname }} {{ item.lastname }}</ion-label>

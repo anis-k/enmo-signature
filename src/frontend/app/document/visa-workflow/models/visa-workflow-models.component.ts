@@ -78,7 +78,7 @@ export class VisaWorkflowModelsComponent implements OnInit {
         };
         this.http.post('../rest/workflowTemplates', objToSend).pipe(
             tap((res: any) => {
-                this.notificationService.success('Modèle créé');
+                this.notificationService.success('lang.modelCreated');
                 this.visaWorkflowModels.push({ id: res.id, title: title });
             }),
             catchError(err => {

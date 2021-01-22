@@ -446,6 +446,9 @@
 		"docIsInMailGroup": "Ce document est issu d'un publipostage",
 		"makeActionOnDocInMailGroup": "Voulez-vous valider les autres documents avec les tampons actuels ?",
 		"mailing": "Publipostage",
-		"delegatedUser": "Utilisateur délégué"
+		"delegatedUser": "Utilisateur délégué",
+		"filter": "Filtrer",
+		"noItem": "Aucun élément",
+		"modelCreated": "Modèle créé"
 	}
 }

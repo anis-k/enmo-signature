@@ -25,7 +25,7 @@
           </div>
         </ng-container>
         <div style="flex: 1" *ngIf="displayedColumns.indexOf('actions') > -1">
-          <ion-searchbar placeholder="Filtrer" style="padding: 1px;" (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
+          <ion-searchbar [placeholder] = "'lang.filter' | translate" style="padding: 1px;" (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
         </div>
       </ion-label>
       <ion-button slot="end" fill="clear" shape="round" disabled>
