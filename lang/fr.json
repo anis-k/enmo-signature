@@ -449,6 +449,7 @@
 		"delegatedUser": "Utilisateur délégué",
 		"filter": "Filtrer",
 		"noItem": "Aucun élément",
-		"modelCreated": "Modèle créé"
+		"modelCreated": "Modèle créé",
+		"undefined": "Non défini"
 	}
 }
