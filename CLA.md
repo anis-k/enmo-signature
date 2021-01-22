@@ -32,10 +32,10 @@ These terms apply to your contribution of materials to a product or project owne
  Your name: 
  Your company's name (if applicable): 
  Mailing address: 
- Telephone, Fax and Email: 
+ Telephone and Email: 
  Your signature: 
  Date: 
   
-To deliver these terms to us, scan and email, or fax a signed copy to us using the email address info@Maarch.org 
+To deliver these terms to us, scan and email a signed copy to us using the email address dev.maarch@maarch.org 
 
 Maarch Contributor Agreement – version 2.0 This document is licensed under a Creative Commons Attribution­Share Alike 3.0 Unported License http://creativecommons.org/licenses/by­sa/3.0/  and based on original work from Sun Microsystems. 
