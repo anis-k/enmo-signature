@@ -35,7 +35,7 @@
                     [position]="{x: (sign.position.positionX*workingAreaWidth)/100, y:(sign.position.positionY*workingAreaHeight)/100}"
                     [style.width.%]="25" [ngDraggable]="currentUser===sign.sequence" (movingOffset)="dragging=true"
                     (endOffset)="moveSign($event, i);" [preventDefaultEvent]="false" [bounds]="myBounds"
-                    [inBounds]="true" class="signature"
+                    [inBounds]="true" class="signature" [class.hide]="!pagesLoaded"
                     (click)="currentUser!=sign.sequence ? goToSignUserPage(sign.sequence, currentPage) : false">
                     <ion-buttons style="position: absolute;top: -50px;right: 0px;">
                         <ion-button fill="clear" slot="icon-only" shape="round" size="small" color="danger"
@@ -45,6 +45,7 @@
                     </ion-buttons>
                     <span class="signUserName">{{getUserName(sign.sequence)}}</span>
                     {{'lang.signature' | translate | uppercase}}
+                    <p>x = {{sign.position.positionX}}, y = {{sign.position.positionY}}</p>
                 </div>
             </ng-container>
             <ion-img class="img-content" [src]="imgContent" (ionImgDidLoad)="imageLoaded($event)"></ion-img>

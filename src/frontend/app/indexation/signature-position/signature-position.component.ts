@@ -22,7 +22,7 @@ export class SignaturePositionComponent implements OnInit {
     pages: number[] = [];
 
     currentUser: number = 0;
-    currentPage: number = 0;
+    currentPage: number = 1;
     currentSignature: any = {
         positionX: 0,
         positionY: 0
@@ -34,6 +34,8 @@ export class SignaturePositionComponent implements OnInit {
 
     imgContent: any = null;
     load: HTMLIonLoadingElement = null;
+
+    pagesLoaded: boolean = false;
 
     constructor(
         public translate: TranslateService,
@@ -81,6 +83,7 @@ export class SignaturePositionComponent implements OnInit {
         const data = await this.pdfViewerService.getPageAsImage(this.currentPage, scale);
         this.getImageDimensions(data);
         this.imgContent = data;
+        this.pagesLoaded = true;
     }
 
     getImageDimensions(imgContent: any): void {
