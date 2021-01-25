@@ -19,7 +19,6 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
 export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
-    @Input() posCurrentUser: number;
 
     loading: boolean = true;
     scrolling: boolean = false;
@@ -109,35 +108,32 @@ export class SignaturesComponent implements OnInit {
         }
     }
 
+    mustPrePosSignature(signPosCurrentPage: any, signPosOtherPage: any) {
+        return !(!this.signPosMode || (signPosCurrentPage.length === 0 && signPosOtherPage.length === 0));
+    }
+
     selectSignature(signature: any) {
         const percentWidth = 25;
         signature.width = percentWidth;
         const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
         const signPosOtherPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
-        if (!this.signPosMode || (signPosCurrentPage.length === 0 && signPosOtherPage.length === 0)) {
+
+        if (!this.mustPrePosSignature(signPosCurrentPage, signPosOtherPage)) {
             signature.positionX = 60;
             signature.positionY = 80;
             this.storeSignature(signature, this.signaturesService.currentPage);
             this.notificationService.success('lang.signatureInDocAdded');
             this.modalController.dismiss('success');
         } else {
-            let signaturePos = this.currentWorflow.signaturePositions.filter((item: any) => item.sequence === this.posCurrentUser); 
-            if (signPosCurrentPage.length > 0 && signPosOtherPage.length === 0) {
+            // set sign block in current page
+            if (signPosCurrentPage.length > 0) {
                 signature.positionX = signPosCurrentPage[0].positionX;
                 signature.positionY = signPosCurrentPage[0].positionY;
                 this.storeSignature(signature, this.signaturesService.currentPage);
-            } else if (signPosCurrentPage.length > 0 && signPosOtherPage.length > 0) {
-                signature.positionX = signaturePos[0].positionX;
-                signature.positionY = signaturePos[0].positionY;
-                this.storeSignature(signature, signaturePos[0].page);
-            }         
-            if (signaturePos.length > 0) {
-                signaturePos.forEach((element: { positionX: any; positionY: any; page: number; }) => {
-                    signature.positionX = element.positionX;
-                    signature.positionY = element.positionY;
-                    this.storeSignature(signature, element.page);
-                });
-            } else {                                
+            }
+
+            // set sign block in other page
+            if (signPosOtherPage.length > 0) {
                 signPosOtherPage.forEach((element: { positionX: any; positionY: any; page: number; }) => {
                     signature.positionX = element.positionX;
                     signature.positionY = element.positionY;
@@ -147,25 +143,15 @@ export class SignaturesComponent implements OnInit {
             if (this.currentWorflow.signaturePositions.length === 1) {
                 this.notificationService.success('lang.signatureInDocAddedAlt');
             } else {
-                if (signaturePos.length > 0) {
-                    this.translate.get('lang.signaturesInDocAdded', { 0: signaturePos.map((item: any) => item.page) }).subscribe((res: string) => {
-                        this.notificationService.success(res);
-                    });
-                } else {
-                    this.translate.get('lang.signaturesInDocAdded', { 0: this.currentWorflow.signaturePositions.map((item: any) => item.page) }).subscribe((res: string) => {
-                        this.notificationService.success(res);
-                    });
-                }
+                this.translate.get('lang.signaturesInDocAdded', { 0: this.currentWorflow.signaturePositions.map((item: any) => item.page) }).subscribe((res: string) => {
+                    this.notificationService.success(res);
+                });
             }
-            if (signPosCurrentPage.length === 0 && signPosOtherPage.length > 0) {                
-                if (signaturePos.length > 0) {
-                    this.modalController.dismiss({ redirectPage: signaturePos[0].page });
-                } else {
-                    this.modalController.dismiss({ redirectPage: this.currentWorflow.signaturePositions[0].page });
-                }
-            } else if(signPosCurrentPage.length > 0 && signPosOtherPage.length > 0) {                
-                this.modalController.dismiss({ redirectPage: signaturePos[0].page });
-            } else {                
+            // if no sign in current page but have sign in other page
+            if (signPosCurrentPage.length === 0 && signPosOtherPage.length > 0) {
+                // go to first page with signature block
+                this.modalController.dismiss({ redirectPage: signPosOtherPage[0].page });
+            } else {
                 this.modalController.dismiss('success');
             }
         }
@@ -184,7 +170,7 @@ export class SignaturesComponent implements OnInit {
                 font: 'Arial',
                 size: 15,
                 color: '#666',
-                format : 'd MMMM y'
+                format: 'd MMMM y'
             };
 
             dateBlock.positionX = 60;
@@ -202,7 +188,7 @@ export class SignaturesComponent implements OnInit {
                     font: 'Arial',
                     size: 15,
                     color: '#666',
-                    format : 'd MMMM y'
+                    format: 'd MMMM y'
                 };
                 this.storeDate(dateBlock, this.signaturesService.currentPage);
             }
@@ -215,7 +201,7 @@ export class SignaturesComponent implements OnInit {
                     font: 'Arial',
                     size: 15,
                     color: '#666',
-                    format : 'd MMMM y'
+                    format: 'd MMMM y'
                 };
                 this.storeDate(dateBlock, position.page);
             });

@@ -251,7 +251,6 @@ export class DocumentComponent implements OnInit {
             cssClass: 'my-custom-class',
             componentProps: {
                 currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
-                posCurrentUser: this.mainDocument.workflow.indexOf(this.mainDocument.workflow.filter((item: { current: boolean; }) => item.current === true)[0])
             }
         });
         await modal.present();
@@ -376,9 +375,7 @@ export class DocumentComponent implements OnInit {
                                     this.signaturesService.signaturesListSubstituted = [];
                                 }
                                 if (realUserWorkflow[0].datePositions.length > 0 && this.functionsService.empty(this.signaturesService.datesContent)) {
-                                    const currentUser = this.mainDocument.workflow.indexOf(realUserWorkflow[0]);
-                                    const datePosUser = realUserWorkflow[0].datePositions.filter((item: any) => item.sequence === currentUser);
-                                    datePosUser.forEach((date: any) => {
+                                    realUserWorkflow[0].datePositions.forEach((date: any) => {
                                         if (!this.signaturesService.datesContent[date.page]) {
                                             this.signaturesService.datesContent[date.page] = [];
                                         }
