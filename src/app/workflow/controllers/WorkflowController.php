@@ -46,6 +46,7 @@ class WorkflowController
                 'userId'        => $value['user_id'],
                 'userDisplay'   => UserModel::getLabelledUserById(['id' => $value['user_id']]),
                 'mode'          => $value['mode'],
+                'signatureMode' => $value['signature_mode'],
                 'order'         => $value['order'],
                 'status'        => $value['status'],
                 'note'          => $value['note'],
