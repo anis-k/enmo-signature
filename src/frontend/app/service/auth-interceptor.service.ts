@@ -18,6 +18,9 @@ export class AuthInterceptor implements HttpInterceptor {
         {
             route: '/password',
             method: ['PUT']
+        }, {
+            route: '/logout',
+            method: ['GET']
         }
     ];
 

@@ -118,4 +118,16 @@ export class AuthService {
     getWorkflowMode(id: string) {
         return this.signatureRoles.filter((item: any) => item.id === id)[0].type;
     }
+
+    setCachedUrl(url: string) {
+        this.localStorage.save('MaarchParapheurCacheUrl', url);
+    }
+
+    getCachedUrl() {
+        return this.localStorage.get('MaarchParapheurCacheUrl');
+    }
+
+    cleanCachedUrl() {
+        return this.localStorage.remove(`MaarchParapheurCacheUrl`);
+    }
 }

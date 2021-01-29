@@ -811,6 +811,7 @@ export class DocumentComponent implements OnInit {
 
     ionViewWillLeave() {
         this.signaturesService.detachTemplate('rightContent');
+        this.loadingController.dismiss();
     }
 
     openSelect(event: any) {

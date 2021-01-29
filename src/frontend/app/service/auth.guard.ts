@@ -138,6 +138,7 @@ export class AuthGuard implements CanActivate {
                                 }
                                 return true;
                             } else {
+                                this.authService.setCachedUrl(state.url.replace(/^\//g, ''));
                                 this.authService.logout();
                                 return false;
                             }

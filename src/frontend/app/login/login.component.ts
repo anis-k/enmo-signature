@@ -88,7 +88,12 @@ export class LoginComponent implements OnInit, AfterViewInit {
                         this.authService.saveTokens(data.headers.get('Token'), data.headers.get('Refresh-Token'));
                         this.authService.setUser({});
 
-                        this.router.navigate(['/home']);
+                        if (this.authService.getCachedUrl()) {
+                            this.router.navigateByUrl(this.authService.getCachedUrl());
+                            this.authService.cleanCachedUrl();
+                        } else {
+                            this.router.navigate(['/home']);
+                        }
                         loading.dismiss();
                     }),
                     catchError((err: any) => {
