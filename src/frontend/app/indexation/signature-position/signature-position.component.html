@@ -45,7 +45,6 @@
                     </ion-buttons>
                     <span class="signUserName">{{getUserName(sign.sequence)}}</span>
                     {{'lang.signature' | translate | uppercase}}
-                    <p>x = {{sign.position.positionX}}, y = {{sign.position.positionY}}</p>
                 </div>
             </ng-container>
             <ion-img class="img-content" [src]="imgContent" (ionImgDidLoad)="imageLoaded($event)"></ion-img>
