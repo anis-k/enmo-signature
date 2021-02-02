@@ -102,7 +102,7 @@ class DocumentController
             }
 
             $documents = DocumentModel::get([
-                'select'    => ['id', 'title', 'reference', 'mailing_id as "mailingId"', 'count(1) OVER()'],
+                'select'    => ['id', 'title', 'reference', 'mailing_id as "mailingId"', 'sender', 'creation_date as "creationDate"', 'count(1) OVER()'],
                 'where'     => $where,
                 'data'      => $data,
                 'limit'     => $queryParams['limit'],
