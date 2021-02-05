@@ -74,8 +74,10 @@ export class DocumentNotePadComponent implements OnInit {
                     if (Math.sign(offset.top) === 1 || this.precentScrollTop <= Math.abs(offset.top)) {
                         y = this.precentScrollTop - offset.top; 
                     } 
-                    else if (Math.sign(offset.top) === -1) {
-                        y = (this.precentScrollTop - offset.top) * 300;
+                    else if (Math.sign(offset.top) === -1 && this.precentScrollTop <= -Math.sign(offset.top)) {
+                        y = (this.precentScrollTop - offset.top) * 2;
+                    } else {
+                        y = (this.precentScrollTop - offset.top) * 100;
                     }
                     x = this.precentScrollLeft - offset.left;  
                     clientX = this.precentScrollLeft - document.documentElement.offsetLeft;
