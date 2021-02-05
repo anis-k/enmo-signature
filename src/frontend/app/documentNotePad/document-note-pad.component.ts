@@ -51,13 +51,13 @@ export class DocumentNotePadComponent implements OnInit {
     imageLoaded(ev: any) {
         // console.log('imageLoaded');
         // this.getImageDimensions(!this.signaturesService.mobileMode);
-        this.getImageDimensions(false);
+        this.getImageDimensions(false);       
     }
 
     getImageDimensions(originalsize: boolean = false): void {
         this.originalSize = originalsize;
         const img = new Image();
-        img.onload = (data: any) => {
+        img.onload = (data: any) => {            
             this.areaWidth = data.target.naturalWidth;
             this.areaHeight = data.target.naturalHeight;
             if (!originalsize) {
@@ -65,25 +65,30 @@ export class DocumentNotePadComponent implements OnInit {
             }
             if (this.editMode) {
                 setTimeout(() => {
-                    // const scrollY = (this.areaHeight * this.precentScrollTop) / 100;
-                    const scrollY = (this.precentScrollTop / 100) * ($('#myBounds').height() - $(window).height());
-                    const scrollX = (this.areaWidth * this.precentScrollLeft) / 100;
-                    
                     const offset = $('#myBounds').offset();
                     let y: number;
-                    let x: number;
-                    if (offset.top > (this.precentScrollTop - offset.top)) {
-                        y = (this.precentScrollTop - offset.top)
-                    } else {
-                        y = (this.precentScrollTop - offset.top) + 250;  
+                    let x: number;  
+                    let clientX: any;
+                    let clientY: any;
+                    
+                    if (Math.sign(offset.top) === 1 || this.precentScrollTop <= Math.abs(offset.top)) {
+                        y = this.precentScrollTop - offset.top; 
+                    } 
+                    else if (Math.sign(offset.top) === -1) {
+                        y = (this.precentScrollTop - offset.top) * 300;
                     }
-                    x = this.precentScrollLeft - offset.left;                                      
+                    x = this.precentScrollLeft - offset.left;  
+                    clientX = this.precentScrollLeft - document.documentElement.offsetLeft;
+                    clientY = this.precentScrollTop - document.documentElement.offsetTop;
+                    clientX = clientX / this.areaWidth * 100;
+                    clientY = clientY / this.areaHeight * 100;
                     document.getElementsByClassName('drag-scroll-content')[1].scrollTo(x, y);
+                    img.style.transform = 'translate(-'+clientX+'%,-'+clientY+'%) scale(2)';
                     this.initPad();
                 }, 200);
             }
         };
-        img.src = this.content;
+        img.src = this.content;        
     }
 
     getAreaDimension() {

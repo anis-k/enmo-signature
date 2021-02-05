@@ -266,29 +266,13 @@ export class DocumentComponent implements OnInit {
         // console.log('dissmiss');
     }
 
-    async openNoteEditor(ev: any = null) {
-        let scrollPercentX = 0;
-        let scrollPercentY = 0;
-        if (ev !== null) {
-            const offsetTop = -($('#myBounds')[0].getBoundingClientRect().top - 70);
-            const realPosY = (ev.pageY - 75) + offsetTop;
-
-            // console.log(offsetTop);
-
-            scrollPercentX = ((ev.pageX - 350) / ($('#myBounds').width() - $(window).width())) * 100;
-            scrollPercentX = scrollPercentX;
-            scrollPercentY = (offsetTop / ($('#myBounds').height() - $(window).height())) * 100;
-            // scrollPercentY = (realPosY / ($('#myBounds').height() - $(window).height())) * 100;
-
-            // console.log('scrollPercentX', scrollPercentX);
-            // console.log('scrollPercentY', scrollPercentY);
-        }
+    async openNoteEditor() {
         const modal = await this.modalController.create({
             component: DocumentNotePadComponent,
             cssClass: 'fullscreen',
             componentProps: {
-                precentScrollTop: this.posY,
                 precentScrollLeft: this.posX,
+                precentScrollTop: this.posY,
                 content: this.docList[this.currentDoc].imgContent[this.pageNum]
             }
         });
