@@ -47,6 +47,25 @@ export class AuthService {
         this.localStorage.remove('MaarchParapheurRefreshToken');
     }
 
+    refreshToken() {
+        return this.http
+            .get<any>(`../rest/authenticate/token`, { params: { refreshToken: this.getRefreshToken() } })
+            .pipe(
+                tap((data) => {
+                    // Update stored token
+                    this.setToken(data.token);
+
+                    // Update user info
+                    this.updateUserInfo(data.token);
+                }),
+                catchError((error) => {
+                    this.logout();
+                    this.notificationService.error('lang.sessionExpired');
+                    return of(false);
+                })
+            );
+    }
+
     logout() {
         const refreshToken = this.getRefreshToken();
         if (refreshToken === null) {
