@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output, Input } from '@angular/core';
 import { SignaturesContentService } from '../service/signatures.service';
 import { NotificationService } from '../service/notification.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../service/auth.service';
 import { LocalStorageService } from '../service/local-storage.service';
 import { ModalController } from '@ionic/angular';
@@ -33,8 +31,7 @@ export class DocumentNotePadComponent implements OnInit {
     @ViewChild('img') img: any;
     @ViewChild('nav', { read: DragScrollComponent }) ds: DragScrollComponent;
 
-    constructor(private translate: TranslateService,
-        private sanitizer: DomSanitizer,
+    constructor(
         public signaturesService: SignaturesContentService,
         public notificationService: NotificationService,
         public authService: AuthService,
@@ -42,7 +39,7 @@ export class DocumentNotePadComponent implements OnInit {
         public modalController: ModalController
     ) { }
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
         setTimeout(() => {
             this.loading = false;
         }, 100);
@@ -51,13 +48,13 @@ export class DocumentNotePadComponent implements OnInit {
     imageLoaded(ev: any) {
         // console.log('imageLoaded');
         // this.getImageDimensions(!this.signaturesService.mobileMode);
-        this.getImageDimensions(false);       
+        this.getImageDimensions(false);
     }
 
     getImageDimensions(originalsize: boolean = false): void {
         this.originalSize = originalsize;
         const img = new Image();
-        img.onload = (data: any) => {            
+        img.onload = (data: any) => {
             this.areaWidth = data.target.naturalWidth;
             this.areaHeight = data.target.naturalHeight;
             if (!originalsize) {
@@ -67,30 +64,29 @@ export class DocumentNotePadComponent implements OnInit {
                 setTimeout(() => {
                     const offset = $('#myBounds').offset();
                     let y: number;
-                    let x: number;  
+                    let x: number;
                     let clientX: any;
                     let clientY: any;
-                    
+
                     if (Math.sign(offset.top) === 1 || this.precentScrollTop <= Math.abs(offset.top)) {
-                        y = this.precentScrollTop - offset.top; 
-                    } 
-                    else if (Math.sign(offset.top) === -1 && this.precentScrollTop <= -Math.sign(offset.top)) {
+                        y = this.precentScrollTop - offset.top;
+                    } else if (Math.sign(offset.top) === -1 && this.precentScrollTop <= -Math.sign(offset.top)) {
                         y = (this.precentScrollTop - offset.top) * 2;
                     } else {
                         y = (this.precentScrollTop - offset.top) * 100;
                     }
-                    x = this.precentScrollLeft - offset.left;  
+                    x = this.precentScrollLeft - offset.left;
                     clientX = this.precentScrollLeft - document.documentElement.offsetLeft;
                     clientY = this.precentScrollTop - document.documentElement.offsetTop;
                     clientX = clientX / this.areaWidth * 100;
                     clientY = clientY / this.areaHeight * 100;
                     document.getElementsByClassName('drag-scroll-content')[1].scrollTo(x, y);
-                    img.style.transform = 'translate(-'+clientX+'%,-'+clientY+'%) scale(2)';
+                    img.style.transform = 'translate(-' + clientX + '%,-' + clientY + '%) scale(2)';
                     this.initPad();
                 }, 200);
             }
         };
-        img.src = this.content;        
+        img.src = this.content;
     }
 
     getAreaDimension() {
