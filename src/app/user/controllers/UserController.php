@@ -271,24 +271,25 @@ class UserController
             $infoContent = substr($body['picture'], 0, strpos($body['picture'], ',') + 1);
             $body['picture'] = substr($body['picture'], strpos($body['picture'], ',') + 1);
         }
-        $picture    = base64_decode($body['picture']);
-        $finfo      = new \finfo(FILEINFO_MIME_TYPE);
-        $mimeType   = $finfo->buffer($picture);
-        $type       = explode('/', $mimeType);
+        $picture  = base64_decode($body['picture']);
+        $finfo    = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($picture);
+        $type     = explode('/', $mimeType);
 
         if ($type[0] != 'image') {
             return $response->withStatus(400)->withJson(['errors' => 'Picture is not an image']);
         }
 
+        $imagick = new \Imagick();
+        $imagick->readImageBlob(base64_decode($body['picture']));
         if (!empty($body['pictureOrientation'])) {
-            $imagick = new \Imagick();
-            $imagick->readImageBlob(base64_decode($body['picture']));
             $imagick->rotateImage(new \ImagickPixel(), $body['pictureOrientation']);
-            $body['picture'] = base64_encode($imagick->getImageBlob());
         }
+        $imagick->thumbnailImage(100, null);
+        $body['picture'] = base64_encode($imagick->getImageBlob());
 
         $set = [
-            'picture'     => $infoContent . $body['picture']
+            'picture' => $infoContent . $body['picture']
         ];
 
         UserModel::update([
@@ -328,9 +329,9 @@ class UserController
 
         $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
         $workflows = WorkflowModel::get([
-            'select'    => [1],
-            'where'     => ['user_id in (?)', "(id) in ({$workflowSelect})"],
-            'data'      => [array_merge([$args['id']], $allSubstitutedUsers)]
+            'select' => [1],
+            'where'  => ['user_id in (?)', "(id) in ({$workflowSelect})"],
+            'data'   => [array_merge([$args['id']], $allSubstitutedUsers)]
         ]);
         if (!empty($workflows)) {
             return $response->withStatus(400)->withJson(['errors' => 'User has current documents', 'lang' => 'userHasCurrentDocuments']);
@@ -350,11 +351,11 @@ class UserController
         UserModel::delete(['id' => $args['id']]);
 
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $args['id'],
-            'type'          => 'SUPPRESSION',
-            'message'       => "{userDeleted} : {$user['firstname']} {$user['lastname']}"
+            'code'       => 'OK',
+            'objectType' => 'users',
+            'objectId'   => $args['id'],
+            'type'       => 'SUPPRESSION',
+            'message'    => "{userDeleted} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         return $response->withStatus(204);
@@ -437,11 +438,11 @@ class UserController
         ]);
 
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $args['id'],
-            'type'          => 'MODIFICATION',
-            'message'       => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
+            'code'       => 'OK',
+            'objectType' => 'users',
+            'objectId'   => $args['id'],
+            'type'       => 'MODIFICATION',
+            'message'    => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         return $response->withStatus(204);
@@ -490,11 +491,11 @@ class UserController
         ]);
 
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $args['id'],
-            'type'          => 'MODIFICATION',
-            'message'       => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
+            'code'       => 'OK',
+            'objectType' => 'users',
+            'objectId'   => $args['id'],
+            'type'       => 'MODIFICATION',
+            'message'    => "{userUpdated} : {$user['firstname']} {$user['lastname']}"
         ]);
 
         return $response->withStatus(204);
@@ -542,10 +543,10 @@ class UserController
 
         $refreshToken = [];
         if ($GLOBALS['id'] == $args['id']) {
-            $refreshJWT = AuthenticationController::getRefreshJWT();
+            $refreshJWT     = AuthenticationController::getRefreshJWT();
             $refreshToken[] = $refreshJWT;
-            $response = $response->withHeader('Token', AuthenticationController::getJWT());
-            $response = $response->withHeader('Refresh-Token', $refreshJWT);
+            $response       = $response->withHeader('Token', AuthenticationController::getJWT());
+            $response       = $response->withHeader('Refresh-Token', $refreshJWT);
         }
 
         UserModel::update([
@@ -555,11 +556,11 @@ class UserController
         ]);
 
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $args['id'],
-            'type'          => 'MODIFICATION',
-            'message'       => '{userPasswordUpdated}'
+            'code'       => 'OK',
+            'objectType' => 'users',
+            'objectId'   => $args['id'],
+            'type'       => 'MODIFICATION',
+            'message'    => '{userPasswordUpdated}'
         ]);
 
         return $response->withStatus(204);
@@ -588,22 +589,22 @@ class UserController
 
         $url = UrlController::getCoreUrl() . 'dist/update-password?token=' . $resetToken;
         EmailController::createEmail([
-            'userId'    => $user['id'],
-            'data'      => [
-                'sender'        => 'Notification',
-                'recipients'    => [$user['email']],
-                'subject'       => $lang['notificationForgotPasswordSubject'],
-                'body'          => $lang['notificationForgotPasswordBody'] . $url . $lang['notificationForgotPasswordFooter'],
-                'isHtml'        => true
+            'userId' => $user['id'],
+            'data'   => [
+                'sender'     => 'Notification',
+                'recipients' => [$user['email']],
+                'subject'    => $lang['notificationForgotPasswordSubject'],
+                'body'       => $lang['notificationForgotPasswordBody'] . $url . $lang['notificationForgotPasswordFooter'],
+                'isHtml'     => true
             ]
         ]);
 
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $user['id'],
-            'type'          => 'MODIFICATION',
-            'message'       => '{userPasswordForgotten}'
+            'code'       => 'OK',
+            'objectType' => 'users',
+            'objectId'   => $user['id'],
+            'type'       => 'MODIFICATION',
+            'message'    => '{userPasswordForgotten}'
         ]);
 
         return $response->withStatus(204);
@@ -640,10 +641,10 @@ class UserController
 
         UserModel::update([
             'set' => [
-                'password'                      => AuthenticationModel::getPasswordHash($body['password']),
-                'password_modification_date'    => 'CURRENT_TIMESTAMP',
-                'reset_token'                   => null,
-                'refresh_token'                 => '[]'
+                'password'                   => AuthenticationModel::getPasswordHash($body['password']),
+                'password_modification_date' => 'CURRENT_TIMESTAMP',
+                'reset_token'                => null,
+                'refresh_token'              => '[]'
             ],
             'where' => ['id = ?'],
             'data'  => [$user['id']]
@@ -651,11 +652,11 @@ class UserController
 
         $GLOBALS['id'] = $user['id'];
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'users',
-            'objectId'      => $user['id'],
-            'type'          => 'MODIFICATION',
-            'message'       => '{userForgottenPasswordUpdated}'
+            'code'       => 'OK',
+            'objectType' => 'users',
+            'objectId'   => $user['id'],
+            'type'       => 'MODIFICATION',
+            'message'    => '{userForgottenPasswordUpdated}'
         ]);
 
         return $response->withStatus(204);
