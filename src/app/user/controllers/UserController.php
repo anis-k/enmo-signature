@@ -286,7 +286,7 @@ class UserController
             $imagick->rotateImage(new \ImagickPixel(), $body['pictureOrientation']);
         }
         $imagick->thumbnailImage(100, null);
-        $body['picture'] = base64_encode($imagick->getImageBlob());
+        $body['picture'] = base64_encode($imagick->getImagesBlob());
 
         $set = [
             'picture' => $infoContent . $body['picture']
