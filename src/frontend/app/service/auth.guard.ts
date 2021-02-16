@@ -38,6 +38,7 @@ export class AuthGuard implements CanActivate {
                     map((data: any) => {
                         this.authService.authMode = data.connection;
                         this.authService.changeKey = data.changeKey;
+                        this.localStorage.setAppSession(data.instanceId);
                     })
                 ). subscribe();
                 return true;
@@ -54,36 +55,7 @@ export class AuthGuard implements CanActivate {
                     this.translate.use(this.authService.user.preferences.lang);
                     this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
 
-                    if (this.authService.signatureRoles.length === 0) {
-                        this.http.get('../rest/signatureModes')
-                            .subscribe((dataModes: any) => {
-                                this.authService.signatureRoles = [{
-                                    'id': 'visa',
-                                    'type': 'visa',
-                                    'color': '#135F7F'
-                                }];
-                                this.authService.signatureRoles = this.authService.signatureRoles.concat(dataModes.map((item: any) => {
-                                    return {
-                                        ...item,
-                                        type: 'sign'
-                                    };
-                                }));
-                            });
-                    }
-
-                    if (this.signaturesService.signaturesList.length === 0) {
-                        this.http.get('../rest/users/' + this.authService.user.id + '/signatures')
-                            .subscribe((dataSign: any) => {
-                                this.signaturesService.signaturesList = dataSign.signatures;
-                            });
-                    }
-
-                    if (this.authService.user.picture === undefined) {
-                        this.http.get('../rest/users/' + this.authService.user.id + '/picture')
-                            .subscribe((dataPic: any) => {
-                                this.authService.user.picture = dataPic.picture;
-                            });
-                    }
+                    this.setData();
                 }
 
                 return true;
@@ -102,36 +74,7 @@ export class AuthGuard implements CanActivate {
                                 this.translate.use(this.authService.user.preferences.lang);
                                 this.cookieService.set('maarchParapheurLang', this.authService.user.preferences.lang);
 
-                                if (this.authService.signatureRoles.length === 0) {
-                                    this.http.get('../rest/signatureModes')
-                                        .subscribe((dataModes: any) => {
-                                            this.authService.signatureRoles = [{
-                                                'id': 'visa',
-                                                'type': 'visa',
-                                                'color': '#135F7F'
-                                            }];
-                                            this.authService.signatureRoles = this.authService.signatureRoles.concat(dataModes.map((item: any) => {
-                                                return {
-                                                    ...item,
-                                                    type: 'sign'
-                                                };
-                                            }));
-                                        });
-                                }
-
-                                if (this.signaturesService.signaturesList.length === 0) {
-                                    this.http.get('../rest/users/' + this.authService.user.id + '/signatures')
-                                        .subscribe((dataSign: any) => {
-                                            this.signaturesService.signaturesList = dataSign.signatures;
-                                        });
-                                }
-
-                                if (this.authService.user.picture === undefined) {
-                                    this.http.get('../rest/users/' + this.authService.user.id + '/picture')
-                                        .subscribe((dataPic: any) => {
-                                            this.authService.user.picture = dataPic.picture;
-                                        });
-                                }
+                                this.setData();
 
                                 if (this.authService.changeKey) {
                                     this.dialog.open(AlertComponent, { autoFocus: false, disableClose: true, data: { mode: 'warning', title: 'lang.warnPrivateKeyTitle', msg: 'lang.warnPrivateKey' } });
@@ -147,5 +90,38 @@ export class AuthGuard implements CanActivate {
             }
         }
 
+    }
+
+    private setData() {
+        if (this.authService.signatureRoles.length === 0) {
+            this.http.get('../rest/signatureModes')
+                .subscribe((dataModes: any) => {
+                    this.authService.signatureRoles = [{
+                        'id': 'visa',
+                        'type': 'visa',
+                        'color': '#135F7F'
+                    }];
+                    this.authService.signatureRoles = this.authService.signatureRoles.concat(dataModes.map((item: any) => {
+                        return {
+                            ...item,
+                            type: 'sign'
+                        };
+                    }));
+                });
+        }
+
+        if (this.signaturesService.signaturesList.length === 0) {
+            this.http.get('../rest/users/' + this.authService.user.id + '/signatures')
+                .subscribe((dataSign: any) => {
+                    this.signaturesService.signaturesList = dataSign.signatures;
+                });
+        }
+
+        if (this.authService.user.picture === undefined) {
+            this.http.get('../rest/users/' + this.authService.user.id + '/picture')
+                .subscribe((dataPic: any) => {
+                    this.authService.user.picture = dataPic.picture;
+                });
+        }
     }
 }
