@@ -23,7 +23,6 @@ import { ModalController } from '@ionic/angular';
 export class ProfileComponent implements OnInit {
 
     @ViewChild('passwordContent') passwordContent: MatExpansionPanel;
-    @ViewChild('avatarProfile') avatarProfile: ElementRef;
     currentTool = 'info';
     profileInfo: any = {
         substitute: null,
@@ -129,8 +128,6 @@ export class ProfileComponent implements OnInit {
     }
 
     closeProfile() {
-        // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
-        // this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
         setTimeout(() => {
             this.initProfileInfo();
         }, 200);
@@ -241,7 +238,6 @@ export class ProfileComponent implements OnInit {
                 this.msgButton = 'lang.validate';
                 this.setLang(this.preferenceInfo.lang);
                 this.cookieService.set('maarchParapheurLang', this.preferenceInfo.lang);
-                // this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(0deg)');
             }),
             exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) :  new Promise(resolve => {resolve(true); })),
             exhaustMap(() => {
@@ -285,10 +281,6 @@ export class ProfileComponent implements OnInit {
         this.http.put('../rest/users/' + this.authService.user.id + '/picture', this.avatarInfo).pipe(
             tap(() => {
                 this.authService.user.picture = this.avatarInfo.picture;
-                this.renderer.setStyle(this.avatarProfile.nativeElement, 'background-size', 'cover');
-                this.renderer.setStyle(this.avatarProfile.nativeElement, 'background-position', 'center');
-                this.renderer.setStyle(this.avatarProfile.nativeElement, 'transform', 'rotate(' + this.avatarInfo.pictureOrientation + 'deg)');
-                this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '\'' + this.avatarInfo.pictureOrientation + '\'');
                 this.notificationService.success('lang.profileUpdated');
             }),
             finalize(() => {
@@ -334,7 +326,6 @@ export class ProfileComponent implements OnInit {
             this.passwordContent.close();
         }
         const fileToUpload = files.item(0);
-        // this.renderer.setStyle(this.avatarProfile.nativeElement, 'content', '');
 
         if (fileToUpload.size <= 5000000) {
             if (['image/png', 'image/jpg', 'image/jpeg', 'image/gif'].indexOf(fileToUpload.type) !== -1) {

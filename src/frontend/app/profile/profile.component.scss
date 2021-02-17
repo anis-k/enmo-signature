@@ -58,27 +58,6 @@
     position: relative;
 }
 
-.avatarProfile {
-    z-index: 2;
-    cursor: pointer;
-    position: absolute;
-    /*background: url(../../assets/user_sample.svg) $primary;*/
-    width: 65px;
-    height: 65px;
-    border-radius: 40px;
-    bottom: -20px;
-    border: solid 3px #F99830;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: all 0.2s;
-}
-
-.avatarProfile:active {
-    box-shadow: 0px 0px 5px 0px #656565;
-}
-
-
 .user {
     color: white;
     color: #F99830;
