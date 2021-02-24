@@ -34,6 +34,8 @@ export class SignatureMethodModalComponent implements OnInit {
     certificate: any;
     signatureLength: any = null;
 
+    server: any = null;
+
     @Input() note: string;
     @Input() signatureMode: string;
     @Input() idsToProcess: any[];
@@ -64,20 +66,26 @@ export class SignatureMethodModalComponent implements OnInit {
     }
 
     async certificateChosen(certData: any) {
-        this.loadingController.create({
-            message: this.translate.instant('lang.processing'),
-            spinner: 'dots'
-        }).then(async (load: HTMLIonLoadingElement) => {
-            load.present();
+        // this.loadingController.create({
+        //     message: this.translate.instant('lang.processing'),
+        //     spinner: 'dots'
+        // }).then(async (load: HTMLIonLoadingElement) => {
+        //     load.present();
 
             try {
+                this.server = certData.detail.server;
+                this.checkWebsocketSession();
                 this.provider = await certData.detail.server.getCrypto(certData.detail.providerId);
+                this.checkWebsocketSession();
                 this.cert = await this.provider.certStorage.getItem(certData.detail.certificateId);
+                this.checkWebsocketSession();
                 this.certPem = await this.provider.certStorage.exportCert('pem', this.cert);
+                this.checkWebsocketSession();
                 this.privateKey = await this.provider.keyStorage.getItem(certData.detail.privateKeyId);
             } catch (e) {
-                this.notificationService.error('lang.fortifyReadException');
-                load.dismiss();
+                console.log('certificateChosen');
+                this.notificationService.error(e);
+                // load.dismiss();
                 this.modalController.dismiss(false);
                 return;
             }
@@ -92,9 +100,17 @@ export class SignatureMethodModalComponent implements OnInit {
                 this.signatures = await this.actionsService.getElementsFromDoc();
                 result = await this.sendAndSign(this.idsToProcess[index]);
             }
-            load.dismiss();
+            // load.dismiss();
             this.modalController.dismiss(result);
-        });
+        // });
+    }
+
+    async checkWebsocketSession() {
+        // Why session closed?!
+        while(this.server.client.state !== WebSocket.OPEN) {
+            await this.server.connect();
+            await new Promise(resolve => setTimeout(resolve, 150));
+        }
     }
 
     async sendAndSign(idToProcess: number) {
@@ -140,9 +156,11 @@ export class SignatureMethodModalComponent implements OnInit {
             let hashSignature: any;
 
             try {
+                this.checkWebsocketSession();
                 hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
             } catch (e) {
-                this.notificationService.error('lang.fortifyReadException');
+                console.log('signDocument');
+                this.notificationService.error(e);
                 resolve(false);
                 return of(false);
             }
