@@ -66,11 +66,11 @@ export class SignatureMethodModalComponent implements OnInit {
     }
 
     async certificateChosen(certData: any) {
-        // this.loadingController.create({
-        //     message: this.translate.instant('lang.processing'),
-        //     spinner: 'dots'
-        // }).then(async (load: HTMLIonLoadingElement) => {
-        //     load.present();
+        this.loadingController.create({
+            message: this.translate.instant('lang.processing'),
+            spinner: 'dots'
+        }).then(async (load: HTMLIonLoadingElement) => {
+            load.present();
 
             try {
                 this.server = certData.detail.server;
@@ -85,7 +85,7 @@ export class SignatureMethodModalComponent implements OnInit {
             } catch (e) {
                 console.log('certificateChosen');
                 this.notificationService.error(e);
-                // load.dismiss();
+                load.dismiss();
                 this.modalController.dismiss(false);
                 return;
             }
@@ -100,14 +100,15 @@ export class SignatureMethodModalComponent implements OnInit {
                 this.signatures = await this.actionsService.getElementsFromDoc();
                 result = await this.sendAndSign(this.idsToProcess[index]);
             }
-            // load.dismiss();
+            load.dismiss();
             this.modalController.dismiss(result);
-        // });
+        });
     }
 
     async checkWebsocketSession() {
-        // Why session closed?!
+        // session closed?!
         while(this.server.client.state !== WebSocket.OPEN) {
+            console.log('server connection');
             await this.server.connect();
             await new Promise(resolve => setTimeout(resolve, 150));
         }
