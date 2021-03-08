@@ -291,8 +291,9 @@ class DocumentController
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
-
+        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Privilege\n", FILE_APPEND);
         $body = $request->getParsedBody();
+        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Body\n", FILE_APPEND);
 
         if (empty($body)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
@@ -307,7 +308,7 @@ class DocumentController
         } elseif (!Validator::stringType()->length(0, 64)->validate($body['reference'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body reference is too loong or not a string']);
         }
-
+        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Check Variables\n", FILE_APPEND);
         $body['attachments'] = empty($body['attachments']) ? [] : $body['attachments'];
         foreach ($body['attachments'] as $key => $attachment) {
             if (!Validator::notEmpty()->validate($attachment['encodedDocument'])) {

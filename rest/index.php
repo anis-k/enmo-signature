@@ -16,8 +16,8 @@ require '../vendor/autoload.php';
 
 //Root application position
 chdir('..');
-file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - index\n", FILE_APPEND);
 date_default_timezone_set(\SrcCore\models\CoreConfigModel::getTimezone());
+file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - index\n", FILE_APPEND);
 
 $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRouteBeforeAppMiddleware' => true]]);
 
