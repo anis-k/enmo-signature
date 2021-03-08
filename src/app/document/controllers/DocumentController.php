@@ -296,16 +296,22 @@ class DocumentController
         file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Body\n", FILE_APPEND);
 
         if (empty($body)) {
+            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Empty body\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
         } elseif (!Validator::notEmpty()->validate($body['encodedDocument'])) {
+            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - EncodedDocument\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body encodedDocument is empty']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['title'])) {
+            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - title\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body title is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['sender'])) {
+            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - sender\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body sender is empty or not a string']);
         } elseif (!Validator::arrayType()->notEmpty()->validate($body['workflow'])) {
+            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - workflow\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body workflow is empty or not an array']);
         } elseif (!Validator::stringType()->length(0, 64)->validate($body['reference'])) {
+            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - reference\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body reference is too loong or not a string']);
         }
         file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Check Variables\n", FILE_APPEND);
