@@ -10,6 +10,8 @@
  */
 
 /* Core CSS required for Ionic components to work properly */
+@import "font-roboto.css";
+
 @import "~@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
@@ -24,6 +26,7 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
 
 .primary {
     color: var(--ion-color-primary);
