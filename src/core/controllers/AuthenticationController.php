@@ -15,11 +15,14 @@
 namespace SrcCore\controllers;
 
 use Configuration\models\ConfigurationModel;
+use Email\controllers\EmailController;
 use Firebase\JWT\JWT;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use SrcCore\controllers\LanguageController;
+use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\PasswordModel;
@@ -299,12 +302,12 @@ class AuthenticationController
         return $jwt;
     }
 
-    public static function getResetJWT()
+    public static function getResetJWT($args = [])
     {
         $token = [
-            'exp'   => time() + 3600,
+            'exp'   => time() + $args['expirationTime'],
             'user'  => [
-                'id' => $GLOBALS['id']
+                'id' => $args['id']
             ],
             'connection' => ConfigurationModel::getConnection()
         ];
@@ -312,6 +315,29 @@ class AuthenticationController
         $jwt = JWT::encode($token, CoreConfigModel::getEncryptKey());
 
         return $jwt;
+    }
+
+    public static function sendAccountActivationNotification(array $args)
+    {
+        $resetToken = AuthenticationController::getResetJWT(['id' => $args['userId'], 'expirationTime' => 1209600]); // 14 days
+        UserModel::update(['set' => ['reset_token' => $resetToken], 'where' => ['id = ?'], 'data' => [$args['userId']]]);
+
+        $user = UserModel::getById(['select' => ['login'], 'id' => $args['userId']]);
+        $lang = LanguageController::get(['lang' => 'fr']);
+
+        $url = UrlController::getCoreUrl() . 'dist/update-password?token=' . $resetToken;
+        EmailController::createEmail([
+            'userId' => $args['userId'],
+            'data'   => [
+                'sender'     => 'Notification',
+                'recipients' => [$args['userEmail']],
+                'subject'    => $lang['notificationNewAccountSubject'],
+                'body'       => $lang['notificationNewAccountBody'] . $url . $lang['notificationNewAccountId'] . ' ' . $user['login'] . $lang['notificationNewAccountFooter'],
+                'isHtml'     => true
+            ]
+        ]);
+
+        return true;
     }
 
     public static function isRouteAvailable(array $args)

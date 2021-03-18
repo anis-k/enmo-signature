@@ -163,6 +163,10 @@ class UserController
             'message'       => "{userAdded} : {$body['firstname']} {$body['lastname']}"
         ]);
 
+        if (empty($body['isRest'])) {
+            AuthenticationController::sendAccountActivationNotification(['userId' => $id, 'userEmail' => $body['email']]);
+        }
+
         return $response->withJson(['id' => $id]);
     }
 
@@ -581,7 +585,7 @@ class UserController
 
         $GLOBALS['id'] = $user['id'];
 
-        $resetToken = AuthenticationController::getResetJWT();
+        $resetToken = AuthenticationController::getResetJWT(['id' => $GLOBALS['id'], 'expirationTime' => 3600]);
         UserModel::update(['set' => ['reset_token' => $resetToken], 'where' => ['id = ?'], 'data' => [$user['id']]]);
 
         $user['preferences'] = json_decode($user['preferences'], true);

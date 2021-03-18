@@ -82,6 +82,9 @@ class UserModel
         ValidatorModel::notEmpty($args, ['login', 'email', 'firstname', 'lastname', 'picture']);
         ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode', 'signatureModes']);
 
+        if (empty($args['password'])) {
+            $args['password'] = AuthenticationModel::generatePassword();
+        }
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'users_id_seq']);
 
         DatabaseModel::insert([
@@ -90,7 +93,7 @@ class UserModel
                 'id'                            => $nextSequenceId,
                 'login'                         => $args['login'],
                 'email'                         => $args['email'],
-                'password'                      => AuthenticationModel::getPasswordHash('maarch'),
+                'password'                      => $args['password'],
                 'firstname'                     => $args['firstname'],
                 'lastname'                      => $args['lastname'],
                 '"isRest"'                      => empty($args['isRest']) ? 'false' : 'true',
