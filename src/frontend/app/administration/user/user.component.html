@@ -30,20 +30,20 @@
         <ion-content>
             <ion-item>
                 <ion-label color="secondary" position="floating">{{'lang.login' | translate}} *</ion-label>
-                <ion-input name="login" [readonly]="!creationMode" [(ngModel)]="user.login" required pattern="^[\w.@-]*$">
+                <ion-input name="login" [maxlength]="128" [readonly]="!creationMode" [(ngModel)]="user.login" required pattern="^[\w.@-]*$">
                 </ion-input>
             </ion-item>
             <ion-item>
                 <ion-label color="secondary" position="floating">{{'lang.firstname' | translate}} *</ion-label>
-                <ion-input name="firstname" [(ngModel)]="user.firstname" required></ion-input>
+                <ion-input name="firstname" [maxlength]="128" [(ngModel)]="user.firstname" required></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}} *</ion-label>
-                <ion-input name="lastname" [(ngModel)]="user.lastname" required></ion-input>
+                <ion-input name="lastname" [maxlength]="128" [(ngModel)]="user.lastname" required></ion-input>
             </ion-item>
             <ion-item>
                 <ion-label color="secondary" position="floating">{{'lang.email' | translate}} *</ion-label>
-                <ion-input type="email" name="email" [(ngModel)]="user.email" required
+                <ion-input type="email" name="email" [maxlength]="128" [(ngModel)]="user.email" required
                     pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"></ion-input>
             </ion-item>
             <ion-item>

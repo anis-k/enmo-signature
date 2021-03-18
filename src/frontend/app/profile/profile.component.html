@@ -35,21 +35,21 @@
                         <img [src]="avatarInfo.picture">
                       </ion-avatar>
                     <ion-label color="secondary" position="floating">{{'lang.login' | translate}}</ion-label>
-                    <ion-input name="login" [(ngModel)]="profileInfo.login" readonly required></ion-input>
+                    <ion-input name="login" [maxlength]="128" [(ngModel)]="profileInfo.login" readonly required></ion-input>
                     <input #uploadFile type="file" style="display:none;" (change)="handleFileInput($event.target.files)">
                 </ion-item>
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.email' | translate}}</ion-label>
-                    <ion-input name="email" [(ngModel)]="profileInfo.email"
+                    <ion-input name="email" [maxlength]="128" [(ngModel)]="profileInfo.email"
                         pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.firstname' | translate}}</ion-label>
-                    <ion-input name="firstname" [(ngModel)]="profileInfo.firstname" [readonly]="authService.authMode !== 'default'" required></ion-input>
+                    <ion-input name="firstname" [maxlength]="128" [(ngModel)]="profileInfo.firstname" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{'lang.lastname' | translate}}</ion-label>
-                    <ion-input name="lastname" [(ngModel)]="profileInfo.lastname" [readonly]="authService.authMode !== 'default'" required></ion-input>
+                    <ion-input name="lastname" [maxlength]="128" [(ngModel)]="profileInfo.lastname" [readonly]="authService.authMode !== 'default'" required></ion-input>
                 </ion-item>
                 <div *ngIf="authService.authMode === 'default'">
                     <ion-list-header lines="none">

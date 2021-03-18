@@ -10,7 +10,7 @@
     <ion-content>
         <ion-item>
             <ion-label color="secondary" position="floating">{{'lang.label' | translate}} *</ion-label>
-            <ion-input name="label" [(ngModel)]="group.label" required>
+            <ion-input name="label" [maxlength]="128" [(ngModel)]="group.label" required>
             </ion-input>
         </ion-item>
         <ion-item lines="none" *ngIf="!creationMode">
