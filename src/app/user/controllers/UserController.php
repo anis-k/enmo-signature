@@ -113,13 +113,13 @@ class UserController
 
         if (empty($body)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['login']) || !preg_match("/^[\w.@-]*$/", $body['login'])) {
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 128)->validate($body['login']) || !preg_match("/^[\w.@-]*$/", $body['login'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body login is empty, not a string or wrong formatted']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 128)->validate($body['firstname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 128)->validate($body['lastname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
-        } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL)) {
+        } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL) || !Validator::stringType()->notEmpty()->length(1, 128)->validate($body['email'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
@@ -181,11 +181,11 @@ class UserController
 
         if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['firstname'])) {
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 128)->validate($body['firstname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body firstname is empty or not a string']);
-        } elseif (!Validator::stringType()->notEmpty()->validate($body['lastname'])) {
+        } elseif (!Validator::stringType()->notEmpty()->length(1, 128)->validate($body['lastname'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
-        } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL)) {
+        } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL) || !Validator::stringType()->notEmpty()->length(1, 128)->validate($body['email'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
         }
 
