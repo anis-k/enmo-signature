@@ -289,7 +289,7 @@ export class IndexationComponent implements OnInit {
                 let filename = fileInput.target.files[index].name;
                 let file = {
                     title: filename.substr(0, filename.lastIndexOf('.')),
-                    reference: filename.substr(0, filename.lastIndexOf('.')),
+                    reference: filename.substr(0, filename.lastIndexOf('.')).substr(0, 53),
                     mainDocument: true,
                     content: ''
                 };
@@ -297,8 +297,8 @@ export class IndexationComponent implements OnInit {
                 reader.readAsArrayBuffer(fileInput.target.files[index]);
                 reader.onload = (value: any) => {
                     file.mainDocument = this.filesToUpload.length === 0;
-                    file.reference = this.filesToUpload.length === 0 ? file.reference : '',
-                        file.content = this.getBase64Document(value.target.result);
+                    file.reference = this.filesToUpload.length === 0 ? file.reference : '';
+                    file.content = this.getBase64Document(value.target.result);
                     this.filesToUpload.push(file);
                     if (this.filesToUpload.length === 1) {
                         setTimeout(() => {
