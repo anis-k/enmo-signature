@@ -150,7 +150,7 @@ export class ActionsService {
         });
     }
 
-    checkGroupMail(mainDocument: any): Promise<any[]> {
+    checkGroupMail(mainDocument: any, action: string): Promise<any[]> {
         return new Promise(async (resolve) => {
             if (this.functionsService.empty(mainDocument.mailingId)) {
                 resolve([this.signaturesService.mainDocumentId]);
@@ -161,7 +161,7 @@ export class ActionsService {
                             if (res.documents.length > 1) {
                                 const alert = await this.alertController.create({
                                     header: this.translate.instant('lang.mailing'),
-                                    message: this.translate.instant('lang.makeActionOnDocInMailGroup'),
+                                    message: action === 'validate' ? this.translate.instant('lang.makeActionOnDocInMailGroup') : this.translate.instant('lang.refuseActionDocInMailGroup'),
                                     backdropDismiss: false,
                                     buttons: [
                                         {

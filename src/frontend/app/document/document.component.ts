@@ -609,7 +609,7 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.reject'),
                     handler: async (data: any) => {
-                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument);
+                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument, 'reject');                        
 
                         const res = await this.signatureMethodService.launchDefaultMode(data.paragraph, idsToProcess);
 
@@ -654,7 +654,7 @@ export class DocumentComponent implements OnInit {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
                         const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
-                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument);
+                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument, 'validate');
 
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph, idsToProcess);
 

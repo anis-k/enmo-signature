@@ -461,6 +461,7 @@
 		"filter": "Filtrer",
 		"noItem": "Aucun élément",
 		"modelCreated": "Modèle créé",
-		"undefined": "Non défini"
+		"undefined": "Non défini",
+		"refuseActionDocInMailGroup": "Voulez-vous refuser les autres documents ?"
 	}
 }
