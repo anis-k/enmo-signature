@@ -45,7 +45,7 @@ class SearchController
 
             $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
             $workflowSelect = "SELECT main_document_id FROM workflows WHERE user_id in (?) AND id in ({$workflowSelect})";
-            $where          = ["id in ({$workflowSelect}) OR typist = ?"];
+            $where          = ["(id in ({$workflowSelect}) OR typist = ?)"];
             $data           = [$users, $GLOBALS['id']];
         }
 
