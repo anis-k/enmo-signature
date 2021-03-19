@@ -282,6 +282,7 @@ export class GroupComponent implements OnInit {
             .subscribe({
                 next: () => {
                     this.notificationService.success('lang.privilegeUpdated');
+                    this.authService.updateUserInfoWithTokenRefresh();
                 },
             });
     }
