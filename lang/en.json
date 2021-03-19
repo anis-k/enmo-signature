@@ -454,6 +454,18 @@
         "filter": "Filter",
         "noItem": "No item",
         "modelCreated": "Model created",
-        "undefined": "Undefined"
+        "undefined": "Undefined",
+        "notificationRefusedSubject": "[Maarch Parapheur] Visa workflow refused",
+        "notificationRefusedBody": "Hello, <br/> <br/> A visa workflow that you initiated was interrupted because a user took a refusal action. <br/> <br/> Click on the link below to view it: <br/>",
+        "notificationInterruptSubject": "[Maarch Parapheur] Visa workflow interrupted",
+        "notificationInterruptBody": "Hello, <br/> <br/> A visa workflow that you initiated has been interrupted. <br/> <br/> Click on the link below to view it: <br/>",
+        "notificationEndOfWorkflowSubject": "[Maarch Parapheur] Visa workflow completed",
+        "notificationEndOfWorkflowBody": "Hello, <br/> <br/> A visa workflow that you initiated has been successfully completed. <br/> <br/> Click on the link below to view it: <br/>",
+        "notificationNewAccountSubject": "[Maarch Parapheur] Activate your user account",
+        "notificationNewAccountBody": "Welcome, <br/> <br/> You now have an account in the Maarch Parapheur application. <br/> <br/> To log in and set your password, please click on the link below: <br/> <br/>",
+        "notificationNewAccountId": "<br/> <br/> <b> Your username: </b>",
+        "notificationNewAccountFooter": "<br/> <br/> This message is sent automatically following an action by the administrator. <br/> Please do not answer it. <br/> <br/> For any questions, please contact the technical administrator of the solution.",
+        "documentIdSearch": "Document ID",
+        "refuseActionDocInMailGroup": "Do you want to refuse the other documents?"
     }
 }
