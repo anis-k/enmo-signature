@@ -332,7 +332,7 @@ class AuthenticationController
                 'sender'     => 'Notification',
                 'recipients' => [$args['userEmail']],
                 'subject'    => $lang['notificationNewAccountSubject'],
-                'body'       => $lang['notificationNewAccountBody'] . $url . $lang['notificationNewAccountId'] . ' ' . $user['login'] . $lang['notificationNewAccountFooter'],
+                'body'       => $lang['notificationNewAccountBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationNewAccountId'] . ' ' . $user['login'] . $lang['notificationNewAccountFooter'],
                 'isHtml'     => true
             ]
         ]);
