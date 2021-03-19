@@ -44,10 +44,10 @@ class DocumentModel
         ValidatorModel::arrayType($args, ['select']);
 
         $document = DatabaseModel::select([
-            'select'    => $args['select'],
-            'table'     => ['main_documents'],
-            'where'     => ['id = ?'],
-            'data'      => [$args['id']]
+            'select' => $args['select'],
+            'table'  => ['main_documents'],
+            'where'  => ['id = ?'],
+            'data'   => [$args['id']]
         ]);
 
         if (empty($document[0])) {
@@ -59,7 +59,7 @@ class DocumentModel
 
     public static function create(array $args)
     {
-        ValidatorModel::notEmpty($args, ['title', 'sender', 'metadata']);
+        ValidatorModel::notEmpty($args, ['title', 'sender', 'metadata', 'typist']);
         ValidatorModel::stringType($args, ['title', 'reference', 'description', 'sender', 'deadline', 'notes', 'link_id', 'metadata', 'mailing_id']);
 
         $nextSequenceId = DatabaseModel::getNextSequenceValue(['sequenceId' => 'main_documents_id_seq']);
@@ -67,16 +67,17 @@ class DocumentModel
         DatabaseModel::insert([
             'table'         => 'main_documents',
             'columnsValues' => [
-                'id'                => $nextSequenceId,
-                'title'             => $args['title'],
-                'reference'         => $args['reference'],
-                'description'       => $args['description'],
-                'sender'            => $args['sender'],
-                'deadline'          => $args['deadline'],
-                'notes'             => $args['notes'],
-                'link_id'           => $args['link_id'],
-                'metadata'          => $args['metadata'],
-                'mailing_id'        => $args['mailing_id']
+                'id'            => $nextSequenceId,
+                'title'         => $args['title'],
+                'reference'     => $args['reference'],
+                'description'   => $args['description'],
+                'sender'        => $args['sender'],
+                'deadline'      => $args['deadline'],
+                'notes'         => $args['notes'],
+                'link_id'       => $args['link_id'],
+                'metadata'      => $args['metadata'],
+                'mailing_id'    => $args['mailing_id'],
+                'typist'        => $args['typist']
             ]
         ]);
 

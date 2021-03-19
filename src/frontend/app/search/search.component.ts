@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ActionSheetController, AlertController, IonInfiniteScroll, LoadingController, MenuController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -32,6 +32,12 @@ export class SearchComponent implements OnInit {
         },
         {
             id: 'reference',
+            type: 'text',
+            val: '',
+            values: []
+        },
+        {
+            id: 'documentId',
             type: 'text',
             val: '',
             values: []
@@ -89,6 +95,7 @@ export class SearchComponent implements OnInit {
     count: number = 0;
     openedLine = '';
     reActiveInfinite: any;
+    documentId: any;
 
     @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
     @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
@@ -109,9 +116,18 @@ export class SearchComponent implements OnInit {
         public actionSheetController: ActionSheetController,
         public datePipe: DatePipe,
         private functionsService: FunctionsService,
+        private _activatedRoute: ActivatedRoute,
     ) { }
 
-    ngOnInit(): void { }
+    ngOnInit(): void {
+        this._activatedRoute.queryParamMap.subscribe((paramMap: ParamMap) => {
+            if (!this.functionsService.empty(paramMap.get('documentId'))) {
+                this.documentId = paramMap.get('documentId');
+                this.filters.filter((element: any) => element.id === 'documentId')[0].val = this.documentId;
+                this.search();
+            }
+        });
+    }
 
     ionViewWillEnter() {
         this.menu.enable(true, 'left-menu');
@@ -274,6 +290,7 @@ export class SearchComponent implements OnInit {
                 this.currentFilters = this.currentFilters.filter((item: any) => item.id !== 'workflowStates');
             }
         }
+        console.log(this.currentFilters);
     }
 
     loadData(event: any) {
@@ -470,7 +487,7 @@ export class SearchComponent implements OnInit {
     }
 
     checkInput() {
-        if ((this.filters.find((el: any) => el.id === 'title').val === '') && (this.filters.find((el: any) => el.id === 'reference').val === '')) {
+        if ((this.filters.find((el: any) => el.id === 'title').val === '') && (this.filters.find((el: any) => el.id === 'reference').val === '') && (this.filters.find((el: any) => el.id === 'documentId').val === '')) {
             if ((this.filters.find((el: any) => el.id === 'workflowStates').val.length === 0) && (this.filters.find((el: any) => el.id === 'workflowUsers').val.length === 0)) {
                 this.clearFilters();
                 this.currentFilters = [];

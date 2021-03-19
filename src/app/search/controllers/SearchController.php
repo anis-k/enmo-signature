@@ -27,11 +27,11 @@ class SearchController
 {
     public function getDocuments(Request $request, Response $response)
     {
-        $body = $request->getParsedBody();
+        $body        = $request->getParsedBody();
         $queryParams = $request->getQueryParams();
 
         $queryParams['offset'] = empty($queryParams['offset']) ? 0 : (int)$queryParams['offset'];
-        $queryParams['limit'] = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
+        $queryParams['limit']  = empty($queryParams['limit']) ? 0 : (int)$queryParams['limit'];
 
         $where = [];
         $data  = [];
@@ -104,7 +104,11 @@ class SearchController
         }
         if (Validator::stringType()->notEmpty()->validate($body['reference'] ?? null)) {
             $where[] = 'reference ilike ?';
-            $data[] = "%{$body['reference']}%";
+            $data[]  = "%{$body['reference']}%";
+        }
+        if (Validator::numeric()->notEmpty()->validate($body['documentId'] ?? null)) {
+            $where[] = 'id = ?';
+            $data[]  = $body['documentId'];
         }
 
         $documents = DocumentModel::get([

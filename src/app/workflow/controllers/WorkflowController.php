@@ -17,6 +17,7 @@ namespace Workflow\controllers;
 use Document\controllers\DigitalSignatureController;
 use Document\controllers\DocumentController;
 use Document\models\DocumentModel;
+use Email\controllers\EmailController;
 use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use Respect\Validation\Validator;
@@ -92,6 +93,8 @@ class WorkflowController
                 break;
             }
         }
+
+        EmailController::sendNotificationToTypist(['documentId' => $args['id'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => 'INT']);
 
         HistoryController::add([
             'code'          => 'OK',

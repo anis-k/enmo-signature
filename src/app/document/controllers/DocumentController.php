@@ -547,7 +547,7 @@ class DocumentController
             }
         }
         file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - sendNotification\n", FILE_APPEND);
-        EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $id, 'userId' => $GLOBALS['id']]);
+        EmailController::sendNotification(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
         file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Thumbnail\n", FILE_APPEND);
         $configPath = CoreConfigModel::getConfigPath();
@@ -885,7 +885,7 @@ class DocumentController
             ]);
         }
 
-        EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['id'], 'userId' => $GLOBALS['id']]);
+        EmailController::sendNotification(['documentId' => $args['id'], 'userId' => $GLOBALS['id'], 'status' => DocumentController::ACTIONS[$args['actionId']]]);
 
         $historyMessagePart = "{actionDone} : ";
         if ($workflow['user_id'] != $GLOBALS['id']) {

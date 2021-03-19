@@ -19,17 +19,12 @@
             </ion-button>
             <div class="scrollfilters" slot="start">
                 <div *ngFor="let currentFilter of currentFilters">
-                    <ion-chip outline *ngIf="currentFilter.id === 'title' && currentFilter.val !== ''" color="primary"
+                    <ion-chip outline *ngIf="(currentFilter.id === 'title' || currentFilter.id === 'reference' || currentFilter.id === 'documentId') && currentFilter.val !== ''" color="primary"
                         style="background: white;" [title]="'lang.' + currentFilter.id + 'Search' | translate"
                         (click)="removeFilter(currentFilter)">
-                        <ion-icon name="document-text-outline"></ion-icon>
-                        <ion-label>{{ currentFilter.val }}</ion-label>
-                        <ion-icon name="close-circle"></ion-icon>
-                    </ion-chip>
-                    <ion-chip outline *ngIf="currentFilter.id === 'reference' && currentFilter.val !== ''"
-                        color="primary" style="background: white;" [title]="'lang.' + currentFilter.id + 'Search' | translate"
-                        (click)="removeFilter(currentFilter)">
-                        <ion-icon name="compass-outline"></ion-icon>
+                        <ion-icon *ngIf="currentFilter.id === 'title'" name="document-text-outline"></ion-icon>
+                        <ion-icon *ngIf="currentFilter.id === 'reference'" name="compass-outline"></ion-icon>
+                        <ion-icon *ngIf="currentFilter.id === 'documentId'" name="bookmark-outline"></ion-icon>
                         <ion-label>{{ currentFilter.val }}</ion-label>
                         <ion-icon name="close-circle"></ion-icon>
                     </ion-chip>

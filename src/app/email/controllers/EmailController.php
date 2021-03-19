@@ -15,10 +15,14 @@
 namespace Email\controllers;
 
 use Configuration\models\ConfigurationModel;
+use Document\models\DocumentModel;
 use Email\models\EmailModel;
+use Group\controllers\PrivilegeController;
 use History\controllers\HistoryController;
 use PHPMailer\PHPMailer\PHPMailer;
 use Respect\Validation\Validator;
+use Slim\Http\Request;
+use Slim\Http\Response;
 use SrcCore\controllers\LanguageController;
 use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
@@ -26,9 +30,6 @@ use SrcCore\models\CoreConfigModel;
 use SrcCore\models\ValidatorModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Group\controllers\PrivilegeController;
 
 class EmailController
 {
@@ -203,17 +204,63 @@ class EmailController
         return ['success' => 'success'];
     }
 
-    public static function sendNotificationToNextUserInWorkflow(array $args)
+    public static function sendNotification(array $args)
     {
         ValidatorModel::notEmpty($args, ['documentId', 'userId']);
         ValidatorModel::intVal($args, ['documentId', 'userId']);
 
         $workflow = WorkflowModel::getCurrentStep(['select' => ['user_id'], 'documentId' => $args['documentId']]);
-        if (empty($workflow)) {
-            return true;
+        if (empty($workflow) || $args['status'] == 'REF') {
+            $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['documentId']]);
+            if (!empty($document['typist'])) {
+                $mode = $args['status'] == 'REF' ? 'REF' : 'END';
+                EmailController::sendNotificationToTypist(['documentId' => $args['documentId'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => $mode]);
+            }
+        } else {
+            EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['documentId'], 'senderId' => $GLOBALS['id'], 'recipientId' => $workflow['user_id']]);
         }
 
-        $nextUser = UserModel::getById(['select' => ['email', 'preferences', 'substitute'], 'id' => $workflow['user_id']]);
+        return true;
+    }
+
+    public static function sendNotificationToTypist(array $args)
+    {
+        if ($args['recipientId'] != $GLOBALS['id']) {
+            $recipient = UserModel::getById(['select' => ['email', 'preferences', '"isRest"'], 'id' => $args['recipientId']]);
+    
+            $recipient['preferences'] = json_decode($recipient['preferences'], true);
+            if ($recipient['preferences']['notifications'] && $recipient['isRest'] == false) {
+                $lang = LanguageController::get(['lang' => $recipient['preferences']['lang']]);
+                $url  = UrlController::getCoreUrl() . 'dist/search?documentId=' . $args['documentId'];
+
+                if ($args['mode'] == 'END') {
+                    $subject = $lang['notificationEndOfWorkflowSubject'];
+                    $body    = $lang['notificationEndOfWorkflowBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'];
+                } elseif ($args['mode'] == 'INT') {
+                    $subject = $lang['notificationInterruptSubject'];
+                    $body    = $lang['notificationInterruptBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'];
+                } else {
+                    $subject = $lang['notificationRefusedSubject'];
+                    $body    = $lang['notificationRefusedBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'];
+                }
+
+                EmailController::createEmail([
+                    'userId' => $args['senderId'],
+                    'data'   => [
+                        'sender'     => 'Notification',
+                        'recipients' => [$recipient['email']],
+                        'subject'    => $subject,
+                        'body'       => $body,
+                        'isHtml'     => true
+                    ]
+                ]);
+            }
+        }
+    }
+
+    public static function sendNotificationToNextUserInWorkflow(array $args)
+    {
+        $nextUser = UserModel::getById(['select' => ['email', 'preferences', 'substitute'], 'id' => $args['recipientId']]);
         if (!empty($nextUser['substitute'])) {
             $nextUser = UserModel::getById(['select' => ['email', 'preferences'], 'id' => $nextUser['substitute']]);
         }
@@ -221,23 +268,21 @@ class EmailController
         $nextUser['preferences'] = json_decode($nextUser['preferences'], true);
         if ($nextUser['preferences']['notifications']) {
             $lang = LanguageController::get(['lang' => $nextUser['preferences']['lang']]);
-            $url = UrlController::getCoreUrl() . 'dist/documents/' . $args['documentId'];
+            $url  = UrlController::getCoreUrl() . 'dist/documents/' . $args['documentId'];
             EmailController::createEmail([
-                'userId'    => $args['userId'],
-                'data'      => [
-                    'sender'        => 'Notification',
-                    'recipients'    => [$nextUser['email']],
-                    'subject'       => $lang['notificationDocumentAddedSubject'],
-                    'body'          => $lang['notificationDocumentAddedBody'] . $url . $lang['notificationFooter'],
-                    'isHtml'        => true
+                'userId' => $args['senderId'],
+                'data'   => [
+                    'sender'     => 'Notification',
+                    'recipients' => [$nextUser['email']],
+                    'subject'    => $lang['notificationDocumentAddedSubject'],
+                    'body'       => $lang['notificationDocumentAddedBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'],
+                    'isHtml'     => true
                 ]
             ]);
         }
-
-        return true;
     }
 
-    private static function controlCreateEmail(array $args)
+    public static function controlCreateEmail(array $args)
     {
         if (!Validator::stringType()->notEmpty()->validate($args['sender'])) {
             return ['errors' => 'Data sender is empty or not a string', 'code' => 400];
