@@ -65,25 +65,25 @@ class EmailController
         }
 
         $id = EmailModel::create([
-            'user_id'               => $args['userId'],
-            'sender'                => $args['data']['sender'],
-            'recipients'            => json_encode($args['data']['recipients']),
-            'cc'                    => empty($args['data']['cc']) ? '[]' : json_encode($args['data']['cc']),
-            'cci'                   => empty($args['data']['cci']) ? '[]' : json_encode($args['data']['cci']),
-            'subject'               => empty($args['data']['subject']) ? null : $args['data']['subject'],
-            'body'                  => empty($args['data']['body']) ? null : $args['data']['body'],
-            'document'              => null,
-            'isHtml'                => $args['data']['isHtml'] ? 'true' : 'false',
-            'status'                => 'WAITING'
+            'user_id'      => $args['userId'],
+            'sender'       => $args['data']['sender'],
+            'recipients'   => json_encode($args['data']['recipients']),
+            'cc'           => empty($args['data']['cc']) ? '[]' : json_encode($args['data']['cc']),
+            'cci'          => empty($args['data']['cci']) ? '[]' : json_encode($args['data']['cci']),
+            'subject'      => empty($args['data']['subject']) ? null : $args['data']['subject'],
+            'body'         => empty($args['data']['body']) ? null : $args['data']['body'],
+            'document'     => null,
+            'isHtml'       => $args['data']['isHtml'] ? 'true' : 'false',
+            'status'       => 'WAITING'
         ]);
 
         $subject = empty($args['data']['subject']) ? '{emailNoSubject}' : $args['data']['subject'];
         HistoryController::add([
-            'code'          => 'OK',
-            'objectType'    => 'emails',
-            'objectId'      => $id,
-            'type'          => 'CREATION',
-            'message'       => "{emailAdded} : {$subject}"
+            'code'       => 'OK',
+            'objectType' => 'emails',
+            'objectId'   => $id,
+            'type'       => 'CREATION',
+            'message'    => "{emailAdded} : {$subject}"
         ]);
 
         if (!empty($args['data']['status']) && $args['data']['status'] == 'EXPRESS') {
@@ -93,12 +93,12 @@ class EmailController
             } else {
                 EmailModel::update(['set' => ['status' => 'ERROR'], 'where' => ['id = ?'], 'data' => [$id]]);
                 HistoryController::add([
-                    'code'          => 'KO',
-                    'objectType'    => 'emails',
-                    'objectId'      => $id,
-                    'type'          => 'EMAIL',
-                    'message'       => '{emailFailed}',
-                    'data'          => ['errors' => $isSent['errors']]
+                    'code'        => 'KO',
+                    'objectType'  => 'emails',
+                    'objectId'    => $id,
+                    'type'        => 'EMAIL',
+                    'message'     => '{emailFailed}',
+                    'data'        => ['errors' => $isSent['errors']]
                 ]);
             }
         } else {
@@ -117,9 +117,9 @@ class EmailController
         ValidatorModel::intVal($args, ['emailId']);
 
         $email = EmailModel::getById(['id' => $args['emailId']]);
-        $email['recipients']    = json_decode($email['recipients']);
-        $email['cc']            = json_decode($email['cc']);
-        $email['cci']           = json_decode($email['cci']);
+        $email['recipients']  = json_decode($email['recipients']);
+        $email['cc']          = json_decode($email['cc']);
+        $email['cci']         = json_decode($email['cci']);
 
         $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'emailServer', 'select' => ['value']]);
         $configuration = json_decode($configuration[0]['value'], true);
@@ -136,8 +136,8 @@ class EmailController
                 $phpmailer->isMail();
             }
 
-            $phpmailer->Host = $configuration['host'];
-            $phpmailer->Port = $configuration['port'];
+            $phpmailer->Host        = $configuration['host'];
+            $phpmailer->Port        = $configuration['port'];
             $phpmailer->SMTPAutoTLS = false;
             if (!empty($configuration['secure'])) {
                 $phpmailer->SMTPSecure = $configuration['secure'];
@@ -178,7 +178,7 @@ class EmailController
                 $originalSrc = $image->getAttribute('src');
                 if (preg_match('/^data:image\/(\w+);base64,/', $originalSrc)) {
                     $encodedImage = substr($originalSrc, strpos($originalSrc, ',') + 1);
-                    $imageFormat = substr($originalSrc, 11, strpos($originalSrc, ';') - 11);
+                    $imageFormat  = substr($originalSrc, 11, strpos($originalSrc, ';') - 11);
                     $phpmailer->addStringEmbeddedImage(base64_decode($encodedImage), "embeded{$key}", "embeded{$key}.{$imageFormat}");
                     $email['body'] = str_replace($originalSrc, "cid:embeded{$key}", $email['body']);
                 }
@@ -186,13 +186,13 @@ class EmailController
         }
 
         $phpmailer->Subject = $email['subject'];
-        $phpmailer->Body = $email['body'];
+        $phpmailer->Body    = $email['body'];
         if (empty($email['body'])) {
             $phpmailer->AllowEmpty = true;
         }
 
-        $phpmailer->Timeout = 30;
-        $phpmailer->SMTPDebug = 1;
+        $phpmailer->Timeout     = 30;
+        $phpmailer->SMTPDebug   = 1;
         $phpmailer->Debugoutput = function ($str) {
         };
 
@@ -212,10 +212,8 @@ class EmailController
         $workflow = WorkflowModel::getCurrentStep(['select' => ['user_id'], 'documentId' => $args['documentId']]);
         if (empty($workflow) || $args['status'] == 'REF') {
             $document = DocumentModel::getById(['select' => ['typist'], 'id' => $args['documentId']]);
-            if (!empty($document['typist'])) {
-                $mode = $args['status'] == 'REF' ? 'REF' : 'END';
-                EmailController::sendNotificationToTypist(['documentId' => $args['documentId'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => $mode]);
-            }
+            $mode     = $args['status'] == 'REF' ? 'REF' : 'END';
+            EmailController::sendNotificationToTypist(['documentId' => $args['documentId'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => $mode]);
         } else {
             EmailController::sendNotificationToNextUserInWorkflow(['documentId' => $args['documentId'], 'senderId' => $GLOBALS['id'], 'recipientId' => $workflow['user_id']]);
         }
@@ -225,7 +223,7 @@ class EmailController
 
     public static function sendNotificationToTypist(array $args)
     {
-        if ($args['recipientId'] != $GLOBALS['id']) {
+        if ($args['recipientId'] != $GLOBALS['id'] && !empty($args['recipientId'])) {
             $recipient = UserModel::getById(['select' => ['email', 'preferences', '"isRest"'], 'id' => $args['recipientId']]);
     
             $recipient['preferences'] = json_decode($recipient['preferences'], true);
