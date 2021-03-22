@@ -462,6 +462,6 @@
 		"noItem": "Aucun élément",
 		"modelCreated": "Modèle créé",
 		"undefined": "Non défini",
-		"refuseActionDocInMailGroup": "Voulez-vous refuser les autres documents ?"
+		"refuseActionDocInMailGroup": "Voulez-vous refuser les autres documents issus d'un publipostage ?"
 	}
 }
