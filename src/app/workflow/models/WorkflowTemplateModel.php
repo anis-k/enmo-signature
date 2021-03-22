@@ -102,20 +102,4 @@ class WorkflowTemplateModel
 
         return true;
     }
-
-//    public static function getWithItems(array $args = [])
-//    {
-//        ValidatorModel::arrayType($args, ['select', 'where', 'data', 'orderBy']);
-//
-//        $listTemplates = DatabaseModel::select([
-//            'select'    => empty($args['select']) ? ['*'] : $args['select'],
-//            'table'     => ['list_templates', 'list_templates_items'],
-//            'left_join' => ['list_templates.id = list_templates_items.list_template_id'],
-//            'where'     => empty($args['where']) ? [] : $args['where'],
-//            'data'      => empty($args['data']) ? [] : $args['data'],
-//            'order_by'  => empty($args['orderBy']) ? [] : $args['orderBy']
-//        ]);
-//
-//        return $listTemplates;
-//    }
 }

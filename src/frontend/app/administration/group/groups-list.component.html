@@ -17,7 +17,6 @@
 <ion-content #mainContent>
   <ion-list>
     <ion-item style="display: flex;">
-      <!--<ion-checkbox slot="start"></ion-checkbox>-->
       <ion-label color="primary" matSort [matSortActive]="displayedColumns[0]" matSortDirection='asc' style="display: flex;font-size: 12px;align-items: center;" (matSortChange)="sortData($event)">
         <ng-container *ngFor="let col of displayedColumns">
           <div [mat-sort-header]="col" disableClear style="flex: 1" *ngIf="col!=='actions'">
@@ -34,7 +33,6 @@
     </ion-item>
     <ion-virtual-scroll [items]="sortedData" approxItemHeight="50px">
       <ion-item *virtualItem="let element" style="display: flex;">
-        <!--<ion-checkbox slot="start"></ion-checkbox>-->
         <ion-label style="display: flex;cursor: pointer;" routerLink="/administration/groups/{{element.id}}">
           <div style="flex: 1" *ngFor="let col of displayedColumns">
             {{element[col]}}

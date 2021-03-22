@@ -102,7 +102,7 @@ class DatabasePDO
         if (!empty($data)) {
             $tmpData = [];
             $position = 0;
-            foreach ($data as $key => $value) {
+            foreach ($data as $value) {
                 if (is_array($value)) {
                     $placeholders = implode(',', array_fill(0, count($value), '?'));
                     $position = strpos($queryString, '(?)', $position + 1);

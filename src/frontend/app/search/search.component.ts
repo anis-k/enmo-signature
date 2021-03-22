@@ -350,8 +350,8 @@ export class SearchComponent implements OnInit {
             this.http.put(`../rest/documents/${item.id}/workflows/interrupt`, {})
                 .pipe(
                     tap(() => {
-                        this.notificationService.success('lang.documentInterrupted'),
-                            resolve(true);
+                        this.notificationService.success('lang.documentInterrupted');
+                        resolve(true);
                     }),
                     catchError((err: any) => {
                         this.notificationService.handleErrors(err);

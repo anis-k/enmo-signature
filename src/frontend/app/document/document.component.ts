@@ -278,10 +278,6 @@ export class DocumentComponent implements OnInit {
         });
         await modal.present();
         const { data } = await modal.onWillDismiss();
-        if (data === 'success') {
-
-        }
-        // console.log('dissmiss');
     }
 
     scrollToElem() {
