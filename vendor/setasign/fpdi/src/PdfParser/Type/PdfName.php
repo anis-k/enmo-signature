@@ -3,9 +3,9 @@
  * This file is part of FPDI
  *
  * @package   setasign\Fpdi
- * @copyright Copyright (c) 2018 Setasign - Jan Slabon (https://www.setasign.com)
+ * @copyright Copyright (c) 2020 Setasign GmbH & Co. KG (https://www.setasign.com)
  * @license   http://opensource.org/licenses/mit-license The MIT License
-  */
+ */
 
 namespace setasign\Fpdi\PdfParser\Type;
 
@@ -49,8 +49,8 @@ class PdfName extends PdfType
         if (strpos($value, '#') === false)
             return $value;
 
-        return preg_replace_callback('/#[a-fA-F\d]{2}/', function($matches) {
-            return chr(hexdec($matches[0]));
+        return preg_replace_callback('/#([a-fA-F\d]{2})/', function($matches) {
+            return chr(hexdec($matches[1]));
         }, $value);
     }
 
