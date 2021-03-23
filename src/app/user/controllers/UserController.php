@@ -678,6 +678,10 @@ class UserController
         $user['signatureModes'] = json_decode($user['signature_modes'], true);
         unset($user['signature_modes']);
 
+        $validSignatureModes = CoreConfigModel::getSignatureModes();
+        $validSignatureModes = array_column($validSignatureModes, 'id');
+        $user['signatureModes'] = array_reverse(array_values(array_intersect($validSignatureModes, $user['signatureModes'])));
+
         if (empty($user['picture'])) {
             $user['picture'] = base64_encode(file_get_contents('src/frontend/assets/user_picture.png'));
             $user['picture'] = 'data:image/png;base64,' . $user['picture'];
