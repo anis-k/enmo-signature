@@ -15,6 +15,8 @@
 namespace User\controllers;
 
 use Configuration\models\ConfigurationModel;
+use Document\controllers\DigitalSignatureController;
+use Document\models\DocumentModel;
 use Email\controllers\EmailController;
 use Firebase\JWT\JWT;
 use Group\controllers\PrivilegeController;
@@ -31,10 +33,12 @@ use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\PasswordModel;
 use SrcCore\models\ValidatorModel;
+use User\models\SignatureModel;
 use User\models\UserGroupModel;
 use User\models\UserModel;
 use Workflow\models\WorkflowModel;
 use Workflow\models\WorkflowTemplateItemModel;
+use Workflow\models\WorkflowTemplateModel;
 
 class UserController
 {
@@ -333,25 +337,47 @@ class UserController
 
         $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
         $workflows = WorkflowModel::get([
-            'select' => [1],
-            'where'  => ['user_id in (?)', "(id) in ({$workflowSelect})"],
-            'data'   => [array_merge([$args['id']], $allSubstitutedUsers)]
+            'select' => ['id', 'digital_signature_id', 'main_document_id'],
+            'where'  => ['user_id = ?', "(id) in ({$workflowSelect})"],
+            'data'   => [$args['id']]
         ]);
-        if (!empty($workflows)) {
-            return $response->withStatus(400)->withJson(['errors' => 'User has current documents', 'lang' => 'userHasCurrentDocuments']);
-        }
 
-        //Workflows
-        WorkflowModel::delete(['where' => ['process_date is null', 'status is null', 'user_id = ?'], 'data' => [$args['id']]]);
+        $workflowsId = array_column($workflows, 'id');
+        WorkflowModel::update([
+            'set'   => ['status' => 'STOP', 'process_date' => 'CURRENT_TIMESTAMP'],
+            'where' => ['id in (?)'],
+            'data'  => [$workflowsId]
+        ]);
+
+        foreach ($workflows as $step) {
+            $document = DocumentModel::getById(['select' => ['typist', 'id'], 'id' => $step['main_document_id']]);
+            EmailController::sendNotificationToTypist(['documentId' => $document['id'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => 'DEL']);
+            if (!empty($step['digital_signature_id'])) {
+                DigitalSignatureController::abort(['signatureId' => $step['digital_signature_id'], 'documentId' => $args['id']]);
+                break;
+            }
+        }
 
         //Substituted Users
         if (!empty($allSubstitutedUsers)) {
             UserModel::update(['set' => ['substitute' => null], 'where' => ['id in (?)'], 'data' => [$allSubstitutedUsers]]);
         }
 
-        //Groups
-        UserGroupModel::delete(['where' => ['user_id = ?'], 'data' => [$args['id']]]);
+        $workflowTemplates = WorkflowTemplateModel::get([
+            'select' => ['id'],
+            'where'  => ['owner = ?'],
+            'data'   => [$args['id']]
+        ]);
 
+        if (!empty($workflowTemplates)) {
+            $workflowTemplates = array_column($workflowTemplates, 'id');
+            WorkflowTemplateItemModel::delete(['where' => ['workflow_template_id in (?)'], 'data' => [$workflowTemplates]]);
+            WorkflowTemplateModel::delete(['where' => ['owner = ?'], 'data'  => [$args['id']]]);
+        }
+
+        SignatureModel::delete(['where' => ['user_id = ?'], 'data' => [$args['id']]]);
+        UserGroupModel::delete(['where' => ['user_id = ?'], 'data' => [$args['id']]]);
+        WorkflowTemplateItemModel::delete(['where' => ['user_id = ?'], 'data' => [$args['id']]]);
         UserModel::delete(['id' => $args['id']]);
 
         HistoryController::add([

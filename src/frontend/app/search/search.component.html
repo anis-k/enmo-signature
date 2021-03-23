@@ -74,7 +74,7 @@
                                         [class.typist-interrupt]="itemW.status==='REF'"
                                         [class.interrupt]="(itemW.processDate===null && itemW.status === 'END') || itemW.status === 'STOP'"
                                         [class.current]="itemW.current"
-                                        [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{itemW.userDisplay}}&nbsp;
+                                        [class.no-visa]="itemW.processDate===null && itemW.status===null && !itemW.current">{{!this.functionsService.empty(itemW.userDisplay) ? itemW.userDisplay : ('lang.userDeleted' | translate)}}&nbsp;
                                         <ion-icon
                                             *ngIf="itemW.processDate!==null && itemW.status!=='REF' && itemW.status!=='STOP'"
                                             name="thumbs-up-outline"></ion-icon>

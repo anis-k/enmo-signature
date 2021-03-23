@@ -237,6 +237,9 @@ class EmailController
                 } elseif ($args['mode'] == 'INT') {
                     $subject = $lang['notificationInterruptSubject'];
                     $body    = $lang['notificationInterruptBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'];
+                } elseif ($args['mode'] == 'DEL') {
+                    $subject = $lang['notificationInterruptSubject'];
+                    $body    = $lang['notificationDeletedUserBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'];
                 } else {
                     $subject = $lang['notificationRefusedSubject'];
                     $body    = $lang['notificationRefusedBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'];

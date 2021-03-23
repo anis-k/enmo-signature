@@ -77,6 +77,7 @@
 		"notificationRefusedBody"      		 : "Bonjour,<br/><br/>Un circuit de visa que vous avez initié a été interrompu car un utilisateur a fait une action de refus.<br/><br/>Cliquez sur le lien ci-dessous pour le consulter :<br/>",
 		"notificationInterruptSubject"   	 : "[Maarch Parapheur] Circuit de visa interrompu",
 		"notificationInterruptBody"      	 : "Bonjour,<br/><br/>Un circuit de visa que vous avez initié a été interrompu.<br/><br/>Cliquez sur le lien ci-dessous pour le consulter :<br/>",
+		"notificationDeletedUserBody"      	 : "Bonjour,<br/><br/>Un circuit de visa que vous avez initié a été interrompu car un utilisateur a été supprimé.<br/><br/>Cliquez sur le lien ci-dessous pour le consulter :<br/>",
 		"notificationEndOfWorkflowSubject"   : "[Maarch Parapheur] Circuit de visa terminé",
 		"notificationEndOfWorkflowBody"      : "Bonjour,<br/><br/>Un circuit de visa que vous avez initié s'est terminé avec succès.<br/><br/>Cliquez sur le lien ci-dessous pour le consulter :<br/>",
 		"notificationDocumentAddedSubject"   : "[Maarch Parapheur] Nouveau document à traiter",

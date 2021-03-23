@@ -43,7 +43,7 @@
     "@angular/router": "^11.2.6",
     "@biesbjerg/ngx-translate-extract": "^6.0.3",
     "@fortawesome/fontawesome-free": "^5.15.3",
-    "@ionic/angular": "^5.6.1",
+    "@ionic/angular": "^5.6.3",
     "@ngrx/store": "^9.2.1",
     "@ngrx/store-devtools": "^9.2.1",
     "@ngx-translate/core": "^12.1.2",

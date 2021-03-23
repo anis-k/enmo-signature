@@ -115,7 +115,7 @@ export class SearchComponent implements OnInit {
         public alertController: AlertController,
         public actionSheetController: ActionSheetController,
         public datePipe: DatePipe,
-        private functionsService: FunctionsService,
+        public functionsService: FunctionsService,
         private _activatedRoute: ActivatedRoute,
     ) { }
 
