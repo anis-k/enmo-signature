@@ -46,8 +46,6 @@ export class DocumentNotePadComponent implements OnInit {
     }
 
     imageLoaded(ev: any) {
-        // console.log('imageLoaded');
-        // this.getImageDimensions(!this.signaturesService.mobileMode);
         this.getImageDimensions(false);
     }
 

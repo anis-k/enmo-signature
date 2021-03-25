@@ -130,7 +130,6 @@ export class DocumentComponent implements OnInit {
 
     imageLoaded(ev: any) {
         this.getImageDimensions(true);
-        // this.loadingDocument = false;
         this.load.dismiss();
         this.menu.enable(true, 'right-menu');
         this.loadingImage = false;
@@ -263,7 +262,6 @@ export class DocumentComponent implements OnInit {
                 this.goTo(data.redirectPage);
             }
         }
-        // console.log('dissmiss');
     }
 
     async openNoteEditor() {
@@ -295,7 +293,6 @@ export class DocumentComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // console.log('oninit!');
         this.menu.enable(false, 'right-menu');
         this.menu.enable(true, 'left-menu');
 
@@ -398,8 +395,6 @@ export class DocumentComponent implements OnInit {
     }
 
     renderPdf() {
-        // console.log('renderPdf');
-
         this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/content')
             .subscribe((data: any) => {
                 this.pdfname = 'data:application/pdf;base64,' + data.encodedDocument;
@@ -506,7 +501,6 @@ export class DocumentComponent implements OnInit {
     }
 
     zoomForView() {
-        // this.resetDragPosition();
         this.resetDragPos = true;
         this.widthDoc = '100%';
         this.signaturesService.workingAreaHeight = this.signaturesService.workingAreaHeight / 2;

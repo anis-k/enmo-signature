@@ -52,7 +52,6 @@ export class AppComponent {
     }
 
     test() {
-        console.log(this.router.url);
         return true;
     }
 

@@ -83,7 +83,6 @@ export class SignatureMethodModalComponent implements OnInit {
                 this.checkWebsocketSession();
                 this.privateKey = await this.provider.keyStorage.getItem(certData.detail.privateKeyId);
             } catch (e) {
-                console.log('certificateChosen');
                 this.notificationService.error(e);
                 load.dismiss();
                 this.modalController.dismiss(false);
@@ -108,7 +107,6 @@ export class SignatureMethodModalComponent implements OnInit {
     async checkWebsocketSession() {
         // session closed?!
         while(this.server.client.state !== WebSocket.OPEN) {
-            console.log('server connection');
             await this.server.connect();
             await new Promise(resolve => setTimeout(resolve, 150));
         }
@@ -125,7 +123,6 @@ export class SignatureMethodModalComponent implements OnInit {
                     return false;
                 } else if (res !== false) {
                     signDocComplete = await this.signDocument(idToProcess, res.hashDocument, res.signatureContentLength, res.signatureFieldName, res.tmpUniqueId);
-                    console.log('signDocComplete', signDocComplete);
                     if (signDocComplete === true) {
                         this.signatures.shift();
                         allSignaturesComplete = this.signatures.length === 0;
@@ -160,7 +157,6 @@ export class SignatureMethodModalComponent implements OnInit {
                 this.checkWebsocketSession();
                 hashSignature = await this.provider.subtle.sign(alg, this.privateKey, hashDocumentHex);
             } catch (e) {
-                console.log('signDocument');
                 this.notificationService.error(e);
                 resolve(false);
                 return of(false);

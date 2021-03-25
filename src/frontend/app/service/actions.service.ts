@@ -101,7 +101,6 @@ export class ActionsService {
                                 'page': index,
                             }
                         );
-                        console.log('push date', signatures);
                     }
                 }
                 if (this.signaturesService.signaturesContent[index]) {

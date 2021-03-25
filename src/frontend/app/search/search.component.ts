@@ -290,7 +290,6 @@ export class SearchComponent implements OnInit {
                 this.currentFilters = this.currentFilters.filter((item: any) => item.id !== 'workflowStates');
             }
         }
-        console.log(this.currentFilters);
     }
 
     loadData(event: any) {
