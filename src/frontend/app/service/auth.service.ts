@@ -49,7 +49,7 @@ export class AuthService {
 
     refreshToken() {
         return this.http
-            .get<any>(`../rest/authenticate/token`, { params: { refreshToken: this.getRefreshToken() } })
+            .get<any>('../rest/authenticate/token', { params: { refreshToken: this.getRefreshToken() } })
             .pipe(
                 tap((data) => {
                     // Update stored token
@@ -112,9 +112,9 @@ export class AuthService {
     updateUserInfoWithTokenRefresh() {
         this.http.get('../rest/authenticate/token', {
             params: {
-              refreshToken: this.getRefreshToken()
+                refreshToken: this.getRefreshToken()
             }
-          }).subscribe({
+        }).subscribe({
             next: (data: any) => {
                 this.setToken(data.token);
 
@@ -147,6 +147,6 @@ export class AuthService {
     }
 
     cleanCachedUrl() {
-        return this.localStorage.remove(`MaarchParapheurCacheUrl`);
+        return this.localStorage.remove('MaarchParapheurCacheUrl');
     }
 }

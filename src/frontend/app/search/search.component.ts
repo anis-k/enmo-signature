@@ -19,6 +19,11 @@ import { SignaturesContentService } from '../service/signatures.service';
 })
 export class SearchComponent implements OnInit {
 
+    @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
+    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
+
+    @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+
     loading: boolean = false;
     filesToUpload: any[] = [];
     errors: any[] = [];
@@ -96,11 +101,6 @@ export class SearchComponent implements OnInit {
     openedLine = '';
     reActiveInfinite: any;
     documentId: any;
-
-    @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
-    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
-
-    @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
 
     constructor(
         public http: HttpClient,
@@ -194,13 +194,11 @@ export class SearchComponent implements OnInit {
     }
 
     formatListDatas(data: any) {
-        return data.map((res: any) => {
-            return {
-                ...res,
-                reason: this.getReason(res),
-                currentUser: this.getCurrentUser(res)
-            };
-        });
+        return data.map((res: any) => ({
+            ...res,
+            reason: this.getReason(res),
+            currentUser: this.getCurrentUser(res)
+        }));
     }
 
     getNbFilters() {
@@ -264,7 +262,7 @@ export class SearchComponent implements OnInit {
         this.refreshCurrentFilter();
 
         return new Promise((resolve) => {
-            this.http.post(`../rest/search/documents?limit=10&offset=0`, this.formatDatas())
+            this.http.post('../rest/search/documents?limit=10&offset=0', this.formatDatas())
                 .pipe(
                     tap((data: any) => {
                         this.ressources = this.formatListDatas(data.documents);
@@ -453,12 +451,10 @@ export class SearchComponent implements OnInit {
 
             if (Array.isArray(this.filters[index].val)) {
                 this.filters[index].val = [];
-                this.filters[index].values = this.filters[index].values.map((item: any) => {
-                    return {
-                        ...item,
-                        selected : false
-                    };
-                });
+                this.filters[index].values = this.filters[index].values.map((item: any) => ({
+                    ...item,
+                    selected : false
+                }));
             }
         }
         if (this.ressources.length > 0) {

@@ -48,7 +48,7 @@ export class AppComponent {
         if (!environment.production) {
             this.debugMode = true;
         }
-        
+
     }
 
     test() {
@@ -57,7 +57,7 @@ export class AppComponent {
 
     allowedRoute() {
         const route = this.router.url.split('?')[0];
-        
+
         return ['/', '/login', '/forgot-password', '/update-password', '/password-modification'].indexOf(route) === -1;
     }
 }

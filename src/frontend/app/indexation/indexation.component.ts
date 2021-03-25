@@ -19,14 +19,14 @@ import { SignaturePositionComponent } from './signature-position/signature-posit
 })
 export class IndexationComponent implements OnInit {
 
+    @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
+    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
+    @ViewChild('docToUpload') fileImport: ElementRef;
+
     loading: boolean = false;
     filesToUpload: any[] = [];
     errors: any[] = [];
     fromDocument: number = null;
-
-    @ViewChild('appVisaWorkflow', { static: false }) appVisaWorkflow: VisaWorkflowComponent;
-    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
-    @ViewChild('docToUpload') fileImport: ElementRef;
 
     constructor(
         public http: HttpClient,
@@ -245,26 +245,20 @@ export class IndexationComponent implements OnInit {
                 linkId: this.fromDocument !== null ? file.linkId : linkId,
                 sender: `${this.authService.user.firstname} ${this.authService.user.lastname}`,
                 notes: noteObj,
-                attachments: attachFiles.map((item: any) => {
-                    return {
-                        title: item.title,
-                        encodedDocument: item.content
-                    };
-                }),
-                workflow: this.appVisaWorkflow.getCurrentWorkflow().map((item: any, index: number) => {
-                    return {
-                        userId: item.userId,
-                        mode: this.authService.getWorkflowMode(item.role),
-                        signatureMode: this.authService.getSignatureMode(item.role),
-                        signaturePositions: file.signPos !== undefined ? file.signPos.filter((userItem: any) => userItem.sequence === index).map((item: any) => {
-                            return {
-                                page: item.page,
-                                positionX: item.position.positionX,
-                                positionY: item.position.positionY,
-                            };
-                        }) : []
-                    };
-                }),
+                attachments: attachFiles.map((item: any) => ({
+                    title: item.title,
+                    encodedDocument: item.content
+                })),
+                workflow: this.appVisaWorkflow.getCurrentWorkflow().map((item: any, index: number) => ({
+                    userId: item.userId,
+                    mode: this.authService.getWorkflowMode(item.role),
+                    signatureMode: this.authService.getSignatureMode(item.role),
+                    signaturePositions: file.signPos !== undefined ? file.signPos.filter((userItem: any) => userItem.sequence === index).map((itemFile: any) => ({
+                        page: itemFile.page,
+                        positionX: itemFile.position.positionX,
+                        positionY: itemFile.position.positionY,
+                    })) : []
+                })),
                 metadata: metadata
             });
         });
@@ -286,8 +280,8 @@ export class IndexationComponent implements OnInit {
     uploadTrigger(fileInput: any) {
         if (fileInput.target.files && fileInput.target.files[0] && this.isExtensionAllowed(fileInput.target.files)) {
             for (let index = 0; index < fileInput.target.files.length; index++) {
-                let filename = fileInput.target.files[index].name;
-                let file = {
+                const filename = fileInput.target.files[index].name;
+                const file = {
                     title: filename.substr(0, filename.lastIndexOf('.')),
                     reference: filename.substr(0, filename.lastIndexOf('.')).substr(0, 53),
                     mainDocument: true,
@@ -307,7 +301,7 @@ export class IndexationComponent implements OnInit {
                     }
                 };
             }
-            this.fileImport.nativeElement.value = "";
+            this.fileImport.nativeElement.value = '';
         } else {
             this.loading = false;
         }
@@ -325,9 +319,7 @@ export class IndexationComponent implements OnInit {
 
     getBase64Document(buffer: ArrayBuffer) {
         const TYPED_ARRAY = new Uint8Array(buffer);
-        const STRING_CHAR = TYPED_ARRAY.reduce((data, byte) => {
-            return data + String.fromCharCode(byte);
-        }, '');
+        const STRING_CHAR = TYPED_ARRAY.reduce((data, byte) => data + String.fromCharCode(byte), '');
 
         return btoa(STRING_CHAR);
     }
@@ -342,12 +334,10 @@ export class IndexationComponent implements OnInit {
                 component: SignaturePositionComponent,
                 cssClass: 'custom-alert-fullscreen',
                 componentProps: {
-                    'workflow': this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => {
-                        return {
-                            userDisplay: item.userDisplay,
-                            mode: this.authService.getWorkflowMode(item.role),
-                        };
-                    }),
+                    'workflow': this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => ({
+                        userDisplay: item.userDisplay,
+                        mode: this.authService.getWorkflowMode(item.role),
+                    })),
                     'signPos': this.filesToUpload[index].signPos,
                     'pdfTitle': this.filesToUpload[index].title,
                     'pdfContent': 'data:application/pdf;base64,' + this.filesToUpload[index].content,

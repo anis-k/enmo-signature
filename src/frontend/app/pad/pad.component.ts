@@ -20,17 +20,16 @@ interface AfterViewInit {
 })
 export class SignaturePadPageComponent implements AfterViewInit {
 
+    @ViewChild('signaturePad') signaturePad: SignaturePad;
+
+    @Output() reloaded = new EventEmitter<string>();
+
     penColors = [{ id: 'black' }, { id: '#1a75ff' }, { id: '#FF0000'}];
     selectedColor: any;
     haveSigned: any;
     disableState = false;
 
     pad$: Observable<boolean>;
-
-    @ViewChild('signaturePad') signaturePad: SignaturePad;
-
-    @Output()
-    reloaded = new EventEmitter<string>();
 
     signaturePadOptions: Object = {
         // passed through to szimek/signature_pad constructor

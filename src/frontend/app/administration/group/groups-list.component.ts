@@ -25,14 +25,14 @@ export interface Group {
 
 export class GroupsListComponent {
 
+    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+    @ViewChild(MatSort, { static: true }) sort: MatSort;
+
     groupList: Group[] = [];
     sortedData: any[];
     dataSource: MatTableDataSource<Group>;
     displayedColumns: string[];
     loading: boolean = true;
-
-    @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-    @ViewChild(MatSort, { static: true }) sort: MatSort;
 
     constructor(
         public http: HttpClient,
@@ -91,21 +91,21 @@ export class GroupsListComponent {
                     text: this.translate.instant('lang.yes'),
                     handler: () => {
                         this.http.delete('../rest/groups/' + groupToDelete.id)
-                    .pipe(
-                        finalize(() => this.loading = false)
-                    )
-                    .subscribe({
-                        next: data => {
-                            const indexToDelete = this.groupList.findIndex(group => group.id === groupToDelete.id);
+                            .pipe(
+                                finalize(() => this.loading = false)
+                            )
+                            .subscribe({
+                                next: data => {
+                                    const indexToDelete = this.groupList.findIndex(group => group.id === groupToDelete.id);
 
-                            this.groupList.splice(indexToDelete, 1);
+                                    this.groupList.splice(indexToDelete, 1);
 
-                            this.sortedData = this.groupList.slice();
+                                    this.sortedData = this.groupList.slice();
 
-                            this.notificationService.success('lang.groupDeleted');
+                                    this.notificationService.success('lang.groupDeleted');
 
-                        },
-                    });
+                                },
+                            });
                     }
                 }
             ]

@@ -9,9 +9,9 @@ export interface Privilege {
 }
 
 @Component({
-  selector: 'app-admin-sidebar',
-  templateUrl: 'admin-sidebar.component.html',
-  styleUrls: ['admin-sidebar.component.scss']
+    selector: 'app-admin-sidebar',
+    templateUrl: 'admin-sidebar.component.html',
+    styleUrls: ['admin-sidebar.component.scss']
 })
 export class AdminSidebarComponent implements OnInit {
 

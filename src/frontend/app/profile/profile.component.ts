@@ -239,7 +239,9 @@ export class ProfileComponent implements OnInit {
                 this.setLang(this.preferenceInfo.lang);
                 this.cookieService.set('maarchParapheurLang', this.preferenceInfo.lang);
             }),
-            exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) :  new Promise(resolve => {resolve(true); })),
+            exhaustMap(() => this.authService.authMode === 'default' ? this.http.put('../rest/users/' + this.authService.user.id, this.profileInfo) :  new Promise(resolve => {
+                resolve(true);
+            })),
             exhaustMap(() => {
                 this.authService.updateUserInfoWithTokenRefresh();
 

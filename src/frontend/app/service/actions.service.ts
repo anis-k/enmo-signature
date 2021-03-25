@@ -6,7 +6,6 @@ import { SignaturesContentService } from './signatures.service';
 import { NotificationService } from '../service/notification.service';
 import { of } from 'rxjs';
 import { FunctionsService } from './functions.service';
-import { resolve } from 'path';
 import { AlertController } from '@ionic/angular';
 
 @Injectable({

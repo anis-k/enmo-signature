@@ -1,9 +1,9 @@
-import { Component, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSort, Sort } from '@angular/material/sort';
+import { Sort } from '@angular/material/sort';
 import { TranslateService } from '@ngx-translate/core';
 import { tap, catchError } from 'rxjs/operators';
 import { LatinisePipe } from 'ngx-pipes';
@@ -30,6 +30,8 @@ export interface User {
 })
 
 export class HistoryListComponent {
+
+    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
 
     sortedData: any[];
     displayedColumns: string[] = ['creation_date', 'user', 'info', 'ip'];
@@ -62,8 +64,6 @@ export class HistoryListComponent {
     };
 
     actions: any[] = [];
-
-    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
 
     constructor(
         public http: HttpClient,
@@ -101,15 +101,13 @@ export class HistoryListComponent {
     }
 
     getActions() {
-        this.http.get(`../rest/history/messageTypes`, this.filters)
+        this.http.get('../rest/history/messageTypes', this.filters)
             .pipe(
                 tap((data: any) => {
-                    this.actions = data.messageTypes.map((item: any) => {
-                        return {
-                            id: item,
-                            label: this.translate.instant('lang.' + item)
-                        };
-                    });
+                    this.actions = data.messageTypes.map((item: any) => ({
+                        id: item,
+                        label: this.translate.instant('lang.' + item)
+                    }));
                     this.actions = this.sortPipe.transform(this.actions, 'label');
                 }),
                 catchError((err: any) => {
@@ -123,7 +121,7 @@ export class HistoryListComponent {
         this.resources = [];
         this.offset = 0;
         return new Promise((resolve) => {
-            this.http.post(`../rest/history?limit=10&offset=0`, this.filters)
+            this.http.post('../rest/history?limit=10&offset=0', this.filters)
                 .pipe(
                     tap((data: any) => {
                         this.resources = data.history;
@@ -194,7 +192,7 @@ export class HistoryListComponent {
         });
         document.querySelector('ion-searchbar').getInputElement().then((searchInput) => {
             searchInput.value = '';
-         });
+        });
         this.filters.user = '';
         this.filters.date.start = this.filters.date.end = null;
         this.getDatas();

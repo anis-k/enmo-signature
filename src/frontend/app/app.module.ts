@@ -97,121 +97,121 @@ import { SortPipe } from './plugins/sorting.pipe';
 registerLocaleData(localeFr, 'fr-FR');
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DragDropDirective,
-    LoginComponent,
-    HomeComponent,
-    ForgotPasswordComponent,
-    UpdatePasswordComponent,
-    SignaturesComponent,
-    SignaturePadPageComponent,
-    DocumentComponent,
-    DocumentSignListComponent,
-    DocumentNoteListComponent,
-    DocumentNotePadComponent,
-    SidebarComponent,
-    WarnModalComponent,
-    ConfirmModalComponent,
-    SuccessInfoValidBottomSheetComponent,
-    RejectInfoBottomSheetComponent,
-    ProfileComponent,
-    VisaWorkflowComponent,
-    DocumentListComponent,
-    MainDocumentDetailComponent,
-    AssociatedDocumentsComponent,
-    AdministrationComponent,
-    UsersListComponent,
-    UserComponent,
-    ConfirmComponent,
-    AlertComponent,
-    AdminSidebarComponent,
-    ConnectionComponent,
-    LdapListComponent,
-    LdapComponent,
-    SendmailComponent,
-    GroupsListComponent,
-    GroupComponent,
-    PluginAutocompleteComponent,
-    SortPipe,
-    SecuritiesAdministrationComponent,
-    PasswordModificationComponent,
-    UsersComponent,
-    CheckConnectionComponent,
-    CheckEmailConnectionComponent,
-    IndexationComponent,
-    VisaWorkflowModelsComponent,
-    SearchComponent,
-    SignaturePositionComponent,
-    DevToolComponent,
-    DevLangComponent,
-    SignatureMethodModalComponent,
-    HistoryListComponent,
-    DocumentDateListComponent,
-    DateOptionModalComponent
-  ],
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    IonicModule.forRoot({ mode: 'md' }),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      }
-    }),
-    SignaturePadModule,
-    NgxExtendedPdfViewerModule,
-    DragScrollModule,
-    NgPipesModule,
-    AngularDraggableModule,
-    AppMaterialModule,
-    AppRoutingModule,
-    HammerModule,
-  ],
-  entryComponents: [
-    WarnModalComponent,
-    ConfirmModalComponent,
-    SuccessInfoValidBottomSheetComponent,
-    RejectInfoBottomSheetComponent,
-    SignaturesComponent,
-    ConfirmComponent,
-    AlertComponent
-  ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    SignaturesContentService,
-    FiltersService,
-    NotificationService,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    CookieService,
-    LatinisePipe
-  ],
-  bootstrap: [AppComponent],
-  schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
+    declarations: [
+        AppComponent,
+        DragDropDirective,
+        LoginComponent,
+        HomeComponent,
+        ForgotPasswordComponent,
+        UpdatePasswordComponent,
+        SignaturesComponent,
+        SignaturePadPageComponent,
+        DocumentComponent,
+        DocumentSignListComponent,
+        DocumentNoteListComponent,
+        DocumentNotePadComponent,
+        SidebarComponent,
+        WarnModalComponent,
+        ConfirmModalComponent,
+        SuccessInfoValidBottomSheetComponent,
+        RejectInfoBottomSheetComponent,
+        ProfileComponent,
+        VisaWorkflowComponent,
+        DocumentListComponent,
+        MainDocumentDetailComponent,
+        AssociatedDocumentsComponent,
+        AdministrationComponent,
+        UsersListComponent,
+        UserComponent,
+        ConfirmComponent,
+        AlertComponent,
+        AdminSidebarComponent,
+        ConnectionComponent,
+        LdapListComponent,
+        LdapComponent,
+        SendmailComponent,
+        GroupsListComponent,
+        GroupComponent,
+        PluginAutocompleteComponent,
+        SortPipe,
+        SecuritiesAdministrationComponent,
+        PasswordModificationComponent,
+        UsersComponent,
+        CheckConnectionComponent,
+        CheckEmailConnectionComponent,
+        IndexationComponent,
+        VisaWorkflowModelsComponent,
+        SearchComponent,
+        SignaturePositionComponent,
+        DevToolComponent,
+        DevLangComponent,
+        SignatureMethodModalComponent,
+        HistoryListComponent,
+        DocumentDateListComponent,
+        DateOptionModalComponent
+    ],
+    imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        IonicModule.forRoot({ mode: 'md' }),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient]
+            }
+        }),
+        SignaturePadModule,
+        NgxExtendedPdfViewerModule,
+        DragScrollModule,
+        NgPipesModule,
+        AngularDraggableModule,
+        AppMaterialModule,
+        AppRoutingModule,
+        HammerModule,
+    ],
+    entryComponents: [
+        WarnModalComponent,
+        ConfirmModalComponent,
+        SuccessInfoValidBottomSheetComponent,
+        RejectInfoBottomSheetComponent,
+        SignaturesComponent,
+        ConfirmComponent,
+        AlertComponent
+    ],
+    providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        SignaturesContentService,
+        FiltersService,
+        NotificationService,
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        CookieService,
+        LatinisePipe
+    ],
+    bootstrap: [AppComponent],
+    schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class AppModule { }
 
 export class TranslateBackendHttpLoader implements TranslateLoader {
 
-  constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) { }
 
-  /**
+    /**
    * Gets the translations from the server
    * @param lang
    * @returns {any}
    */
-  public getTranslation(lang: string): any {
+    public getTranslation(lang: string): any {
 
-    return this.http.get(`../rest/languages/` + lang);
-  }
+        return this.http.get('../rest/languages/' + lang);
+    }
 }
 
 // For traductions
 export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateBackendHttpLoader(http);
+    return new TranslateBackendHttpLoader(http);
 }

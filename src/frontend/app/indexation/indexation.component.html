@@ -48,7 +48,7 @@
             </ion-item>
         </ion-list>
         <input type="file" #docToUpload name="files[]" (change)="uploadTrigger($event)" style="display:none;" multiple accept="application/pdf">
-        <div class="dnd-area" appUploadFileDragDrop (onFileDropped)="dndUploadFile($event)">
+        <div class="dnd-area" appUploadFileDragDrop (fileDropped)="dndUploadFile($event)">
             <ion-button fill="outline" color="medium" size="large" (click)="docToUpload.click()">
                 {{'lang.chooseDocuments' | translate}}
             </ion-button>

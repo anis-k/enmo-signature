@@ -33,6 +33,15 @@ import { SuccessInfoValidBottomSheetComponent } from '../modal/success-info-vali
 
 export class DocumentComponent implements OnInit {
 
+    @ViewChild('mainContent') mainContent: any;
+    @ViewChild('img') img: any;
+    @ViewChild('snav', { static: true }) snav: MatSidenav;
+    @ViewChild('dragElem') dragElem: any;
+    @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
+    @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
+    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
+    @ViewChild('pagesList') pagesList: any;
+
     posX: number = 0;
     posY: number = 0;
     enterApp: boolean = true;
@@ -92,14 +101,6 @@ export class DocumentComponent implements OnInit {
     loadingdocument: boolean = true;
     loadingpdf: boolean = false;
     loadingImage: boolean = true;
-    @ViewChild('mainContent') mainContent: any;
-    @ViewChild('img') img: any;
-    @ViewChild('snav', { static: true }) snav: MatSidenav;
-    @ViewChild('dragElem') dragElem: any;
-    @ViewChild('appDocumentNotePad') appDocumentNotePad: DocumentNotePadComponent;
-    @ViewChild('appDocumentList') appDocumentList: DocumentListComponent;
-    @ViewChild('rightContent', { static: true }) rightContent: TemplateRef<any>;
-    @ViewChild('pagesList') pagesList: any;
 
     constructor(private translate: TranslateService,
         private router: Router,
@@ -149,7 +150,7 @@ export class DocumentComponent implements OnInit {
                 this.getAreaDimension();
             }
 
-            /*if (percent !== Infinity) {
+            /* if (percent !== Infinity) {
                 this.signatures.forEach(element => {
                     element.position.height = (percent * element.position.height) / 100;
                     element.position.width = (percent * element.position.width) / 100;
@@ -168,7 +169,7 @@ export class DocumentComponent implements OnInit {
         this.signaturesService.workingAreaWidth = (percent * this.signaturesService.workingAreaWidth) / 100;
         this.signaturesService.workingAreaHeight = (percent * this.signaturesService.workingAreaHeight) / 100;
 
-        /*this.signatures.forEach(element => {
+        /* this.signatures.forEach(element => {
           element.position.height = (percent * element.position.height) / 100;
           element.position.width = (percent * element.position.width) / 100;
           element.position.top = (percent * element.position.top) / 100;
@@ -180,7 +181,7 @@ export class DocumentComponent implements OnInit {
     async openAction(event: any) {
         this.posX = event.clientX;
         this.posY = event.clientY;
-        let buttons = [];
+        const buttons = [];
         if (!this.checkEmptyNote()) {
             buttons.push({
                 text: this.translate.instant('lang.cancelPreviousNote'),
@@ -249,7 +250,7 @@ export class DocumentComponent implements OnInit {
             component: SignaturesComponent,
             cssClass: 'my-custom-class',
             componentProps: {
-                currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0],
+                currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean }) => line.current === true)[0],
             }
         });
         await modal.present();
@@ -326,7 +327,7 @@ export class DocumentComponent implements OnInit {
                             this.menu.enable(true, 'right-menu');
                             this.initDoc();
 
-                            const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true);
+                            const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean }) => line.current === true);
 
                             this.mainDocument.isCertified = this.mainDocument.workflow.filter((line: any) => line.status !== 'REF' && line.status !== 'STOP' && line.mode === 'sign' && line.signatureMode !== 'stamp' && line.processDate !== null).length > 0;
 
@@ -568,7 +569,7 @@ export class DocumentComponent implements OnInit {
     }
 
     initWorkingArea() {
-        /*if ((typeof this.signaturesService.workingAreaHeight !== 'number' || this.signaturesService.workingAreaHeight === 0) && (typeof this.signaturesService.workingAreaWidth !== 'number' || this.signaturesService.workingAreaWidth === 0)) {
+        /* if ((typeof this.signaturesService.workingAreaHeight !== 'number' || this.signaturesService.workingAreaHeight === 0) && (typeof this.signaturesService.workingAreaWidth !== 'number' || this.signaturesService.workingAreaWidth === 0)) {
             this.img = document.querySelector('img.zoom');
             const rect = this.img.getBoundingClientRect();
             this.signaturesService.workingAreaHeight = rect.height;
@@ -599,7 +600,7 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.reject'),
                     handler: async (data: any) => {
-                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument, 'reject');                        
+                        const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument, 'reject');
 
                         const res = await this.signatureMethodService.launchDefaultMode(data.paragraph, idsToProcess);
 
@@ -643,7 +644,7 @@ export class DocumentComponent implements OnInit {
                 {
                     text: this.translate.instant('lang.validate'),
                     handler: async (data: any) => {
-                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true)[0];
+                        const currentUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean }) => line.current === true)[0];
                         const idsToProcess = await this.actionsService.checkGroupMail(this.mainDocument, 'validate');
 
                         const res = await this.signatureMethodService.checkAuthenticationAndLaunchAction(currentUserWorkflow, data.paragraph, idsToProcess);

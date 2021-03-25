@@ -7,7 +7,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { map, finalize } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
 import { AlertController, ModalController, PopoverController } from '@ionic/angular';
@@ -29,6 +28,9 @@ export interface Group {
 
 export class GroupComponent implements OnInit {
 
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+    @ViewChild(MatSort) sort: MatSort;
+
     creationMode: boolean = true;
     loading: boolean = true;
     group: Group;
@@ -37,9 +39,6 @@ export class GroupComponent implements OnInit {
     displayedColumns: string[];
     usersList: any[];
     sortedData: any[];
-
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild(MatSort) sort: MatSort;
 
     constructor(
         public http: HttpClient,

@@ -68,13 +68,11 @@ export class VisaWorkflowModelsComponent implements OnInit {
     saveModel(title: string) {
         const objToSend: any = {
             title: title,
-            items: this.currentWorkflow.map((item: any) => {
-                return {
-                    userId: item.userId,
-                    mode: this.authService.getWorkflowMode(item.role),
-                    signatureMode: this.authService.getSignatureMode(item.role)
-                };
-            })
+            items: this.currentWorkflow.map((item: any) => ({
+                userId: item.userId,
+                mode: this.authService.getWorkflowMode(item.role),
+                signatureMode: this.authService.getSignatureMode(item.role)
+            }))
         };
         this.http.post('../rest/workflowTemplates', objToSend).pipe(
             tap((res: any) => {

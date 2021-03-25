@@ -3,9 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  VERSION: require('../../../../package.json').version + ' (development mode)',
-  AUTHOR: require('../../../../package.json').author
+    production: false,
+    VERSION: require('../../../../package.json').version + ' (development mode)',
+    AUTHOR: require('../../../../package.json').author
 };
 
 /*

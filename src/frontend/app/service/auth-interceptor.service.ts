@@ -47,6 +47,63 @@ export class AuthInterceptor implements HttpInterceptor {
         });
     }
 
+    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
+        // We don't want to intercept some routes
+        if ((this.excludeUrls.indexOf(request.url) > -1 || request.url.indexOf('/password') > -1) && request.url.indexOf('/passwordRules') === -1 && request.method.indexOf('PUT') === -1) {
+            return next.handle(request);
+        } else {
+            // Add current token in header request
+            request = this.addAuthHeader(request);
+
+            // Handle response
+            return next.handle(request).pipe(
+                /* map((data: any) => {
+                  console.log('can modify datas for each response');
+                  return data;
+                }
+                ),*/
+                catchError(error => {
+                    // Disconnect user if bad token process
+                    if (this.byPassHandleErrors.filter(url => request.url.indexOf(url.route) > -1 && url.method.indexOf(request.method) > -1).length > 0) {
+                        return next.handle(request);
+                    } else if (error.status === 401) {
+                        return this.handle401Error(request, next);
+                    } else if (error.error.errors === 'Password expired : User must change his password') {
+                        return this.router.navigate(['/password-modification']);
+                    } else {
+                        let response: any;
+                        if (request.method === 'GET') {
+                            this.frontUrl.forEach(element => {
+                                if (request.url.indexOf(element) > -1) {
+                                    if (element === '../rest/documents/') {
+                                        this.signaturesService.mainDocumentId = null;
+                                    }
+                                    // this.router.navigate(['/documents']);
+                                    response = new HttpErrorResponse({
+                                        error: error.error,
+                                        status: error.status,
+                                        statusText: error.statusText,
+                                        headers: error.headers,
+                                        url: error.url,
+                                    });
+                                    return Promise.reject(response);
+                                }
+                            });
+                        }
+                        response = new HttpErrorResponse({
+                            error: error.error,
+                            status: error.status,
+                            statusText: error.statusText,
+                            headers: error.headers,
+                            url: error.url,
+                        });
+                        return Promise.reject(response);
+                    }
+                })
+            );
+        }
+    }
+
     private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
         if (!this.isRefreshing) {
             this.isRefreshing = true;
@@ -67,62 +124,6 @@ export class AuthInterceptor implements HttpInterceptor {
                 switchMap(() => {
                     request = this.addAuthHeader(request);
                     return next.handle(request);
-                })
-            );
-        }
-    }
-
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-        // We don't want to intercept some routes
-        if ((this.excludeUrls.indexOf(request.url) > -1 || request.url.indexOf('/password') > -1) && request.url.indexOf('/passwordRules') === -1 && request.method.indexOf('PUT') === -1) {
-            return next.handle(request);
-        } else {
-            // Add current token in header request
-            request = this.addAuthHeader(request);
-
-            // Handle response
-            return next.handle(request).pipe(
-                /*map((data: any) => {
-                  console.log('can modify datas for each response');
-                  return data;
-                }
-                ),*/
-                catchError(error => {
-                    // Disconnect user if bad token process
-                    if (this.byPassHandleErrors.filter(url => request.url.indexOf(url.route) > -1 && url.method.indexOf(request.method) > -1).length > 0) {
-                        return next.handle(request);
-                    } else if (error.status === 401) {
-                        return this.handle401Error(request, next);
-                    } else if (error.error.errors === 'Password expired : User must change his password') {
-                        return this.router.navigate(['/password-modification']);
-                    } else {
-                        if (request.method === 'GET') {
-                            this.frontUrl.forEach(element => {
-                                if (request.url.indexOf(element) > -1) {
-                                    if (element === '../rest/documents/') {
-                                        this.signaturesService.mainDocumentId = null;
-                                    }
-                                    // this.router.navigate(['/documents']);
-                                    const response = new HttpErrorResponse({
-                                        error: error.error,
-                                        status: error.status,
-                                        statusText: error.statusText,
-                                        headers: error.headers,
-                                        url: error.url,
-                                    });
-                                    return Promise.reject(response);
-                                }
-                            });
-                        }
-                        const response = new HttpErrorResponse({
-                            error: error.error,
-                            status: error.status,
-                            statusText: error.statusText,
-                            headers: error.headers,
-                            url: error.url,
-                        });
-                        return Promise.reject(response);
-                    }
                 })
             );
         }

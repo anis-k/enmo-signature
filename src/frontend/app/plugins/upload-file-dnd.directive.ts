@@ -5,7 +5,8 @@ import { Directive, Output, EventEmitter, HostBinding, HostListener, Input } fro
 })
 export class DragDropDirective {
 
-    @Output() onFileDropped = new EventEmitter<any>();
+    @Output() fileDropped = new EventEmitter<any>();
+
     @Input() disabled: boolean = false;
 
     @HostBinding('style.background-color') private background = 'none';
@@ -42,7 +43,7 @@ export class DragDropDirective {
             this.opacity = '1';
             const files = evt.dataTransfer.files;
             if (files.length > 0) {
-                this.onFileDropped.emit(files);
+                this.fileDropped.emit(files);
             }
         }
 

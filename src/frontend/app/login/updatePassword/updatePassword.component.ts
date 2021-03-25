@@ -64,7 +64,7 @@ export class UpdatePasswordComponent implements OnInit {
             });
     }
 
-    ngOnInit(): void { 
+    ngOnInit(): void {
         this.getPassRules();
     }
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, ViewChild, AfterViewInit } from '@angular/core';
 import { SignaturesContentService } from '../../service/signatures.service';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -9,7 +9,14 @@ import { IonSlides, MenuController } from '@ionic/angular';
     templateUrl: 'document-list.component.html',
     styleUrls: ['document-list.component.scss'],
 })
-export class DocumentListComponent implements OnInit {
+export class DocumentListComponent implements OnInit, AfterViewInit {
+
+    @Input() docList: any;
+    @Input() currentDocId: any;
+
+    @Output() triggerEvent = new EventEmitter<string>();
+
+    @ViewChild('slides', { static: false }) slides: IonSlides;
 
     loading: boolean = true;
 
@@ -19,13 +26,6 @@ export class DocumentListComponent implements OnInit {
         speed: 400,
         direction: 'vertical'
     };
-
-    @Input() docList: any;
-    @Input() currentDocId: any;
-
-    @Output() triggerEvent = new EventEmitter<string>();
-
-    @ViewChild('slides', { static: false }) slides: IonSlides;
 
     constructor(
         public http: HttpClient,
@@ -46,9 +46,7 @@ export class DocumentListComponent implements OnInit {
     }
 
     ngAfterViewInit(): void {
-      //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
-      //Add 'implements AfterViewInit' to the class.
-      this.loading = false;
+        this.loading = false;
     }
 
     loadDoc(id: string) {
@@ -58,15 +56,15 @@ export class DocumentListComponent implements OnInit {
 
     scroll(ev: any) {
         if (!this.scrolling) {
-          this.scrolling = true;
-          if (ev.deltaY < 0) {
-            this.slides.slidePrev();
-          } else {
-            this.slides.slideNext();
-          }
-          setTimeout(() => {
-            this.scrolling = false;
-          }, 500);
+            this.scrolling = true;
+            if (ev.deltaY < 0) {
+                this.slides.slidePrev();
+            } else {
+                this.slides.slideNext();
+            }
+            setTimeout(() => {
+                this.scrolling = false;
+            }, 500);
         }
-      }
+    }
 }

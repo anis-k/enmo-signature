@@ -6,7 +6,7 @@
   "projects": {
     "parapheur": {
       "root": "",
-      "sourceRoot": "src",
+      "sourceRoot": "src/frontend",
       "projectType": "application",
       "prefix": "app",
       "schematics": {},

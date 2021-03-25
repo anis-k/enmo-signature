@@ -3,9 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Input, EventEmitter, Output, ViewChild } from '@angular/core';
 import { of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { LatinisePipe } from 'ngx-pipes';
 import { HttpClient } from '@angular/common/http';
-import { TranslateService } from '@ngx-translate/core';
 import { NotificationService } from '../../service/notification.service';
 
 @Component({
@@ -14,6 +12,20 @@ import { NotificationService } from '../../service/notification.service';
     styleUrls: ['autocomplete.component.scss'],
 })
 export class PluginAutocompleteComponent implements OnInit {
+
+    @Input() currentItems: any[] = [];
+    @Input() singleMode: boolean;
+    @Input() required: boolean;
+    @Input('datas') options: any;
+    @Input() routeDatas: string[];
+    @Input('labelPlaceholder') placeholder: string;
+    @Input('targetSearchKey') key: string[];
+    @Input() subInfoKey: string;
+
+    @Output('triggerEvent') selectedOpt = new EventEmitter();
+
+    @ViewChild('searchInput', { static: false }) searchInput: any;
+
     myControl = new FormControl();
     loading = false;
 
@@ -22,21 +34,6 @@ export class PluginAutocompleteComponent implements OnInit {
     listInfo: string;
 
     editMode: boolean = false;
-
-    @Input() currentItems: any[] = [];
-    @Input('singleMode') singleMode: boolean;
-    @Input('required') required: boolean;
-    @Input('datas') options: any;
-    @Input('routeDatas') routeDatas: string[];
-    @Input('labelPlaceholder') placeholder: string;
-    @Input('targetSearchKey') key: string[];
-    @Input('subInfoKey') subInfoKey: string;
-
-
-    // tslint:disable-next-line:no-output-rename
-    @Output('triggerEvent') selectedOpt = new EventEmitter();
-
-    @ViewChild('searchInput', { static: false }) searchInput: any;
 
     itemList: any[] = [];
 

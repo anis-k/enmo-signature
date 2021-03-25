@@ -18,11 +18,11 @@ export interface Ldap {
     label: string;
     identifier: string;
     value: {
-        uri: string,
-        ssl: boolean,
-        prefix: string,
-        suffix: string,
-        baseDN: string,
+        uri: string;
+        ssl: boolean;
+        prefix: string;
+        suffix: string;
+        baseDN: string;
     };
 }
 

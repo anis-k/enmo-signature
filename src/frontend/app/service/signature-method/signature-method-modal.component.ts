@@ -16,6 +16,11 @@ import { FunctionsService } from '../functions.service';
     styleUrls: ['./signature-method-modal.component.scss']
 })
 export class SignatureMethodModalComponent implements OnInit {
+
+    @Input() note: string;
+    @Input() signatureMode: string;
+    @Input() idsToProcess: any[];
+
     filters: any = {
         //   onlySmartcards: false,
         expired: false,
@@ -35,10 +40,6 @@ export class SignatureMethodModalComponent implements OnInit {
     signatureLength: any = null;
 
     server: any = null;
-
-    @Input() note: string;
-    @Input() signatureMode: string;
-    @Input() idsToProcess: any[];
 
     constructor(
         public modalController: ModalController,
@@ -106,7 +107,7 @@ export class SignatureMethodModalComponent implements OnInit {
 
     async checkWebsocketSession() {
         // session closed?!
-        while(this.server.client.state !== WebSocket.OPEN) {
+        while (this.server.client.state !== WebSocket.OPEN) {
             await this.server.connect();
             await new Promise(resolve => setTimeout(resolve, 150));
         }

@@ -76,7 +76,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         const loading = await this.loadingController.create({
             cssClass: 'my-custom-class',
             message: this.translate.instant('lang.connexion'),
-          });
+        });
         await loading.present();
         if (!this.loginForm.invalid ) {
 

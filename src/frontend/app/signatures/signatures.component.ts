@@ -20,6 +20,8 @@ export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
 
+    @ViewChild('slides', { static: false }) slides: IonSlides;
+
     loading: boolean = true;
     scrolling: boolean = false;
     signPosMode: boolean = false;
@@ -32,7 +34,6 @@ export class SignaturesComponent implements OnInit {
     };
     signaturesList: any[] = [];
 
-    @ViewChild('slides', { static: false }) slides: IonSlides;
     inAllPage = false;
     count = 0;
 
@@ -134,7 +135,7 @@ export class SignaturesComponent implements OnInit {
 
             // set sign block in other page
             if (signPosOtherPage.length > 0) {
-                signPosOtherPage.forEach((element: { positionX: any; positionY: any; page: number; }) => {
+                signPosOtherPage.forEach((element: { positionX: any; positionY: any; page: number }) => {
                     signature.positionX = element.positionX;
                     signature.positionY = element.positionY;
                     this.storeSignature(signature, element.page);

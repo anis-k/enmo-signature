@@ -17,6 +17,13 @@ export class DocumentNotePadComponent implements OnInit {
     @Input() precentScrollTop: any;
     @Input() precentScrollLeft: any;
 
+    @Output() triggerEvent = new EventEmitter<string>();
+
+    @ViewChild('mainContent') mainContent: any;
+    @ViewChild('canvas') canvas: ElementRef;
+    @ViewChild('img') img: any;
+    @ViewChild('nav', { read: DragScrollComponent }) ds: DragScrollComponent;
+
     penColors = [{ id: '#000000' }, { id: '#1a75ff' }, { id: '#FF0000' }];
 
     areaWidth = 0;
@@ -25,11 +32,6 @@ export class DocumentNotePadComponent implements OnInit {
     originalSize: boolean = true;
     loading = true;
 
-    @Output() triggerEvent = new EventEmitter<string>();
-    @ViewChild('mainContent') mainContent: any;
-    @ViewChild('canvas') canvas: ElementRef;
-    @ViewChild('img') img: any;
-    @ViewChild('nav', { read: DragScrollComponent }) ds: DragScrollComponent;
 
     constructor(
         public signaturesService: SignaturesContentService,
@@ -62,7 +64,6 @@ export class DocumentNotePadComponent implements OnInit {
                 setTimeout(() => {
                     const offset = $('#myBounds').offset();
                     let y: number;
-                    let x: number;
                     let clientX: any;
                     let clientY: any;
 
@@ -73,7 +74,7 @@ export class DocumentNotePadComponent implements OnInit {
                     } else {
                         y = (this.precentScrollTop - offset.top) * 100;
                     }
-                    x = this.precentScrollLeft - offset.left;
+                    const x: number = this.precentScrollLeft - offset.left;
                     clientX = this.precentScrollLeft - document.documentElement.offsetLeft;
                     clientY = this.precentScrollTop - document.documentElement.offsetTop;
                     clientX = clientX / this.areaWidth * 100;
@@ -133,7 +134,7 @@ export class DocumentNotePadComponent implements OnInit {
     }
 
     undo() {
-        /*const data = this.signaturePad.toData();
+        /* const data = this.signaturePad.toData();
         if (data) {
             data.pop(); // remove the last dot or line
             this.signaturePad.fromData(data);

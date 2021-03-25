@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { SignaturesContentService } from '../service/signatures.service';
@@ -17,13 +17,13 @@ import { FiltersService } from '../service/filters.service';
     templateUrl: 'sidebar.component.html',
     styleUrls: ['sidebar.component.scss']
 })
-export class SidebarComponent implements OnInit {
-
-    loadingList: boolean = false;
-    searchMode: boolean = false;
+export class SidebarComponent implements OnInit, AfterViewInit {
 
     @ViewChild('listContent') listContent: ElementRef;
     @ViewChild('searchInput') searchInput: ElementRef;
+
+    loadingList: boolean = false;
+    searchMode: boolean = false;
 
     searchTerm: FormControl = new FormControl();
 

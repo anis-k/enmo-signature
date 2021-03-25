@@ -18,6 +18,6 @@ export class AssociatedDocumentsComponent implements OnInit {
     }
 
     goTo(id: number) {
-      this.router.navigate([`/documents/${id}`]);
-  }
+        this.router.navigate([`/documents/${id}`]);
+    }
 }

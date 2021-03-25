@@ -9,9 +9,9 @@ import { SignaturesContentService } from '../../service/signatures.service';
 })
 export class MainDocumentDetailComponent implements OnInit {
 
-    loading: boolean = false;
-
     @Input() mainDocument: any;
+
+    loading: boolean = false;
 
     constructor(
         public signaturesService: SignaturesContentService,
