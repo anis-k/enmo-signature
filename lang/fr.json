@@ -463,6 +463,8 @@
 		"noItem": "Aucun élément",
 		"modelCreated": "Modèle créé",
 		"undefined": "Non défini",
-		"refuseActionDocInMailGroup": "Voulez-vous refuser les autres documents issus d'un publipostage ?"
+		"refuseActionDocInMailGroup": "Voulez-vous refuser les autres documents issus d'un publipostage ?",
+		"stopProcessInfo": "Interrompu le",
+		"refProcessInfo": "Refusé le"
 	}
 }

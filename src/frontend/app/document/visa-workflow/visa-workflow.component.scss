@@ -42,7 +42,7 @@ ion-select {
     display: none !important;
 }
 
-.processDate {
+.valProcess {
     display: flex;
     justify-content: flex-start;
     font-size: 12px;
@@ -51,3 +51,14 @@ ion-select {
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
+.refProcess, .stopProcess {
+    display: flex;
+    justify-content: flex-start;
+    font-size: 12px;
+    text-align: right;
+    color : var(--ion-color-danger);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+

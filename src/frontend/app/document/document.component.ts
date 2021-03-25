@@ -328,7 +328,7 @@ export class DocumentComponent implements OnInit {
 
                             const realUserWorkflow = this.mainDocument.workflow.filter((line: { current: boolean; }) => line.current === true);
 
-                            this.mainDocument.isCertified = this.mainDocument.workflow.filter((line: any) => line.mode === 'sign' && line.signatureMode !== 'stamp' && line.processDate !== null).length > 0;
+                            this.mainDocument.isCertified = this.mainDocument.workflow.filter((line: any) => line.status !== 'REF' && line.status !== 'STOP' && line.mode === 'sign' && line.signatureMode !== 'stamp' && line.processDate !== null).length > 0;
 
                             if (realUserWorkflow.length === 0 || this.mainDocument.readOnly) {
                                 this.actionsList = [

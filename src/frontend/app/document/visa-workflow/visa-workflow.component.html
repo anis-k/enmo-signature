@@ -61,9 +61,19 @@
                         </ion-select-option>
                     </ion-select>
                 </p>
-                <p *ngIf="diffusion.processDate !== null" [title]="diffusion.processDate" class="processDate">
-                    {{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
-                    {{diffusion.processDate}}
+                <p *ngIf="diffusion.processDate !== null" [title]="diffusion.processDate">
+                    <ion-note *ngIf="diffusion.status === 'VAL'" class="valProcess">
+                        {{'lang.'+diffusion.mode+'ProcessInfo' | translate}}
+                        {{diffusion.processDate}}
+                    </ion-note>
+                    <ion-note *ngIf="diffusion.status === 'REF'" class="refProcess">
+                        {{'lang.refProcessInfo' | translate}}
+                        {{diffusion.processDate}}
+                    </ion-note>
+                    <ion-note *ngIf="diffusion.status === 'STOP'" class="stopProcess">
+                        {{'lang.stopProcessInfo' | translate}}
+                        {{diffusion.processDate}}
+                    </ion-note>
                 </p>
             </ion-label>
             <ion-icon *ngIf="!editMode && diffusion.current" color="success" slot="end" name="caret-back-outline">

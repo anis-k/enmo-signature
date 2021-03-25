@@ -466,7 +466,9 @@
         "notificationNewAccountId": "<br/> <br/> <b> Your username: </b>",
         "notificationNewAccountFooter": "<br/> <br/> This message is sent automatically following an action by the administrator. <br/> Please do not answer it. <br/> <br/> For any questions, please contact the technical administrator of the solution.",
         "documentIdSearch": "Document ID",
-        "refuseActionDocInMailGroup": "Do you want to refuse the other documents?",
-        "notificationDeletedUserBody": "Hello, <br/> <br/> A visa workflow you initiated was interrupted because a user was deleted. <br/> <br/> Click on the link below to view it: <br / >"
+        "refuseActionDocInMailGroup": "Do you want to refuse the other documents from a direct mail?",
+        "notificationDeletedUserBody": "Hello, <br/> <br/> A visa workflow you initiated was interrupted because a user was deleted. <br/> <br/> Click on the link below to view it: <br / >",
+        "stopProcessInfo": "Interrupted on",
+        "refProcessInfo": "Refused on"
     }
 }
