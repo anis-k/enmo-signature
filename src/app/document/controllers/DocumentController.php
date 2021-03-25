@@ -193,7 +193,8 @@ class DocumentController
                 'signaturePositions'    => json_decode($value['signature_positions'], true),
                 'datePositions'         => json_decode($value['date_positions'], true),
                 'userSignatureModes'    => json_decode($userSignaturesModes['signature_modes'], true) ?? [],
-                'note'                  => $value['note']
+                'note'                  => $value['note'],
+                'status'                => $value['status']
             ];
             if (!$currentId && empty($value['status'])) {
                 $currentFound = true;
