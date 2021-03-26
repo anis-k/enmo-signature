@@ -17,7 +17,6 @@ require '../vendor/autoload.php';
 //Root application position
 chdir('..');
 date_default_timezone_set(\SrcCore\models\CoreConfigModel::getTimezone());
-file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - index\n", FILE_APPEND);
 
 $app = new \Slim\App(['settings' => ['displayErrorDetails' => true, 'determineRouteBeforeAppMiddleware' => true]]);
 
@@ -31,7 +30,6 @@ $app->add(function (\Slim\Http\Request $request, \Slim\Http\Response $response, 
     $currentMethod = empty($route) ? '' : $route->getMethods()[0];
     $currentRoute = empty($route) ? '' : $route->getPattern();
 
-    file_put_contents('debug.txt', $currentRoute."\n", FILE_APPEND);
     if (in_array($currentMethod.$currentRoute, \SrcCore\controllers\AuthenticationController::ROUTES_WITHOUT_AUTHENTICATION)) {
         $response = $next($request, $response);
     } else {

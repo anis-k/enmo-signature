@@ -29,7 +29,7 @@ class DocumentControllerTest extends TestCase
             'sender'                => 'Oliver Queen',
             'deadline'              => '2018-12-25',
             'workflow'              => [[
-                "processingUser" => "jjane@maarch.com",
+                "processingUser" => "superadmin@maarch.com",
                 "mode" => "visa"
             ], [
                 "processingUser" => "ccornillac@maarch.com",
@@ -46,7 +46,6 @@ class DocumentControllerTest extends TestCase
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
         $response     = $documentController->create($fullRequest, new \Slim\Http\Response());
         $responseBody = json_decode((string)$response->getBody());
-
         $this->assertIsInt($responseBody->id);
         self::$id = $responseBody->id;
     }

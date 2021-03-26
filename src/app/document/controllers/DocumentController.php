@@ -288,34 +288,26 @@ class DocumentController
 
     public function create(Request $request, Response $response)
     {
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Create\n", FILE_APPEND);
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Privilege\n", FILE_APPEND);
+        
         $body = $request->getParsedBody();
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Body\n", FILE_APPEND);
-
+        
         if (empty($body)) {
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Empty body\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
         } elseif (!Validator::notEmpty()->validate($body['encodedDocument'])) {
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - EncodedDocument\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body encodedDocument is empty']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['title'])) {
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - title\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body title is empty or not a string']);
         } elseif (!Validator::stringType()->notEmpty()->validate($body['sender'])) {
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - sender\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body sender is empty or not a string']);
         } elseif (!Validator::arrayType()->notEmpty()->validate($body['workflow'])) {
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - workflow\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body workflow is empty or not an array']);
         } elseif (!Validator::stringType()->length(0, 64)->validate($body['reference'])) {
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - reference\n", FILE_APPEND);
             return $response->withStatus(400)->withJson(['errors' => 'Body reference is too loong or not a string']);
         }
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Check Variables\n", FILE_APPEND);
+        
         $body['attachments'] = empty($body['attachments']) ? [] : $body['attachments'];
         foreach ($body['attachments'] as $key => $attachment) {
             if (!Validator::notEmpty()->validate($attachment['encodedDocument'])) {
@@ -325,7 +317,7 @@ class DocumentController
             }
         }
 
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Workflow\n", FILE_APPEND);
+        
         $hasEidas = false;
         $hasElectronicSignature = false;
         foreach ($body['workflow'] as $key => $workflow) {
@@ -373,7 +365,7 @@ class DocumentController
             $body['workflow'][$key]['userId'] = $processingUser['id'];
         }
 
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Librairies\n", FILE_APPEND);
+        
         $libDir    = CoreConfigModel::getLibrariesDirectory();
         $loadedXml = CoreConfigModel::getConfig();
         if ($loadedXml->docaposteSignature->enable == 'true' && $hasEidas && (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php'))) {
@@ -387,7 +379,7 @@ class DocumentController
         } else {
             $encodedDocument['encodedDocument'] = $body['encodedDocument'];
         }
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - EncodedDocument\n", FILE_APPEND);
+        
         if (!empty($encodedDocument['errors'])) {
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
@@ -399,7 +391,7 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document is not a pdf']);
         }
 
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - FormFiller\n", FILE_APPEND);
+        
         if (!empty($libDir) && is_file($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php')) {
             require_once($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');
 
@@ -420,14 +412,14 @@ class DocumentController
             unlink($targetFile);
         }
 
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - StoreResource\n", FILE_APPEND);
+        
         try {
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'       => $encodedDocument['encodedDocument'],
                 'format'            => 'pdf',
                 'docserverType'     => 'DOC'
             ]);
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - AfterStoreResource\n", FILE_APPEND);
+            
             if (!empty($storeInfos['errors'])) {
                 return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
@@ -442,7 +434,7 @@ class DocumentController
             }
 
             DatabaseModel::beginTransaction();
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - createDocument\n", FILE_APPEND);
+            
             $id = DocumentModel::create([
                 'title'         => $body['title'],
                 'reference'     => empty($body['reference']) ? null : $body['reference'],
@@ -456,7 +448,7 @@ class DocumentController
                 'typist'        => $GLOBALS['id'],
                 'mailing_id'    => !empty($body['mailingId']) ? (string)$body['mailingId'] : null
             ]);
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - aftercreateDocument:{$id}\n", FILE_APPEND);
+            
 
             AdrModel::createDocumentAdr([
                 'documentId'     => $id,
@@ -465,14 +457,14 @@ class DocumentController
                 'filename'       => $storeInfos['filename'],
                 'fingerprint'    => $storeInfos['fingerprint']
             ]);
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - aftercreateDocumentAdr\n", FILE_APPEND);
+            
 
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'       => $encodedDocument['encodedDocument'],
                 'format'            => 'pdf',
                 'docserverType'     => 'ORIGINAL'
             ]);
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - afterAddInDocserver\n", FILE_APPEND);
+            
             if (!empty($storeInfos['errors'])) {
                 return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
@@ -483,10 +475,9 @@ class DocumentController
                 'filename'       => $storeInfos['filename'],
                 'fingerprint'    => $storeInfos['fingerprint']
             ]);
-            file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - afterAddInDocserverOriginal\n", FILE_APPEND);
+            
 
             foreach ($body['workflow'] as $key => $workflow) {
-                file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - isValidSignatureMode\n", FILE_APPEND);
                 if (!SignatureController::isValidSignatureMode(['mode' => $workflow['signatureMode']])) {
                     $workflow['signatureMode'] = 'stamp';
                 }
@@ -499,7 +490,6 @@ class DocumentController
                     'signaturePositions'    => empty($workflow['signaturePositions']) ? '[]' : json_encode($workflow['signaturePositions']),
                     'datePositions'         => empty($workflow['datePositions']) ? '[]' : json_encode($workflow['datePositions'])
                 ]);
-                file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - afterCreateWorkflow\n", FILE_APPEND);
             }
 
             foreach ($body['attachments'] as $key => $value) {
@@ -533,7 +523,7 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $e->getMessage()]);
         }
 
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - getWorkflow\n", FILE_APPEND);
+        
         $workflow  = WorkflowModel::get([
             'select'  => ['id', 'user_id', 'signature_mode'],
             'where'   => ['mode = ?', 'main_document_id = ?'],
@@ -547,13 +537,13 @@ class DocumentController
                 return $response->withStatus(500)->withJson(['errors' => $result['errors']]);
             }
         }
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - sendNotification\n", FILE_APPEND);
+        
         EmailController::sendNotification(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - Thumbnail\n", FILE_APPEND);
+        
         $configPath = CoreConfigModel::getConfigPath();
         exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$id} 'document' '{$GLOBALS['id']}' > /dev/null &");
-        file_put_contents('debug.txt', date('Y-m-d H:i:s') . " - afterThumbnail\n", FILE_APPEND);
+        
 
         return $response->withJson(['id' => $id]);
     }

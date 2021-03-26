@@ -35,8 +35,8 @@ class AuthenticationControllerTest extends TestCase
         $request        = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
-            'login'     => 'jjane@maarch.com',
-            'password'  => 'maarch'
+            'login'     => 'superadmin@maarch.com',
+            'password'  => 'maarch@'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
         $response     = $authenticationController->authenticate($fullRequest, new \Slim\Http\Response());
@@ -44,7 +44,7 @@ class AuthenticationControllerTest extends TestCase
 
         //  ERRORS
         $aArgs = [
-            'login'     => 'jjane@maarch.com',
+            'login'     => 'jenny.jane@maarch.com',
             'password'  => 'maarche'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
@@ -55,7 +55,7 @@ class AuthenticationControllerTest extends TestCase
         $this->assertSame('Authentication Failed', $responseBody->errors);
 
         $aArgs = [
-            'logi'     => 'jjane@maarch.com',
+            'logi'     => 'jenny.jane@maarch.com',
             'password'  => 'maarche'
         ];
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);
@@ -68,8 +68,8 @@ class AuthenticationControllerTest extends TestCase
 
     public function testAuthentication()
     {
-        $_SERVER['PHP_AUTH_USER'] = 'jjane@maarch.com';
-        $_SERVER['PHP_AUTH_PW'] = 'maarch';
+        $_SERVER['PHP_AUTH_USER'] = 'superadmin@maarch.com';
+        $_SERVER['PHP_AUTH_PW'] = 'maarch@';
 
         $response = \SrcCore\controllers\AuthenticationController::authentication();
 

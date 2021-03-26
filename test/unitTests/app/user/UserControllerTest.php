@@ -71,7 +71,7 @@ class UserControllerTest extends TestCase
         $request     = \Slim\Http\Request::createFromEnvironment($environment);
 
         $aArgs = [
-            'currentPassword'          => 'maarch',
+            'currentPassword'          => 'maarch@',
             'newPassword'              => 'maarch2',
             'passwordConfirmation'     => 'maarch2'
         ];
@@ -123,8 +123,8 @@ class UserControllerTest extends TestCase
 
         $aArgs = [
             'currentPassword'          => 'maarch2',
-            'newPassword'              => 'maarch',
-            'passwordConfirmation'     => 'maarch'
+            'newPassword'              => 'maarch@',
+            'passwordConfirmation'     => 'maarch@'
         ];
 
         $fullRequest = \httpRequestCustom::addContentInBody($aArgs, $request);

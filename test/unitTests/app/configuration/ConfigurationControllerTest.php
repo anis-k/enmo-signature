@@ -19,9 +19,13 @@ class ConfigurationControllerTest extends TestCase
     public function testCreate()
     {
         $configuration = \Configuration\models\ConfigurationModel::getByIdentifier(['identifier' => 'emailServer', 'select' => ['id']]);
-        \Configuration\models\ConfigurationModel::delete(['id' => $configuration[0]['id']]);
+        if (!empty($configuration)) {
+            \Configuration\models\ConfigurationModel::delete(['id' => $configuration[0]['id']]);
+        }
         $configuration = \Configuration\models\ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => ['id']]);
-        \Configuration\models\ConfigurationModel::delete(['id' => $configuration[0]['id']]);
+        if (!empty($configuration)) {
+            \Configuration\models\ConfigurationModel::delete(['id' => $configuration[0]['id']]);
+        }
 
         $configurationController = new \Configuration\controllers\ConfigurationController();
 

@@ -29,7 +29,7 @@ class WorkflowTemplateControllerTest extends TestCase
                     'signatureMode' => 'stamp'
                 ],
                 [
-                    'userId'        => 3,
+                    'userId'        => 12,
                     'mode'          => 'sign',
                     'signatureMode' => 'stamp'
                 ]
@@ -94,7 +94,7 @@ class WorkflowTemplateControllerTest extends TestCase
         $this->assertNotEmpty($responseBody['workflowTemplate']['items'][0]['userLabel']);
         $this->assertSame('visa', $responseBody['workflowTemplate']['items'][0]['mode']);
         $this->assertSame('stamp', $responseBody['workflowTemplate']['items'][0]['signatureMode']);
-        $this->assertSame(3, $responseBody['workflowTemplate']['items'][1]['userId']);
+        $this->assertSame(12, $responseBody['workflowTemplate']['items'][1]['userId']);
         $this->assertNotEmpty($responseBody['workflowTemplate']['items'][1]['userLabel']);
         $this->assertSame('sign', $responseBody['workflowTemplate']['items'][1]['mode']);
         $this->assertSame('stamp', $responseBody['workflowTemplate']['items'][1]['signatureMode']);
