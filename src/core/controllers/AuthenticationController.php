@@ -424,7 +424,7 @@ class AuthenticationController
         preg_match('#^ref:(.+)$#', $head, $matches);
         $currentHead = trim($matches[1]);
 
-        if (empty($currentHead)) {
+        if (empty($currentHead) || !is_file('.git/' . $currentHead)) {
             return $response->withJson(['hash' => null]);
         }
 
