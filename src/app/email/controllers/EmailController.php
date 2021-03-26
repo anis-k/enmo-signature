@@ -223,7 +223,7 @@ class EmailController
 
     public static function sendNotificationToTypist(array $args)
     {
-        if ($args['recipientId'] != $GLOBALS['id'] && !empty($args['recipientId'])) {
+        if (($args['mode'] == 'DEL' || $args['recipientId'] != $GLOBALS['id']) && !empty($args['recipientId'])) {
             $recipient = UserModel::getById(['select' => ['email', 'preferences', '"isRest"'], 'id' => $args['recipientId']]);
     
             $recipient['preferences'] = json_decode($recipient['preferences'], true);
