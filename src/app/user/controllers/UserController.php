@@ -624,7 +624,7 @@ class UserController
                 'sender'     => 'Notification',
                 'recipients' => [$user['email']],
                 'subject'    => $lang['notificationForgotPasswordSubject'],
-                'body'       => $lang['notificationForgotPasswordBody'] . $url . $lang['notificationForgotPasswordFooter'],
+                'body'       => $lang['notificationForgotPasswordBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationForgotPasswordFooter'],
                 'isHtml'     => true
             ]
         ]);
