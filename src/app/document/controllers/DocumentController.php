@@ -1235,6 +1235,9 @@ class DocumentController
         ValidatorModel::stringType($args, ['path']);
 
         $tmpPath = CoreConfigModel::getTmpPath();
+        if (!is_dir($tmpPath)) {
+            return ['errors' => 'Tmp path is not valid'];
+        }
 
         $tmpFilename = $tmpPath . $GLOBALS['id'] . '_' . rand() . 'adr.pdf';
         copy($args['path'], $tmpFilename);

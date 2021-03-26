@@ -264,17 +264,15 @@ class CertificateSignatureController
             DigitalSignatureController::terminate(['config' => $config, 'transactionId' => $document['digital_signature_transaction_id']]);
         }
 
-
-        // if (!empty($storeInfos['errors'])) {
-        //     return ['errors' => $storeInfos['errors']];
-        // }
-
         if ($args['lastStep']) {
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'   => base64_encode(file_get_contents($signedDocumentPath)),
                 'format'        => 'pdf',
                 'docserverType' => 'ESIGN'
             ]);
+             if (!empty($storeInfos['errors'])) {
+                 return ['errors' => $storeInfos['errors']];
+             }
 
             AdrModel::deleteDocumentAdr([
                 'where' => ['main_document_id = ?', 'type = ?'],
