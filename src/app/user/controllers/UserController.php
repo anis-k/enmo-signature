@@ -335,26 +335,39 @@ class UserController
         $substitutedUsers = UserModel::get(['select' => ['id'], 'where' => ['substitute = ?'], 'data' => [$args['id']]]);
         $allSubstitutedUsers = array_column($substitutedUsers, 'id');
 
-        $workflowSelect = "SELECT id FROM workflows ws WHERE workflows.main_document_id = main_document_id AND process_date IS NULL AND status IS NULL ORDER BY \"order\" LIMIT 1";
         $workflows = WorkflowModel::get([
-            'select' => ['id', 'digital_signature_id', 'main_document_id'],
-            'where'  => ['user_id = ?', "(id) in ({$workflowSelect})"],
+            'select' => ['main_document_id'],
+            'where'  => ['user_id = ?', "process_date IS NULL", "status IS NULL"],
             'data'   => [$args['id']]
         ]);
 
-        $workflowsId = array_column($workflows, 'id');
-        WorkflowModel::update([
-            'set'   => ['status' => 'STOP', 'process_date' => 'CURRENT_TIMESTAMP'],
-            'where' => ['id in (?)'],
-            'data'  => [$workflowsId]
-        ]);
+        $mainDocumentId = array_column($workflows, 'main_document_id');
 
-        foreach ($workflows as $step) {
-            $document = DocumentModel::getById(['select' => ['typist', 'id'], 'id' => $step['main_document_id']]);
-            EmailController::sendNotificationToTypist(['documentId' => $document['id'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => 'DEL']);
-            if (!empty($step['digital_signature_id'])) {
-                DigitalSignatureController::abort(['signatureId' => $step['digital_signature_id'], 'documentId' => $args['id']]);
-                break;
+        if (!empty($mainDocumentId)) {
+            $workflows = WorkflowModel::get([
+                'select' => ['id', 'digital_signature_id', 'main_document_id'],
+                'where'  => ['main_document_id in (?)', "process_date IS NULL", "status IS NULL"],
+                'data'   => [$mainDocumentId]
+            ]);
+            
+            $workflowsId = array_column($workflows, 'id');
+            WorkflowModel::update([
+                'set'   => ['status' => 'STOP', 'process_date' => 'CURRENT_TIMESTAMP'],
+                'where' => ['id in (?)', "process_date IS NULL AND status IS NULL"],
+                'data'  => [$workflowsId]
+            ]);
+    
+            $previousDocumentId = null;
+            foreach ($workflows as $step) {
+                $document = DocumentModel::getById(['select' => ['typist', 'id'], 'id' => $step['main_document_id']]);
+                if (!empty($step['digital_signature_id'])) {
+                    DigitalSignatureController::abort(['signatureId' => $step['digital_signature_id'], 'documentId' => $args['id']]);
+                    break;
+                }
+                if ($previousDocumentId != $step['main_document_id']) {
+                    EmailController::sendNotificationToTypist(['documentId' => $document['id'], 'senderId' => $GLOBALS['id'], 'recipientId' => $document['typist'], 'mode' => 'DEL']);
+                }
+                $previousDocumentId = $step['main_document_id'];
             }
         }
 
