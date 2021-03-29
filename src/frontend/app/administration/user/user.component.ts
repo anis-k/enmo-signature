@@ -3,11 +3,12 @@ import { SignaturesContentService } from '../../service/signatures.service';
 import { NotificationService } from '../../service/notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog';
-import { map, finalize } from 'rxjs/operators';
+import {map, finalize, tap, catchError} from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
+import {of} from "rxjs";
 
 
 export interface User {
@@ -142,10 +143,8 @@ export class UserComponent implements OnInit {
         this.loading = true;
         this.http.put('../rest/users/' + this.user.id, this.user)
             .pipe(
-                finalize(() => this.loading = false)
-            )
-            .subscribe({
-                next: () => {
+                finalize(() => this.loading = false),
+                tap(() => {
                     if (this.authService.user.id === this.user.id) {
                         this.authService.updateUserInfoWithTokenRefresh();
                     }
@@ -154,8 +153,13 @@ export class UserComponent implements OnInit {
                     }
                     this.router.navigate(['/administration/users']);
                     this.notificationService.success('lang.userUpdated');
-                },
-            });
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            )
+            .subscribe();
     }
 
     updateRestUser() {
@@ -175,18 +179,21 @@ export class UserComponent implements OnInit {
         this.loading = true;
         this.http.post('../rest/users', this.user)
             .pipe(
-                finalize(() => this.loading = false)
-            )
-            .subscribe({
-                next: (data: any) => {
+                finalize(() => this.loading = false),
+                tap((data: any) => {
                     if (this.user.isRest) {
                         this.user.id = data.id;
                         this.updateRestUser();
                     }
                     this.router.navigate(['/administration/users']);
                     this.notificationService.success('lang.userAdded');
-                },
-            });
+                }),
+                catchError((err: any) => {
+                    this.notificationService.handleErrors(err);
+                    return of(false);
+                })
+            )
+            .subscribe();
     }
 
     delete() {
