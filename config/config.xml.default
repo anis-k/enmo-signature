@@ -36,13 +36,13 @@
     </docaposteSignature>
     <!-- Sort by the more secure to the less secure mode -->
     <signatureModes>
-        <mode>
+        <!-- <mode>
             <id>rgs_2stars_timestamped</id>
             <color>#FF0000</color>
             <issuer>ChamberSign</issuer>
             <subject></subject>
             <keyUsage>digitalSignature</keyUsage>
-        </mode>
+        </mode> -->
         <mode>
             <id>rgs_2stars</id>
             <color>#FF0000</color>
@@ -50,23 +50,23 @@
             <subject></subject>
             <keyUsage>digitalSignature</keyUsage>
         </mode>
-        <mode>
+        <!-- <mode>
             <id>inca_card_eidas</id>
             <color>#FFA500</color>
             <issuer></issuer>
             <subject></subject>
             <keyUsage>digitalSignature</keyUsage>
-        </mode>
-        <mode>
+        </mode> -->
+        <!-- <mode>
             <id>inca_card</id>
             <color>#FFA500</color>
             <issuer></issuer>
             <subject></subject>
             <keyUsage>digitalSignature</keyUsage>
-        </mode>
-        <mode>
+        </mode> -->
+        <!-- <mode>
             <id>eidas</id>
             <color>#00FF00</color>
-        </mode>
+        </mode> -->
     </signatureModes>
 </ROOT>
