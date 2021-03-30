@@ -88,9 +88,6 @@ tags:
  stage: synchronization
  only:
    - tags
-   - master
-   - develop
-   - "21.03"
  except:
    - schedules
  before_script:
