@@ -51,81 +51,88 @@ job_php-7.3:
   except:
     - schedules
 
-#
-#commits:
-#  image: debian:10-slim
-#  stage: synchronization
-#  except:
-#    - tags
-#    - schedules
-#  before_script:
-#    # Skip the synchronisation if it is not enabled
-#    - if [ $SYNC_ENABLED = "true" ]; then echo "Sync enabled"; else echo "Sync disabled, stopping the job" && exit 0; fi
-#    # Configure ssh, with the private key to push to the private repository
-#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-#    - eval $(ssh-agent -s)
-#    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-#    - mkdir -p ~/.ssh
-#    - chmod 700 ~/.ssh
-#    - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
-#    - chmod 644 ~/.ssh/known_hosts
-#    # Install git command
-#    - apt install -y git
-#  script:
-#    - git remote set-url origin $PRIVATE_REPOSITORY_URL_SSH
-#    - git config --global user.email "$CI_EMAIL" && git config --global user.name "$CI_USER"
-#    - 'exists=`git show-ref refs/heads/$CI_COMMIT_REF_NAME` && if [ -n "$exists" ]; then git branch -D $CI_COMMIT_REF_NAME; fi'
-#    - git pull --rebase origin $CI_COMMIT_REF_NAME
-#    - git checkout -b $CI_COMMIT_REF_NAME
-#    - git push origin --all
-#
-#tags:
-#  image: debian:10-slim
-#  stage: synchronization
-#  only:
-#    - tags
-#  except:
-#    - schedules
-#  before_script:
-#    # Skip the synchronisation if it is not enabled
-#    - if [ $SYNC_ENABLED = "true" ]; then echo "Sync enabled"; else echo "Sync disabled, stopping the job" && exit 0; fi
-#    # Configure ssh, with the private key to push to the private repository
-#    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
-#    - eval $(ssh-agent -s)
-#    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-#    - mkdir -p ~/.ssh
-#    - chmod 700 ~/.ssh
-#    - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
-#    - chmod 644 ~/.ssh/known_hosts
-#    # Install git and curl command
-#    - apt install -y git
-#    - apt install -y curl
-#    # Install npm
-#    - curl -sL https://deb.nodesource.com/setup_14.x | bash -
-#    - apt install -y nodejs
-#  script:
-#    - git config --global user.email "$CI_EMAIL" && git config --global user.name "$CI_USER"
-#    # We will work in another directory, to avoid git conflicts
-#    - mkdir tmp
-#    - cd tmp
-#    # Find the branch name from tag name
-#    - VERSION1=$(echo $CI_COMMIT_TAG| cut -d'.' -f 1)
-#    - VERSION2=$(echo $CI_COMMIT_TAG| cut -d'.' -f 2)
-#    - VERSION="${VERSION1}.${VERSION2}"
-#    # Pull the private repository
-#    - git init && git remote add origin $PRIVATE_REPOSITORY_URL_SSH
-#    - git pull origin $VERSION
-#    # Update and push build prod
-#    - npm install
-#    - npm run build-prod
-#    - git status
-#    - git add -f dist/
-#    - git status
-#    - git commit -m "Build prod for tag ${CI_COMMIT_TAG}"
-#    - git show-ref
-#    - git push origin HEAD:$VERSION
-#    - git status
-#    # Do the tag on the private repo
-#    - git tag $CI_COMMIT_TAG
-#    - git status
-#    - git push origin --tags
+
+commits:
+ image: debian:10-slim
+ stage: synchronization
+ only:
+   - master
+   - develop
+   - "21.03"
+ except:
+   - tags
+   - schedules
+ before_script:
+   # Skip the synchronisation if it is not enabled
+   - if [ $SYNC_ENABLED = "true" ]; then echo "Sync enabled"; else echo "Sync disabled, stopping the job" && exit 0; fi
+   # Configure ssh, with the private key to push to the private repository
+   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+   - eval $(ssh-agent -s)
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+   - mkdir -p ~/.ssh
+   - chmod 700 ~/.ssh
+   - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
+   - chmod 644 ~/.ssh/known_hosts
+   # Install git command
+   - apt install -y git
+ script:
+   - git remote set-url origin $PRIVATE_REPOSITORY_URL_SSH
+   - git config --global user.email "$CI_EMAIL" && git config --global user.name "$CI_USER"
+   - 'exists=`git show-ref refs/heads/$CI_COMMIT_REF_NAME` && if [ -n "$exists" ]; then git branch -D $CI_COMMIT_REF_NAME; fi'
+   - git pull --rebase origin $CI_COMMIT_REF_NAME
+   - git checkout -b $CI_COMMIT_REF_NAME
+   - git push origin --all
+
+tags:
+ image: debian:10-slim
+ stage: synchronization
+ only:
+   - tags
+   - master
+   - develop
+   - "21.03"
+ except:
+   - schedules
+ before_script:
+   # Skip the synchronisation if it is not enabled
+   - if [ $SYNC_ENABLED = "true" ]; then echo "Sync enabled"; else echo "Sync disabled, stopping the job" && exit 0; fi
+   # Configure ssh, with the private key to push to the private repository
+   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+   - eval $(ssh-agent -s)
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+   - mkdir -p ~/.ssh
+   - chmod 700 ~/.ssh
+   - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
+   - chmod 644 ~/.ssh/known_hosts
+   # Install git and curl command
+   - apt install -y git
+   - apt install -y curl
+   # Install npm
+   - curl -sL https://deb.nodesource.com/setup_14.x | bash -
+   - apt install -y nodejs
+ script:
+   - git config --global user.email "$CI_EMAIL" && git config --global user.name "$CI_USER"
+   # We will work in another directory, to avoid git conflicts
+   - mkdir tmp
+   - cd tmp
+   # Find the branch name from tag name
+   - VERSION1=$(echo $CI_COMMIT_TAG| cut -d'.' -f 1)
+   - VERSION2=$(echo $CI_COMMIT_TAG| cut -d'.' -f 2)
+   - VERSION="${VERSION1}.${VERSION2}"
+   # Pull the private repository
+   - git init && git remote add origin $PRIVATE_REPOSITORY_URL_SSH
+   - git pull origin $VERSION
+   # Update and push build prod
+   - npm install
+   - npm run build-prod
+   - git status
+   - git add -f dist/
+   - git status
+   - git commit -m "Build prod for tag ${CI_COMMIT_TAG}"
+   - git show-ref
+   - git push origin HEAD:$VERSION
+   - git status
+   # Do the tag on the private repo
+   - git tag $CI_COMMIT_TAG
+   - git status
+   - git push origin --tags
