@@ -465,6 +465,7 @@
 		"undefined": "Non défini",
 		"refuseActionDocInMailGroup": "Voulez-vous refuser les autres documents issus d'un publipostage ?",
 		"stopProcessInfo": "Interrompu le",
-		"refProcessInfo": "Refusé le"
+		"refProcessInfo": "Refusé le",
+		"repoUrl": "https://labs.maarch.org/maarch/MaarchParapheur"
 	}
 }
