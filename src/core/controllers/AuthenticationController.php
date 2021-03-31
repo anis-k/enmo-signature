@@ -21,8 +21,6 @@ use History\controllers\HistoryController;
 use Respect\Validation\Validator;
 use Slim\Http\Request;
 use Slim\Http\Response;
-use SrcCore\controllers\LanguageController;
-use SrcCore\controllers\UrlController;
 use SrcCore\models\AuthenticationModel;
 use SrcCore\models\CoreConfigModel;
 use SrcCore\models\PasswordModel;
@@ -44,12 +42,14 @@ class AuthenticationController
         $connection = ConfigurationModel::getConnection();
         $encryptKey = CoreConfigModel::getEncryptKey();
         $path = CoreConfigModel::getConfigPath();
+        $coreUrl = UrlController::getCoreUrl();
         $hashedPath = md5($path);
 
         return $response->withJson([
-            'connection'     => $connection,
-            'changeKey'      => $encryptKey == 'Security Key Maarch Parapheur #2008',
-            'instanceId'     => $hashedPath
+            'connection'    => $connection,
+            'changeKey'     => $encryptKey == 'Security Key Maarch Parapheur #2008',
+            'instanceId'    => $hashedPath,
+            'coreUrl'       => $coreUrl
         ]);
     }
 
@@ -99,7 +99,7 @@ class AuthenticationController
         }
 
         $login = strtolower($body['login']);
-        
+
         if ($connection == 'ldap') {
             $ldapConfigurations = ConfigurationModel::getByIdentifier(['identifier' => 'ldapServer', 'select' => ['value']]);
             if (empty($ldapConfigurations)) {

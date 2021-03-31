@@ -4,6 +4,8 @@ import { LoadingController, ModalController } from '@ionic/angular';
 import { SignatureMethodModalComponent } from './signature-method-modal.component';
 import { ActionsService } from '../actions.service';
 import { TranslateService } from '@ngx-translate/core';
+import {AuthService} from "../auth.service";
+import {NotificationService} from "../notification.service";
 
 @Injectable({
     providedIn: 'root'
@@ -16,10 +18,16 @@ export class SignatureMethodService {
         public actionsService: ActionsService,
         public loadingController: LoadingController,
         private translate: TranslateService,
+        public authService: AuthService,
+        public notificationService: NotificationService
     ) { }
 
     async checkAuthenticationAndLaunchAction(userWorkflow: any, note: any = null, idsToProcess: any[]) {
         if (['rgs_2stars', 'rgs_2stars_timestamped', 'inca_card', 'inca_card_eidas'].indexOf(userWorkflow.signatureMode) > -1) {
+            if (this.authService.coreUrl.indexOf('https://') !== 0) {
+                await this.notificationService.error('lang.securedUrlNeeded');
+                return null;
+            }
             const res = await this.openRgsAuth(note, userWorkflow.signatureMode, idsToProcess);
             return res;
         } else {

@@ -410,6 +410,7 @@
         "errorUserSignType": "Signers without a certificate must be present before signers with a certificate.",
         "fortifyReadException": "Error when communicating with Fortify",
         "docaposteSignatureDisabled": "The docaposteSignature parameter is not activated",
+        "securedUrlNeeded": "If you want to sign with a certificate, you must have a secured application (https)",
         "certifiedDocumentMsg2": "Certified document! Annotations on the document will not be taken into account!",
         "history": "History",
         "manage_history": "Manage history",

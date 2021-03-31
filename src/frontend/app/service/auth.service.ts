@@ -13,9 +13,10 @@ import { of } from 'rxjs';
 })
 export class AuthService {
 
-    authMode: string = 'default';
-    changeKey: boolean = false;
-    user: any = {};
+    authMode: string    = 'default';
+    changeKey: boolean  = false;
+    coreUrl: string     = '';
+    user: any           = {};
     signatureRoles: any[] = [];
 
     constructor(public http: HttpClient,

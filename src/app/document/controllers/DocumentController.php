@@ -20,6 +20,7 @@ use Email\controllers\EmailController;
 use Group\controllers\PrivilegeController;
 use Respect\Validation\Validator;
 use setasign\Fpdi\Tcpdf\Fpdi;
+use SrcCore\controllers\UrlController;
 use SrcCore\models\CoreConfigModel;
 use Attachment\models\AttachmentModel;
 use Docserver\controllers\DocserverController;
@@ -117,7 +118,7 @@ class DocumentController
             $documents[$key]['mode'] = $workflowsShortcut[$document['id']]['mode'];
             $documents[$key]['owner'] = $workflowsShortcut[$document['id']]['user_id'] == $userId;
         }
-        
+
         foreach ($countWorkflows as $mode) {
             $count[$mode['mode']] = $mode['count'];
         }
@@ -274,7 +275,7 @@ class DocumentController
         $fileContent = file_get_contents($pathToDocument);
         $finfo       = new \finfo(FILEINFO_MIME_TYPE);
         $mimeType    = $finfo->buffer($fileContent);
-        
+
         if (empty($queryParams['mode']) || $queryParams['mode'] == 'base64') {
             return $response->withJson(['encodedDocument' => base64_encode($fileContent)]);
         } else {
@@ -291,9 +292,9 @@ class DocumentController
         if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'indexation'])) {
             return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
-        
+
         $body = $request->getParsedBody();
-        
+
         if (empty($body)) {
             return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
         } elseif (!Validator::notEmpty()->validate($body['encodedDocument'])) {
@@ -307,7 +308,7 @@ class DocumentController
         } elseif (!Validator::stringType()->length(0, 64)->validate($body['reference'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body reference is too loong or not a string']);
         }
-        
+
         $body['attachments'] = empty($body['attachments']) ? [] : $body['attachments'];
         foreach ($body['attachments'] as $key => $attachment) {
             if (!Validator::notEmpty()->validate($attachment['encodedDocument'])) {
@@ -317,7 +318,7 @@ class DocumentController
             }
         }
 
-        
+
         $hasEidas = false;
         $hasElectronicSignature = false;
         foreach ($body['workflow'] as $key => $workflow) {
@@ -365,7 +366,7 @@ class DocumentController
             $body['workflow'][$key]['userId'] = $processingUser['id'];
         }
 
-        
+
         $libDir    = CoreConfigModel::getLibrariesDirectory();
         $loadedXml = CoreConfigModel::getConfig();
         if ($loadedXml->docaposteSignature->enable == 'true' && $hasEidas && (empty($libDir) || !is_file($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php'))) {
@@ -379,7 +380,7 @@ class DocumentController
         } else {
             $encodedDocument['encodedDocument'] = $body['encodedDocument'];
         }
-        
+
         if (!empty($encodedDocument['errors'])) {
             return $response->withStatus(500)->withJson(['errors' => $encodedDocument['errors']]);
         }
@@ -391,7 +392,7 @@ class DocumentController
             return $response->withStatus(400)->withJson(['errors' => 'Document is not a pdf']);
         }
 
-        
+
         if (!empty($libDir) && is_file($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php')) {
             require_once($libDir . 'SetaPDF-FormFiller-Full/library/SetaPDF/Autoload.php');
 
@@ -412,14 +413,14 @@ class DocumentController
             unlink($targetFile);
         }
 
-        
+
         try {
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'       => $encodedDocument['encodedDocument'],
                 'format'            => 'pdf',
                 'docserverType'     => 'DOC'
             ]);
-            
+
             if (!empty($storeInfos['errors'])) {
                 return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
@@ -434,7 +435,7 @@ class DocumentController
             }
 
             DatabaseModel::beginTransaction();
-            
+
             $id = DocumentModel::create([
                 'title'         => $body['title'],
                 'reference'     => empty($body['reference']) ? null : $body['reference'],
@@ -448,7 +449,7 @@ class DocumentController
                 'typist'        => $GLOBALS['id'],
                 'mailing_id'    => !empty($body['mailingId']) ? (string)$body['mailingId'] : null
             ]);
-            
+
 
             AdrModel::createDocumentAdr([
                 'documentId'     => $id,
@@ -457,14 +458,14 @@ class DocumentController
                 'filename'       => $storeInfos['filename'],
                 'fingerprint'    => $storeInfos['fingerprint']
             ]);
-            
+
 
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'       => $encodedDocument['encodedDocument'],
                 'format'            => 'pdf',
                 'docserverType'     => 'ORIGINAL'
             ]);
-            
+
             if (!empty($storeInfos['errors'])) {
                 return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
@@ -475,7 +476,7 @@ class DocumentController
                 'filename'       => $storeInfos['filename'],
                 'fingerprint'    => $storeInfos['fingerprint']
             ]);
-            
+
 
             foreach ($body['workflow'] as $key => $workflow) {
                 if (!SignatureController::isValidSignatureMode(['mode' => $workflow['signatureMode']])) {
@@ -523,7 +524,7 @@ class DocumentController
             return $response->withStatus(500)->withJson(['errors' => $e->getMessage()]);
         }
 
-        
+
         $workflow  = WorkflowModel::get([
             'select'  => ['id', 'user_id', 'signature_mode'],
             'where'   => ['mode = ?', 'main_document_id = ?'],
@@ -537,13 +538,13 @@ class DocumentController
                 return $response->withStatus(500)->withJson(['errors' => $result['errors']]);
             }
         }
-        
+
         EmailController::sendNotification(['documentId' => $id, 'userId' => $GLOBALS['id']]);
 
-        
+
         $configPath = CoreConfigModel::getConfigPath();
         exec("php src/app/convert/scripts/ThumbnailScript.php '{$configPath}' {$id} 'document' '{$GLOBALS['id']}' > /dev/null &");
-        
+
 
         return $response->withJson(['id' => $id]);
     }
@@ -566,6 +567,13 @@ class DocumentController
                 return $response->withStatus(500)->withJson(['errors' => 'SetaPDF-Signer library is not installed', 'lang' => 'setAPdfSignerError']);
             }
             require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
+
+            if ($workflow['signature_mode'] != 'eidas') {
+                $url = UrlController::getCoreUrl();
+                if (strpos($url, 'https://') !== 0) {
+                    return $response->withStatus(400)->withJson(['errors' => 'Url is not secured (https needed)', 'lang' => 'securedUrlNeeded']);
+                }
+            }
         }
         if (in_array($workflow['signature_mode'], ['eidas', 'inca_card_eidas']) && $loadedXml->docaposteSignature->enable != 'true') {
             return $response->withStatus(400)->withJson(['errors' => 'docaposteSignature is disabled', 'lang' => 'docaposteSignatureDisabled']);
@@ -684,7 +692,7 @@ class DocumentController
                     if (!empty($storeInfos['errors'])) {
                         return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
                     }
-    
+
                     AdrModel::deleteDocumentAdr([
                         'where' => ['main_document_id = ?', 'type = ?'],
                         'data'  => [$args['id'], 'ESIGN']

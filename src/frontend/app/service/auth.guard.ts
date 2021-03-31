@@ -38,6 +38,7 @@ export class AuthGuard implements CanActivate {
                     map((data: any) => {
                         this.authService.authMode = data.connection;
                         this.authService.changeKey = data.changeKey;
+                        this.authService.coreUrl = data.coreUrl;
                         this.localStorage.setAppSession(data.instanceId);
                     })
                 ). subscribe();
@@ -65,6 +66,7 @@ export class AuthGuard implements CanActivate {
                         map((data: any) => {
                             this.authService.authMode = data.connection;
                             this.authService.changeKey = data.changeKey;
+                            this.authService.coreUrl = data.coreUrl;
                             this.localStorage.setAppSession(data.instanceId);
                             tokenInfo = this.authService.getToken();
 
