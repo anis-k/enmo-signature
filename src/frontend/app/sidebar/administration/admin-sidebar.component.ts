@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { AuthService } from '../../service/auth.service';
 
 export interface Privilege {
@@ -21,7 +22,8 @@ export class AdminSidebarComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        public authService: AuthService
+        public authService: AuthService,
+        public menu: MenuController
     ) {
     }
 

@@ -7,7 +7,7 @@
 </ion-header>
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let privilege of authService.user.administrativePrivileges" [routerLink]="privilege.route" [class.item-active]="isActiveRoute(privilege.route)">
+    <ion-item *ngFor="let privilege of authService.user.administrativePrivileges" [routerLink]="privilege.route" routerDirection="root" [class.item-active]="isActiveRoute(privilege.route)" (click)="menu.close('left-menu')">
       <ion-icon slot="start" [name]="privilege.icon" color="primary"></ion-icon>
       <ion-label>{{'lang.' + privilege.id | translate}}</ion-label>
     </ion-item>
