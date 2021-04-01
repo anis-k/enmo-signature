@@ -16,9 +16,16 @@
         <ion-item lines="none" *ngIf="!creationMode">
             <ion-label color="secondary">{{'lang.privileges' | translate}} :</ion-label>
         </ion-item>
-        <ion-grid *ngIf="!creationMode">
+        <div style="display: grid;grid-gap: 10px;" [class.grid-2-col]="signaturesService.mobileMode" [class.grid-3-col]="!signaturesService.mobileMode">
+            <ion-item  style="cursor: pointer" *ngFor="let privilege of group.privileges">
+                <ion-toggle slot="start" [name]="privilege.id" color="primary" [checked]="privilege.checked"
+                    [(ngModel)]="privilege.checked" (click)="togglePrivilege(privilege, true)"></ion-toggle>
+                <ion-label (click)="togglePrivilege(privilege, false)">{{'lang.' + privilege.id + 'Admin' | translate}}</ion-label>
+            </ion-item>
+        </div>
+        <!--<ion-grid *ngIf="!creationMode">
             <ion-row>
-                <ion-col size="4" *ngFor="let privilege of group.privileges">
+                <ion-col [size]="!signaturesService.mobileMode ? 2 : 2" *ngFor="let privilege of group.privileges">
                     <ion-item  style="cursor: pointer">
                         <ion-toggle slot="start" [name]="privilege.id" color="primary" [checked]="privilege.checked"
                             [(ngModel)]="privilege.checked" (click)="togglePrivilege(privilege, true)"></ion-toggle>
@@ -26,7 +33,7 @@
                     </ion-item>
                 </ion-col>
             </ion-row>
-        </ion-grid>
+        </ion-grid>-->
         <ion-item lines="none" *ngIf="!creationMode">
             <ion-label color="secondary">{{'lang.linkedUsers' | translate}} :</ion-label>
         </ion-item>
