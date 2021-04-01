@@ -1,47 +1,51 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-title>{{'lang.administration' | translate}} {{'lang.manage_groupsAlt' | translate}}</ion-title>
-  </ion-toolbar>
-  <ion-toolbar  color="primary">
-    <ion-buttons slot="start">
-      <ion-button fill="outline"  shape="round" routerLink="/administration/groups/new">
-        {{'lang.groupCreation' | translate}}
-      </ion-button>
-    </ion-buttons>
-    <ion-title slot="end" color="secondary">{{groupList.length}} {{'lang.manage_groupsAlt' | translate}}</ion-title>
-  </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-menu-button menu="left-menu"></ion-menu-button>
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{'lang.administration' | translate}} {{'lang.manage_groupsAlt' | translate}}</ion-title>
+    </ion-toolbar>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-button fill="outline" shape="round" routerLink="/administration/groups/new">
+                {{'lang.groupCreation' | translate}}
+            </ion-button>
+        </ion-buttons>
+        <ion-title slot="end" color="secondary">{{groupList.length}} {{'lang.manage_groupsAlt' | translate}}</ion-title>
+    </ion-toolbar>
 </ion-header>
 <ion-content #mainContent>
-  <ion-list>
-    <ion-item style="display: flex;">
-      <ion-label color="primary" matSort [matSortActive]="displayedColumns[0]" matSortDirection='asc' style="display: flex;font-size: 12px;align-items: center;" (matSortChange)="sortData($event)">
-        <ng-container *ngFor="let col of displayedColumns">
-          <div [mat-sort-header]="col" disableClear style="flex: 1" *ngIf="col!=='actions'">
-            {{'lang.' + col | translate}}
-          </div>
-        </ng-container>
-        <div style="flex: 1" *ngIf="displayedColumns.indexOf('actions') > -1">
-          <ion-searchbar [placeholder] = "'lang.filter' | translate" style="padding: 1px;" (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
-        </div>
-      </ion-label>
-      <ion-button slot="end" fill="clear" shape="round" disabled>
-        <ion-icon></ion-icon>
-      </ion-button>
-    </ion-item>
-    <ion-virtual-scroll [items]="sortedData" approxItemHeight="50px">
-      <ion-item *virtualItem="let element" style="display: flex;">
-        <ion-label style="display: flex;cursor: pointer;" routerLink="/administration/groups/{{element.id}}">
-          <div style="flex: 1" *ngFor="let col of displayedColumns">
-            {{element[col]}}
-          </div>
-        </ion-label>
-        <ion-button slot="end" fill="clear" shape="round" (click)="$event.stopPropagation();delete(element)" title="{{'lang.delete' | translate}}">
-          <ion-icon color="danger" slot="icon-only" name="trash"></ion-icon>
-        </ion-button>
-      </ion-item>
-    </ion-virtual-scroll>
-  </ion-list>
+    <ion-list>
+        <ion-item style="display: flex;">
+            <ion-label color="primary" matSort [matSortActive]="displayedColumns[0]" matSortDirection='asc'
+                style="display: flex;font-size: 12px;align-items: center;" (matSortChange)="sortData($event)">
+                <ng-container *ngFor="let col of displayedColumns">
+                    <div [mat-sort-header]="col" disableClear style="flex: 1" *ngIf="col!=='actions'">
+                        {{'lang.' + col | translate}}
+                    </div>
+                </ng-container>
+                <div style="flex: 1" *ngIf="displayedColumns.indexOf('actions') > -1">
+                    <ion-searchbar [placeholder]="'lang.filter' | translate" style="padding: 1px;"
+                        (ionChange)="applyFilter($event.detail.value)"></ion-searchbar>
+                </div>
+            </ion-label>
+            <ion-button slot="end" fill="clear" shape="round" disabled>
+                <ion-icon></ion-icon>
+            </ion-button>
+        </ion-item>
+        <ion-virtual-scroll [items]="sortedData" approxItemHeight="50px">
+            <ion-item *virtualItem="let element" style="display: flex;">
+                <ion-label style="display: flex;cursor: pointer;" routerLink="/administration/groups/{{element.id}}">
+                    <div style="flex: 1" *ngFor="let col of displayedColumns">
+                        {{element[col]}}
+                    </div>
+                </ion-label>
+                <ion-button slot="end" fill="clear" shape="round" (click)="$event.stopPropagation();delete(element)"
+                    title="{{'lang.delete' | translate}}">
+                    <ion-icon color="danger" slot="icon-only" name="trash"></ion-icon>
+                </ion-button>
+            </ion-item>
+        </ion-virtual-scroll>
+    </ion-list>
 </ion-content>
