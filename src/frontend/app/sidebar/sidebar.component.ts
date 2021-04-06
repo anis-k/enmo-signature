@@ -6,7 +6,7 @@ import { NotificationService } from '../service/notification.service';
 import { FormControl } from '@angular/forms';
 import { debounceTime, switchMap, distinctUntilChanged, tap, finalize } from 'rxjs/operators';
 import { AuthService } from '../service/auth.service';
-import { MenuController, ModalController } from '@ionic/angular';
+import { IonSearchbar, MenuController, ModalController } from '@ionic/angular';
 import { ProfileComponent } from '../profile/profile.component';
 import { FunctionsService } from '../service/functions.service';
 import { FiltersService } from '../service/filters.service';
@@ -20,7 +20,7 @@ import { FiltersService } from '../service/filters.service';
 export class SidebarComponent implements OnInit, AfterViewInit {
 
     @ViewChild('listContent') listContent: ElementRef;
-    @ViewChild('searchInput') searchInput: ElementRef;
+    @ViewChild('searchInput') searchInput: IonSearchbar;
 
     loadingList: boolean = false;
     searchMode: boolean = false;
@@ -96,9 +96,8 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         this.signaturesService.mode = '';
         this.filter('');
         setTimeout(() => {
-            this.searchInput.nativeElement.value = '';
-            this.searchInput.nativeElement.focus();
-            this.searchInput.nativeElement.click();
+            this.searchInput.value = '';
+            this.searchInput.setFocus();
         }, 0);
     }
 
