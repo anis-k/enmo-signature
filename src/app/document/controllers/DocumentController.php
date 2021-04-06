@@ -568,7 +568,7 @@ class DocumentController
             }
             require_once($libDir . 'SetaPDF-Signer/library/SetaPDF/Autoload.php');
 
-            if ($workflow['signature_mode'] != 'eidas') {
+            if (DocumentController::ACTIONS[$args['actionId']] == 'VAL' && $workflow['signature_mode'] != 'eidas') {
                 $url = UrlController::getCoreUrl();
                 if (strpos($url, 'https://') !== 0) {
                     return $response->withStatus(400)->withJson(['errors' => 'Url is not secured (https needed)', 'lang' => 'securedUrlNeeded']);
