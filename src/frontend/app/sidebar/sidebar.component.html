@@ -50,17 +50,17 @@
 <ion-header *ngIf="!isAdminRoute()" style="background: white;">
     <ion-toolbar class="filters">
         <ion-segment value="heart" [value]="signaturesService.mode">
-            <ion-segment-button value="sign" (click)="filter('sign')">
+            <ion-segment-button value="sign" (click)="filter('sign')" [class.segment-button-notFocused]="signaturesService.mode !== 'sign'">
                 <ion-label>{{'lang.signLabel' | translate | titlecase}}</ion-label>
                 <ion-icon color="primary" name="pencil-outline"></ion-icon>
                 <ion-badge color="secondary">{{signaturesService.documentsListCount.sign}}</ion-badge>
             </ion-segment-button>
-            <ion-segment-button value="visa" (click)="filter('visa')">
+            <ion-segment-button value="visa" (click)="filter('visa')" [class.segment-button-notFocused]="signaturesService.mode !== 'visa'">
                 <ion-label>{{'lang.visaLabel' | translate | titlecase}}</ion-label>
                 <ion-icon color="primary" name="checkmark-done-outline"></ion-icon>
                 <ion-badge color="secondary">{{signaturesService.documentsListCount.visa}}</ion-badge>
             </ion-segment-button>
-            <ion-segment-button value="note" (click)="filter('note')">
+            <ion-segment-button value="note" (click)="filter('note')" [class.segment-button-notFocused]="signaturesService.mode !== 'note'">
                 <ion-label>{{'lang.noteLabel' | translate | titlecase}}</ion-label>
                 <ion-icon color="primary" name="chatbubble-ellipses-outline"></ion-icon>
                 <ion-badge color="secondary">{{signaturesService.documentsListCount.note}}</ion-badge>
