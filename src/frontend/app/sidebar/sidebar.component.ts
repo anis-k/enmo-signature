@@ -91,13 +91,15 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         this.router.navigate(['/search']);
     }
 
-    search() {
+    search(event: any) {
         this.searchMode = true;
         this.signaturesService.mode = '';
         this.filter('');
         setTimeout(() => {
-            this.searchInput.value = '';
-            this.searchInput.setFocus();
+            if (event.type !== 'ionCancel') {
+                this.searchInput.value = '';
+                this.searchInput.setFocus();
+            }
         }, 0);
     }
 

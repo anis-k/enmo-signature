@@ -36,7 +36,7 @@
 </ion-avatar>
 <ion-header *ngIf="!isAdminRoute()">
     <ion-toolbar color="light">
-        <ion-title *ngIf="!searchMode" (click)="search();" [title]="'lang.filterInfo' | translate" style="text-align: center;font-size: 14px;">
+        <ion-title *ngIf="!searchMode" (click)="search($event);" [title]="'lang.filterInfo' | translate" style="text-align: center;font-size: 14px;">
             <span [class.primary]="signaturesService.mode != ''">{{signaturesService.documentsListCount.current}}</span>
             {{'lang.documents' | translate}}
             <span class="primary"
@@ -44,7 +44,7 @@
             &nbsp;
             <ion-icon color="primary" name="search-outline"></ion-icon>
         </ion-title>
-        <ion-searchbar *ngIf="searchMode" #searchInput [placeholder]="'lang.filterInfo' | translate" showCancelButton="always" (ionCancel)="search();searchMode=!searchMode;" [formControl]="searchTerm"></ion-searchbar>
+        <ion-searchbar *ngIf="searchMode" #searchInput [placeholder]="'lang.filterInfo' | translate" showCancelButton="always" (ionCancel)="search($event);searchMode=!searchMode;" [formControl]="searchTerm"></ion-searchbar>
     </ion-toolbar>
 </ion-header>
 <ion-header *ngIf="!isAdminRoute()" style="background: white;">
