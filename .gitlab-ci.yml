@@ -80,7 +80,8 @@ commits:
    - git remote set-url origin $PRIVATE_REPOSITORY_URL_SSH
    - git config --global user.email "$CI_EMAIL" && git config --global user.name "$CI_USER"
    - 'exists=`git show-ref refs/heads/$CI_COMMIT_REF_NAME` && if [ -n "$exists" ]; then git branch -D $CI_COMMIT_REF_NAME; fi'
-   - git pull --rebase origin $CI_COMMIT_REF_NAME
+#   - git pull --rebase origin $CI_COMMIT_REF_NAME
+   - git pull -s recursive -X theirs --no-edit origin $CI_COMMIT_REF_NAME # Use this pull command if there are merge conflicts during rebase
    - git checkout -b $CI_COMMIT_REF_NAME
    - git push origin --all
 
