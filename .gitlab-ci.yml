@@ -73,6 +73,7 @@ commits:
    - chmod 700 ~/.ssh
    - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
    - chmod 644 ~/.ssh/known_hosts
+   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >> ~/.ssh/config'
    # Install git command
    - apt install -y git
  script:
@@ -101,6 +102,7 @@ tags:
    - chmod 700 ~/.ssh
    - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
    - chmod 644 ~/.ssh/known_hosts
+   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >> ~/.ssh/config'
    # Install git and curl command
    - apt install -y git
    - apt install -y curl
