@@ -80,7 +80,7 @@ class UserModel
     public static function create(array $args)
     {
         ValidatorModel::notEmpty($args, ['login', 'email', 'firstname', 'lastname', 'picture']);
-        ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode', 'signatureModes']);
+        ValidatorModel::stringType($args, ['login', 'email', 'firstname', 'lastname', 'picture', 'mode', 'signatureModes', 'x509_fingerprint']);
 
         if (empty($args['password'])) {
             $args['password'] = AuthenticationModel::generatePassword();
@@ -99,7 +99,8 @@ class UserModel
                 '"isRest"'                      => empty($args['isRest']) ? 'false' : 'true',
                 'picture'                       => $args['picture'],
                 'password_modification_date'    => 'CURRENT_TIMESTAMP',
-                'signature_modes'               => $args['signatureModes']
+                'signature_modes'               => $args['signatureModes'],
+                'x509_fingerprint'              => $args['x509_fingerprint'],
             ]
         ]);
 

@@ -46,7 +46,7 @@ class UserController
     {
         $queryParams = $request->getQueryParams();
 
-        $select = ['id', 'firstname', 'lastname', 'substitute'];
+        $select = ['id', 'firstname', 'lastname', 'substitute', 'x509_fingerprint'];
         $where = [];
         $queryData = [];
         if (empty($queryParams['mode'])) {
@@ -65,8 +65,14 @@ class UserController
             'orderBy'   => ['lastname', 'firstname']
         ]);
 
+        $currentUser = UserModel::getById(['select' => ['"isRest"'], 'id' => $GLOBALS['id']]);
+
         foreach ($users as $key => $user) {
             $users[$key]['substitute'] = !empty($user['substitute']);
+            if ($currentUser['isRest']) {
+                $users[$key]['x509Fingerprint'] = $users[$key]['x509_fingerprint'];
+            }
+            unset($users[$key]['x509_fingerprint']);
         }
 
         return $response->withJson(['users' => $users]);
@@ -125,6 +131,8 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
         } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL) || !Validator::stringType()->notEmpty()->length(1, 128)->validate($body['email'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
+        } elseif (!empty($body['x509Fingerprint']) && !Validator::stringType()->validate($body['x509Fingerprint'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body x509Fingerprint is not a string']);
         }
 
         $body['login'] = strtolower($body['login']);
@@ -132,6 +140,8 @@ class UserController
         if (!empty($existingUser)) {
             return $response->withStatus(400)->withJson(['errors' => 'Login already exists', 'lang' => 'userLoginAlreadyExists']);
         }
+        
+        $body['x509_fingerprint'] = $body['x509Fingerprint'];
 
         if (!empty($body['isRest'])) {
             $body['"isRest"'] = true;
@@ -191,6 +201,8 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body lastname is empty or not a string']);
         } elseif (empty($body['email']) || !filter_var($body['email'], FILTER_VALIDATE_EMAIL) || !Validator::stringType()->notEmpty()->length(1, 128)->validate($body['email'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body email is empty or not a valid email']);
+        } elseif (!empty($body['x509Fingerprint']) && !Validator::stringType()->validate($body['x509Fingerprint'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body x509Fingerprint is not a string']);
         }
 
         $user = UserModel::getById(['id' => $args['id'], 'select' => [1]]);
@@ -204,6 +216,11 @@ class UserController
             'email'           => $body['email'],
             'signature_modes' => []
         ];
+
+        $currentUser = UserModel::getById(['select' => ['"isRest"'], 'id' => $GLOBALS['id']]);
+        if ($currentUser['isRest']) {
+            $set['x509_fingerprint'] = $body['x509Fingerprint'];
+        }
 
         if (!empty($body['signatureModes'])) {
             if (!Validator::arrayType()->validate($body['signatureModes'])) {
@@ -546,13 +563,14 @@ class UserController
 
     public function updatePassword(Request $request, Response $response, array $args)
     {
-        $connection = ConfigurationModel::getConnection();
-        if ($connection != 'default') {
-            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
-        }
-
         if (!Validator::intVal()->notEmpty()->validate($args['id'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Route id is not an integer']);
+        }
+
+        $user = UserModel::getById(['select' => ['login', '"isRest"'], 'id' => $args['id']]);
+        $connection = ConfigurationModel::getConnection();
+        if ($connection != 'default' && $user['isRest'] == false) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
         }
 
         if ($GLOBALS['id'] != $args['id']) {
@@ -567,8 +585,6 @@ class UserController
         } elseif ($body['newPassword'] != $body['passwordConfirmation']) {
             return $response->withStatus(400)->withJson(['errors' => 'Body newPassword and passwordConfirmation must be identical']);
         }
-
-        $user = UserModel::getById(['select' => ['login', '"isRest"'], 'id' => $args['id']]);
 
         if ($user['isRest'] == false) {
             if (empty($body['currentPassword']) || !AuthenticationModel::authentication(['login' => $user['login'], 'password' => $body['currentPassword']])) {
@@ -710,7 +726,7 @@ class UserController
         ValidatorModel::notEmpty($args, ['id']);
         ValidatorModel::intVal($args, ['id']);
 
-        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', '"isRest"', 'signature_modes'], 'id' => $args['id']]);
+        $user = UserModel::getById(['select' => ['id', 'login', 'email', 'firstname', 'lastname', 'picture', 'preferences', 'substitute', '"isRest"', 'signature_modes', 'x509_fingerprint'], 'id' => $args['id']]);
         if (empty($user)) {
             return [];
         }
@@ -735,6 +751,12 @@ class UserController
                 $user['substituteUser'] = UserModel::getLabelledUserById(['id' => $user['substitute']]);
             }
         }
+
+        $currentUser = UserModel::getById(['select' => ['"isRest"'], 'id' => $GLOBALS['id']]);
+        if ($currentUser['isRest']) {
+            $user['x509Fingerprint'] = $user['x509_fingerprint'];
+        }
+        unset($user['x509_fingerprint']);
 
         return $user;
     }
