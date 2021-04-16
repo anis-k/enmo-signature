@@ -72,6 +72,7 @@
                 <ion-input [type]="hideNewPassword ? 'password' : 'text'" name="newPasswordRest"
                     [(ngModel)]="passwordRest.newPassword" (ionChange)="checkPasswordValidity(passwordRest.newPassword)">
                 </ion-input>
+                <ion-note color="danger" *ngIf="this.handlePassword.error && passwordRest.newPassword.length > 0"> {{ this.handlePassword.errorMsg | translate}}</ion-note>
             </ion-item>
             <ion-item style="align-items: center;" *ngIf="user.isRest">
                 <ion-button slot="end" fill="clear" color="primary"
@@ -82,10 +83,10 @@
                 <ion-label color="secondary" position="floating">{{'lang.passwordConfirmation' | translate}}</ion-label>
                 <ion-input [type]="hideNewPasswordConfirm ? 'password' : 'text'" name="passwordConfirmation"
                     [(ngModel)]="passwordRest.passwordConfirmation"></ion-input>
-                <ion-note color="danger" *ngIf="passwordRest.passwordConfirmation !== passwordRest.newPassword">
+                <ion-note color="danger" *ngIf="passwordRest.passwordConfirmation !== passwordRest.newPassword && passwordRest.passwordConfirmation.length > 0">
                     {{'lang.passwordNotMatch' | translate}}</ion-note>
                 <ion-note color="success"
-                    *ngIf="passwordRest.passwordConfirmation === passwordRest.newPassword && passwordRest.newPassword.length > 0 && passwordRest.passwordConfirmation.length> 0">
+                    *ngIf="passwordRest.passwordConfirmation === passwordRest.newPassword && passwordRest.newPassword.length > 0 && passwordRest.passwordConfirmation.length> 0 && !this.handlePassword.error">
                     {{'lang.samePassword' | translate}}</ion-note>
             </ion-item>
             <ion-item text-center lines="none" style="position: sticky;bottom:0px;z-index:1;">

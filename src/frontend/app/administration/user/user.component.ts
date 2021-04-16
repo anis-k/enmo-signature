@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmComponent } from '../../plugins/confirm.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
-import {of} from "rxjs";
+import {of} from 'rxjs';
 
 
 export interface User {
@@ -113,7 +113,9 @@ export class UserComponent implements OnInit {
                             this.userClone = JSON.parse(JSON.stringify(this.user));
                             this.title = this.user.firstname + ' ' + this.user.lastname;
                             if (this.user.isRest) {
-                                this.getPassRules({ checked: true });
+                                this.getPassRules({ detail: {
+                                    checked: true
+                                } });
                             }
                         },
                     });
@@ -221,7 +223,7 @@ export class UserComponent implements OnInit {
     }
 
     getPassRules(ev: any) {
-        if (ev.checked) {
+        if (ev.detail.checked) {
             this.handlePassword.error = false;
             this.handlePassword.errorMsg = '';
 
