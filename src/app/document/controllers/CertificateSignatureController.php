@@ -102,18 +102,34 @@ class CertificateSignatureController
             $pageCount = $pages->count();
     
             for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++) {
-                $page = $pages->getPage($pageNumber);
-    
-                $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
-
                 $signature = $args['body']['signatures'][0];
                 if ($signature['page'] == $pageNumber) {
+                    $page = $pages->getPage($pageNumber);
+                    $format = \SetaPDF_Core_PageFormats::getFormat($page->getWidthAndHeight(), \SetaPDF_Core_PageFormats::ORIENTATION_AUTO);
+
                     $image = base64_decode($signature['encodedImage']);
                     if ($image === false) {
                         return ['errors' => 'base64_decode failed'];
                     }
     
                     $imageTmpPath = $tmpPath . $GLOBALS['id'] . '_' . rand() . '_writing.png';
+
+                    if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
+                        $signWidth = $format['width'];
+                        $signPosX  = 0;
+                        $signPosY  = 0;
+                    } else {
+                        $signWidth = ($signature['width'] * $format['width']) / 100;
+                        $signPosX  = ($signature['positionX'] * $format['width']) / 100;
+                        $signPosY  = ($signature['positionY'] * $format['height']) / 100;
+                    }
+                    $signatureInfo = [
+                        'page'          => $signature['page'],
+                        'positionX'     => $signPosX,
+                        'positionY'     => $signPosY,
+                        'filePath'      => $imageTmpPath,
+                        'signWidth'     => $signWidth
+                    ];
                     if ($signature['type'] == 'SVG') {
                         $Imagick = new \Imagick();
                         $Imagick->readImageBlob($image);
@@ -123,23 +139,8 @@ class CertificateSignatureController
                         $Imagick->destroy();
                     } else {
                         file_put_contents($imageTmpPath, $image);
-                        if ($signature['positionX'] == 0 && $signature['positionY'] == 0) {
-                            $signWidth = $format['width'];
-                            $signPosX  = 0;
-                            $signPosY  = 0;
-                        } else {
-                            $signWidth = ($signature['width'] * $format['width']) / 100;
-                            $signPosX  = ($signature['positionX'] * $format['width']) / 100;
-                            $signPosY  = ($signature['positionY'] * $format['height']) / 100;
-                        }
-                        $signatureInfo = [
-                            'page'          => $signature['page'],
-                            'positionX'     => $signPosX,
-                            'positionY'     => $signPosY,
-                            'filePath'      => $imageTmpPath,
-                            'signWidth'     => $signWidth
-                        ];
                     }
+                    $signatureInfo['type'] = $signature['type'];
                 }
             }
         }
@@ -172,11 +173,11 @@ class CertificateSignatureController
             );
 
             $loadedXml = CoreConfigModel::getConfig();
-            if ($loadedXml->textWithDigitalSignature == 'true') {
+            if ($loadedXml->textWithDigitalSignature == 'true' && $signatureInfo['type'] != 'SVG') {
                 $textBlock = new \SetaPDF_Core_Text_Block($font, 6);
                 $textBlock->setWidth($signatureFieldWith);
                 $textBlock->setLineHeight(14);
-                $textBlock->setPadding(2);
+                $textBlock->setPaddingBottom(-5);
                 $textBlock->setText("Signé électroniquement par : " . $user['firstname'] . ' ' . $user['lastname'] . "\nLe " . date('c'));
                 $textBlock->draw($canvas, 0, 30);
             }
@@ -261,18 +262,20 @@ class CertificateSignatureController
                 'fieldName'          => $args['signatureFieldName'],
                 'extraCertificate'   => $args['certificate']
             ]);
-            DigitalSignatureController::terminate(['config' => $config, 'transactionId' => $document['digital_signature_transaction_id']]);
         }
 
         if ($args['lastStep']) {
+            if ($args['signatureMode'] == 'rgs_2stars_timestamped') {
+                DigitalSignatureController::terminate(['config' => $config, 'transactionId' => $document['digital_signature_transaction_id']]);
+            }
             $storeInfos = DocserverController::storeResourceOnDocServer([
                 'encodedFile'   => base64_encode(file_get_contents($signedDocumentPath)),
                 'format'        => 'pdf',
                 'docserverType' => 'ESIGN'
             ]);
-             if (!empty($storeInfos['errors'])) {
-                 return ['errors' => $storeInfos['errors']];
-             }
+            if (!empty($storeInfos['errors'])) {
+                return ['errors' => $storeInfos['errors']];
+            }
 
             AdrModel::deleteDocumentAdr([
                 'where' => ['main_document_id = ?', 'type = ?'],
