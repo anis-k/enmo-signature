@@ -84,7 +84,7 @@ commits:
    # Use this pull command if there are merge conflicts during rebase /!\ it will keep the changes in the Pro repository !
 #   - git pull -s recursive -X theirs --no-edit origin $CI_COMMIT_REF_NAME
    - git checkout -b $CI_COMMIT_REF_NAME
-   - git push origin --all
+   - git push origin
 
 tags:
  image: debian:10-slim
