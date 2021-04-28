@@ -13,7 +13,7 @@
     "reload-packages-prod": "rm -Rf node_modules && rm package-lock.json && npm cache clean --force && npm i --production",
     "build": "ng build",
     "build-watch": "ng build --watch",
-    "build-prod": "ng build --prod --output-hashing none",
+    "build-prod": "ng build --prod",
     "build-release": "npm run build-prod && npm run reload-packages-prod"
   },
   "private": true,
