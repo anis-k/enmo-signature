@@ -1,8 +1,3 @@
-services:
-  - name: postgres:10.1
-    command: ["-c", "datestyle=iso,dmy"]
-  - httpd:latest
-
 variables:
   POSTGRES_DB: "MaarchParapheur"
   POSTGRES_USER: maarch
@@ -27,6 +22,9 @@ before_script:
 job_php-7.4:
   image: php:7.4-apache
   stage: test
+  services:
+    - name: postgres:10.1
+      command: [ "-c", "datestyle=iso,dmy" ]
   script:
     - curl --location -s --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-9.phar
     - chmod +x /usr/local/bin/phpunit
@@ -43,6 +41,9 @@ job_php-7.4:
 job_php-7.3:
   image: php:7.3-apache
   stage: test
+  services:
+    - name: postgres:10.1
+      command: [ "-c", "datestyle=iso,dmy" ]
   script:
     - curl --location -s --output /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-9.phar
     - chmod +x /usr/local/bin/phpunit
