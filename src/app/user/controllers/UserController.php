@@ -163,7 +163,7 @@ class UserController
                 }
             }
         } else {
-            $body['signatureModes'] = [];
+            $body['signatureModes'] = ['stamp'];
         }
         $body['signatureModes'] = json_encode($body['signatureModes']);
 
