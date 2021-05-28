@@ -22,7 +22,7 @@
                     <ion-item>
                         <ion-label color="secondary" position="floating">{{'lang.smtpAuth' | translate}} *
                         </ion-label>
-                        <ion-select name="SMTPSecure" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                        <ion-select name="SMTPSecure" [disabled]="sendmail.type != 'smtp'"
                             [(ngModel)]="sendmail.secure" [value]="sendmail.secure" interface="popover" required>
                             <ion-select-option *ngFor="let security of smtpSecList" [value]="security.id">
                                 {{security.label | translate}}
@@ -33,7 +33,7 @@
                 <ion-col size="8">
                     <ion-item>
                         <ion-label color="secondary" position="floating">{{'lang.host' | translate}} *</ion-label>
-                        <ion-input name="host" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                        <ion-input name="host" [disabled]="sendmail.type != 'smtp'"
                             [(ngModel)]="sendmail.host" required>
                         </ion-input>
                     </ion-item>
@@ -41,7 +41,7 @@
                 <ion-col size="2">
                     <ion-item>
                         <ion-label color="secondary" position="floating">{{'lang.port' | translate}} *</ion-label>
-                        <ion-input type="number" name="port" [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                        <ion-input type="number" name="port" [disabled]="sendmail.type != 'smtp'"
                             [(ngModel)]="sendmail.port" required>
                         </ion-input>
                     </ion-item>
@@ -50,14 +50,14 @@
         </ion-grid>
         <ion-item>
             <ion-toggle name="SMTPAuth" [(ngModel)]="sendmail.auth" [checked]="sendmail.auth"
-                [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1" (ngModelChange)="cleanAuthInfo()">
+                [disabled]="sendmail.type != 'smtp'" (ngModelChange)="cleanAuthInfo()">
             </ion-toggle>
             <ion-label>{{'lang.enableAuth' | translate}}</ion-label>
         </ion-item>
         <ion-item>
             <ion-label color="secondary" position="floating">{{'lang.id' | translate}} *</ion-label>
             <ion-input name="user" [(ngModel)]="sendmail.user"
-                [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1" required>
+                [disabled]="!sendmail.auth || sendmail.type != 'smtp'" required>
             </ion-input>
         </ion-item>
         <ion-item style="align-items: center;">
@@ -68,14 +68,14 @@
             <ion-label color="secondary" position="floating">{{passwordLanguage}}
                 {{!sendmail.passwordAlreadyExists ? '*' : ''}}</ion-label>
             <ion-input name="password" [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="sendmail.password"
-                [disabled]="!sendmail.auth || ['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                [disabled]="!sendmail.auth || sendmail.type != 'smtp'"
                 [required]="!sendmail.passwordAlreadyExists">
             </ion-input>
         </ion-item>
         <ion-item>
             <ion-label color="secondary" position="floating">{{'lang.mailFrom' | translate}}</ion-label>
             <ion-input name="mailFrom" [(ngModel)]="sendmail.from"
-                [disabled]="['smtp', 'mail'].indexOf(sendmail.type) == -1"
+                [disabled]="sendmail.type != 'smtp'"
                 pattern="(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)">
             </ion-input>
         </ion-item>

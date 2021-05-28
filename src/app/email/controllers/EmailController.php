@@ -129,13 +129,8 @@ class EmailController
 
         $phpmailer = new PHPMailer();
         $phpmailer->setFrom($configuration['from']);
-        if ($configuration['type'] == 'smtp' || $configuration['type'] == 'mail') {
-            if ($configuration['type'] == 'smtp') {
-                $phpmailer->isSMTP();
-            } elseif ($configuration['type'] == 'mail') {
-                $phpmailer->isMail();
-            }
-
+        if ($configuration['type'] == 'smtp') {
+            $phpmailer->isSMTP();
             $phpmailer->Host        = $configuration['host'];
             $phpmailer->Port        = $configuration['port'];
             $phpmailer->SMTPAutoTLS = false;
@@ -153,6 +148,8 @@ class EmailController
             $phpmailer->isSendmail();
         } elseif ($configuration['type'] == 'qmail') {
             $phpmailer->isQmail();
+        } elseif ($configuration['type'] == 'mail') {
+            $phpmailer->isMail();
         }
 
         $phpmailer->CharSet = $configuration['charset'];
