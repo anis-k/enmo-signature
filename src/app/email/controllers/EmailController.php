@@ -259,19 +259,25 @@ class EmailController
     public static function sendNotificationToNextUserInWorkflow(array $args)
     {
         $nextUser = UserModel::getById(['select' => ['email', 'preferences', 'substitute'], 'id' => $args['recipientId']]);
-        if (!empty($nextUser['substitute'])) {
-            $nextUser = UserModel::getById(['select' => ['email', 'preferences'], 'id' => $nextUser['substitute']]);
-        }
+        EmailController::sendNotificationToUser(['documentId' => $args['documentId'], 'senderId' => $args['senderId'], 'email' => $nextUser['email'], 'preferences' => $nextUser['preferences']]);
 
-        $nextUser['preferences'] = json_decode($nextUser['preferences'], true);
-        if ($nextUser['preferences']['notifications']) {
-            $lang = LanguageController::get(['lang' => $nextUser['preferences']['lang']]);
+        if (!empty($nextUser['substitute'])) {
+            $nextSubstituteUser = UserModel::getById(['select' => ['email', 'preferences'], 'id' => $nextUser['substitute']]);
+            EmailController::sendNotificationToUser(['documentId' => $args['documentId'], 'senderId' => $args['senderId'], 'email' => $nextSubstituteUser['email'], 'preferences' => $nextSubstituteUser['preferences']]);
+        }
+    }
+
+    public static function sendNotificationToUser(array $args)
+    {
+        $args['preferences'] = json_decode($args['preferences'], true);
+        if ($args['preferences']['notifications']) {
+            $lang = LanguageController::get(['lang' => $args['preferences']['lang']]);
             $url  = UrlController::getCoreUrl() . 'dist/documents/' . $args['documentId'];
             EmailController::createEmail([
                 'userId' => $args['senderId'],
                 'data'   => [
                     'sender'     => 'Notification',
-                    'recipients' => [$nextUser['email']],
+                    'recipients' => [$args['email']],
                     'subject'    => $lang['notificationDocumentAddedSubject'],
                     'body'       => $lang['notificationDocumentAddedBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationFooter'],
                     'isHtml'     => true
