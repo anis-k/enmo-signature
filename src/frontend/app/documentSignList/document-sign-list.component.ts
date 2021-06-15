@@ -107,6 +107,22 @@ export class DocumentSignListComponent implements OnInit {
         } else {
             this.signaturesService.signaturesContent[this.signaturesService.currentPage].splice(i, 1);
         }
+        if (this.emptySigns()) {
+            this.signaturesService.signaturesContent = [];
+        }
         this.localStorage.save(this.signaturesService.mainDocumentId.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+    }
+
+    emptySigns() {
+        let state = true;
+        for (let pageNum = 1; pageNum <= this.signaturesService.totalPage; pageNum++) {
+            if (this.signaturesService.signaturesContent[pageNum]) {
+                if (this.signaturesService.signaturesContent[pageNum].length > 0) {
+                    state = false;
+                    break;
+                }
+            }
+        }
+        return state;
     }
 }

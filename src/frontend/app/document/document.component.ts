@@ -704,6 +704,9 @@ export class DocumentComponent implements OnInit {
             this.signaturesService.notesContent[this.pageNum].pop();
             this.localStorage.remove(this.mainDocument.id.toString());
             this.localStorage.save(this.mainDocument.id.toString(), JSON.stringify({ 'sign': this.signaturesService.signaturesContent, 'note': this.signaturesService.notesContent }));
+            if (this.isEmptyNote()) {
+                this.signaturesService.notesContent = [];
+            }
         }
     }
 
@@ -717,6 +720,19 @@ export class DocumentComponent implements OnInit {
         } else {
             return false;
         }
+    }
+
+    isEmptyNote() {
+        let state = true;
+        for (let pageNum = 1; pageNum <= this.signaturesService.totalPage; pageNum++) {
+            if (this.signaturesService.notesContent[pageNum]) {
+                if (this.signaturesService.notesContent[pageNum].length > 0) {
+                    state = false;
+                    break;
+                }
+            }
+        }
+        return state;
     }
 
     checkEmptiness() {
