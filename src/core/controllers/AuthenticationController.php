@@ -319,23 +319,26 @@ class AuthenticationController
 
     public static function sendAccountActivationNotification(array $args)
     {
-        $resetToken = AuthenticationController::getResetJWT(['id' => $args['userId'], 'expirationTime' => 1209600]); // 14 days
-        UserModel::update(['set' => ['reset_token' => $resetToken], 'where' => ['id = ?'], 'data' => [$args['userId']]]);
-
-        $user = UserModel::getById(['select' => ['login'], 'id' => $args['userId']]);
-        $lang = LanguageController::get(['lang' => 'fr']);
-
-        $url = UrlController::getCoreUrl() . 'dist/update-password?token=' . $resetToken;
-        EmailController::createEmail([
-            'userId' => $args['userId'],
-            'data'   => [
-                'sender'     => 'Notification',
-                'recipients' => [$args['userEmail']],
-                'subject'    => $lang['notificationNewAccountSubject'],
-                'body'       => $lang['notificationNewAccountBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationNewAccountId'] . ' ' . $user['login'] . $lang['notificationNewAccountFooter'],
-                'isHtml'     => true
-            ]
-        ]);
+        $connection = ConfigurationModel::getConnection();
+        if ($connection == 'default') {
+            $resetToken = AuthenticationController::getResetJWT(['id' => $args['userId'], 'expirationTime' => 1209600]); // 14 days
+            UserModel::update(['set' => ['reset_token' => $resetToken], 'where' => ['id = ?'], 'data' => [$args['userId']]]);
+    
+            $user = UserModel::getById(['select' => ['login'], 'id' => $args['userId']]);
+            $lang = LanguageController::get(['lang' => 'fr']);
+    
+            $url = UrlController::getCoreUrl() . 'dist/update-password?token=' . $resetToken;
+            EmailController::createEmail([
+                'userId' => $args['userId'],
+                'data'   => [
+                    'sender'     => 'Notification',
+                    'recipients' => [$args['userEmail']],
+                    'subject'    => $lang['notificationNewAccountSubject'],
+                    'body'       => $lang['notificationNewAccountBody'] . '<a href="' . $url . '">'.$url.'</a>' . $lang['notificationNewAccountId'] . ' ' . $user['login'] . $lang['notificationNewAccountFooter'],
+                    'isHtml'     => true
+                ]
+            ]);
+        }
 
         return true;
     }
