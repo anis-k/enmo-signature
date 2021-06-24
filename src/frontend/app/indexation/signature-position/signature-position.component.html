@@ -57,7 +57,7 @@
         (pdfLoaded)="onPagesLoaded($event)">
     </ngx-extended-pdf-viewer>
     <section class="page-info">
-        <div class="page-info-doc">{{pdfTitle}}</div>
+        <div class="page-info-doc">{{resource.title}}</div>
         <div class="page-info-page" (click)="pages.length > 1 ? pagesList.open() : false">{{'lang.page' | translate}} {{ currentPage }} / {{ pages.length }}</div>
         <ion-select [cancelText]="'lang.cancel' | translate" style="max-height: 30%;" interface="action-sheet" #pagesList (ionChange)="changePage($event.target.value)" hidden="true">
             <ion-select-option  *ngFor="let page of pages;let i=index" [value]="page">{{ i + 1 }}</ion-select-option>

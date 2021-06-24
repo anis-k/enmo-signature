@@ -188,4 +188,25 @@ export class VisaWorkflowComponent implements OnInit {
             return true;
         }
     }
+
+    setPositionsWorkfow(resource: any, positions: any[]) {
+        this.clearPositionsFromResource(resource);
+        if (positions.length > 0) {
+            Object.keys(positions).forEach(key => {
+                const objPos = {
+                    ...positions[key],
+                    mainDocument : resource.mainDocument,
+                };
+                this.visaWorkflow[positions[key].sequence].signaturePositions = this.visaWorkflow[positions[key].sequence].signaturePositions.filter((pos: any) => pos.mainDocument !== resource.mainDocument);
+                this.visaWorkflow[positions[key].sequence].signaturePositions.push(objPos);
+            });
+        }
+    }
+
+    clearPositionsFromResource(resource: any) {
+        this.visaWorkflow.forEach((user: any) => {
+            user.signaturePositions = user.signaturePositions.filter((pos: any) => pos.mainDocument !== resource.mainDocument);
+        });
+    }
+
 }

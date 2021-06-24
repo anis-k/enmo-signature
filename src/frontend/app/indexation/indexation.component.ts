@@ -253,7 +253,7 @@ export class IndexationComponent implements OnInit {
                     userId: item.userId,
                     mode: this.authService.getWorkflowMode(item.role),
                     signatureMode: this.authService.getSignatureMode(item.role),
-                    signaturePositions: file.signPos !== undefined ? file.signPos.filter((userItem: any) => userItem.sequence === index).map((itemFile: any) => ({
+                    signaturePositions: item.signaturePositions !== undefined ? this.formatPositions(item.signaturePositions.filter((pos: any) => pos.mainDocument === file.mainDocument && file.signPos !== undefined)).map((itemFile: any) => ({
                         page: itemFile.page,
                         positionX: itemFile.position.positionX,
                         positionY: itemFile.position.positionY,
@@ -264,6 +264,11 @@ export class IndexationComponent implements OnInit {
         });
 
         return formattedObj;
+    }
+
+    formatPositions(position: any) {
+        delete position.mainDocument;
+        return position;
     }
 
     dndUploadFile(event: any) {
@@ -330,16 +335,17 @@ export class IndexationComponent implements OnInit {
 
     async signPos(index: number) {
         if (this.appVisaWorkflow.getCurrentWorkflow().length > 0) {
+            this.appVisaWorkflow.getCurrentWorkflow().forEach((user: any, indexUser: number) => {
+                if (user.signaturePositions === undefined) {
+                    this.appVisaWorkflow.visaWorkflow[indexUser].signaturePositions = [];
+                }
+            });
             const modal = await this.modalController.create({
                 component: SignaturePositionComponent,
                 cssClass: 'custom-alert-fullscreen',
                 componentProps: {
-                    'workflow': this.appVisaWorkflow.getCurrentWorkflow().map((item: any) => ({
-                        userDisplay: item.userDisplay,
-                        mode: this.authService.getWorkflowMode(item.role),
-                    })),
-                    'signPos': this.filesToUpload[index].signPos,
-                    'pdfTitle': this.filesToUpload[index].title,
+                    'workflow': this.appVisaWorkflow.getCurrentWorkflow(),
+                    'resource': this.filesToUpload[index],
                     'pdfContent': 'data:application/pdf;base64,' + this.filesToUpload[index].content,
                 }
             });
@@ -347,6 +353,7 @@ export class IndexationComponent implements OnInit {
             const { data } = await modal.onWillDismiss();
             if (data !== undefined) {
                 this.filesToUpload[index].signPos = data;
+                this.appVisaWorkflow.setPositionsWorkfow(this.filesToUpload[index], data);
             }
         } else {
             this.notificationService.error('lang.mustSetWorkflowBeforeSignPositions');

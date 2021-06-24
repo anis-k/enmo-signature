@@ -12,9 +12,8 @@ import { SignaturesContentService } from '../../service/signatures.service';
 export class SignaturePositionComponent implements OnInit {
 
     @Input() workflow: any = [];
-    @Input() signPos: any = [];
+    @Input() resource: any = [];
     @Input() pdfContent: any = null;
-    @Input() pdfTitle: string = '';
 
     loading: boolean = false;
     dragging: boolean = false;
@@ -54,18 +53,19 @@ export class SignaturePositionComponent implements OnInit {
             this.load = load;
             this.load.present();
         });
-        if (this.signPos !== undefined) {
+        if (this.resource.signPos) {
             this.initSignPos();
         }
     }
 
     initSignPos() {
-        this.signPos.forEach((element: any) => {
-            this.signList.push({
-                sequence: element.sequence,
-                page: element.page,
-                position: element.position
-            });
+        this.workflow.forEach((user: any, index: number) => {
+            if (user.signaturePositions?.length > 0) {
+                this.signList = this.signList.concat(user.signaturePositions.filter((pos: any) => pos.mainDocument === this.resource.mainDocument).map((pos: any) => ({
+                    ...pos,
+                    sequence : index
+                })));
+            }
         });
     }
 
