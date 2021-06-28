@@ -86,6 +86,7 @@ commits:
    #   - git pull --rebase origin $CI_COMMIT_REF_NAME
    # Use this pull command if there are merge conflicts during rebase /!\ theirs will keep the changes in the Pro repository ! ours will keep the changes in the normal one
    #   - git pull -s recursive -X ours --no-edit origin $CI_COMMIT_REF_NAME
+   - git fetch origin
    - git merge --no-commit --no-ff origin/$CI_COMMIT_REF_NAME
    - git reset -- dist/
    - git commit -m "Removed dist folder"
