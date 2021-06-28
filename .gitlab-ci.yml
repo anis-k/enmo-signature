@@ -82,9 +82,13 @@ commits:
    - git remote set-url origin $PRIVATE_REPOSITORY_URL_SSH
    - git config --global user.email "$CI_EMAIL" && git config --global user.name "$CI_USER"
    - 'exists=`git show-ref refs/heads/$CI_COMMIT_REF_NAME` && if [ -n "$exists" ]; then git branch -D $CI_COMMIT_REF_NAME; fi'
-   - git pull --rebase origin $CI_COMMIT_REF_NAME
-   # Use this pull command if there are merge conflicts during rebase /!\ it will keep the changes in the Pro repository !
-#   - git pull -s recursive -X theirs --no-edit origin $CI_COMMIT_REF_NAME
+   - 'if [ -d ".git/rebase-apply" ]; then rm -fr .git/rebase-apply; fi'
+   #   - git pull --rebase origin $CI_COMMIT_REF_NAME
+   # Use this pull command if there are merge conflicts during rebase /!\ theirs will keep the changes in the Pro repository ! ours will keep the changes in the normal one
+   #   - git pull -s recursive -X ours --no-edit origin $CI_COMMIT_REF_NAME
+   - git merge --no-commit --no-ff origin/$CI_COMMIT_REF_NAME
+   - git reset -- dist/
+   - git commit -m "Removed dist folder"
    - git checkout -b $CI_COMMIT_REF_NAME
    - git push --set-upstream origin $CI_COMMIT_REF_NAME
 
