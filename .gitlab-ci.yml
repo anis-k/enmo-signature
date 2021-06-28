@@ -87,8 +87,9 @@ commits:
    # Use this pull command if there are merge conflicts during rebase /!\ theirs will keep the changes in the Pro repository ! ours will keep the changes in the normal one
    #   - git pull -s recursive -X ours --no-edit origin $CI_COMMIT_REF_NAME
    - git fetch origin
-   - git merge --no-commit --no-ff origin/$CI_COMMIT_REF_NAME || true
+   - git merge --no-commit --no-ff origin/$CI_COMMIT_REF_NAME || true # gitlab stop as soon as a command exit with a code different than 0, we force the command to return 0 because this command will return 1 when they are conflicts
    - git reset -- dist/
+   - git status
    - git commit -m "Removed dist folder"
    - git checkout -b $CI_COMMIT_REF_NAME
    - git push --set-upstream origin $CI_COMMIT_REF_NAME
