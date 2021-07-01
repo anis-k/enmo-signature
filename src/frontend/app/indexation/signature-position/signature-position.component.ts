@@ -123,7 +123,12 @@ export class SignaturePositionComponent implements OnInit {
                 }
             }
         );
-        document.getElementsByClassName('drag-scroll-content')[0].scrollTop = this.workingAreaHeight;
+        let indexOfElement: number = 0;
+        const element: any[] = Array.from(document.getElementsByClassName('drag-scroll-content'));
+        element.forEach((item: any, index: number) => {
+            indexOfElement = item.offsetParent !== null ? index : indexOfElement;
+        });
+        document.getElementsByClassName('drag-scroll-content')[indexOfElement].scrollTop = this.workingAreaHeight;
     }
 
     getUserSignPosPage(workflowIndex: number) {
