@@ -194,6 +194,7 @@ export class IndexationComponent implements OnInit {
         return new Promise((resolve) => {
             this.http.post('../rest/documents', data).pipe(
                 tap(() => {
+                    this.errors = [];
                 }),
                 finalize(() => resolve(true)),
                 catchError((err: any) => {
