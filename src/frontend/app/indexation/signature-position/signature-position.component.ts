@@ -126,7 +126,10 @@ export class SignaturePositionComponent implements OnInit {
         let indexOfElement: number = 0;
         const element: any[] = Array.from(document.getElementsByClassName('drag-scroll-content'));
         element.forEach((item: any, index: number) => {
-            indexOfElement = item.offsetParent !== null ? index : indexOfElement;
+            if (item.offsetParent !== null) {
+                indexOfElement = index;
+                return true;
+            }
         });
         document.getElementsByClassName('drag-scroll-content')[indexOfElement].scrollTop = this.workingAreaHeight;
     }
