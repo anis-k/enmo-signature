@@ -80,6 +80,7 @@ import { GroupComponent } from './administration/group/group.component';
 import { UsersComponent } from './administration/group/list/users.component';
 import { SecuritiesAdministrationComponent } from './administration/security/securities-administration.component';
 import { HistoryListComponent } from './administration/history/history-list.component';
+import { CustomizationComponent } from './administration/customization/customization.component';
 
 
 // SERVICES
@@ -148,7 +149,8 @@ registerLocaleData(localeFr, 'fr-FR');
         SignatureMethodModalComponent,
         HistoryListComponent,
         DocumentDateListComponent,
-        DateOptionModalComponent
+        DateOptionModalComponent,
+        CustomizationComponent,
     ],
     imports: [
         FormsModule,
