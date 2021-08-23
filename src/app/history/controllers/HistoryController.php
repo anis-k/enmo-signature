@@ -428,6 +428,9 @@ class HistoryController
             file_put_contents($historyXmlPath, $historyXml);
 
             $loadedXml  = simplexml_load_file($historyXmlPath);
+            if (empty($loadedXml)) {
+                return $response->withStatus(500)->withJson(['errors' => 'Cannot create file ' . $historyXmlPath]);
+            }
             $historyXml = HistoryController::formatXml($loadedXml);
             file_put_contents($historyXmlPath, $historyXml);
 
