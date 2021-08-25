@@ -374,10 +374,10 @@ class ConfigurationController
         $data = [];
 
         if (!empty($body['watermark'])) {
-            if (!Validator::notEmpty()->boolType()->validate($body['watermark']['enabled'])) {
-                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[enabled] is empty or not a boolean']);
-            } elseif (!Validator::notEmpty()->intVal()->validate($body['watermark']['posY'])) {
-                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[posY] is empty or not an integer']);
+            if (!Validator::boolType()->validate($body['watermark']['enabled'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[enabled] is not a boolean']);
+            } elseif (!Validator::intVal()->validate($body['watermark']['posY']) || $body['watermark']['posY'] < 0) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[posY] is not an integer or is less than 0']);
             } elseif (!Validator::notEmpty()->stringType()->validate($body['watermark']['text'])) {
                 return $response->withStatus(400)->withJson(['errors' => 'Body watermark[text] is empty or not a string']);
             } elseif (!Validator::notEmpty()->stringType()->validate($body['watermark']['align'])) {
@@ -423,7 +423,7 @@ class ConfigurationController
 
         $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'customization']);
         if (empty($configuration[0])) {
-            return $response->withStatus(400)->withJson(['errors' => 'Configuration does not exist']);
+            return $response->withJson(['configuration' => []]);
         }
         $configuration = json_decode($configuration[0]['value'], true);
 
