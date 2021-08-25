@@ -397,15 +397,16 @@ class ConfigurationController
         $data = !empty($data) ? json_encode($data) : '{}';
         $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'customization']);
         if (empty($configuration[0])) {
-            ConfigurationModel::create(['identifier' => 'customization', 'label' => 'Customization', 'value' => $data]);
+            $id = ConfigurationModel::create(['identifier' => 'customization', 'label' => 'Customization', 'value' => $data]);
         } else {
             ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['id = ?'], 'data' => [$configuration[0]['id']]]);
+            $id = $configuration[0]['id'];
         }
 
         HistoryController::add([
             'code'          => 'OK',
             'objectType'    => 'configurations',
-            'objectId'      => $configuration['id'],
+            'objectId'      => $id,
             'type'          => 'MODIFICATION',
             'message'       => "{configurationUpdated} : {$configuration['label']}",
             'data'          => ['identifier' => $configuration['identifier']]
