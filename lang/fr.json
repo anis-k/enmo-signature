@@ -468,6 +468,8 @@
 		"stopProcessInfo": "Interrompu le",
 		"refProcessInfo": "Refusé le",
 		"manage_customization": "Personnalisation",
+		"customization": "Personnalisation",
+		"manage_customizationAdmin": "Personnaliser la page de connexion",
 		"watermark": "Filigrane des documents",
 		"positionY": "Ajustement de la position vertical (en pixel)",
 		"content": "Contenu",
