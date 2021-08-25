@@ -43,7 +43,9 @@ export class CustomizationComponent implements OnInit {
         return new Promise((resolve) => {
             this.http.get('../rest/customization/watermark').pipe(
                 tap((data: any) => {
-                    this.watermark = data.configuration;
+                    if (!this.functions.empty(data.configuration)) {
+                        this.watermark = data.configuration;
+                    }
                     resolve(true);
                 }),
                 catchError((err: any) => {
