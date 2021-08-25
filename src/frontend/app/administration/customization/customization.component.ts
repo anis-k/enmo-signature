@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../service/auth.service';
 import { of } from 'rxjs';
 import { NgForm } from '@angular/forms';
+import { FunctionsService } from '../../service/functions.service';
 
 @Component({
     templateUrl: 'customization.component.html',
@@ -31,7 +32,8 @@ export class CustomizationComponent implements OnInit {
         public http: HttpClient,
         private translate: TranslateService,
         public notificationService: NotificationService,
-        public authService: AuthService
+        public authService: AuthService,
+        private functions: FunctionsService
     ) { }
 
     async ngOnInit() {
