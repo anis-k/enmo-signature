@@ -58,7 +58,7 @@
                 <ion-item>
                     <ion-label color="secondary" position="floating">{{ 'lang.positionY' | translate}}
                     </ion-label>
-                    <ion-input type="number" name="watermarkPosY" [(ngModel)]="watermark.posY"></ion-input>
+                    <ion-input type="number" name="watermarkPosY" [(ngModel)]="watermark.posY" [min]="0" (keypress)="isNumber($event)"></ion-input>
                     <ion-note slot="end">px</ion-note>
                 </ion-item>
             </ng-container>
