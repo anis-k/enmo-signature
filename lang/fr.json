@@ -470,6 +470,7 @@
 		"manage_customization": "Personnalisation",
 		"customization": "Personnalisation",
 		"manage_customizationAdmin": "Personnaliser l'application",
+		"manage_customizationDesc": "Personnaliser l'application",
 		"watermark": "Filigrane des documents",
 		"positionY": "Ajustement de la position vertical (en pixel)",
 		"content": "Contenu",
