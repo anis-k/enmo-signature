@@ -425,11 +425,13 @@ class HistoryController
             $formattedHistory = HistoryController::getFormattedHistory(['id' => $args['id']]);
             $historyXml       = HistoryController::arrayToXml(['data' => $formattedHistory['formattedHistory'], 'xml' => false]);
             $historyXmlPath = $tmpPath . 'maarchProof' . $GLOBALS['id'] . "_" . rand() . '.xml';
-            file_put_contents($historyXmlPath, $historyXml);
-
+            $result = file_put_contents($historyXmlPath, $historyXml);
+            if (empty($result)) {
+                return $response->withStatus(500)->withJson(['errors' => 'Cannot create file ' . $historyXmlPath]);
+            }
             $loadedXml  = simplexml_load_file($historyXmlPath);
             if (empty($loadedXml)) {
-                return $response->withStatus(500)->withJson(['errors' => 'Cannot create file ' . $historyXmlPath]);
+                return $response->withStatus(500)->withJson(['errors' => 'Cannot load file ' . $historyXmlPath]);
             }
             $historyXml = HistoryController::formatXml($loadedXml);
             file_put_contents($historyXmlPath, $historyXml);
