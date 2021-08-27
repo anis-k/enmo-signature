@@ -359,6 +359,79 @@ class ConfigurationController
         return $response->withJson(['connection' => true, 'informations' => 'success']);
     }
 
+    public function updateCustomization(Request $request, Response $response, array $args)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_customization'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $body = $request->getParsedBody();
+
+        if (empty($body)) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body is not set or empty']);
+        }
+
+        $data = [];
+
+        if (!empty($body['watermark'])) {
+            if (!Validator::boolType()->validate($body['watermark']['enabled'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[enabled] is not a boolean']);
+            } elseif (!Validator::intVal()->validate($body['watermark']['posY']) || $body['watermark']['posY'] < 0) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[posY] is not an integer or is less than 0']);
+            } elseif (!Validator::notEmpty()->stringType()->validate($body['watermark']['text'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[text] is empty or not a string']);
+            } elseif (!Validator::notEmpty()->stringType()->validate($body['watermark']['align'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[align] is empty or not a string']);
+            } elseif (!in_array($body['watermark']['align'], ['L', 'C', 'R'])) {
+                return $response->withStatus(400)->withJson(['errors' => 'Body watermark[align] can only be "L", "R" or "C"']);
+            }
+
+            $data['watermark'] = [
+                'enabled' => $body['watermark']['enabled'],
+                'posY'    => $body['watermark']['posY'],
+                'text'    => $body['watermark']['text'],
+                'align'   => $body['watermark']['align']
+            ];
+        }
+
+        $data = !empty($data) ? json_encode($data) : '{}';
+        $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'customization']);
+        if (empty($configuration[0])) {
+            $id = ConfigurationModel::create(['identifier' => 'customization', 'label' => 'Customization', 'value' => $data]);
+        } else {
+            ConfigurationModel::update(['set' => ['value' => $data], 'where' => ['id = ?'], 'data' => [$configuration[0]['id']]]);
+            $id = $configuration[0]['id'];
+        }
+
+        HistoryController::add([
+            'code'          => 'OK',
+            'objectType'    => 'configurations',
+            'objectId'      => $id,
+            'type'          => 'MODIFICATION',
+            'message'       => "{configurationUpdated} : {$configuration['label']}",
+            'data'          => ['identifier' => $configuration['identifier']]
+        ]);
+
+        return $response->withStatus(204);
+    }
+
+
+    public function getWatermarkConfiguration(Request $request, Response $response)
+    {
+        if (!PrivilegeController::hasPrivilege(['userId' => $GLOBALS['id'], 'privilege' => 'manage_customization'])) {
+            return $response->withStatus(403)->withJson(['errors' => 'Privilege forbidden']);
+        }
+
+        $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'customization']);
+        if (empty($configuration[0])) {
+            return $response->withJson(['configuration' => []]);
+        }
+        $configuration = json_decode($configuration[0]['value'], true);
+
+        return $response->withJson(['configuration' => $configuration['watermark'] ?? []]);
+    }
+
+
     private static function checkMailer(array $args)
     {
         if (!Validator::stringType()->notEmpty()->validate($args['type'])) {

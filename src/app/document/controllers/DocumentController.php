@@ -15,6 +15,7 @@
 namespace Document\controllers;
 
 use Attachment\controllers\AttachmentController;
+use Configuration\models\ConfigurationModel;
 use Docserver\models\AdrModel;
 use Email\controllers\EmailController;
 use Group\controllers\PrivilegeController;
@@ -415,15 +416,7 @@ class DocumentController
 
 
         try {
-            $storeInfos = DocserverController::storeResourceOnDocServer([
-                'encodedFile'       => $encodedDocument['encodedDocument'],
-                'format'            => 'pdf',
-                'docserverType'     => 'DOC'
-            ]);
-
-            if (!empty($storeInfos['errors'])) {
-                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
-            }
+            DatabaseModel::beginTransaction();
 
             if (!empty($body['notes']) && !empty($body['notes']['value'])) {
                 $notes = [
@@ -433,8 +426,6 @@ class DocumentController
                 ];
                 $notes = json_encode($notes);
             }
-
-            DatabaseModel::beginTransaction();
 
             $id = DocumentModel::create([
                 'title'         => $body['title'],
@@ -450,6 +441,29 @@ class DocumentController
                 'mailing_id'    => !empty($body['mailingId']) ? (string)$body['mailingId'] : null
             ]);
 
+            $configuration = ConfigurationModel::getByIdentifier(['identifier' => 'customization']);
+            $configuration = json_decode($configuration[0]['value'] ?? '[]', true);
+            if (!empty($configuration['watermark']['enabled'])) {
+                $fileWithWaterMark = WatermarkController::watermarkDocument([
+                    'config'          => $configuration['watermark'],
+                    'encodedDocument' => $encodedDocument['encodedDocument'],
+                    'id'              => $id
+                ]);
+
+                if (!empty($fileWithWaterMark)) {
+                    $encodedDocument['encodedDocument'] = base64_encode($fileWithWaterMark);
+                }
+            }
+
+            $storeInfos = DocserverController::storeResourceOnDocServer([
+                'encodedFile'       => $encodedDocument['encodedDocument'],
+                'format'            => 'pdf',
+                'docserverType'     => 'DOC'
+            ]);
+
+            if (!empty($storeInfos['errors'])) {
+                return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
+            }
 
             AdrModel::createDocumentAdr([
                 'documentId'     => $id,
@@ -467,6 +481,7 @@ class DocumentController
             ]);
 
             if (!empty($storeInfos['errors'])) {
+                DatabaseModel::rollbackTransaction();
                 return $response->withStatus(500)->withJson(['errors' => $storeInfos['errors']]);
             }
             AdrModel::createDocumentAdr([

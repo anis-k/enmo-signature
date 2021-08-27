@@ -76,6 +76,11 @@ $app->get('/configurations/{id}/connection', \Configuration\controllers\Configur
 // CommitInformation
 $app->get('/commitInformation', \SrcCore\controllers\AuthenticationController::class . ':getGitCommitInformation');
 
+//Customization
+$app->put('/customization', \Configuration\controllers\ConfigurationController::class . ':updateCustomization');
+$app->get('/customization/watermark', \Configuration\controllers\ConfigurationController::class . ':getWatermarkConfiguration');
+
+
 //Documents
 $app->post('/documents', \Document\controllers\DocumentController::class . ':create');
 $app->get('/documents', \Document\controllers\DocumentController::class . ':get');

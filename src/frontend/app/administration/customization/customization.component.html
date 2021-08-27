@@ -1,0 +1,74 @@
+<ion-header [translucent]="true">
+    <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+            <ion-menu-button menu="left-menu"></ion-menu-button>
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>{{'lang.customization' | translate}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<form *ngIf="!loading" style="display: contents;" id="customizationForm" (ngSubmit)="onSubmit()"
+    #customizationForm="ngForm">
+    <ion-content>
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary">
+                    {{ 'lang.watermark' | translate}}
+                </ion-label>
+                <ion-button size="small" color="danger" *ngIf="watermark.enabled" (click)="watermark.enabled=false">
+                    {{ 'lang.disableWatermark' | translate}}</ion-button>
+            </ion-list-header>
+            <ion-item *ngIf="!watermark.enabled">
+                <ion-button size="small" color="primary" (click)="watermark.enabled=true">{{ 'lang.enableWatermark' |
+                    translate}}
+                </ion-button>
+            </ion-item>
+            <ng-container *ngIf="watermark.enabled">
+                <ion-card>
+                    <ion-item color="primary">
+                        <ion-icon name="information-circle" slot="start"></ion-icon>
+                        <ion-label style="white-space: initial;" [innerHTML]="'lang.watermarkDesc' | translate"></ion-label>
+                    </ion-item>
+                </ion-card>
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{ 'lang.content' | translate}}</ion-label>
+                    <ion-input name="watermarkContent" [(ngModel)]="watermark.text"></ion-input>
+                    <ion-note [innerHTML]="'lang.watermarkContentDesc' | translate"></ion-note>
+                </ion-item>
+                <ion-radio-group [value]="watermark.align" (ionChange)="watermark.align=$event.detail.value">
+                    <ion-list-header>
+                        <ion-label color="secondary">{{ 'lang.alignment' | translate}}</ion-label>
+                    </ion-list-header>
+
+                    <ion-item>
+                        <ion-label>{{ 'lang.left' | translate}}</ion-label>
+                        <ion-radio slot="start" value="L"></ion-radio>
+                    </ion-item>
+
+                    <ion-item>
+                        <ion-label>{{ 'lang.center' | translate}}</ion-label>
+                        <ion-radio slot="start" value="C"></ion-radio>
+                    </ion-item>
+
+                    <ion-item>
+                        <ion-label>{{ 'lang.right' | translate}}</ion-label>
+                        <ion-radio slot="start" value="R"></ion-radio>
+                    </ion-item>
+                </ion-radio-group>
+                <ion-item>
+                    <ion-label color="secondary" position="floating">{{ 'lang.positionY' | translate}}
+                    </ion-label>
+                    <ion-input type="number" name="watermarkPosY" [(ngModel)]="watermark.posY" [min]="0" (keypress)="isNumber($event)"></ion-input>
+                    <ion-note slot="end">px</ion-note>
+                </ion-item>
+            </ng-container>
+        </ion-list>
+        <ion-item text-center lines="none" style="position: sticky;bottom:0px;z-index:1;">
+            <div style="display: flex;align-items: center;justify-content: center;width: 100%;background: white;">
+                <ion-button type="submit" shape="round" size="large" fill="outline" color="primary">
+                    <ion-label style="font-size: 13px;">{{'lang.validate' | translate}}</ion-label>
+                </ion-button>
+            </div>
+        </ion-item>
+    </ion-content>
+</form>

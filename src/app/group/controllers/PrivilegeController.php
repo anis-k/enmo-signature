@@ -27,6 +27,7 @@ class PrivilegeController
         ['id' => 'manage_email_configuration',  'type' => 'admin', 'icon' => 'paper-plane',   'route' => '/administration/emailConfiguration'],
         ['id' => 'manage_password_rules',       'type' => 'admin', 'icon' => 'lock-closed',   'route' => '/administration/passwordRules'],
         ['id' => 'manage_history',              'type' => 'admin', 'icon' => 'timer-outline', 'route' => '/administration/history'],
+        ['id' => 'manage_customization',        'type' => 'admin', 'icon' => 'color-wand-outline',  'route' => '/administration/customization'],
         ['id' => 'manage_documents',            'type' => 'simple'],
         ['id' => 'indexation',                  'type' => 'simple']
     ];
