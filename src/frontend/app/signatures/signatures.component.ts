@@ -114,7 +114,13 @@ export class SignaturesComponent implements OnInit {
     }
 
     selectSignature(signature: any) {
-        const percentWidth = 25;
+        let percentWidth: any;
+        const signatureScaling: any = this.authService.user.preferences.signatureScaling;
+        if (signatureScaling === undefined) {
+            percentWidth = 25;
+        } else {
+            percentWidth = signatureScaling === false ? (600 * 100) / this.signaturesService.workingAreaWidth : signatureScaling;
+        }
         signature.width = percentWidth;
         const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
         const signPosOtherPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);

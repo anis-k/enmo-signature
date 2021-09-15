@@ -72,6 +72,9 @@ export class ProfileComponent implements OnInit {
     showHideContent = false;
     userList: any[] = [];
 
+    signatureScaling: any = 25;
+    originalSize: boolean = false;
+
     constructor(private translate: TranslateService,
         public http: HttpClient,
         private router: Router,
@@ -114,6 +117,13 @@ export class ProfileComponent implements OnInit {
         this.profileInfo = JSON.parse(JSON.stringify(this.authService.user));
         this.preferenceInfo = this.profileInfo.preferences;
         this.avatarInfo.picture = this.profileInfo.picture;
+        if (this.preferenceInfo.signatureScaling !== undefined) {
+            if (this.preferenceInfo.signatureScaling === false) {
+                this.originalSize = true;
+            } else {
+                this.signatureScaling = this.preferenceInfo.signatureScaling;
+            }
+        }
         delete this.profileInfo.picture;
         delete this.profileInfo.preferences;
     }
@@ -231,6 +241,10 @@ export class ProfileComponent implements OnInit {
     async submitProfile() {
         this.disableState = true;
         this.msgButton = 'lang.sending';
+        this.preferenceInfo = {
+            ... this.preferenceInfo,
+            signatureScaling: !this.originalSize ? this.signatureScaling : false
+        };
 
         this.http.put('../rest/users/' + this.authService.user.id + '/preferences', this.preferenceInfo).pipe(
             tap(() => {

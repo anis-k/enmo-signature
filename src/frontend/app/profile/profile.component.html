@@ -157,6 +157,32 @@
                         </ion-note>
                     </ion-item>
                 </ion-list>
+                <ion-list>
+                    <ion-row>
+                        <iotn-item>
+                            <ion-label color="secondary" style="opacity: 1; margin-left: 15px;">{{'lang.signatureScaling' | translate}}</ion-label>
+                        </iotn-item>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col size="7">
+                            <ion-item lines="none" style="margin-left: -10px;">
+                                <ion-range min="10" max="50" pin color="primary" name="signatureScaling" [disabled]="originalSize" [(ngModel)]="signatureScaling">
+                                    <ion-icon slot="start" size="small" name="scan-circle-outline"></ion-icon>
+                                    <ion-icon slot="end" name="scan-outline"></ion-icon>
+                                </ion-range>
+                            </ion-item>
+                            <ion-note *ngIf="!originalSize" style="margin-left: 20px; font-size: 14px;" [innerHTML]="'lang.scalingDocWith' | translate: {value : signatureScaling}"></ion-note>
+                        </ion-col>
+                        <ion-col size="5">
+                            <ion-item lines="none" style=" margin-top: 22px; margin-left: 10px;">
+                                <ion-label>{{'lang.originalSize' | translate}}</ion-label>
+                                <ion-toggle slot="start" name="originalSize" color="primary" style="cursor: pointer"
+                                    [checked]="originalSize" (ionChange)="originalSize = !originalSize">
+                                </ion-toggle>
+                            </ion-item>
+                        </ion-col>
+                    </ion-row>
+                </ion-list>
             </ion-list>
         </ng-container>
         <ng-container *ngIf="currentTool === 'deleg'">
