@@ -37,6 +37,8 @@ export class SignaturesComponent implements OnInit {
     inAllPage = false;
     count = 0;
 
+    realSizes: any[] = [];
+
     constructor(private translate: TranslateService,
         public http: HttpClient,
         public signaturesService: SignaturesContentService,
@@ -91,6 +93,7 @@ export class SignaturesComponent implements OnInit {
         if (obj.length > 0) {
             this.signaturesList.push(obj);
         }
+        this.getImgDimensions(this.signaturesList);
     }
 
     ionViewDidEnter() {
@@ -115,11 +118,13 @@ export class SignaturesComponent implements OnInit {
 
     selectSignature(signature: any) {
         let percentWidth: any;
+        const realWith: number = this.realSizes.find((sign: any) => sign.id === signature.id).width;
         const signatureScaling: any = this.authService.user.preferences.signatureScaling;
+        const signatureWith: number = realWith >= this.signaturesService.workingAreaWidth ? 100 : (realWith * 100) / this.signaturesService.workingAreaWidth;
         if (signatureScaling === undefined) {
             percentWidth = 25;
         } else {
-            percentWidth = signatureScaling === false ? (400 * 100) / this.signaturesService.workingAreaWidth : signatureScaling;
+            percentWidth = signatureScaling === false ? signatureWith : signatureScaling;
         }
         signature.width = percentWidth;
         const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
@@ -328,5 +333,23 @@ export class SignaturesComponent implements OnInit {
             }
         }
         return state;
+    }
+
+    getImgDimensions(signList: any[]) {
+        this.realSizes = [];
+        signList.forEach((sign: any[]) => {
+            sign.forEach((img: any) => {
+                const decodeBase64 = atob(img.encodedSignature.slice(0, 50)).slice(16, 24);
+                const uint8 = Uint8Array.from(decodeBase64, c => c.charCodeAt(0));
+                const dataView = new DataView(uint8.buffer);
+                this.realSizes.push(
+                    {
+                        id: img.id,
+                        width: dataView.getInt32(0),
+                        height: dataView.getInt32(4)
+                    }
+                );
+            });
+        });
     }
 }
