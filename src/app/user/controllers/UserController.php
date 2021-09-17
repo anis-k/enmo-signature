@@ -473,7 +473,7 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body writingColor is empty or not a string']);
         } elseif (!Validator::boolType()->validate($body['notifications'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body notifications is empty or not a boolean']);
-        } elseif (!Validator::oneOf(Validator::falseVal(), Validator::intVal()->between(10, 50))->validate($body['signatureScaling'])) {
+        } elseif (!isset($body['signatureScaling']) || !Validator::oneOf(Validator::falseVal(), Validator::intVal()->between(10, 50))->validate($body['signatureScaling'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body signatureScaling is neither false nor an integer between 10 and 50']);
         }
 
