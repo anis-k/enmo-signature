@@ -102,6 +102,8 @@ export class DocumentComponent implements OnInit {
     loadingpdf: boolean = false;
     loadingImage: boolean = true;
 
+    fileContent: string = '';
+
     constructor(private translate: TranslateService,
         private router: Router,
         private route: ActivatedRoute,
@@ -251,6 +253,7 @@ export class DocumentComponent implements OnInit {
             cssClass: 'my-custom-class',
             componentProps: {
                 currentWorflow: this.mainDocument.workflow.filter((line: { current: boolean }) => line.current === true)[0],
+                content: this.fileContent
             }
         });
         await modal.present();
@@ -424,6 +427,7 @@ export class DocumentComponent implements OnInit {
                 this.http.get('../rest/documents/' + this.docList[this.currentDoc].id + '/thumbnails/' + this.pageNum).pipe(
                     tap((data: any) => {
                         this.docList[this.currentDoc].imgContent[this.pageNum] = 'data:image/png;base64,' + data.fileContent;
+                        this.fileContent = data.fileContent;
                     }),
                     catchError((err: any) => {
                         this.load.dismiss();

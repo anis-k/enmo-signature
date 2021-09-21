@@ -19,6 +19,7 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
 export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
+    @Input() content: any;
 
     @ViewChild('slides', { static: false }) slides: IonSlides;
 
@@ -37,7 +38,9 @@ export class SignaturesComponent implements OnInit {
     inAllPage = false;
     count = 0;
 
-    realSizes: any[] = [];
+    documentWidth: number;
+    signatureWith: number;
+
 
     constructor(private translate: TranslateService,
         public http: HttpClient,
@@ -118,10 +121,8 @@ export class SignaturesComponent implements OnInit {
 
     selectSignature(signature: any) {
         let percentWidth: any;
-        const realWith: number = this.realSizes.find((sign: any) => sign.id === signature.id).width;
         const signatureScaling: any = this.authService.user.preferences.signatureScaling;
-        const signatureWith: number = realWith >= this.signaturesService.workingAreaWidth ? 100 : (realWith * 100) / this.signaturesService.workingAreaWidth;
-        if (signatureScaling === undefined) {
+        const signatureWith: number = this.signatureWith >= this.documentWidth ? 100 : (this.signatureWith * 100) / this.documentWidth;        if (signatureScaling === undefined) {
             percentWidth = 25;
         } else {
             percentWidth = signatureScaling === false ? signatureWith : signatureScaling;
@@ -335,21 +336,14 @@ export class SignaturesComponent implements OnInit {
         return state;
     }
 
-    getImgDimensions(signList: any[]) {
-        this.realSizes = [];
-        signList.forEach((sign: any[]) => {
-            sign.forEach((img: any) => {
-                const decodeBase64 = atob(img.encodedSignature.slice(0, 50)).slice(16, 24);
-                const uint8 = Uint8Array.from(decodeBase64, c => c.charCodeAt(0));
-                const dataView = new DataView(uint8.buffer);
-                this.realSizes.push(
-                    {
-                        id: img.id,
-                        width: dataView.getInt32(0),
-                        height: dataView.getInt32(4)
-                    }
-                );
-            });
-        });
+    getImgDimensions(signList: any) {
+        const decodeBase64 = atob(signList.slice(0, 50)).slice(16, 24);
+        const uint8 = Uint8Array.from(decodeBase64, c => c.charCodeAt(0));
+        const dataView = new DataView(uint8.buffer);
+        this.documentWidth = dataView.getInt32(0);
+    }
+
+    setSignatureWith(event: any) {
+        this.signatureWith = event.path[0].naturalWidth;
     }
 }
