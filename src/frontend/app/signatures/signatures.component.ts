@@ -39,7 +39,7 @@ export class SignaturesComponent implements OnInit {
     count = 0;
 
     documentWidth: number;
-    signatureWith: number;
+    signatureWidth: number;
 
 
     constructor(private translate: TranslateService,
@@ -122,10 +122,10 @@ export class SignaturesComponent implements OnInit {
     selectSignature(signature: any) {
         let percentWidth: any;
         const signatureScaling: any = this.authService.user.preferences.signatureScaling;
-        const signatureWith: number = this.signatureWith >= this.documentWidth ? 100 : (this.signatureWith * 100) / this.documentWidth;        if (signatureScaling === undefined) {
+        const signatureWidth: number = this.signatureWidth >= this.documentWidth ? 100 : (this.signatureWidth * 100) / this.documentWidth;        if (signatureScaling === undefined) {
             percentWidth = 25;
         } else {
-            percentWidth = signatureScaling === false ? signatureWith : signatureScaling;
+            percentWidth = signatureScaling === false ? signatureWidth : signatureScaling;
         }
         signature.width = percentWidth;
         const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
@@ -343,7 +343,7 @@ export class SignaturesComponent implements OnInit {
         this.documentWidth = dataView.getInt32(0);
     }
 
-    setSignatureWith(event: any) {
-        this.signatureWith = event.path[0].naturalWidth;
+    setSignatureWidth(event: any) {
+        this.signatureWidth = event.path[0].naturalWidth;
     }
 }
