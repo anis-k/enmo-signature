@@ -473,6 +473,8 @@ class UserController
             return $response->withStatus(400)->withJson(['errors' => 'Body writingColor is empty or not a string']);
         } elseif (!Validator::boolType()->validate($body['notifications'])) {
             return $response->withStatus(400)->withJson(['errors' => 'Body notifications is empty or not a boolean']);
+        } elseif (!isset($body['signatureScaling']) || !Validator::oneOf(Validator::falseVal(), Validator::intVal()->between(10, 50))->validate($body['signatureScaling'])) {
+            return $response->withStatus(400)->withJson(['errors' => 'Body signatureScaling is neither false nor an integer between 10 and 50']);
         }
 
         $user = UserModel::getById(['id' => $args['id'], 'select' => ['firstname', 'lastname']]);
@@ -481,11 +483,12 @@ class UserController
         }
 
         $preferences = json_encode([
-            'lang'          => $body['lang'],
-            'writingMode'   => $body['writingMode'],
-            'writingSize'   => $body['writingSize'],
-            'writingColor'  => $body['writingColor'],
-            'notifications' => $body['notifications'],
+            'lang'             => $body['lang'],
+            'writingMode'      => $body['writingMode'],
+            'writingSize'      => $body['writingSize'],
+            'writingColor'     => $body['writingColor'],
+            'signatureScaling' => $body['signatureScaling'],
+            'notifications'    => $body['notifications']
         ]);
         if (!is_string($preferences)) {
             return $response->withStatus(400)->withJson(['errors' => 'Wrong format for user preferences data']);

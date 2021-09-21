@@ -482,6 +482,9 @@
 		"alignment": "Alignement",
 		"watermarkDesc": "Permet de rajouter des informations en haut du document. Ces informations sont <b>permanentes</b> et seront dans le document final signé.",
 		"watermarkContentDesc": "Les colonnes de <b>main_documents</b> peuvent être utilisées. ex: [id] ainsi que les <b>variables de temps</b>. ex : [date_now] ou [hour_now]",
-		"repoUrl": "https://labs.maarch.org/maarch/MaarchParapheur"
+		"repoUrl": "https://labs.maarch.org/maarch/MaarchParapheur",
+		"signatureScaling": "Taux de mise à l'échelle du bloc de signature",
+		"originaleize": "Taille originale",
+		"scalingDocWith": "{{value}} % de la largeur du document"
 	}
 }

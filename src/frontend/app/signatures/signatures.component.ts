@@ -19,6 +19,7 @@ import { SignaturePadPageComponent } from '../pad/pad.component';
 export class SignaturesComponent implements OnInit {
 
     @Input() currentWorflow: any;
+    @Input() content: any;
 
     @ViewChild('slides', { static: false }) slides: IonSlides;
 
@@ -36,6 +37,10 @@ export class SignaturesComponent implements OnInit {
 
     inAllPage = false;
     count = 0;
+
+    documentWidth: number;
+    signatureWidth: number;
+
 
     constructor(private translate: TranslateService,
         public http: HttpClient,
@@ -91,6 +96,7 @@ export class SignaturesComponent implements OnInit {
         if (obj.length > 0) {
             this.signaturesList.push(obj);
         }
+        this.getImgDimensions(this.signaturesList);
     }
 
     ionViewDidEnter() {
@@ -114,7 +120,13 @@ export class SignaturesComponent implements OnInit {
     }
 
     selectSignature(signature: any) {
-        const percentWidth = 25;
+        let percentWidth: any;
+        const signatureScaling: any = this.authService.user.preferences.signatureScaling;
+        const signatureWidth: number = this.signatureWidth >= this.documentWidth ? 100 : (this.signatureWidth * 100) / this.documentWidth;        if (signatureScaling === undefined) {
+            percentWidth = 25;
+        } else {
+            percentWidth = signatureScaling === false ? signatureWidth : signatureScaling;
+        }
         signature.width = percentWidth;
         const signPosCurrentPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page === this.signaturesService.currentPage);
         const signPosOtherPage = this.currentWorflow.signaturePositions.filter((item: any) => item.page !== this.signaturesService.currentPage);
@@ -322,5 +334,16 @@ export class SignaturesComponent implements OnInit {
             }
         }
         return state;
+    }
+
+    getImgDimensions(signList: any) {
+        const decodeBase64 = atob(signList.slice(0, 50)).slice(16, 24);
+        const uint8 = Uint8Array.from(decodeBase64, c => c.charCodeAt(0));
+        const dataView = new DataView(uint8.buffer);
+        this.documentWidth = dataView.getInt32(0);
+    }
+
+    setSignatureWidth(event: any) {
+        this.signatureWidth = event.path[0].naturalWidth;
     }
 }

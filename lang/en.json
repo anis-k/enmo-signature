@@ -471,6 +471,9 @@
         "notificationDeletedUserBody": "Hello, <br/> <br/> A visa workflow you initiated was interrupted because a user was deleted. <br/> <br/> Click on the link below to view it: <br / >",
         "stopProcessInfo": "Interrupted on",
         "refProcessInfo": "Refused on",
-        "repoUrl": "https://labs.maarch.org/maarch/MaarchParapheur"
+        "repoUrl": "https://labs.maarch.org/maarch/MaarchParapheur",
+        "signatureScaling": "Signature block scaling rate",
+		"originaleize": "Original size",
+		"scalingDocWith": "{{value}}% of the document width"
     }
 }
