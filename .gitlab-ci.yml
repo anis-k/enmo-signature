@@ -202,7 +202,7 @@ new_tag:
    - apt-get update -yqq > /dev/null
    - 'which ssh-agent || ( apt-get install openssh-client -y )'
    - eval $(ssh-agent -s)
-   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+   - echo "$SSH_PRIVATE_KEY_2" | tr -d '\r' | ssh-add -
    - mkdir -p ~/.ssh
    - chmod 700 ~/.ssh
    - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
