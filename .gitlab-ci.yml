@@ -6,6 +6,7 @@ variables:
 stages:
   - logs
   - new_branch
+  - new_tag
   - test
   - synchronization
 
@@ -190,3 +191,27 @@ new_branch:
  script:
    - chmod +x ./ci/create_mr.sh
    - ./ci/create_mr.sh
+
+new_tag:
+ image: debian:10-slim
+ stage: new_tag
+ only:
+   - tags
+ before_script:
+   # Install git and curl command
+   - apt-get update -yqq > /dev/null
+   - 'which ssh-agent || ( apt-get install openssh-client -y )'
+   - eval $(ssh-agent -s)
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+   - mkdir -p ~/.ssh
+   - chmod 700 ~/.ssh
+   - ssh-keyscan "$GITLAB_URL" >> ~/.ssh/known_hosts
+   - chmod 644 ~/.ssh/known_hosts
+   - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >> ~/.ssh/config'
+   - apt install -y git
+   - apt install -y curl
+   - apt install -y jq
+ script:
+   - chmod +x ./ci/new_tag.sh
+   - ./ci/new_tag.sh
+
