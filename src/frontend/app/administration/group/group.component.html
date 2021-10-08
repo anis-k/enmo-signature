@@ -27,10 +27,11 @@
         <ion-item lines="none" *ngIf="!creationMode">
             <ion-label color="secondary">{{'lang.linkedUsers' | translate}} :</ion-label>
         </ion-item>
-        <ion-card *ngIf="!creationMode" style="height: 400px;">
+        <ion-card *ngIf="!creationMode" style="height: 400px; overflow-y: auto;">
             <ion-list>
-                <ion-item style="display: flex;">
-                    <ion-label color="primary" matSort [matSortActive]="displayedColumns[1]" matSortDirection='asc'
+                <ion-item style="position: sticky;top:0px;z-index:1;">
+                    <ng-container style="display: flex;align-items: center;justify-content: center;width: 100%;background: white;">
+                        <ion-label color="primary" matSort [matSortActive]="displayedColumns[1]" matSortDirection='asc'
                         style="display: flex;font-size: 12px;align-items: center;" (matSortChange)="sortData($event)">
                         <ng-container *ngFor="let col of displayedColumns">
                             <div [mat-sort-header]="col" disableClear style="flex: 1" *ngIf="col!=='actions'">
@@ -42,10 +43,11 @@
                                 {{'lang.add' | translate}}
                             </ion-button>
                         </div>
-                    </ion-label>
-                    <ion-button slot="end" fill="clear" shape="round" disabled>
-                        <ion-icon></ion-icon>
-                    </ion-button>
+                        </ion-label>
+                        <ion-button slot="end" fill="clear" shape="round" disabled>
+                            <ion-icon></ion-icon>
+                        </ion-button>
+                    </ng-container>
                 </ion-item>
                 <ion-virtual-scroll [items]="sortedData" approxItemHeight="50px">
                     <ion-item *virtualItem="let element" style="display: flex;">
