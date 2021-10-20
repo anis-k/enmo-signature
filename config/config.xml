@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ROOT>
+    <config>
+        <sessionTime>10080</sessionTime> <!-- minutes -->
+        <timezone>Europe/Paris</timezone>
+        <customLangPathDirectory></customLangPathDirectory>
+    </config>
+    <database>
+        <server>localhost</server>
+        <port>5432</port>
+        <type>POSTGRESQL</type>
+        <name>maarchparapheur</name>
+        <user>maarch</user>
+        <password>maarch</password>
+    </database>
+    <electronicSignature>
+        <enable>false</enable>
+        <certPath>/var/www/html/MaarchParapheur/samples/certs/MP_final_certificate.crt</certPath><!-- .crt or .p12 or .pem -->
+        <privateKeyPath>/var/www/html/MaarchParapheur/samples/certs/MP_private.key</privateKeyPath><!-- if private key and certificate are in the same file, put the same path -->
+        <password>maarch</password>
+        <certInfo>
+            <name>Maarch</name>
+            <location>Paris</location>
+            <reason>Signature Maarch Parapheur</reason>
+            <contactInfo>Maarch SAS, société du groupe Archiveco</contactInfo>
+        </certInfo>
+    </electronicSignature>
+    <textWithDigitalSignature>true</textWithDigitalSignature>
+    <docaposteSignature>
+        <enable>false</enable>
+        <url>https://test.contralia.fr:443/Contralia/api/v2</url>
+        <user></user>
+        <password></password>
+        <offerCode></offerCode>
+        <organizationalUnitCode></organizationalUnitCode>
+    </docaposteSignature>
+    <!-- Sort by the more secure to the less secure mode -->
+    <signatureModes>
+        <!-- <mode>
+            <id>rgs_2stars_timestamped</id>
+            <color>#FF0000</color>
+            <issuer>ChamberSign</issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
+        </mode> -->
+        <mode>
+            <id>rgs_2stars</id>
+            <color>#FF0000</color>
+            <issuer></issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
+        </mode>
+        <!-- <mode>
+            <id>inca_card_eidas</id>
+            <color>#FFA500</color>
+            <issuer></issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
+        </mode> -->
+        <!-- <mode>
+            <id>inca_card</id>
+            <color>#FFA500</color>
+            <issuer></issuer>
+            <subject></subject>
+            <keyUsage>digitalSignature</keyUsage>
+        </mode> -->
+        <!-- <mode>
+            <id>eidas</id>
+            <color>#00FF00</color>
+        </mode> -->
+    </signatureModes>
+</ROOT>

@@ -1,10 +1,12 @@
-composer.lock
-config/config.xml
-.vscode/
-.phplint-cache
-.phplint.yml
+#composer.lock
+#config/config.xml
+#.vscode/
+#.phplint-cache
+#.phplint.yml
 *.log
-xdelete.sh
-test/unitTests/build/
-package-lock.json
+#xdelete.sh
+#test/unitTests/build/
+#package-lock.json
 
+node_modules
+node_modules

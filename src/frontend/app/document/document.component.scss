@@ -316,7 +316,7 @@ button.disabled {
     overflow: hidden;
     text-overflow: ellipsis;
     background:
-        #135F7F;
+        #280d43;
     color:
         white;
     font-size: 13px;
@@ -342,13 +342,13 @@ button.disabled {
         display: flex;
         align-items: center;
         padding: 10px;
-        color: #135F7F;
+        color: #280d43;
         font-weight: bold;
     }
 
     &-creator {
         padding: 10px;
-        color: #135F7F;
+        color: #280d43;
         font-size: 12px;
         text-decoration: underline;
     }

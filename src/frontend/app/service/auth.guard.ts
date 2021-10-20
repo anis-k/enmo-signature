@@ -101,7 +101,7 @@ export class AuthGuard implements CanActivate {
                     this.authService.signatureRoles = [{
                         'id': 'visa',
                         'type': 'visa',
-                        'color': '#135F7F'
+                        'color': '#280d43'
                     }];
                     this.authService.signatureRoles = this.authService.signatureRoles.concat(dataModes.map((item: any) => ({
                         ...item,
